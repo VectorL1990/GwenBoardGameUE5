@@ -1,0 +1,13 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "d:\\unreal projects\\gwenboardgameue5\\plugins\\unluaextensions\\luasocket\\source\\src\\unixstream.cpp",
+        "ProvidedModule": "",
+        "PCH": "d:\\unreal projects\\gwenboardgameue5\\intermediate\\build\\win64\\x64\\gwenboardgameclienteditor\\development\\engine\\sharedpch.engine.shadowerrors.noundef.inclorderunreal5_1.h.pch",
+        "Includes": [
+            "d:\\unreal projects\\gwenboardgameue5\\plugins\\unluaextensions\\luasocket\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\luasocket\\definitions.luasocket.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}
