@@ -2,11 +2,14 @@
 
 #include "LibLuasocket.h"
 
-#include "lua.hpp"
+//#include "lua.hpp"
 
 extern "C" {
 #include "luasocket.h"
 #include "mime.h"
+#include "lua.h"
+#include "lualib.h"
+#include "lauxlib.h"
 }
 
 IMPLEMENT_MODULE(FLibLuasocketModule, LibLuasocket);

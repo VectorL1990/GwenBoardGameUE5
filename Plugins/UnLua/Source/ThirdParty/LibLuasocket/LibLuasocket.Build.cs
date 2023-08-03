@@ -12,7 +12,7 @@ public class LibLuasocket : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "Lua" });
 
-		bEnableShadowVariableWarnings = false;
+		//bEnableShadowVariableWarnings = false;
 		bEnableUndefinedIdentifierWarnings = false;
 
 		PublicDefinitions.Add("WITH_LIBLUASOCKET=1");

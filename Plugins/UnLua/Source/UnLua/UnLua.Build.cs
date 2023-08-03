@@ -54,7 +54,8 @@ public class UnLua : ModuleRules
                 "Slate",
                 "InputCore",
                 "Lua",
-                "LibSproto"
+                "LibSproto",
+                "LibLuasocket"
             }
         );
 

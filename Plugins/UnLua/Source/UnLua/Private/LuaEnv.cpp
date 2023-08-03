@@ -32,6 +32,7 @@
 #include "lstate.h"
 
 #include "ThirdParty/LibSproto/LibSproto.h"
+#include "ThirdParty/LibLuasocket/LibLuasocket.h"
 
 namespace UnLua
 {
@@ -99,6 +100,15 @@ namespace UnLua
 			lua_setglobal(L, "SupportSproto");
 
 			UE_LOG(LogUnLua, Log, TEXT("Lua state setup with Sproto."));
+		}
+
+        if (FLibLuasocketModule::IsAvailable())
+		{
+			FLibLuasocketModule::Get().SetupLuasocket(L);
+			lua_pushboolean(L, true);
+			lua_setglobal(L, "SupportLuasocket");
+
+			UE_LOG(LogUnLua, Log, TEXT("Lua state setup with Luasocket."));
 		}
 
         AllEnvs.Add(L, this);
