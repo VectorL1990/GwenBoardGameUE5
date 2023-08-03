@@ -31,6 +31,8 @@
 #include "UnLuaSettings.h"
 #include "lstate.h"
 
+#include "ThirdParty/LibSproto/LibSproto.h"
+
 namespace UnLua
 {
     constexpr EInternalObjectFlags AsyncObjectFlags = EInternalObjectFlags::AsyncLoading | EInternalObjectFlags::Async;
@@ -90,6 +92,14 @@ namespace UnLua
 #else
         L = lua_newstate(GetLuaAllocator(), nullptr);
 #endif
+        if (FLibSprotoModule::IsAvailable())
+		{
+			FLibSprotoModule::Get().SetupLibSproto(L);
+			lua_pushboolean(L, true);
+			lua_setglobal(L, "SupportSproto");
+
+			UE_LOG(LogUnLua, Log, TEXT("Lua state setup with Sproto."));
+		}
 
         AllEnvs.Add(L, this);
 

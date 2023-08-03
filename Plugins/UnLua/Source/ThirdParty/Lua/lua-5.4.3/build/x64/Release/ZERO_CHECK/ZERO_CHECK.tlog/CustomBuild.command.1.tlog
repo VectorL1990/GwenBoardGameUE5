@@ -1,0 +1,10 @@
+^D:\UNREAL PROJECTS\GWENBOARDGAMEUE5\PLUGINS\UNLUA\SOURCE\THIRDPARTY\LUA\LUA-5.4.3\BUILD\CMAKEFILES\2ED7053E9DEBD047123CAACA9B4570DC\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SD:/Unreal Projects/GwenBoardGameUE5/Plugins/UnLua/Source/ThirdParty/Lua" "-BD:/Unreal Projects/GwenBoardGameUE5/Plugins/UnLua/Source/ThirdParty/Lua/lua-5.4.3/build" --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file "D:/Unreal Projects/GwenBoardGameUE5/Plugins/UnLua/Source/ThirdParty/Lua/lua-5.4.3/build/Lua.sln"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

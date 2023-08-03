@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="D:\Unreal Projects\GwenBoardGameUE5\Plugins\UnLua\Source\ThirdParty\Lua\lua-5.4.3\build\CMakeFiles\2ed7053e9debd047123caaca9b4570dc\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{CF81F144-3951-3EC8-B4D8-C7E5357775FE}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
