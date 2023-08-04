@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "LibCjson.h"
 
-#include "lua.hpp"
+//#include "lua.hpp"
 //#include "fpconv.h"
 //#include "strbuf.h"
 //#include "fpconv.h"
@@ -9,7 +9,9 @@
 extern "C" {
 //#include "fpconv.h"
 #include "lua_cjson.c"
-
+#include "lua.h"
+#include "lualib.h"
+#include "lauxlib.h"
 
 }
 

@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "LibLpeg.h"
 
-#include "lua.hpp"
+//#include "lua.hpp"
 
 extern "C" {
 
@@ -11,7 +11,9 @@ extern "C" {
 #include "lptree.h"
 #include "lptypes.h"
 #include "lpvm.h"
-
+#include "lua.h"
+#include "lualib.h"
+#include "lauxlib.h"
 }
 
 IMPLEMENT_MODULE(FLibLpegModule, LibLpeg);

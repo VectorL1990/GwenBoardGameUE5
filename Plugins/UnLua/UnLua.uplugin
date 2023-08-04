@@ -49,6 +49,18 @@
             "Type": "Runtime",
             "LoadingPhase": "Default",
             "WhitelistPlatforms" : [ "Win64", "Mac", "IOS", "Android" ]
+        },
+        {
+            "Name": "LibLpeg",
+            "Type": "Runtime",
+            "LoadingPhase": "Default",
+            "WhitelistPlatforms" : [ "Win64", "Mac", "IOS", "Android" ]
+        },
+        {
+            "Name": "LibCjson",
+            "Type": "Runtime",
+            "LoadingPhase": "Default",
+            "WhitelistPlatforms" : [ "Win64", "Mac", "IOS", "Android" ]
         }
     ]
 }

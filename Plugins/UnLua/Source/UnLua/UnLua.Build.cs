@@ -55,7 +55,9 @@ public class UnLua : ModuleRules
                 "InputCore",
                 "Lua",
                 "LibSproto",
-                "LibLuasocket"
+                "LibLuasocket",
+                "LibCjson",
+                "LibLpeg"
             }
         );
 

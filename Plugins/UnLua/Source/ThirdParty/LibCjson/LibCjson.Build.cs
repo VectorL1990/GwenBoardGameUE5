@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class LibLuacrypt : ModuleRules
+public class LibCjson : ModuleRules
 {
-	public LibLuacrypt(ReadOnlyTargetRules Target) : base(Target)
+	public LibCjson(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
@@ -12,9 +12,9 @@ public class LibLuacrypt : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "Lua" });
 
-		bEnableShadowVariableWarnings = false;
+		//bEnableShadowVariableWarnings = false;
 		bEnableUndefinedIdentifierWarnings = false;
 
-		PublicDefinitions.Add("WITH_LibLuacrypt=1");
+		PublicDefinitions.Add("WITH_LibCjson=1");
 	}
 }

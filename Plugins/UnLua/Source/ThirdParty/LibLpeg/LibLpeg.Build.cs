@@ -12,7 +12,7 @@ public class LibLpeg : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "Lua" });
 
-		bEnableShadowVariableWarnings = false;
+		//bEnableShadowVariableWarnings = false;
 		bEnableUndefinedIdentifierWarnings = false;
 
 		PublicDefinitions.Add("WITH_LibLpeg=1");

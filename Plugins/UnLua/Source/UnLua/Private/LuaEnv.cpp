@@ -33,6 +33,8 @@
 
 #include "ThirdParty/LibSproto/LibSproto.h"
 #include "ThirdParty/LibLuasocket/LibLuasocket.h"
+#include "ThirdParty/LibLpeg/LibLpeg.h"
+#include "ThirdParty/LibCjson/LibCjson.h"
 
 namespace UnLua
 {
@@ -109,6 +111,24 @@ namespace UnLua
 			lua_setglobal(L, "SupportLuasocket");
 
 			UE_LOG(LogUnLua, Log, TEXT("Lua state setup with Luasocket."));
+		}
+
+        if (FLibCjsonModule::IsAvailable())
+		{
+			FLibCjsonModule::Get().SetupLibCjson(L);
+			lua_pushboolean(L, true);
+			lua_setglobal(L, "SupportLuaCjson");
+
+			UE_LOG(LogUnLua, Log, TEXT("Lua state setup with lua-cjson."));
+		}
+
+        if (FLibLpegModule::IsAvailable())
+		{
+			FLibLpegModule::Get().SetupLibLpeg(L);
+			lua_pushboolean(L, true);
+			lua_setglobal(L, "SupportLpeg");
+
+			UE_LOG(LogUnLua, Log, TEXT("Lua state setup with LuaLpeg."));
 		}
 
         AllEnvs.Add(L, this);
