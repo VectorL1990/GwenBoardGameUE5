@@ -25,36 +25,6 @@ signin 3 {
 }
 
 login 4 {
-	request {
-		user_name 0 : string
-	}
-	response {
-		resp 0 : boolean
-	}
-}
-
-testcmd 5 {
-	request {
-		testmsg 0 : string
-	}
-}
-
-sayhello 6 {
-	request {
-		msg 0 : string
-	}
-}
-
-client_confirm_agent 7 {
-	request {
-		msg 0 : string
-	}
-	response {
-		ok 0 : boolean
-	}
-}
-
-client_request_match 8 {
 	response {
 		ok 0 : boolean
 	}

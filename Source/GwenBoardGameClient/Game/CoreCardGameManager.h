@@ -10,17 +10,22 @@ UCLASS()
 class GWENBOARDGAMECLIENT_API ACoreCardGameManager : public AActor
 {
 	GENERATED_BODY()
+private:
+				static ACoreCardGameManager* instance;
 	
 public:	
 	// Sets default values for this actor's properties
-	ACoreCardGameManager();
+				ACoreCardGameManager();
 
 protected:
 	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+				virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+				virtual void Tick(float DeltaTime) override;
+
+				bool Init(AActor* actor);
+
+				static ACoreCardGameManager* GetInstance();
 
 };
