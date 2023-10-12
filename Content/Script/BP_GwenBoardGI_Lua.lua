@@ -24,6 +24,10 @@ local request
 local fd
 local session = 0
 
+function game_gi.CallCppConnectServer()
+    self:ConnectServer("192.168.19.57", 5678, 1)
+end
+
 function game_gi.ConnectToSkynetServer()
     --[[
     local full_path = debug.getinfo(1,'S').source
@@ -70,6 +74,11 @@ function game_gi.ReceiveRoomMsg(msg)
     end
 end
 
+function game_gi.SecondThreadCallLua()
+    screen.Print("trigger game_gi.SecondThreadCallLua")
+    --message.update()
+end
+
 function game_gi.TestCallLua()
     screen.Print("trigger TestCallLua")
 end
@@ -78,6 +87,7 @@ function game_gi.play_card(card_info, grid_nb)
 end
 
 function event:signup(req, resp)
+    screen.Print("111111111111")
     if resp.ok then
         screen.Print("aaaaaaaaaa")
     else

@@ -12,21 +12,30 @@ local game_gi = require "BP_GwenBoardGI_Lua"
 local login_gamemode = UnLua.Class()
 
 function login_gamemode:Initialize(Initializer)
-  
+
 end
 
 -- function M:UserConstructionScript()
 -- end
 
 function login_gamemode:ReceiveBeginPlay()
-  game_gi.ConnectToSkynetServer()
-  game_gi.SendRequest("signup", {userid = "Alice"})
+  --game_gi.ConnectToSkynetServer()
+  --game_gi.SendRequest("signup", {userid = "Alice"})
+  --self:AfterBeginPlay()
+  --game_gi.CallCppConnectServer()
 end
 
 -- function M:ReceiveEndPlay()
 -- end
 
 function login_gamemode:ReceiveTick(DeltaSeconds)
+  game_gi.UpdateMessage()
+end
+
+function login_gamemode:CallLuaBeginPlay()
+end
+
+function login_gamemode:CallLuaTick(dT)
   --game_gi.UpdateMessage()
 end
 

@@ -2,8 +2,7 @@
 
 
 #include "LoginGameModeBase.h"
+#include "Base/GwenBoardGameInstance.h"
+#include "UnLua.h"
 
-void ALoginGameModeBase::BeginPlay()
-{
-				
-}
+

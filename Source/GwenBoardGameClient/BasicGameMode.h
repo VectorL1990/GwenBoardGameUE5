@@ -4,17 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "BasicGameMode.h"
-#include "LoginGameModeBase.generated.h"
+#include "BasicGameMode.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class GWENBOARDGAMECLIENT_API ALoginGameModeBase : public ABasicGameMode
+class GWENBOARDGAMECLIENT_API ABasicGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
-	public:
 
+	public:
+				UFUNCTION(BlueprintCallable)
+				void CallGameInstanceSendData();
 	
 };

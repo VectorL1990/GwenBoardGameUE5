@@ -41,7 +41,8 @@ function message.request(name, args)
 end
 
 function message.update(ti)
-	local msg = socket.read(ti)
+	--local msg = socket.read(ti)
+	local msg = socket.trigger_read()
 	if not msg then
 		return false
 	end

@@ -1,8 +1,44 @@
 local lua_socket = require "socket.core"
+local screen = require "Screen"
 
 local socket = {}
 local fd
 local message
+
+local read_coroutine = coroutine.create(function()
+	while true do
+		screen.Print("[[[[[[[[[[[[[[")
+		
+		local ok, msg, n = pcall(string.unpack, ">s2", message)
+		screen.Print("[[[[[[[[[[[[[[1111111111")
+		if not ok then
+			--[[
+			local rd = lua_socket.select({fd}, 0) 
+			screen.Print("[[[[[[[[[[[[[[222222222222")
+			if not rd then
+				screen.Print("pppppppppppp")
+				return nil
+			end
+			if next(rd) == nil then
+				screen.Print("pppppppppppp1111111")
+				return nil
+			end]]
+			
+			local p, status = fd:receive(1024)
+			
+			if not p then
+				error(socket.error)
+			end
+			message = message .. p
+		else
+			message = message:sub(n)
+			screen.Print("pppppppppppp2222222222")
+			return msg
+		end
+		screen.Print("pppppppppppp3333333333")
+		coroutine.yield()
+	end
+end)
 
 socket.error = setmetatable({},{ __tostring = function() return "[socket error]" end })
 
@@ -33,29 +69,17 @@ function socket.close()
     message = nil
 end
 
-function socket.innerRead(ti)
-	while true do
-		local ok, msg, n = pcall(string.unpack, ">s2", message)
-		if not ok then
-			local rd = lua_socket.select({fd}, ti) 
-			if not rd then
-				return nil
-			end
-			if next(rd) == nil then
-				return nil
-			end
-			fd:settimeout(0)
-			local p, status = fd:receive("*a")
-			if not p then
-				error(socket.error)
-			end
-			message = message .. p
-		else
-			message = message:sub(n)
-			return msg
-		end
+function socket.trigger_read()
+	local status, msg = coroutine.resume(read_coroutine)
+	if not status then
+		return nil
+	else
+		return msg
 	end
 end
+
+
+
 
 function socket.read(ti)
 	while true do
@@ -68,7 +92,7 @@ function socket.read(ti)
 			if next(rd) == nil then
 				return nil
 			end
-			local p, status = fd:recv()
+			local p, status = fd:receive("*l")
 			if not p then
 				error(socket.error)
 			end

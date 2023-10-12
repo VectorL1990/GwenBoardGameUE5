@@ -8,11 +8,7 @@
 void ACoreCardGamePC::BeginPlay()
 {
 				SetShowMouseCursor(true);
-				UGwenBoardGameInstance* gwenBoardGameInstance = Cast<UGwenBoardGameInstance>(GetGameInstance());
-				if (gwenBoardGameInstance)
-				{
-								gwenBoardGameInstance->StartSkynetClientThread();
-				}
+
 }
 
 void ACoreCardGamePC::Tick(float DeltaTime)
