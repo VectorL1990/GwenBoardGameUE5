@@ -7,6 +7,7 @@
 --
 local screen = require "Screen"
 local game_gi = require "BP_GwenBoardGI_Lua"
+local message = require "ClientMessage"
 
 ---@type BP_LoginGameMode_C
 local login_gamemode = UnLua.Class()
@@ -22,7 +23,10 @@ function login_gamemode:ReceiveBeginPlay()
   --game_gi.ConnectToSkynetServer()
   --game_gi.SendRequest("signup", {userid = "Alice"})
   --self:AfterBeginPlay()
-  --game_gi.CallCppConnectServer()
+  game_gi.RegisterInit()
+  local pack = message.packMsg("signup", {userid = "Alice"})
+  print(string.format("pack msg is: %s", pack))
+  self:RequestSignup(pack)
 end
 
 -- function M:ReceiveEndPlay()

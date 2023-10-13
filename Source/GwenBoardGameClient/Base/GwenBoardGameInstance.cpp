@@ -107,6 +107,24 @@ FString UGwenBoardGameInstance::Message_ReadString(TArray<uint8>& message, int32
 				return FString(UTF8_TO_TCHAR(cstr.c_str()));
 }
 
+TArray<uint8> UGwenBoardGameInstance::Conv_StringToBytes(const FString& inStr)
+{
+				FTCHARToUTF8 convert(*inStr);
+				int bytesLength = convert.Length(); //length of the utf-8 string in bytes (when non-latin letters are used, it's longer than just the number of characters)
+				uint8* messageBytes = static_cast<uint8*>(FMemory::Malloc(bytesLength));
+				FMemory::Memcpy(messageBytes, (uint8*)TCHAR_TO_UTF8(inStr.GetCharArray().GetData()), bytesLength); //mcmpy is required, since TCHAR_TO_UTF8 returns an object with a very short lifetime
+
+				TArray<uint8> result;
+				for (int i = 0; i < bytesLength; i++)
+				{
+								result.Add(messageBytes[i]);
+				}
+
+				FMemory::Free(messageBytes);
+
+				return result;
+}
+
 void UGwenBoardGameInstance::ExecuteOnConnected(int32 workerId, TWeakObjectPtr<UGwenBoardGameInstance> thisObj)
 {
 

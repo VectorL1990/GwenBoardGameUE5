@@ -4,8 +4,9 @@
 #include "BasicGameMode.h"
 #include "Base/GwenBoardGameInstance.h"
 
-void ABasicGameMode::CallGameInstanceSendData()
+void ABasicGameMode::CallGameInstanceSendData(FString sendData)
 {
 				UGwenBoardGameInstance* gi = Cast<UGwenBoardGameInstance>(GetWorld()->GetGameInstance());
-				
+				TArray<uint8> bytes = gi->Conv_StringToBytes(sendData);
+				gi->SendData(1, bytes);
 }

@@ -16,6 +16,6 @@ class GWENBOARDGAMECLIENT_API ABasicGameMode : public AGameModeBase
 
 	public:
 				UFUNCTION(BlueprintCallable)
-				void CallGameInstanceSendData();
+				void CallGameInstanceSendData(FString sendData);
 	
 };

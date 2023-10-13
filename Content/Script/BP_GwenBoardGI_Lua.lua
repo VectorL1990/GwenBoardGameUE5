@@ -23,9 +23,18 @@ local host
 local request
 local fd
 local session = 0
+local registerInit = false
 
 function game_gi.CallCppConnectServer()
     self:ConnectServer("192.168.19.57", 5678, 1)
+end
+
+function game_gi.RegisterInit()
+    if not registerInit then
+        local full_path = debug.getinfo(1,'S').source
+        local path = full_path:match("(.*[/ \\])")
+        message.register(path.."proto")
+    end
 end
 
 function game_gi.ConnectToSkynetServer()

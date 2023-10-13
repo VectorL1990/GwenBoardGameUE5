@@ -19,6 +19,15 @@ function message.register(name)
 	var.request = var.host:attach(sproto.parse(t))
 end
 
+function  message.packMsg(name, args)
+	var.session_id = var.session_id + 1
+	var.session[var.session_id] = { name = name, req = args }
+	local msg = var.request(name , args, var.session_id)
+	print(string.format("@@@@@@@@@@@@@@@@@@@@@@@@@@ : %s", msg))
+	local pack = string.pack(">s2", msg)
+	return pack
+end
+
 function message.peer(addr, port)
 	var.addr = addr
 	var.port = port

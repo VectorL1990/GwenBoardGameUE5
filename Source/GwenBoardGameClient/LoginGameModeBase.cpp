@@ -5,4 +5,7 @@
 #include "Base/GwenBoardGameInstance.h"
 #include "UnLua.h"
 
-
+void ALoginGameModeBase::RequestSignup(FString packMsg)
+{
+				CallGameInstanceSendData(packMsg);
+}

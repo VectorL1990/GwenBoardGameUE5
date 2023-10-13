@@ -16,5 +16,7 @@ class GWENBOARDGAMECLIENT_API ALoginGameModeBase : public ABasicGameMode
 	GENERATED_BODY()
 	public:
 
+	UFUNCTION(BlueprintCallable)
+	void RequestSignup(FString packMsg);
 	
 };

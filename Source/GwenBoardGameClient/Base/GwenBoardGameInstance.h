@@ -32,6 +32,8 @@ class GWENBOARDGAMECLIENT_API UGwenBoardGameInstance : public UGameInstance
 
 				FString Message_ReadString(UPARAM(ref) TArray<uint8>& message, int32 stringLength);
 
+				TArray<uint8> Conv_StringToBytes(const FString& inStr);
+
 				void ExecuteOnConnected(int32 workerId, TWeakObjectPtr<UGwenBoardGameInstance> thisObj);
 
 				void ExecuteOnDisconnected(int32 workerId, TWeakObjectPtr<UGwenBoardGameInstance> thisObj);
