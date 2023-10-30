@@ -14,8 +14,15 @@ class GWENBOARDGAMECLIENT_API ABasicGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 
-	public:
-				UFUNCTION(BlueprintCallable)
-				void CallGameInstanceSendData(FString sendData);
+public:
+	UFUNCTION(BlueprintCallable)
+	void CallGameInstanceSendData(FString sendData);
+
+	virtual void InitEvents();
+
+	UFUNCTION()
+	void onKicked(const UKBEventData* eventData);
+
+	void onDisconnected(const UKBEventData* eventData);
 	
 };

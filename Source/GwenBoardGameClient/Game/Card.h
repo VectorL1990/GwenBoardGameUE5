@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+
+#include "CoreGameBlueprintFunctionLibrary.h"
 #include "Card.generated.h"
 
 UCLASS()
@@ -22,5 +24,17 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	BattleCardStatus cardStatus = BattleCardStatus::Standby;
+
+	FString cardName;
+
+	int32 cardUid;
+
+	int32 hp;
+
+	int32 agility;
+
+	int32 defence;
 
 };
