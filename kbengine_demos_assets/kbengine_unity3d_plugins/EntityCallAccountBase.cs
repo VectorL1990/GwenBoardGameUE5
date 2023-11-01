@@ -61,6 +61,16 @@ namespace KBEngine
 			sendCall(null);
 		}
 
+		public void reqTest(Int32 arg1)
+		{
+			Bundle pBundle = newCall("reqTest", 0);
+			if(pBundle == null)
+				return;
+
+			bundle.writeInt32(arg1);
+			sendCall(null);
+		}
+
 		public void selectAvatarGame(UInt64 arg1)
 		{
 			Bundle pBundle = newCall("selectAvatarGame", 0);

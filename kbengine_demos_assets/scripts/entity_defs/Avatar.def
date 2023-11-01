@@ -16,31 +16,9 @@
 
 	<Interfaces>
 		<Interface>	GameObject		</Interface>
-		<Interface>	State			</Interface>
-		<Interface>	Flags			</Interface>
-		<Interface>	Motion			</Interface>
-		<Interface>	SkillBox		</Interface>
-		<Interface>	Combat			</Interface>
-		<Interface>	Spell			</Interface>
-		<Interface>	Teleport		</Interface>
-		<Interface>	Dialog			</Interface>
 	</Interfaces>
 
   <Components>
-		<component1>			
-			<Type> 			Test		</Type>
-			<Persistent>	true		</Persistent>
-		</component1>
-
-		<component2>			
-			<Type> 			Test		</Type>
-			<Persistent>	false		</Persistent>
-		</component2>
-
-		<component3>			
-			<Type> 			TestNoBase	</Type>
-      		<Persistent>	true		</Persistent>
-		</component3>
 	</Components>
 
 	<Properties>

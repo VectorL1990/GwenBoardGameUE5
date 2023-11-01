@@ -26,8 +26,6 @@ public:
 	EntityBaseEntityCall_GateBase* pBaseEntityCall;
 	EntityCellEntityCall_GateBase* pCellEntityCall;
 
-	uint32 entityNO;
-	virtual void onEntityNOChanged(uint32 oldValue) {}
 	uint32 modelID;
 	virtual void onModelIDChanged(uint32 oldValue) {}
 	uint8 modelScale;

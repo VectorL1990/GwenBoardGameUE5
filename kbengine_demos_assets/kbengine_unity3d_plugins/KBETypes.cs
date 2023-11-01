@@ -1565,29 +1565,6 @@ namespace KBEngine
 
 	}
 
-	public class AVATAR_DATA
-	{
-		public SByte param1 = 0;
-		public byte[] param2 = new byte[0];
-
-	}
-
-	public class AVATAR_INFOS
-	{
-		public UInt64 dbid = 0;
-		public string name = "";
-		public Byte roleType = 0;
-		public UInt16 level = 0;
-		public AVATAR_DATA data = new AVATAR_DATA();
-
-	}
-
-	public class AVATAR_INFOS_LIST
-	{
-		public List<AVATAR_INFOS> values = new List<AVATAR_INFOS>();
-
-	}
-
 	public class BAG
 	{
 		public List<List<Int64>> values22 = new List<List<Int64>>();

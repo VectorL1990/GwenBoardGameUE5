@@ -132,67 +132,6 @@ inline bool operator ==(const ENTITYID_LIST& a, const ENTITYID_LIST& b)
 	return a == b;
 };
 
-class AVATAR_DATA
-{
-public:
-	int8 param1;
-	TArray<uint8> param2;
-
-	AVATAR_DATA():
-	param1(0),
-	param2()
-	{
-	}
-
-};
-
-inline bool operator ==(const AVATAR_DATA& a, const AVATAR_DATA& b)
-{
-	return a.param1 == b.param1 && a.param2 == b.param2;
-};
-
-class AVATAR_INFOS
-{
-public:
-	uint64 dbid;
-	FString name;
-	uint8 roleType;
-	uint16 level;
-	AVATAR_DATA data;
-
-	AVATAR_INFOS():
-	dbid(0),
-	name(),
-	roleType(0),
-	level(0),
-	data()
-	{
-	}
-
-};
-
-inline bool operator ==(const AVATAR_INFOS& a, const AVATAR_INFOS& b)
-{
-	return a.dbid == b.dbid && a.name == b.name && a.roleType == b.roleType && a.level == b.level && a.data == b.data;
-};
-
-class AVATAR_INFOS_LIST
-{
-public:
-	TArray<AVATAR_INFOS> values;
-
-	AVATAR_INFOS_LIST():
-	values()
-	{
-	}
-
-};
-
-inline bool operator ==(const AVATAR_INFOS_LIST& a, const AVATAR_INFOS_LIST& b)
-{
-	return a.values == b.values;
-};
-
 class BAG
 {
 public:
@@ -271,11 +210,13 @@ class UPDATE_GRID_INFO
 {
 public:
 	int32 gridNb;
+	int32 cardUid;
 	FString updateType;
 	int32 updateValue;
 
 	UPDATE_GRID_INFO():
 	gridNb(0),
+	cardUid(0),
 	updateType(),
 	updateValue(0)
 	{
@@ -285,13 +226,57 @@ public:
 
 inline bool operator ==(const UPDATE_GRID_INFO& a, const UPDATE_GRID_INFO& b)
 {
-	return a.gridNb == b.gridNb && a.updateType == b.updateType && a.updateValue == b.updateValue;
+	return a.gridNb == b.gridNb && a.cardUid == b.cardUid && a.updateType == b.updateType && a.updateValue == b.updateValue;
+};
+
+class UPDATE_GRID_INFO_LIST
+{
+public:
+	int32 updateId;
+	TArray<UPDATE_GRID_INFO> updateGridList;
+
+	UPDATE_GRID_INFO_LIST():
+	updateId(0),
+	updateGridList()
+	{
+	}
+
+};
+
+inline bool operator ==(const UPDATE_GRID_INFO_LIST& a, const UPDATE_GRID_INFO_LIST& b)
+{
+	return a.updateId == b.updateId && a.updateGridList == b.updateGridList;
+};
+
+class BATTLE_GRID_INFO
+{
+public:
+	int32 gridNb;
+	int32 cardUid;
+	int32 hp;
+	int32 defence;
+	uint8 agility;
+
+	BATTLE_GRID_INFO():
+	gridNb(0),
+	cardUid(0),
+	hp(0),
+	defence(0),
+	agility(0)
+	{
+	}
+
+};
+
+inline bool operator ==(const BATTLE_GRID_INFO& a, const BATTLE_GRID_INFO& b)
+{
+	return a.gridNb == b.gridNb && a.cardUid == b.cardUid && a.hp == b.hp && a.defence == b.defence && a.agility == b.agility;
 };
 
 class CORE_UPDATE_BATLLE_INFO
 {
 public:
-	TArray<UPDATE_GRID_INFO> updateList;
+	TArray<BATTLE_GRID_INFO> updateList;
 
 	CORE_UPDATE_BATLLE_INFO():
 	updateList()

@@ -4,9 +4,9 @@ import random
 import time
 import d_spaces
 import GlobalConst
-from AVATAR_INFOS import TAvatarInfos
-from AVATAR_INFOS import TAvatarInfosList
-from AVATAR_DATA import TAvatarData
+#from AVATAR_INFOS import TAvatarInfos
+#from AVATAR_INFOS import TAvatarInfosList
+#from AVATAR_DATA import TAvatarData
 from KBEDebug import *
 import d_avatar_inittab
 
@@ -16,127 +16,30 @@ class Account(KBEngine.Proxy):
 	客户端登陆到服务端后，服务端将自动创建这个实体，通过这个实体与客户端进行交互
 	"""
 	def __init__(self):
+		INFO_MSG("create Account!!!")
 		KBEngine.Proxy.__init__(self)
 		self.activeAvatar = None
 		self.relogin = time.time()
+
+	def reqTest(self, param):
+		INFO_MSG("receive msg from ue!!!")
+		self.client.onReqTest(100)
+		return
 	
 	def reqAvatarList(self):
-		"""
-		exposed.
-		客户端请求查询角色列表
-		"""
-		DEBUG_MSG("Account[%i].reqAvatarList: size=%i." % (self.id, len(self.characters)))
-		self.client.onReqAvatarList(self.characters)
+		return
 				
 	def reqCreateAvatar(self, roleType, name):
-		"""
-		exposed.
-		客户端请求创建一个角色
-		"""
-		avatarinfo = TAvatarInfos()
-		avatarinfo.extend([0, "", 0, 0, TAvatarData().createFromDict({"param1" : 0, "param2" :b''})])
-			
-		"""
-		if name in all_avatar_names:
-			retcode = 2
-			self.client.onCreateAvatarResult(retcode, avatarinfo)
-			return
-		"""
-		
-		if len(self.characters) >= 3:
-			DEBUG_MSG("Account[%i].reqCreateAvatar:%s. character=%s.\n" % (self.id, name, self.characters))
-			self.client.onCreateAvatarResult(3, avatarinfo)
-			return
-		
-		""" 根据前端类别给出出生点
-		Reference: http://www.kbengine.org/docs/programming/clientsdkprogramming.html, client types
-		UNKNOWN_CLIENT_COMPONENT_TYPE	= 0,
-		CLIENT_TYPE_MOBILE				= 1,	// 手机类
-		CLIENT_TYPE_WIN					= 2,	// pc， 一般都是exe客户端
-		CLIENT_TYPE_LINUX				= 3		// Linux Application program
-		CLIENT_TYPE_MAC					= 4		// Mac Application program
-		CLIENT_TYPE_BROWSER				= 5,	// web应用， html5，flash
-		CLIENT_TYPE_BOTS				= 6,	// bots
-		CLIENT_TYPE_MINI				= 7,	// 微型客户端
-		"""
-		spaceUType = GlobalConst.g_demoMaps.get(self.getClientDatas()[0], 1)
-		
-		# 如果是机器人登陆，随机扔进一个场景
-		if self.getClientType() == 6:
-			while True:
-				spaceName = random.choice(list(GlobalConst.g_demoMaps.keys()))
-				if len(spaceName) > 0:
-					spaceUType = GlobalConst.g_demoMaps[spaceName]
-					break
-
-		spaceData = d_spaces.datas.get(spaceUType)
-		
-		props = {
-			"name"				: name,
-			"roleType"			: roleType,
-			"level"				: 1,
-			"spaceUType"		: spaceUType,
-			"direction"			: (0, 0, d_avatar_inittab.datas[roleType]["spawnYaw"]),
-			"position"			: spaceData.get("spawnPos", (0,0,0)),
-
-			"component1"		: { "bb" : 1231, "state" : 456},
-			"component3"		: { "state" : 888 },
-			}
-			
-		avatar = KBEngine.createEntityLocally('Avatar', props)
-		if avatar:
-			avatar.writeToDB(self._onAvatarSaved)
-		
-		DEBUG_MSG("Account[%i].reqCreateAvatar:%s. spaceUType=%i, spawnPos=%s.\n" % (self.id, name, avatar.cellData["spaceUType"], spaceData.get("spawnPos", (0,0,0))))
+		return
 		
 	def reqRemoveAvatar(self, name):
-		"""
-		exposed.
-		客户端请求删除一个角色
-		"""
-		DEBUG_MSG("Account[%i].reqRemoveAvatar: %s" % (self.id, name))
-		found = 0
-		for key, info in self.characters.items():
-			if info[1] == name:
-				del self.characters[key]
-				found = key
-				break
-		
-		self.client.onRemoveAvatar(found)
+		return
 		
 	def reqRemoveAvatarDBID(self, dbid):
-		"""
-		exposed.
-		客户端请求删除一个角色
-		"""
-		DEBUG_MSG("Account[%i].reqRemoveAvatar: %s" % (self.id, dbid))
-		found = 0
-		
-		if dbid in self.characters:
-			del self.characters[dbid]
-			found = dbid
-
-		self.client.onRemoveAvatar(found)
+		return
 
 	def selectAvatarGame(self, dbid):
-		"""
-		exposed.
-		客户端选择某个角色进行游戏
-		"""
-		DEBUG_MSG("Account[%i].selectAvatarGame:%i. self.activeAvatar=%s" % (self.id, dbid, self.activeAvatar))
-		# 注意:使用giveClientTo的entity必须是当前baseapp上的entity
-		if self.activeAvatar is None:
-			if dbid in self.characters:
-				self.lastSelCharacter = dbid
-				# 由于需要从数据库加载角色，因此是一个异步过程，加载成功或者失败会调用__onAvatarCreated接口
-				# 当角色创建好之后，account会调用giveClientTo将客户端控制权（可理解为网络连接与某个实体的绑定）切换到Avatar身上，
-				# 之后客户端各种输入输出都通过服务器上这个Avatar来代理，任何proxy实体获得控制权都会调用onClientEnabled
-				# Avatar继承了Teleport，Teleport.onClientEnabled会将玩家创建在具体的场景中
-				KBEngine.createEntityFromDBID("Avatar", dbid, self.__onAvatarCreated)
-			else:
-				ERROR_MSG("Account[%i]::selectAvatarGame: not found dbid(%i)" % (self.id, dbid))
-		else:
-			self.giveClientTo(self.activeAvatar)
+		return
 		
 	#--------------------------------------------------------------------------------------------
 	#                              Callbacks
@@ -238,34 +141,4 @@ class Account(KBEngine.Proxy):
 		self.giveClientTo(avatar)
 		
 	def _onAvatarSaved(self, success, avatar):
-		"""
-		新建角色写入数据库回调
-		"""
-		INFO_MSG('Account::_onAvatarSaved:(%i) create avatar state: %i, %s, %i' % (self.id, success, avatar.cellData["name"], avatar.databaseID))
-		
-		# 如果此时账号已经销毁， 角色已经无法被记录则我们清除这个角色
-		if self.isDestroyed:
-			if avatar:
-				avatar.destroy(True)
-				
-			return
-			
-		avatarinfo = TAvatarInfos()
-		avatarinfo.extend([0, "", 0, 0, TAvatarData().createFromDict({"param1" : 0, "param2" :b''})])
-
-		if success:
-			info = TAvatarInfos()
-			info.extend([avatar.databaseID, avatar.cellData["name"], avatar.roleType, 1, TAvatarData().createFromDict({"param1" : 1, "param2" :b'1'})])
-			self.characters[avatar.databaseID] = info
-			avatarinfo[0] = avatar.databaseID
-			avatarinfo[1] = avatar.cellData["name"]
-			avatarinfo[2] = avatar.roleType
-			avatarinfo[3] = 1
-			self.writeToDB()
-		else:
-			avatarinfo[1] = "创建失败了"
-
-		avatar.destroy()
-		
-		if self.client:
-			self.client.onCreateAvatarResult(0, avatarinfo)
+		return

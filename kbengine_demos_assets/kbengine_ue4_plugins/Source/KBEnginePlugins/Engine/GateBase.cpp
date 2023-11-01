@@ -107,24 +107,6 @@ void GateBase::onUpdatePropertys(MemoryStream& stream)
 
 				break;
 			}
-			case 51007:
-			{
-				uint32 oldval_entityNO = entityNO;
-				entityNO = stream.readUint32();
-
-				if(pProp->isBase())
-				{
-					if(inited())
-						onEntityNOChanged(oldval_entityNO);
-				}
-				else
-				{
-					if(inWorld())
-						onEntityNOChanged(oldval_entityNO);
-				}
-
-				break;
-			}
 			case 41006:
 			{
 				uint32 oldval_modelID = modelID;
@@ -270,29 +252,8 @@ void GateBase::callPropertysSetMethods()
 		}
 	}
 
-	uint32 oldval_entityNO = entityNO;
-	Property* pProp_entityNO = pdatas[4];
-	if(pProp_entityNO->isBase())
-	{
-		if(inited() && !inWorld())
-			onEntityNOChanged(oldval_entityNO);
-	}
-	else
-	{
-		if(inWorld())
-		{
-			if(pProp_entityNO->isOwnerOnly() && !isPlayer())
-			{
-			}
-			else
-			{
-				onEntityNOChanged(oldval_entityNO);
-			}
-		}
-	}
-
 	uint32 oldval_modelID = modelID;
-	Property* pProp_modelID = pdatas[5];
+	Property* pProp_modelID = pdatas[4];
 	if(pProp_modelID->isBase())
 	{
 		if(inited() && !inWorld())
@@ -313,7 +274,7 @@ void GateBase::callPropertysSetMethods()
 	}
 
 	uint8 oldval_modelScale = modelScale;
-	Property* pProp_modelScale = pdatas[6];
+	Property* pProp_modelScale = pdatas[5];
 	if(pProp_modelScale->isBase())
 	{
 		if(inited() && !inWorld())
@@ -334,7 +295,7 @@ void GateBase::callPropertysSetMethods()
 	}
 
 	FString oldval_name = name;
-	Property* pProp_name = pdatas[7];
+	Property* pProp_name = pdatas[6];
 	if(pProp_name->isBase())
 	{
 		if(inited() && !inWorld())
@@ -376,7 +337,7 @@ void GateBase::callPropertysSetMethods()
 	}
 
 	uint32 oldval_uid = uid;
-	Property* pProp_uid = pdatas[8];
+	Property* pProp_uid = pdatas[7];
 	if(pProp_uid->isBase())
 	{
 		if(inited() && !inWorld())
@@ -397,7 +358,7 @@ void GateBase::callPropertysSetMethods()
 	}
 
 	uint32 oldval_utype = utype;
-	Property* pProp_utype = pdatas[9];
+	Property* pProp_utype = pdatas[8];
 	if(pProp_utype->isBase())
 	{
 		if(inited() && !inWorld())
@@ -423,7 +384,6 @@ GateBase::GateBase():
 	Entity(),
 	pBaseEntityCall(NULL),
 	pCellEntityCall(NULL),
-	entityNO((uint32)FCString::Atoi64(TEXT("0"))),
 	modelID((uint32)FCString::Atoi64(TEXT("0"))),
 	modelScale((uint8)FCString::Atoi64(TEXT("30"))),
 	name(TEXT("")),

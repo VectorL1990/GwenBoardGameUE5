@@ -12,246 +12,246 @@
 namespace KBEngine
 {
 
-ClientSDKUpdater::ClientSDKUpdater()
-{
-	pSdkFileStream = nullptr;
-	sdkPath = FPaths::ConvertRelativePathToFull(FPaths::ProjectPluginsDir());
-	sdkPath += "kbengine_ue4_plugins";
-	FPaths::NormalizeDirectoryName(sdkPath);
-	sdkTempPath = sdkPath + "_temp";
-	sdkBakPath = sdkPath + "_bak";
+    ClientSDKUpdater::ClientSDKUpdater()
+    {
+        pSdkFileStream = nullptr;
+        sdkPath = FPaths::ConvertRelativePathToFull(FPaths::ProjectPluginsDir());
+        sdkPath += "kbengine_ue4_plugins";
+        FPaths::NormalizeDirectoryName(sdkPath);
+        sdkTempPath = sdkPath + "_temp";
+        sdkBakPath = sdkPath + "_bak";
 
-	installEvents();
-}
+        installEvents();
+    }
 
-ClientSDKUpdater::~ClientSDKUpdater()
-{
-	if (pSdkFileStream != nullptr)
-	{
-		MemoryStream::reclaimObject(pSdkFileStream);
-		pSdkFileStream = nullptr;
-	}
+    ClientSDKUpdater::~ClientSDKUpdater()
+    {
+        if (pSdkFileStream != nullptr)
+        {
+            MemoryStream::reclaimObject(pSdkFileStream);
+            pSdkFileStream = nullptr;
+        }
 
-	deregisterEvents();
-}
+        deregisterEvents();
+    }
 
-void ClientSDKUpdater::onImportClientSDK(const UKBEventData* eventData)
-{
-	if (eventData == nullptr) return;
+    void ClientSDKUpdater::onImportClientSDK(const UKBEventData* eventData)
+    {
+        if (eventData == nullptr) return;
 
-	const UKBEventData_onImportClientSDK* pEventData = dynamic_cast<const UKBEventData_onImportClientSDK*>(eventData);
+        const UKBEventData_onImportClientSDK* pEventData = dynamic_cast<const UKBEventData_onImportClientSDK*>(eventData);
 
-	if (pSdkFileStream == nullptr)
-		pSdkFileStream = MemoryStream::createObject();
+        if (pSdkFileStream == nullptr)
+            pSdkFileStream = MemoryStream::createObject();
 
-	pSdkFileStream->append(pEventData->fileDatas.GetData(), pSdkFileStream->rpos(), (uint32)pEventData->fileDatas.Num());
+        pSdkFileStream->append(pEventData->fileDatas.GetData(), pSdkFileStream->rpos(), (uint32)pEventData->fileDatas.Num());
 
-	warnUpdateSDK = "Download:" + pEventData->fileName + " -> " + FString::FromInt(pSdkFileStream->length()) + "/" + FString::FromInt(pEventData->fileSize) + "bytes! " + FString::FromInt((int)(((float)downloadFiles / (float)(downloadFiles + pEventData->remainingFiles)) * 100)) + "%";
+        warnUpdateSDK = "Download:" + pEventData->fileName + " -> " + FString::FromInt(pSdkFileStream->length()) + "/" + FString::FromInt(pEventData->fileSize) + "bytes! " + FString::FromInt((int)(((float)downloadFiles / (float)(downloadFiles + pEventData->remainingFiles)) * 100)) + "%";
 
-	if (pSdkFileStream->length() == pEventData->fileSize)
-	{
-		FString tempPath = sdkTempPath + "/" + pEventData->fileName;
+        if (pSdkFileStream->length() == pEventData->fileSize)
+        {
+            FString tempPath = sdkTempPath + "/" + pEventData->fileName;
 
-		SCREEN_WARNING_MSG("DownloadSDKFileName ::: %s", *tempPath);
+            SCREEN_WARNING_MSG("DownloadSDKFileName ::: %s", *tempPath);
 
-		createDirectory(FPaths::GetPath(tempPath));
+            createDirectory(FPaths::GetPath(tempPath));
 
-		unsigned char* fileData = (unsigned char*)((uint8*)malloc(sizeof(uint8)*(pEventData->fileSize + 1)));
-		memcpy(fileData, pSdkFileStream->data(), pEventData->fileSize);
-		fileData[pEventData->fileSize] = '\0';
-		
-		if (!tempPath.EndsWith(".png"))
-		{
-			FString strData = FString(UTF8_TO_TCHAR((fileData)));
-			FString filePath = FString(tempPath);
-			FFileHelper::SaveStringToFile(strData, *filePath, FFileHelper::EEncodingOptions::ForceUTF8WithoutBOM, &IFileManager::Get(), 0);
-		}
-		else
-		{
-			uint8* pPNGData = (unsigned char*)((uint8*)malloc(sizeof(uint8)*(pEventData->fileSize)));
-			memcpy(pPNGData, pSdkFileStream->data(), pEventData->fileSize);
+            unsigned char* fileData = (unsigned char*)((uint8*)malloc(sizeof(uint8) * (pEventData->fileSize + 1)));
+            memcpy(fileData, pSdkFileStream->data(), pEventData->fileSize);
+            fileData[pEventData->fileSize] = '\0';
 
-			TArray<uint8> PNGData;
-			for(int i = 0 ; i < pEventData->fileSize; i++)
-			{
-				PNGData.Add(pPNGData[i]);
-			}
+            if (!tempPath.EndsWith(".png"))
+            {
+                FString strData = FString(UTF8_TO_TCHAR((fileData)));
+                FString filePath = FString(tempPath);
+                FFileHelper::SaveStringToFile(strData, *filePath, FFileHelper::EEncodingOptions::ForceUTF8WithoutBOM, &IFileManager::Get(), 0);
+            }
+            else
+            {
+                uint8* pPNGData = (unsigned char*)((uint8*)malloc(sizeof(uint8) * (pEventData->fileSize)));
+                memcpy(pPNGData, pSdkFileStream->data(), pEventData->fileSize);
 
-			FString strData = FString(UTF8_TO_TCHAR((fileData)));
-			FString filePath = FString(tempPath);
-			FFileHelper::SaveArrayToFile(PNGData, *tempPath);
+                TArray<uint8> PNGData;
+                for (int i = 0; i < pEventData->fileSize; i++)
+                {
+                    PNGData.Add(pPNGData[i]);
+                }
 
-			free(pPNGData);
-			pPNGData = nullptr;
-		}
+                FString strData = FString(UTF8_TO_TCHAR((fileData)));
+                FString filePath = FString(tempPath);
+                FFileHelper::SaveArrayToFile(PNGData, *tempPath);
 
-		MemoryStream::reclaimObject(pSdkFileStream);
-		pSdkFileStream = nullptr;
-		
-		free(fileData);
-		fileData = nullptr;
-		downloadFiles += 1;
+                free(pPNGData);
+                pPNGData = nullptr;
+            }
 
-		if (pEventData->remainingFiles == 0)
-		{
-			warnUpdateSDK = "";
-			downloadFiles = 0;
+            MemoryStream::reclaimObject(pSdkFileStream);
+            pSdkFileStream = nullptr;
 
-			replaceNewSDK();
-			UE_LOG(LogTemp, Warning, TEXT("End Update KBEnginePlugin!"));
+            free(fileData);
+            fileData = nullptr;
+            downloadFiles += 1;
 
-			UKBEventData_onImportClientSDKSuccessfully* pEventData = NewObject<UKBEventData_onImportClientSDKSuccessfully>();
+            if (pEventData->remainingFiles == 0)
+            {
+                warnUpdateSDK = "";
+                downloadFiles = 0;
 
-			KBENGINE_EVENT_FIRE(KBEventTypes::onImportClientSDKSuccessfully, pEventData);
-		}
-	}
-}
+                replaceNewSDK();
+                UE_LOG(LogTemp, Warning, TEXT("End Update KBEnginePlugin!"));
 
-void ClientSDKUpdater::downloadSDKFromServer()
-{
-	SCREEN_WARNING_MSG("%s", *(getWarnMsgOfUpdateSDK()));
+                UKBEventData_onImportClientSDKSuccessfully* pEventData = NewObject<UKBEventData_onImportClientSDKSuccessfully>();
 
-	downloadFiles = 0;
-	if (deleteDirectory(sdkTempPath))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("DownloadSDKFromServer Begin!"));
-		
-		createDirectory(sdkTempPath);
+                KBENGINE_EVENT_FIRE(KBEventTypes::onImportClientSDKSuccessfully, pEventData);
+            }
+        }
+    }
 
-		if (pSdkFileStream != nullptr)
-		{
-			MemoryStream::reclaimObject(pSdkFileStream);
-			pSdkFileStream = nullptr;
-		}
+    void ClientSDKUpdater::downloadSDKFromServer()
+    {
+        SCREEN_WARNING_MSG("%s", *(getWarnMsgOfUpdateSDK()));
 
-		// kbcmd options
-		FString tool_options = "ue4";
-		FString callbackIP = "";
-		uint16 callbackPort = 0;
-		int clientWindowSize = (int)KBEngineApp::getSingleton().getInitArgs()->TCP_RECV_BUFFER_MAX;
+        downloadFiles = 0;
+        if (deleteDirectory(sdkTempPath))
+        {
+            UE_LOG(LogTemp, Warning, TEXT("DownloadSDKFromServer Begin!"));
 
-		Bundle* bundle = Bundle::createObject();
-		bundle->newMessage(Messages::messages["Loginapp_importClientSDK"]);
-		bundle->writeString(tool_options);
-		bundle->writeInt32(clientWindowSize);
-		bundle->writeString(callbackIP);
-		bundle->writeUint16(callbackPort);
-		bundle->send(KBEngineApp::getSingleton().pNetworkInterface());
+            createDirectory(sdkTempPath);
 
-		UE_LOG(LogTemp, Warning, TEXT("DownloadSDKFromServer end!"));
-	}
-}
+            if (pSdkFileStream != nullptr)
+            {
+                MemoryStream::reclaimObject(pSdkFileStream);
+                pSdkFileStream = nullptr;
+            }
 
-FString ClientSDKUpdater::getWarnMsgOfUpdateSDK()
-{
-	warnUpdateSDK = "Version does not match the server.\nClick to update KBEnginePlugin!\nPull from: " + KBEngineApp::getSingleton().getInitArgs()->ip + ":" + FString::FromInt(KBEngineApp::getSingleton().getInitArgs()->port);
-	return warnUpdateSDK;
-}
+            // kbcmd options
+            FString tool_options = "ue4";
+            FString callbackIP = "";
+            uint16 callbackPort = 0;
+            int clientWindowSize = (int)KBEngineApp::getSingleton().getInitArgs()->TCP_RECV_BUFFER_MAX;
 
-void ClientSDKUpdater::onDownloadSDKSuccessfully()
-{
-	SCREEN_WARNING_MSG("Update SDK Successfully !!");
-}
+            Bundle* bundle = Bundle::createObject();
+            bundle->newMessage(Messages::messages["Loginapp_importClientSDK"]);
+            bundle->writeString(tool_options);
+            bundle->writeInt32(clientWindowSize);
+            bundle->writeString(callbackIP);
+            bundle->writeUint16(callbackPort);
+            bundle->send(KBEngineApp::getSingleton().pNetworkInterface());
 
-void ClientSDKUpdater::installEvents()
-{
-	KBENGINE_REGISTER_EVENT("onImportClientSDK", onImportClientSDK);
-}
+            UE_LOG(LogTemp, Warning, TEXT("DownloadSDKFromServer end!"));
+        }
+    }
 
-void ClientSDKUpdater::deregisterEvents()
-{
-	KBENGINE_DEREGISTER_ALL_EVENT();
-}
+    FString ClientSDKUpdater::getWarnMsgOfUpdateSDK()
+    {
+        warnUpdateSDK = "Version does not match the server.\nClick to update KBEnginePlugin!\nPull from: " + KBEngineApp::getSingleton().getInitArgs()->ip + ":" + FString::FromInt(KBEngineApp::getSingleton().getInitArgs()->port);
+        return warnUpdateSDK;
+    }
 
-bool ClientSDKUpdater::deleteDirectory(FString fileName)
-{
-	FString filePath = FString(fileName);
-	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
+    void ClientSDKUpdater::onDownloadSDKSuccessfully()
+    {
+        SCREEN_WARNING_MSG("Update SDK Successfully !!");
+    }
 
-	if (PlatformFile.DirectoryExists(*filePath))
-	{
-		if (PlatformFile.DeleteDirectoryRecursively(*filePath))
-		{
-			UE_LOG(LogTemp, Warning, TEXT("deleteDic: DeleteDic  successfully!"));
-			return true;
-		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("deleteDic: Not DeleteDic! %s "), *filePath);
-			return false;
-		}
-	}
+    void ClientSDKUpdater::installEvents()
+    {
+        KBENGINE_REGISTER_EVENT("onImportClientSDK", onImportClientSDK);
+    }
 
-	return true;
-}
+    void ClientSDKUpdater::deregisterEvents()
+    {
+        KBENGINE_DEREGISTER_ALL_EVENT();
+    }
 
-bool ClientSDKUpdater::createDirectory(FString fileName)
-{
-	FString filePath = FString(fileName);
-	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
-	return PlatformFile.CreateDirectory(*filePath);
-}
+    bool ClientSDKUpdater::deleteDirectory(FString fileName)
+    {
+        FString filePath = FString(fileName);
+        IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
 
-bool ClientSDKUpdater::directoryExists(FString fileName)
-{
-	FString filePath = FString(fileName);
-	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
-	return PlatformFile.DirectoryExists(*filePath);
-}
+        if (PlatformFile.DirectoryExists(*filePath))
+        {
+            if (PlatformFile.DeleteDirectoryRecursively(*filePath))
+            {
+                UE_LOG(LogTemp, Warning, TEXT("deleteDic: DeleteDic  successfully!"));
+                return true;
+            }
+            else
+            {
+                UE_LOG(LogTemp, Warning, TEXT("deleteDic: Not DeleteDic! %s "), *filePath);
+                return false;
+            }
+        }
 
-void ClientSDKUpdater::replaceNewSDK()
-{
-	UE_LOG(LogTemp, Warning, TEXT("ReplaceNewSDK Begin!"));
-	copyDirectory(sdkPath, sdkBakPath);
+        return true;
+    }
 
-	FString tempScriptPath = "/Source/KBEnginePlugins/Scripts";
-	copyDirectory((sdkBakPath + tempScriptPath), (sdkTempPath + tempScriptPath));
-	copyDirectory(sdkTempPath, sdkPath);
+    bool ClientSDKUpdater::createDirectory(FString fileName)
+    {
+        FString filePath = FString(fileName);
+        IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
+        return PlatformFile.CreateDirectory(*filePath);
+    }
 
-	deleteDirectory(sdkBakPath);
-	deleteDirectory(sdkTempPath);
-	
-	UE_LOG(LogTemp, Warning, TEXT("ReplaceNewSDK End!"));
+    bool ClientSDKUpdater::directoryExists(FString fileName)
+    {
+        FString filePath = FString(fileName);
+        IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
+        return PlatformFile.DirectoryExists(*filePath);
+    }
 
-	onDownloadSDKSuccessfully();
-}
+    void ClientSDKUpdater::replaceNewSDK()
+    {
+        UE_LOG(LogTemp, Warning, TEXT("ReplaceNewSDK Begin!"));
+        copyDirectory(sdkPath, sdkBakPath);
 
-void ClientSDKUpdater::moveDirectory(FString fromDicPath, FString toDicPath)
-{
-	deleteDirectory(toDicPath);
-	TArray<FString> fileNames = findFiles(fromDicPath);
+        FString tempScriptPath = "/Source/KBEnginePlugins/Scripts";
+        copyDirectory((sdkBakPath + tempScriptPath), (sdkTempPath + tempScriptPath));
+        copyDirectory(sdkTempPath, sdkPath);
 
-	FString tempFileName;
-	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
+        deleteDirectory(sdkBakPath);
+        deleteDirectory(sdkTempPath);
 
-	for (int i = 0; i < fileNames.Num(); i++)
-	{
-		tempFileName = fileNames[i];
-		FString replaceFileName = tempFileName.Replace(*fromDicPath, *toDicPath);
-		PlatformFile.MoveFile(*tempFileName, *fileNames[i]);
-	}
-}
+        UE_LOG(LogTemp, Warning, TEXT("ReplaceNewSDK End!"));
 
-TArray<FString> ClientSDKUpdater::findFiles(FString directory)
-{
-	TArray<FString> FileNames;
-	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
-	PlatformFile.FindFilesRecursively(FileNames, *directory, nullptr);
-	return FileNames;
-}
+        onDownloadSDKSuccessfully();
+    }
 
-void ClientSDKUpdater::moveToFile(FString fromFileName, FString toFileName)
-{
-	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
-	PlatformFile.MoveFile(*toFileName, *fromFileName);
-}
+    void ClientSDKUpdater::moveDirectory(FString fromDicPath, FString toDicPath)
+    {
+        deleteDirectory(toDicPath);
+        TArray<FString> fileNames = findFiles(fromDicPath);
 
-void ClientSDKUpdater::copyDirectory(FString fromDicPath, FString toDicPath)
-{
-	FPaths::NormalizeDirectoryName(fromDicPath);
-	FPaths::NormalizeDirectoryName(toDicPath);
-	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
-	PlatformFile.CopyDirectoryTree(*toDicPath, *fromDicPath, true);
-}
+        FString tempFileName;
+        IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
+
+        for (int i = 0; i < fileNames.Num(); i++)
+        {
+            tempFileName = fileNames[i];
+            FString replaceFileName = tempFileName.Replace(*fromDicPath, *toDicPath);
+            PlatformFile.MoveFile(*replaceFileName, *fileNames[i]);
+        }
+    }
+
+    TArray<FString> ClientSDKUpdater::findFiles(FString directory)
+    {
+        TArray<FString> FileNames;
+        IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
+        PlatformFile.FindFilesRecursively(FileNames, *directory, nullptr);
+        return FileNames;
+    }
+
+    void ClientSDKUpdater::moveToFile(FString fromFileName, FString toFileName)
+    {
+        IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
+        PlatformFile.MoveFile(*toFileName, *fromFileName);
+    }
+
+    void ClientSDKUpdater::copyDirectory(FString fromDicPath, FString toDicPath)
+    {
+        FPaths::NormalizeDirectoryName(fromDicPath);
+        FPaths::NormalizeDirectoryName(toDicPath);
+        IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
+        PlatformFile.CopyDirectoryTree(*toDicPath, *fromDicPath, true);
+    }
 
 }

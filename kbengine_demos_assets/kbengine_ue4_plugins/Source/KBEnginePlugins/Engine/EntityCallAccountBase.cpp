@@ -53,6 +53,16 @@ void EntityBaseEntityCall_AccountBase::reqRemoveAvatarDBID(uint64 arg1)
 	sendCall(NULL);
 }
 
+void EntityBaseEntityCall_AccountBase::reqTest(int32 arg1)
+{
+	Bundle* pBundleRet = newCall("reqTest", 0);
+	if(!pBundleRet)
+		return;
+
+	pBundleRet->writeInt32(arg1);
+	sendCall(NULL);
+}
+
 void EntityBaseEntityCall_AccountBase::selectAvatarGame(uint64 arg1)
 {
 	Bundle* pBundleRet = newCall("selectAvatarGame", 0);

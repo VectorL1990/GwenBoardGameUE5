@@ -23,17 +23,17 @@ function login_gamemode:ReceiveBeginPlay()
   --game_gi.ConnectToSkynetServer()
   --game_gi.SendRequest("signup", {userid = "Alice"})
   --self:AfterBeginPlay()
-  game_gi.RegisterInit()
-  local pack = message.packMsg("signup", {userid = "Alice"})
-  print(string.format("pack msg is: %s", pack))
-  self:RequestSignup(pack)
+  --game_gi.RegisterInit()
+  --local pack = message.packMsg("signup", {userid = "Alice"})
+  --print(string.format("pack msg is: %s", pack))
+  --self:RequestSignup(pack)
 end
 
 -- function M:ReceiveEndPlay()
 -- end
 
 function login_gamemode:ReceiveTick(DeltaSeconds)
-  game_gi.UpdateMessage()
+  --game_gi.UpdateMessage()
 end
 
 function login_gamemode:CallLuaBeginPlay()

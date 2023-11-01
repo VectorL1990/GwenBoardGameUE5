@@ -69,98 +69,6 @@ namespace KBEngine
 
 
 
-	public class DATATYPE_AVATAR_DATA : DATATYPE_BASE
-	{
-		public AVATAR_DATA createFromStreamEx(MemoryStream stream)
-		{
-			AVATAR_DATA datas = new AVATAR_DATA();
-			datas.param1 = stream.readInt8();
-			datas.param2 = stream.readBlob();
-			return datas;
-		}
-
-		public void addToStreamEx(Bundle stream, AVATAR_DATA v)
-		{
-			stream.writeInt8(v.param1);
-			stream.writeBlob(v.param2);
-		}
-	}
-
-
-
-	public class DATATYPE_AVATAR_INFOS : DATATYPE_BASE
-	{
-		private DATATYPE_AVATAR_DATA data_DataType = new DATATYPE_AVATAR_DATA();
-		public AVATAR_INFOS createFromStreamEx(MemoryStream stream)
-		{
-			AVATAR_INFOS datas = new AVATAR_INFOS();
-			datas.dbid = stream.readUint64();
-			datas.name = stream.readUnicode();
-			datas.roleType = stream.readUint8();
-			datas.level = stream.readUint16();
-			datas.data = data_DataType.createFromStreamEx(stream);
-			return datas;
-		}
-
-		public void addToStreamEx(Bundle stream, AVATAR_INFOS v)
-		{
-			stream.writeUint64(v.dbid);
-			stream.writeUnicode(v.name);
-			stream.writeUint8(v.roleType);
-			stream.writeUint16(v.level);
-			data_DataType.addToStreamEx(stream, v.data);
-		}
-	}
-
-
-
-	public class DATATYPE_AVATAR_INFOS_LIST : DATATYPE_BASE
-	{
-		private DATATYPE__AVATAR_INFOS_LIST_values_ArrayType_ChildArray values_DataType = new DATATYPE__AVATAR_INFOS_LIST_values_ArrayType_ChildArray();
-
-		public class DATATYPE__AVATAR_INFOS_LIST_values_ArrayType_ChildArray : DATATYPE_BASE
-		{
-			private DATATYPE_AVATAR_INFOS itemType = new DATATYPE_AVATAR_INFOS();
-
-			public List<AVATAR_INFOS> createFromStreamEx(MemoryStream stream)
-			{
-				UInt32 size = stream.readUint32();
-				List<AVATAR_INFOS> datas = new List<AVATAR_INFOS>();
-
-				while(size > 0)
-				{
-					--size;
-					datas.Add(itemType.createFromStreamEx(stream));
-				};
-
-				return datas;
-			}
-
-			public void addToStreamEx(Bundle stream, List<AVATAR_INFOS> v)
-			{
-				stream.writeUint32((UInt32)v.Count);
-				for(int i=0; i<v.Count; ++i)
-				{
-					itemType.addToStreamEx(stream, v[i]);
-				};
-			}
-		}
-
-		public AVATAR_INFOS_LIST createFromStreamEx(MemoryStream stream)
-		{
-			AVATAR_INFOS_LIST datas = new AVATAR_INFOS_LIST();
-			datas.values = values_DataType.createFromStreamEx(stream);
-			return datas;
-		}
-
-		public void addToStreamEx(Bundle stream, AVATAR_INFOS_LIST v)
-		{
-			values_DataType.addToStreamEx(stream, v.values);
-		}
-	}
-
-
-
 	public class DATATYPE_BAG : DATATYPE_BASE
 	{
 		private DATATYPE__BAG_values22_ArrayType_ChildArray values22_DataType = new DATATYPE__BAG_values22_ArrayType_ChildArray();
@@ -430,34 +338,6 @@ namespace KBEngine
 		public void addToStreamEx(Bundle stream, CORE_UPDATE_BATLLE_INFO v)
 		{
 			updateList_DataType.addToStreamEx(stream, v.updateList);
-		}
-	}
-
-
-
-	public class DATATYPE_AnonymousArray_40 : DATATYPE_BASE
-	{
-		public List<Int32> createFromStreamEx(MemoryStream stream)
-		{
-			UInt32 size = stream.readUint32();
-			List<Int32> datas = new List<Int32>();
-
-			while(size > 0)
-			{
-				--size;
-				datas.Add(stream.readInt32());
-			};
-
-			return datas;
-		}
-
-		public void addToStreamEx(Bundle stream, List<Int32> v)
-		{
-			stream.writeUint32((UInt32)v.Count);
-			for(int i=0; i<v.Count; ++i)
-			{
-				stream.writeInt32(v[i]);
-			};
 		}
 	}
 

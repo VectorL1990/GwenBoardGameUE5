@@ -19,8 +19,6 @@ namespace KBEngine
 		public EntityBaseEntityCall_GateBase baseEntityCall = null;
 		public EntityCellEntityCall_GateBase cellEntityCall = null;
 
-		public UInt32 entityNO = 0;
-		public virtual void onEntityNOChanged(UInt32 oldValue) {}
 		public UInt32 modelID = 0;
 		public virtual void onModelIDChanged(UInt32 oldValue) {}
 		public Byte modelScale = 30;
@@ -187,22 +185,6 @@ namespace KBEngine
 						}
 
 						break;
-					case 51007:
-						UInt32 oldval_entityNO = entityNO;
-						entityNO = stream.readUint32();
-
-						if(prop.isBase())
-						{
-							if(inited)
-								onEntityNOChanged(oldval_entityNO);
-						}
-						else
-						{
-							if(inWorld)
-								onEntityNOChanged(oldval_entityNO);
-						}
-
-						break;
 					case 41006:
 						UInt32 oldval_modelID = modelID;
 						modelID = stream.readUint32();
@@ -334,29 +316,8 @@ namespace KBEngine
 				}
 			}
 
-			UInt32 oldval_entityNO = entityNO;
-			Property prop_entityNO = pdatas[4];
-			if(prop_entityNO.isBase())
-			{
-				if(inited && !inWorld)
-					onEntityNOChanged(oldval_entityNO);
-			}
-			else
-			{
-				if(inWorld)
-				{
-					if(prop_entityNO.isOwnerOnly() && !isPlayer())
-					{
-					}
-					else
-					{
-						onEntityNOChanged(oldval_entityNO);
-					}
-				}
-			}
-
 			UInt32 oldval_modelID = modelID;
-			Property prop_modelID = pdatas[5];
+			Property prop_modelID = pdatas[4];
 			if(prop_modelID.isBase())
 			{
 				if(inited && !inWorld)
@@ -377,7 +338,7 @@ namespace KBEngine
 			}
 
 			Byte oldval_modelScale = modelScale;
-			Property prop_modelScale = pdatas[6];
+			Property prop_modelScale = pdatas[5];
 			if(prop_modelScale.isBase())
 			{
 				if(inited && !inWorld)
@@ -398,7 +359,7 @@ namespace KBEngine
 			}
 
 			string oldval_name = name;
-			Property prop_name = pdatas[7];
+			Property prop_name = pdatas[6];
 			if(prop_name.isBase())
 			{
 				if(inited && !inWorld)
@@ -440,7 +401,7 @@ namespace KBEngine
 			}
 
 			UInt32 oldval_uid = uid;
-			Property prop_uid = pdatas[8];
+			Property prop_uid = pdatas[7];
 			if(prop_uid.isBase())
 			{
 				if(inited && !inWorld)
@@ -461,7 +422,7 @@ namespace KBEngine
 			}
 
 			UInt32 oldval_utype = utype;
-			Property prop_utype = pdatas[9];
+			Property prop_utype = pdatas[8];
 			if(prop_utype.isBase())
 			{
 				if(inited && !inWorld)

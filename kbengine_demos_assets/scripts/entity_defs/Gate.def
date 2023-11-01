@@ -7,7 +7,6 @@
 
 	<Interfaces>
 		<Interface>	GameObject		</Interface>
-		<Interface>	NPCObject		</Interface>
 	</Interfaces>
 
 	<Properties>

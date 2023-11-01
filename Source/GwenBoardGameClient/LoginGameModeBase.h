@@ -8,15 +8,21 @@
 #include "LoginGameModeBase.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class GWENBOARDGAMECLIENT_API ALoginGameModeBase : public ABasicGameMode
 {
-	GENERATED_BODY()
-	public:
+    GENERATED_BODY()
+public:
+    virtual void BeginPlay() override;
 
-	UFUNCTION(BlueprintCallable)
-	void RequestSignup(FString packMsg);
-	
+    virtual void InitEvents() override;
+
+    void ReqTest();
+
+    void onReqTest(const UKBEventData* eventData);
+
+    UFUNCTION(BlueprintNativeEvent)
+    void BasicInitDone();
 };

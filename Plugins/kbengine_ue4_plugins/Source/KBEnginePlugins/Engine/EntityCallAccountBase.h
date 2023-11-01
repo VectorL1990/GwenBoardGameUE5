@@ -29,6 +29,7 @@ public:
 	void reqCreateAvatar(uint8 arg1, const FString& arg2);
 	void reqRemoveAvatar(const FString& arg1);
 	void reqRemoveAvatarDBID(uint64 arg1);
+	void reqTest(int32 arg1);
 	void selectAvatarGame(uint64 arg1);
 };
 

@@ -22,9 +22,10 @@ namespace KBEngine
 		public UInt64 lastSelCharacter = 0;
 		public virtual void onLastSelCharacterChanged(UInt64 oldValue) {}
 
-		public abstract void onCreateAvatarResult(Byte arg1, AVATAR_INFOS arg2); 
+		public abstract void onCreateAvatarResult(Byte arg1); 
 		public abstract void onRemoveAvatar(UInt64 arg1); 
-		public abstract void onReqAvatarList(AVATAR_INFOS_LIST arg1); 
+		public abstract void onReqAvatarList(); 
+		public abstract void onReqTest(Int32 arg1); 
 
 		public AccountBase()
 		{
@@ -118,16 +119,18 @@ namespace KBEngine
 			{
 				case 10005:
 					Byte onCreateAvatarResult_arg1 = stream.readUint8();
-					AVATAR_INFOS onCreateAvatarResult_arg2 = ((DATATYPE_AVATAR_INFOS)method.args[1]).createFromStreamEx(stream);
-					onCreateAvatarResult(onCreateAvatarResult_arg1, onCreateAvatarResult_arg2);
+					onCreateAvatarResult(onCreateAvatarResult_arg1);
 					break;
-				case 3:
+				case 4:
 					UInt64 onRemoveAvatar_arg1 = stream.readUint64();
 					onRemoveAvatar(onRemoveAvatar_arg1);
 					break;
 				case 10003:
-					AVATAR_INFOS_LIST onReqAvatarList_arg1 = ((DATATYPE_AVATAR_INFOS_LIST)method.args[0]).createFromStreamEx(stream);
-					onReqAvatarList(onReqAvatarList_arg1);
+					onReqAvatarList();
+					break;
+				case 5:
+					Int32 onReqTest_arg1 = stream.readInt32();
+					onReqTest(onReqTest_arg1);
 					break;
 				default:
 					break;

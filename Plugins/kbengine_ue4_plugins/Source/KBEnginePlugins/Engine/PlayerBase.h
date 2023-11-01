@@ -28,6 +28,7 @@ public:
 
 
 	virtual void onUpdateBattle(const CORE_UPDATE_BATLLE_INFO& arg1) = 0; 
+	virtual void onUpdateGridInfoList(const UPDATE_GRID_INFO_LIST& arg1) = 0; 
 
 	void onComponentsEnterworld() override;
 	void onComponentsLeaveworld() override;

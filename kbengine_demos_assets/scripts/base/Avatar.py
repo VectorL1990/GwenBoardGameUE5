@@ -8,18 +8,15 @@ import d_spaces
 import d_avatar_inittab
 from KBEDebug import *
 from interfaces.GameObject import GameObject
-from interfaces.Teleport import Teleport
 
 class Avatar(KBEngine.Proxy,
-			GameObject,
-			Teleport):
+			GameObject):
 	"""
 	角色实体
 	"""
 	def __init__(self):
 		KBEngine.Proxy.__init__(self)
 		GameObject.__init__(self)
-		Teleport.__init__(self)
 		
 		self.accountEntity = None
 		self.cellData["dbid"] = self.databaseID
@@ -35,7 +32,6 @@ class Avatar(KBEngine.Proxy,
 		cell部分。
 		"""
 		INFO_MSG("Avatar[%i-%s] entities enable. spaceUTypeB=%s, entityCall:%s" % (self.id, self.nameB, self.spaceUTypeB, self.client))
-		Teleport.onClientEnabled(self)
 		
 		if self._destroyTimer > 0:
 			self.delTimer(self._destroyTimer)

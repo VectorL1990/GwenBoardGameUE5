@@ -1,7 +1,7 @@
 <root>
 	<Properties>
 		<characters>
-			<Type>			AVATAR_INFOS_LIST		</Type>
+			<Type>			UINT32		</Type>
 			<Flags>			BASE					</Flags>
 			<Default>								</Default>
 			<Persistent>		true				</Persistent>
@@ -36,21 +36,28 @@
 				这里只是一个演示，demo客户端并没有用到
 			-->
 			<Utype>			10003				</Utype> 
-			<Arg>			AVATAR_INFOS_LIST	</Arg>
 		</onReqAvatarList>
 
 		<onCreateAvatarResult>
 			<Utype>			10005				</Utype>
 			<Arg>			UINT8 				</Arg>
-			<Arg>			AVATAR_INFOS 		</Arg>
 		</onCreateAvatarResult>
 
 		<onRemoveAvatar>
 			<Arg>			DBID				</Arg>
 		</onRemoveAvatar>
+
+		<onReqTest>
+			<Arg> INT32 </Arg>
+		</onReqTest>
 	</ClientMethods>
 
 	<BaseMethods>
+		<reqTest>
+			<Exposed/>
+			<Arg> INT32 </Arg>
+		</reqTest>
+
 		<reqAvatarList>
 			<Exposed/>
 			<Utype>			10001 				</Utype>
