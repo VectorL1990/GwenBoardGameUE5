@@ -11,20 +11,22 @@
 UCLASS()
 class GWENBOARDGAMECLIENT_API ABoardGrid : public AActor
 {
-	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
-	ABoardGrid();
+    GENERATED_BODY()
+
+public:
+    // Sets default values for this actor's properties
+    ABoardGrid();
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+    // Called when the game starts or when spawned
+    virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+public:
+    // Called every frame
+    virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY()
-	ACard* card;
+    int32 gridNb;
+
+    UPROPERTY()
+        ACard* card;
 };

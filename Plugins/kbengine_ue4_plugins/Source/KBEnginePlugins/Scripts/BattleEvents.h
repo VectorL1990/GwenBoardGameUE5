@@ -4,7 +4,7 @@
 #include "BattleEvents.generated.h"
 
 USTRUCT(BlueprintType)
-struct FPLAY_CARD_INFO
+struct FPLAY_CARD_KBE_INFO
 {
 				GENERATED_BODY()
 public:
@@ -25,7 +25,7 @@ public:
 				FString actionType;
 
 				UPROPERTY(EditAnywhere)
-				FPLAY_CARD_INFO playCardInfo;
+				FPLAY_CARD_KBE_INFO playCardInfo;
 };
 
 USTRUCT(BlueprintType)

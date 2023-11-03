@@ -30,7 +30,7 @@ void ACoreCardGameModeBase::ReqPlayCard(int32 targetGridNb, int32 playCardUid)
 {
     UKBEventData_reqSendAction* eventData = NewObject<UKBEventData_reqSendAction>();
     eventData->actionType = "playCard";
-    FPLAY_CARD_INFO playCardInfo;
+    FPLAY_CARD_KBE_INFO playCardInfo;
     playCardInfo.playCardId = playCardUid;
     playCardInfo.targetGridNb = targetGridNb;
     eventData->playCardInfo = playCardInfo;

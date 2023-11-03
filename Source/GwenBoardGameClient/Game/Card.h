@@ -8,33 +8,37 @@
 #include "CoreGameBlueprintFunctionLibrary.h"
 #include "Card.generated.h"
 
+
+
 UCLASS()
 class GWENBOARDGAMECLIENT_API ACard : public AActor
 {
-	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
-	ACard();
+    GENERATED_BODY()
+
+public:
+    // Sets default values for this actor's properties
+    ACard();
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+    // Called when the game starts or when spawned
+    virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+public:
+    // Called every frame
+    virtual void Tick(float DeltaTime) override;
 
-	BattleCardStatus cardStatus = BattleCardStatus::Standby;
+    FPLAY_CARD_INFO GetCardInfo();
 
-	FString cardName;
+    BattleCardStatus cardStatus = BattleCardStatus::Standby;
 
-	int32 cardUid;
+    FString cardName;
 
-	int32 hp;
+    int32 cardUid;
 
-	int32 agility;
+    int32 hp;
 
-	int32 defence;
+    int32 agility;
+
+    int32 defence;
 
 };

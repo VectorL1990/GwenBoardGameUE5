@@ -25,3 +25,12 @@ void ACard::Tick(float DeltaTime)
 
 }
 
+FPLAY_CARD_INFO ACard::GetCardInfo()
+{
+				FPLAY_CARD_INFO info;
+				info.hp = hp;
+				info.defence = defence;
+				info.agility = agility;
+				return info;
+}
+

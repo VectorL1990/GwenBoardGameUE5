@@ -3,26 +3,34 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/PlayerController.h"
+#include "BasicPlayerController.h"
 #include "CoreCardGameManager.h"
+#include "UI/BattleWidget.h"
 #include "CoreCardGamePC.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class GWENBOARDGAMECLIENT_API ACoreCardGamePC : public APlayerController
+class GWENBOARDGAMECLIENT_API ACoreCardGamePC : public ABasicPlayerController
 {
-				GENERATED_BODY()
+    GENERATED_BODY()
 public:
-				UFUNCTION(BlueprintCallable)
-				void DealLeftClick();
 
-				UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-				ACoreCardGameManager* coreCardGameManager;
+    UFUNCTION(BlueprintCallable)
+    void DealHover();
+
+    UFUNCTION(BlueprintCallable)
+    void DealLeftClick();
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+    ACoreCardGameManager* coreCardGameManager;
+
+    UPROPERTY()
+    UBattleWidget* battleWidget;
 
 protected:
-				virtual void BeginPlay() override;
+    virtual void BeginPlay() override;
 
-				virtual void Tick(float DeltaTime) override;
+    virtual void Tick(float DeltaTime) override;
 };
