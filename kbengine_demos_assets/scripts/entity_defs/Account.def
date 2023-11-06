@@ -1,0 +1,31 @@
+<root>
+	<Properties>
+		<lastClientIpAddr>
+			<Type>			UINT32					</Type>
+			<Flags>			BASE					</Flags>
+			<Default>		0						</Default>
+		</lastClientIpAddr>
+	</Properties>
+
+	<ClientMethods>
+		<onReqTest>
+			<Arg> INT32 </Arg>
+		</onReqTest>
+	</ClientMethods>
+
+	<BaseMethods>
+		<reqTest>
+			<Exposed/>
+			<Arg> INT32 </Arg>
+		</reqTest>
+
+		<reqEnterRoom>
+			<Exposed/>
+			<Arg> </Arg>
+		</reqEnterRoom>
+	</BaseMethods>
+
+	<CellMethods>
+	</CellMethods>
+
+</root>

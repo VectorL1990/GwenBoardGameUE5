@@ -1,0 +1,25 @@
+<root>
+	<Properties>
+		<playerId>
+			<Type>			UINT32		</Type>
+			<Flags>			BASE	    </Flags>
+			<Default>					</Default>
+		</playerId>
+	</Properties>
+
+	<ClientMethods>
+		<onUpdateBattle>
+			<Arg>			CORE_UPDATE_BATLLE_INFO	</Arg>
+		</onUpdateBattle>
+		<onUpdateGridInfoList>
+			<Arg> UPDATE_GRID_INFO_LIST </Arg>
+		</onUpdateGridInfoList>
+	</ClientMethods>
+
+	<BaseMethods>
+	</BaseMethods>
+
+	<CellMethods>
+	</CellMethods>
+
+</root>

@@ -1,0 +1,28 @@
+<root>
+	<Properties>
+		<testProperty>
+			<Type>			TEST_ENTITY_PROPS		</Type>
+			<Flags>			BASE					</Flags>
+			<Default>								</Default>
+			<Persistent>		true				</Persistent>
+		</testProperty>
+	</Properties>
+
+	<ClientMethods>
+		<onReqTestProperty>
+			<Utype>			10003				</Utype> 
+			<Arg>			TEST_ENTITY_PROPS	</Arg>
+		</onReqTestProperty>
+	</ClientMethods>
+
+	<BaseMethods>
+		<reqTestProperty>
+			<Exposed/>
+			<Utype>			10001 				</Utype>
+		</reqTestProperty>
+	</BaseMethods>
+
+	<CellMethods>
+	</CellMethods>
+
+</root>

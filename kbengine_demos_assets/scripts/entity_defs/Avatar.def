@@ -1,0 +1,25 @@
+<root>
+	<Interfaces>
+		<Interface>	GameObject		</Interface>
+	</Interfaces>
+
+  <Components>
+	</Components>
+
+	<Properties>
+		<own_val>
+			<Type>			UINT16		</Type>
+			<Flags>			OWN_CLIENT	</Flags>
+		</own_val>
+	</Properties>
+
+	<BaseMethods>
+	</BaseMethods>
+
+	<CellMethods>
+	</CellMethods>
+
+	<ClientMethods>
+	</ClientMethods>
+</root>
+

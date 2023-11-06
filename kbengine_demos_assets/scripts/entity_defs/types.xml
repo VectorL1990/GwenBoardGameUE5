@@ -1,0 +1,130 @@
+<root>
+	<OBJECT_ID>			INT32		</OBJECT_ID>
+	<BOOL>				UINT8		</BOOL>
+	<CONTROLLER_ID>		INT32		</CONTROLLER_ID>
+	<EXPERIENCE>		INT32		</EXPERIENCE>
+	<ITEM_ID>			INT32		</ITEM_ID>
+	<SKILLID>			INT32		</SKILLID>
+	<QUESTID>			INT32		</QUESTID>
+	<DBID>				UINT64		</DBID>
+	<UID>				UINT64		</UID>
+	<UID1>				PYTHON		</UID1>	
+	<ENTITY_ID>			INT32		</ENTITY_ID>
+	<ENTITY_NO>			UINT32		</ENTITY_NO>
+	<SPACE_ID>			UINT32		</SPACE_ID>
+	<POSITION3D>		VECTOR3		</POSITION3D>
+	<DIRECTION3D>		VECTOR3		</DIRECTION3D>
+	<ENTITY_UTYPE>		UINT32		</ENTITY_UTYPE>
+	
+	<DAMAGE_TYPE>		INT32		</DAMAGE_TYPE>
+	<ENMITY>			DAMAGE_TYPE	 </ENMITY>
+	<HP>				INT32		</HP>
+	<MP>				INT32		</MP>
+	
+	<ENTITY_STATE> INT8		</ENTITY_STATE>
+	<ENTITY_SUBSTATE> UINT8	</ENTITY_SUBSTATE>
+	<ENTITY_FORBIDS> INT32	</ENTITY_FORBIDS>
+	<ENTITY_FORBID_COUNTER> ARRAY <of> INT8 </of>	</ENTITY_FORBID_COUNTER>
+	
+	<ENTITYID_LIST> ARRAY <of> ENTITY_ID </of>	</ENTITYID_LIST>
+	
+	<BAG>	FIXED_DICT
+		<Properties>
+			<values22>
+				<Type>	ARRAY <of> ARRAY <of>INT64 </of></of>	</Type>
+			</values22>
+		</Properties>
+	</BAG>	
+	
+	<EXAMPLES>	FIXED_DICT
+		<Properties>
+			<k1>
+				<Persistent>	false	</Persistent>
+				<Type>	INT64	</Type>
+			</k1>
+			
+			<k2>
+				<Type>	INT64	</Type>
+			</k2>
+		</Properties>
+	</EXAMPLES>	
+
+	<TEST_ENTITY_PROPS> FIXED_DICT
+		<Properties>
+			<test1>
+				<Type> INT32 </Type>
+			</test1>
+		</Properties>
+	</TEST_ENTITY_PROPS>
+
+	<PLAYER_ACTION> FIXED_DICT
+		<Properties>
+			<actionType>
+				<Type> UINT8 </Type>
+			</actionType>
+			<playCardName>
+				<Type> STRING </Type>
+			</playCardName>
+			<targetGridNb>
+				<Type> INT32 </Type>
+			</targetGridNb>
+		</Properties>
+	</PLAYER_ACTION>
+
+	<UPDATE_GRID_INFO> FIXED_DICT
+		<Properties>
+			<gridNb>
+				<Type> INT32 </Type>
+			</gridNb>
+			<cardUid>
+				<Type> INT32 </Type>
+			</cardUid>
+			<updateType>
+				<Type> STRING </Type>
+			</updateType>
+			<updateValue>
+				<Type> INT32 </Type>
+			</updateValue>
+		</Properties>
+	</UPDATE_GRID_INFO>
+
+	<UPDATE_GRID_INFO_LIST> FIXED_DICT
+		<Properties>
+			<updateId>
+				<Type> INT32 </Type>
+			</updateId>
+			<updateGridList>
+				<Type> ARRAY <of> UPDATE_GRID_INFO </of> </Type>
+			</updateGridList>
+		</Properties>
+	</UPDATE_GRID_INFO_LIST>
+
+	<BATTLE_GRID_INFO> FIXED_DICT
+		<Properties>
+			<gridNb>
+				<Type> INT32 </Type>
+			</gridNb>
+			<cardUid>
+				<Type> INT32 </Type>
+			</cardUid>
+			<hp>
+				<Type> INT32 </Type>
+			</hp>
+			<defence>
+				<Type> INT32 </Type>
+			</defence>
+			<agility>
+				<Type> UINT8 </Type>
+			</agility>
+		</Properties>
+	</BATTLE_GRID_INFO>
+
+	<CORE_UPDATE_BATLLE_INFO> FIXED_DICT
+		<Properties>
+			<updateList>
+				<Type>	ARRAY <of> BATTLE_GRID_INFO </of>	</Type>
+			</updateList>
+		</Properties>
+	</CORE_UPDATE_BATLLE_INFO>
+	
+</root>
