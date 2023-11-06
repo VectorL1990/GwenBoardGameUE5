@@ -7,10 +7,6 @@
 	</Components>
 
 	<Properties>
-		<own_val>
-			<Type>			UINT16		</Type>
-			<Flags>			OWN_CLIENT	</Flags>
-		</own_val>
 	</Properties>
 
 	<BaseMethods>
@@ -20,6 +16,25 @@
 	</CellMethods>
 
 	<ClientMethods>
+		<onStopCardSelection>
+			<Arg>  </Arg>
+		</onStopCardSelection>
+
+		<syncTimeInterval>
+			<Arg> SYNC_BATTLE_TIME_INFO </Arg>
+		</syncTimeInterval>
+
+		<startBattle>
+			<Arg>  </Arg>
+		</startBattle>
+
+		<switchController>
+			<Arg> UINT8 </Arg>
+		</switchController>
+
+		<resumeBattle>
+			<Arg>  </Arg>
+		</resumeBattle>
 	</ClientMethods>
 </root>
 

@@ -6,7 +6,10 @@
 	-->
 	
 	<Account hasClient="true"></Account>
-	<Avatar hasClient="true"></Avatar> <!-- <Avatar hasCell="true" hasBase="true" hasClient="true"></Avatar> -->
+	<!-- <Avatar hasCell="true" hasBase="true" hasClient="true"></Avatar> -->
+	<!--
+	<Avatar hasClient="true"></Avatar>
+	-->
 	<Gate hasClient="true"></Gate>
 	<TestEntity hasClient="true"></TestEntity>
 	<Player hasClient="true"></Player>

@@ -126,5 +126,16 @@
 			</updateList>
 		</Properties>
 	</CORE_UPDATE_BATLLE_INFO>
+
+	<SYNC_BATTLE_TIME_INFO> FIXED_DICT
+		<Properties>
+			<curTime>
+				<Type>	INT32	</Type>
+			</curTime>
+			<curTime>
+				<Type>	UINT8	</Type>
+			</curTime>
+		</Properties>
+	</SYNC_BATTLE_TIME_INFO>
 	
 </root>

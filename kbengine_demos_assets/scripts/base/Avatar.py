@@ -21,6 +21,8 @@ class Avatar(KBEngine.Proxy,
 		self.pileCardList = []
 		self.graveCardList = []
 
+		self.room = None
+
 	def reqTellRoomSelectCardDone(self):
 		# notify room that player has cards selected
 		return
@@ -54,6 +56,21 @@ class Avatar(KBEngine.Proxy,
 		
 		if not self.isDestroyed:
 			self.destroy()
+
+	def stopCardSelection(self):
+		return
+
+	def syncTimeInterval(self, curTime, state):
+		return
+
+	def startBattle(self):
+		return
+
+	def switchController(self, controlNb):
+		return
+
+	def resumeBattle(self):
+		return
 
 	#--------------------------------------------------------------------------------------------
 	#                              Callbacks

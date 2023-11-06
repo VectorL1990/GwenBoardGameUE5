@@ -11,20 +11,16 @@ from KBEDebug import *
 import d_avatar_inittab
 
 class Account(KBEngine.Proxy):
-	"""
-	账号实体
-	客户端登陆到服务端后，服务端将自动创建这个实体，通过这个实体与客户端进行交互
-	"""
 	def __init__(self):
 		INFO_MSG("create Account!!!")
 		KBEngine.Proxy.__init__(self)
 		self.activeAvatar = None
 		self.relogin = time.time()
 
-	def reqTest(self, param):
-		INFO_MSG("receive msg from ue!!!")
-		self.client.onReqTest(100)
-		return
+	#def reqTest(self, param):
+	#	INFO_MSG("receive msg from ue!!!")
+	#	self.client.onReqTest(100)
+	#	return
 
 	def reqEnterRoom(self):
 		# spawn entity for
