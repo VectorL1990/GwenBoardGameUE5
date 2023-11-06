@@ -55,7 +55,18 @@ class Room(KBEngine.Entity):
 		if self.keepCounting == False:
 			return
 		
-		#DEBUG_MSG("%s::onTimer: %i, tid:%i, arg:%i" % (self.getScriptName(), self.id, tid, userArg))
+		# room should tell which stage it's in right now
+		# 1. which including wait for players cards selection
+		#  if players do not finish cards selection in limited time
+		#  force them start right now
+		# 2. wait for a moment to receive informations about all clients have played prepared animations
+		#  if some confirm information is missing, force start counting
+		# 3. counting for real battle
+		#  3.1 when it comes to switch controller between players
+		#   it should stop for a moment to wait for animations playing for all clients
+		#   if animation confirm information is missing of some clients
+		#   force keep counting
+
 		if self.curTimeClockInterval >= self.maxTimeClockInterval and self.startTimeCount == True:
 			# which means we should modify controller to another player
 			self.curControlNb += 1

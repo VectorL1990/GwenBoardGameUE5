@@ -8,51 +8,51 @@
 namespace KBEngine
 {
 
-				Account::Account() : AccountBase()
-				{
-				}
+    Account::Account() : AccountBase()
+    {
+    }
 
-				Account::~Account()
-				{
-				}
+    Account::~Account()
+    {
+    }
 
-				void Account::__init__()
-				{
-								KBENGINE_REGISTER_EVENT_OVERRIDE_FUNC("reqTest", "reqTest", [this](const UKBEventData* pEventData)
-								{
-												const UKBEventData_ReqTest& data = static_cast<const UKBEventData_ReqTest&>(*pEventData);
-												reqTest(data.testParam);
-								});
+    void Account::__init__()
+    {
+        KBENGINE_REGISTER_EVENT_OVERRIDE_FUNC("reqTest", "reqTest", [this](const UKBEventData* pEventData)
+            {
+                const UKBEventData_ReqTest& data = static_cast<const UKBEventData_ReqTest&>(*pEventData);
+                reqTest(data.testParam);
+            });
 
-								UKBEventData_onLoginSuccessfully* pEventData = NewObject<UKBEventData_onLoginSuccessfully>();
-								pEventData->entity_uuid = KBEngineApp::getSingleton().entity_uuid();
-								pEventData->entity_id = id();
-								KBENGINE_EVENT_FIRE("onLoginSuccessfully", pEventData);
-				}
+        UKBEventData_onLoginSuccessfully* pEventData = NewObject<UKBEventData_onLoginSuccessfully>();
+        pEventData->entity_uuid = KBEngineApp::getSingleton().entity_uuid();
+        pEventData->entity_id = id();
+        KBENGINE_EVENT_FIRE("onLoginSuccessfully", pEventData);
+    }
 
-				void Account::onDestroy()
-				{
-								// 注销注册的所有事件
-								KBENGINE_DEREGISTER_ALL_EVENT();
-				}
+    void Account::onDestroy()
+    {
+        // 注销注册的所有事件
+        KBENGINE_DEREGISTER_ALL_EVENT();
+    }
 
-				void Account::reqTest(int32 param)
-				{
-								pBaseEntityCall->reqTest(param);
-				}
+    void Account::reqTest(int32 param)
+    {
+        pBaseEntityCall->reqTest(param);
+    }
 
-				void Account::onCreateAvatarResult(uint8 arg1)
-				{}
+    void Account::onCreateAvatarResult(uint8 arg1)
+    {}
 
-				void Account::onRemoveAvatar(uint64 arg1)
-				{}
+    void Account::onRemoveAvatar(uint64 arg1)
+    {}
 
-				void Account::onReqAvatarList()
-				{}
+    void Account::onReqAvatarList()
+    {}
 
-				void Account::onReqTest(int32 param)
-				{
-								FString paramStr = FString::FromInt(param);
-								GEngine->AddOnScreenDebugMessage(-1, 10.0, FColor::Red, paramStr);
-				}
+    void Account::onReqTest(int32 param)
+    {
+        FString paramStr = FString::FromInt(param);
+        GEngine->AddOnScreenDebugMessage(-1, 10.0, FColor::Red, paramStr);
+    }
 }

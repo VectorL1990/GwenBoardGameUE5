@@ -26,6 +26,7 @@ public:
 
 private:
     //void ReceivePlayCardResponse();
+    void ReqEnterRoom();
 
     void ReqPlayCard(int32 targetGridNb, int32 playCardUid);
 

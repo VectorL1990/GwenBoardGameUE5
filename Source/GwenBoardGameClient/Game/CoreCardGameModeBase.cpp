@@ -26,6 +26,11 @@ void ACoreCardGameModeBase::Tick(float deltaTime)
     }
 }
 
+void ACoreCardGameModeBase::ReqEnterRoom()
+{
+
+}
+
 void ACoreCardGameModeBase::ReqPlayCard(int32 targetGridNb, int32 playCardUid)
 {
     UKBEventData_reqSendAction* eventData = NewObject<UKBEventData_reqSendAction>();
