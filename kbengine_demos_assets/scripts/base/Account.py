@@ -17,10 +17,10 @@ class Account(KBEngine.Proxy):
 		self.activeAvatar = None
 		self.relogin = time.time()
 
-	#def reqTest(self, param):
-	#	INFO_MSG("receive msg from ue!!!")
-	#	self.client.onReqTest(100)
-	#	return
+	def reqTest(self, param):
+		INFO_MSG("receive msg from ue!!!")
+		self.client.onReqTest(100)
+		return
 
 	def reqEnterRoom(self):
 		# spawn entity for

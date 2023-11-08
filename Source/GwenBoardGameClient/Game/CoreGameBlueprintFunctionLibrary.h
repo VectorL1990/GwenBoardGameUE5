@@ -49,5 +49,6 @@ UCLASS()
 class GWENBOARDGAMECLIENT_API UCoreGameBlueprintFunctionLibrary : public UBlueprintFunctionLibrary
 {
     GENERATED_BODY()
-
+public:
+    
 };

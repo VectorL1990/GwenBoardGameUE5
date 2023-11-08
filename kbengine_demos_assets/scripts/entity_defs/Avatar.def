@@ -16,8 +16,11 @@
 	</CellMethods>
 
 	<ClientMethods>
+		<syncInitializeBattleInfo>
+			<Arg> ALL_PLAYER_INIT_BATTLE_INFO </Arg>
+		</syncInitializeBattleInfo>
+
 		<onStopCardSelection>
-			<Arg>  </Arg>
 		</onStopCardSelection>
 
 		<syncTimeInterval>
@@ -25,7 +28,6 @@
 		</syncTimeInterval>
 
 		<startBattle>
-			<Arg>  </Arg>
 		</startBattle>
 
 		<switchController>
@@ -33,7 +35,6 @@
 		</switchController>
 
 		<resumeBattle>
-			<Arg>  </Arg>
 		</resumeBattle>
 	</ClientMethods>
 </root>

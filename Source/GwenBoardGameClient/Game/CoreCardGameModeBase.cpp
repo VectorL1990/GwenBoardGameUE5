@@ -6,7 +6,7 @@
 
 void ACoreCardGameModeBase::InitEvents()
 {
-
+    KBENGINE_REGISTER_EVENT("syncInitializeAllCard", syncInitializeAllCard);
 }
 
 void ACoreCardGameModeBase::Tick(float deltaTime)
@@ -26,7 +26,26 @@ void ACoreCardGameModeBase::Tick(float deltaTime)
     }
 }
 
+void ACoreCardGameModeBase::syncPlayerPersistInfo(const UKBEventData* eventData)
+{
+    UKBEventData_syncPersistPlayerInfo persistPlayerInfo = Cast<UKBEventData_syncPersistPlayerInfo>(eventData);
+    for (int32 i = 0; i < persistPlayerInfo.persistPlayerInfo.cardList.Num(); i++)
+    {
+        
+    }
+}
+
+void ACoreCardGameModeBase::syncInitializeAllCard(const UKBEventData* eventData)
+{
+
+}
+
 void ACoreCardGameModeBase::ReqEnterRoom()
+{
+
+}
+
+void ACoreCardGameModeBase::ReqChangeHandCard(int32 changeCardId)
 {
 
 }

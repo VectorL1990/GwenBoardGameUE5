@@ -137,5 +137,51 @@
 			</curTime>
 		</Properties>
 	</SYNC_BATTLE_TIME_INFO>
+
+	<PERSIST_CARD_INFO> FIXED_DICT
+		<Properties>
+			<cardName>
+				<Type>	STRING	</Type>
+			</cardName>
+		</Properties>
+	</PERSIST_CARD_INFO>
+
+	<PASS_CARD_INFO> FIXED_DICT
+		<Properties>
+			<cardName>
+				<Type>	STRING	</Type>
+			</cardName>
+			<cardUid>
+				<Type>	INT32	</Type>
+			</cardUid>
+		</Properties>
+	</PASS_CARD_INFO>
+
+	<PERSIST_PLAYER_INFO> FIXED_DICT
+		<Properties>
+			<cardList>
+				<Type>	ARRAY <of> PERSIST_CARD_INFO </of>	</Type>
+			</cardList>
+		</Properties>
+	</PERSIST_PLAYER_INFO>
+
+	<PLAYER_INIT_BATTLE_INFO> FIXED_DICT
+		<Properties>
+			<playerNb>
+				<Type> UINT8 </Type>
+			</playerNb>
+			<cardList>
+				<Type>	ARRAY <of> PASS_CARD_INFO </of>	</Type>
+			</cardList>
+		</Properties>
+	</PLAYER_INIT_BATTLE_INFO>
+
+	<ALL_PLAYER_INIT_BATTLE_INFO> FIXED_DICT
+		<Properties>
+			<playerList>
+				<Type>	ARRAY <of> PLAYER_INIT_BATTLE_INFO </of>	</Type>
+			</playerList>
+		</Properties>
+	</ALL_PLAYER_INIT_BATTLE_INFO>
 	
 </root>

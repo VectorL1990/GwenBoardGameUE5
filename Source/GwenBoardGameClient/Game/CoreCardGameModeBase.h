@@ -25,8 +25,20 @@ public:
     virtual void Tick(float deltaTime) override;
 
 private:
+    void syncPlayerPersistInfo(const UKBEventData* eventData);
+
+    void syncInitializeAllCard(const UKBEventData* eventData);
+
     //void ReceivePlayCardResponse();
     void ReqEnterRoom();
+
+    // Change drawn card in hand
+    void ReqChangeHandCard(int32 changeCardId);
+
+    // Tell server that card selection done
+    void ReqConfirmCardSelection();
+
+
 
     void ReqPlayCard(int32 targetGridNb, int32 playCardUid);
 

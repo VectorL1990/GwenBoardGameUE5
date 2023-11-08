@@ -1,10 +1,10 @@
 <root>
 	<Properties>
-		<lastClientIpAddr>
-			<Type>			UINT32					</Type>
+		<persistPlayerInfo>
+			<Type>			PERSIST_PLAYER_INFO					</Type>
 			<Flags>			BASE					</Flags>
-			<Default>		0						</Default>
-		</lastClientIpAddr>
+			<Persistent>		true				</Persistent>
+		</persistPlayerInfo>
 	</Properties>
 
 	<ClientMethods>
@@ -21,7 +21,6 @@
 
 		<reqEnterRoom>
 			<Exposed/>
-			<Arg> </Arg>
 		</reqEnterRoom>
 	</BaseMethods>
 

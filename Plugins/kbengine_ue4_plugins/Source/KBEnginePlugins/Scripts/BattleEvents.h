@@ -119,6 +119,14 @@ public:
 };
 
 UCLASS(Blueprintable, BlueprintType)
+class KBENGINEPLUGINS_API UKBEventData_ReqEnterRoom : public UKBEventData
+{
+				GENERATED_BODY()
+
+public:
+};
+
+UCLASS(Blueprintable, BlueprintType)
 class KBENGINEPLUGINS_API UKBEventData_onReqTest : public UKBEventData
 {
 				GENERATED_BODY()
@@ -127,3 +135,37 @@ public:
 				UPROPERTY(EditAnywhere)
 								int32 testParam;
 };
+
+USTRUCT(BlueprintType)
+struct FPERSIST_CARD_INFO
+{
+				GENERATED_BODY()
+public:
+				UPROPERTY(EditAnywhere)
+				FString cardName;
+};
+
+USTRUCT(BlueprintType)
+struct FPERSIST_PLAYER_INFO
+{
+				GENERATED_BODY()
+public:
+				UPROPERTY(EditAnywhere)
+				TArray<FPERSIST_CARD_INFO> cardList;
+};
+
+class KBENGINEPLUGINS_API UKBEventData_syncPersistPlayerInfo : public UKBEventData
+{
+				GENERATED_BODY()
+public:
+				UPROPERTY(EditAnywhere)
+				FPERSIST_PLAYER_INFO persistPlayerInfo;
+};
+
+class KBENGINEPLUGINS_API UKBEventData_syncInitializeAllCard : public UKBEventData
+{
+				GENERATED_BODY()
+public:
+				
+};
+

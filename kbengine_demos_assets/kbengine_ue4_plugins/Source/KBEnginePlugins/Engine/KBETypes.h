@@ -290,5 +290,24 @@ inline bool operator ==(const CORE_UPDATE_BATLLE_INFO& a, const CORE_UPDATE_BATL
 	return a.updateList == b.updateList;
 };
 
+class SYNC_BATTLE_TIME_INFO
+{
+public:
+	int32 curTime;
+	uint8 curTime;
+
+	SYNC_BATTLE_TIME_INFO():
+	curTime(0),
+	curTime(0)
+	{
+	}
+
+};
+
+inline bool operator ==(const SYNC_BATTLE_TIME_INFO& a, const SYNC_BATTLE_TIME_INFO& b)
+{
+	return a.curTime == b.curTime && a.curTime == b.curTime;
+};
+
 
 }

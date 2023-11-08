@@ -202,4 +202,12 @@ public:
 };
 
 
+class KBENGINEPLUGINS_API DATATYPE_SYNC_BATTLE_TIME_INFO : DATATYPE_BASE
+{
+public:
+	void createFromStreamEx(MemoryStream& stream, SYNC_BATTLE_TIME_INFO& datas);
+	void addToStreamEx(Bundle& stream, const SYNC_BATTLE_TIME_INFO& v);
+};
+
+
 }

@@ -31,24 +31,5 @@ namespace KBEngine
 			type = ENTITYCALL_TYPE.ENTITYCALL_TYPE_CELL;
 		}
 
-		public void jump()
-		{
-			Bundle pBundle = newCall("jump", 0);
-			if(pBundle == null)
-				return;
-
-			sendCall(null);
-		}
-
-		public void relive(Byte arg1)
-		{
-			Bundle pBundle = newCall("relive", 0);
-			if(pBundle == null)
-				return;
-
-			bundle.writeUint8(arg1);
-			sendCall(null);
-		}
-
 	}
 	}

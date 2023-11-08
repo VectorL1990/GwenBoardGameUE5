@@ -24,6 +24,12 @@ namespace KBEngine
                 reqTest(data.testParam);
             });
 
+        KBENGINE_REGISTER_EVENT_OVERRIDE_FUNC("reqEnterRoom", "reqEnterRoom", [this](const UKBEventData* pEventData)
+            {
+                //const UKBEventData_ReqEnterRoom& data = static_cast<const UKBEventData_ReqEnterRoom&>(*pEventData);
+                reqEnterRoom();
+            });
+
         UKBEventData_onLoginSuccessfully* pEventData = NewObject<UKBEventData_onLoginSuccessfully>();
         pEventData->entity_uuid = KBEngineApp::getSingleton().entity_uuid();
         pEventData->entity_id = id();
@@ -39,6 +45,11 @@ namespace KBEngine
     void Account::reqTest(int32 param)
     {
         pBaseEntityCall->reqTest(param);
+    }
+
+    void Account::reqEnterRoom()
+    {
+        pBaseEntityCall->reqEnterRoom();
     }
 
     void Account::onCreateAvatarResult(uint8 arg1)

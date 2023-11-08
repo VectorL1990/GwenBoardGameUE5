@@ -89,14 +89,14 @@ void PlayerBase::onRemoteMethodCall(MemoryStream& stream)
 
 	switch(pMethod->methodUtype)
 	{
-		case 10:
+		case 9:
 		{
 			CORE_UPDATE_BATLLE_INFO onUpdateBattle_arg1;
 			((DATATYPE_CORE_UPDATE_BATLLE_INFO*)pMethod->args[0])->createFromStreamEx(stream, onUpdateBattle_arg1);
 			onUpdateBattle(onUpdateBattle_arg1);
 			break;
 		}
-		case 11:
+		case 10:
 		{
 			UPDATE_GRID_INFO_LIST onUpdateGridInfoList_arg1;
 			((DATATYPE_UPDATE_GRID_INFO_LIST*)pMethod->args[0])->createFromStreamEx(stream, onUpdateGridInfoList_arg1);

@@ -149,5 +149,17 @@ void DATATYPE_CORE_UPDATE_BATLLE_INFO::addToStreamEx(Bundle& stream, const CORE_
 	updateList_DataType.addToStreamEx(stream, v.updateList);
 }
 
+void DATATYPE_SYNC_BATTLE_TIME_INFO::createFromStreamEx(MemoryStream& stream, SYNC_BATTLE_TIME_INFO& datas)
+{
+	datas.curTime = stream.readInt32();
+	datas.curTime = stream.readUint8();
+}
+
+void DATATYPE_SYNC_BATTLE_TIME_INFO::addToStreamEx(Bundle& stream, const SYNC_BATTLE_TIME_INFO& v)
+{
+	stream.writeInt32(v.curTime);
+	stream.writeUint8(v.curTime);
+}
+
 
 }

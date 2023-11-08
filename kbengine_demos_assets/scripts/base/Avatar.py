@@ -23,6 +23,9 @@ class Avatar(KBEngine.Proxy,
 
 		self.room = None
 
+	def syncInitializeBattleInfo(self, allPlayerInfos):
+		return
+
 	def reqTellRoomSelectCardDone(self):
 		# notify room that player has cards selected
 		return

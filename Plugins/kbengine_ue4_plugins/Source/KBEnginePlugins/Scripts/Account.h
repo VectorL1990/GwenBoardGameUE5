@@ -19,6 +19,7 @@ namespace KBEngine
         virtual void onDestroy() override;
 
         void reqTest(int32 param);
+        void reqEnterRoom();
 
         virtual void onCreateAvatarResult(uint8 arg1) override;
         virtual void onRemoveAvatar(uint64 arg1) override;
