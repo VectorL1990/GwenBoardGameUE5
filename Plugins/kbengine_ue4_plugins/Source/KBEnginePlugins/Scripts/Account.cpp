@@ -41,15 +41,6 @@ namespace KBEngine
         pBaseEntityCall->reqTest(param);
     }
 
-    void Account::onCreateAvatarResult(uint8 arg1)
-    {}
-
-    void Account::onRemoveAvatar(uint64 arg1)
-    {}
-
-    void Account::onReqAvatarList()
-    {}
-
     void Account::onReqTest(int32 param)
     {
         FString paramStr = FString::FromInt(param);

@@ -26,22 +26,22 @@ public:
 	EntityBaseEntityCall_AvatarBase* pBaseEntityCall;
 	EntityCellEntityCall_AvatarBase* pCellEntityCall;
 
-	uint16 level;
-	virtual void onLevelChanged(uint16 oldValue) {}
 	uint32 modelID;
 	virtual void onModelIDChanged(uint32 oldValue) {}
 	uint8 modelScale;
 	virtual void onModelScaleChanged(uint8 oldValue) {}
 	FString name;
 	virtual void onNameChanged(const FString& oldValue) {}
-	uint16 own_val;
-	virtual void onOwn_valChanged(uint16 oldValue) {}
 	uint32 uid;
 	virtual void onUidChanged(uint32 oldValue) {}
 	uint32 utype;
 	virtual void onUtypeChanged(uint32 oldValue) {}
 
-	virtual void onJump() = 0; 
+	virtual void onStopCardSelection() = 0; 
+	virtual void resumeBattle() = 0; 
+	virtual void startBattle() = 0; 
+	virtual void switchController(uint8 arg1) = 0; 
+	virtual void syncTimeInterval(const SYNC_BATTLE_TIME_INFO& arg1) = 0; 
 
 	void onComponentsEnterworld() override;
 	void onComponentsLeaveworld() override;

@@ -21,7 +21,6 @@
 
 		<reqEnterRoom>
 			<Exposed/>
-			<Arg> </Arg>
 		</reqEnterRoom>
 	</BaseMethods>
 

@@ -1624,5 +1624,12 @@ namespace KBEngine
 
 	}
 
+	public class SYNC_BATTLE_TIME_INFO
+	{
+		public Int32 curTime = 0;
+		public Byte playerNb = 0;
+
+	}
+
 
 }

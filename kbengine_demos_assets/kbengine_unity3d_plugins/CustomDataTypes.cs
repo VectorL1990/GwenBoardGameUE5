@@ -342,4 +342,23 @@ namespace KBEngine
 	}
 
 
+
+	public class DATATYPE_SYNC_BATTLE_TIME_INFO : DATATYPE_BASE
+	{
+		public SYNC_BATTLE_TIME_INFO createFromStreamEx(MemoryStream stream)
+		{
+			SYNC_BATTLE_TIME_INFO datas = new SYNC_BATTLE_TIME_INFO();
+			datas.curTime = stream.readInt32();
+			datas.playerNb = stream.readUint8();
+			return datas;
+		}
+
+		public void addToStreamEx(Bundle stream, SYNC_BATTLE_TIME_INFO v)
+		{
+			stream.writeInt32(v.curTime);
+			stream.writeUint8(v.playerNb);
+		}
+	}
+
+
 }
