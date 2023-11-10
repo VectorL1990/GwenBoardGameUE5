@@ -38,6 +38,7 @@ public:
 	virtual void onUtypeChanged(uint32 oldValue) {}
 
 	virtual void onStopCardSelection() = 0; 
+	virtual void onSyncPlayerBattleInfo(const SYNC_PLAYER_BATTLE_INFO& arg1) = 0; 
 	virtual void resumeBattle() = 0; 
 	virtual void startBattle() = 0; 
 	virtual void switchController(uint8 arg1) = 0; 

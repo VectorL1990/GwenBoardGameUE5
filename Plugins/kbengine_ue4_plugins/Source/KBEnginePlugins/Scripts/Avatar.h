@@ -25,6 +25,7 @@ namespace KBEngine
 
         virtual void OnTeamData(uint8 arg1, const TArray<uint64>& arg2) {}
     public:
+        virtual void onSyncPlayerBattleInfo(const SYNC_PLAYER_BATTLE_INFO& arg1) override;
         virtual void onStopCardSelection() override;
         virtual void resumeBattle() override;
         virtual void startBattle() override;

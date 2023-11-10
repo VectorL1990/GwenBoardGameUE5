@@ -127,3 +127,13 @@ public:
 				UPROPERTY(EditAnywhere)
 								int32 testParam;
 };
+
+UCLASS(Blueprintable, BlueprintType)
+class KBENGINEPLUGINS_API UKBEventData_onSyncPlayerBattleInfo : public UKBEventData
+{
+				GENERATED_BODY()
+
+public:
+				UPROPERTY(EditAnywhere)
+				TArray<FString> cardList;
+};

@@ -4,8 +4,6 @@ import random
 import SCDefine
 import time
 import GlobalConst
-import d_spaces
-import d_avatar_inittab
 from KBEDebug import *
 from interfaces.GameObject import GameObject
 
@@ -16,11 +14,11 @@ class Avatar(KBEngine.Proxy,
 		GameObject.__init__(self)
 		
 		self.accountEntity = None
+		self.persistPlayerInfo = None
 		self.cardList = []
 		self.handCardList = []
 		self.pileCardList = []
 		self.graveCardList = []
-
 		self.room = None
 
 	def reqTellRoomSelectCardDone(self):
@@ -57,6 +55,10 @@ class Avatar(KBEngine.Proxy,
 		if not self.isDestroyed:
 			self.destroy()
 
+	def syncPlayerBattleInfo(self, playerBattleInfo):
+		self.client.onSyncPlayerBattleInfo(playerBattleInfo)
+		return
+
 	def stopCardSelection(self):
 		return
 
@@ -75,6 +77,12 @@ class Avatar(KBEngine.Proxy,
 	#--------------------------------------------------------------------------------------------
 	#                              Callbacks
 	#--------------------------------------------------------------------------------------------
+	def onClientEnabled(self):
+		cardList = self.persistPlayerInfo["persistCardList"]
+		playerBattleInfo = {
+			"cardList" : cardList,
+		}
+		self.syncPlayerBattleInfo(playerBattleInfo)
 		
 	def onClientDeath(self):
 		DEBUG_MSG("Avatar[%i].onClientDeath:" % self.id)

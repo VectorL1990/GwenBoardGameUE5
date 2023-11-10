@@ -137,5 +137,24 @@
 			</playerNb>
 		</Properties>
 	</SYNC_BATTLE_TIME_INFO>
+
+	<SYNC_PLAYER_BATTLE_INFO> FIXED_DICT
+		<Properties>
+			<cardList>
+				<Type> ARRAY <of>	STRING </of>	</Type>
+			</cardList>
+		</Properties>
+	</SYNC_PLAYER_BATTLE_INFO>
+
+	<PLAYER_PERSIST_INFO> FIXED_DICT
+		<Properties>
+			<persistCardList>
+				<Type> ARRAY <of>	STRING </of>	</Type>
+			</persistCardList>
+			<campNb>
+				<Type>	UINT8	</Type>
+			</campNb>
+		</Properties>
+	</PLAYER_PERSIST_INFO>
 	
 </root>

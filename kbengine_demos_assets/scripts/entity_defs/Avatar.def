@@ -16,6 +16,10 @@
 	</CellMethods>
 
 	<ClientMethods>
+		<onSyncPlayerBattleInfo>
+			<Arg> SYNC_PLAYER_BATTLE_INFO </Arg>
+		</onSyncPlayerBattleInfo>
+
 		<onStopCardSelection>
 		</onStopCardSelection>
 

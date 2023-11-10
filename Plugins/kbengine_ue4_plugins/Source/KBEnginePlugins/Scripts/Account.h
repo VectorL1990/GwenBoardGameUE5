@@ -19,6 +19,7 @@ namespace KBEngine
         virtual void onDestroy() override;
 
         void reqTest(int32 param);
+        void ReqEnterRoom();
 
         virtual void onReqTest(int32 param) override;
 

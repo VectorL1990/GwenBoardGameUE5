@@ -37,20 +37,20 @@ void ABasicGameMode::onDisconnected(const UKBEventData* eventData)
 
 }
 
-void ABasicGameMode::ReqLogin()
+void ABasicGameMode::ReqLogin(FString playerName, FString pwd)
 {
 				UActorComponent* actorComponent = kbeMainActor->GetComponentByClass(UKBEMain::StaticClass());
 				UKBEMain* kbeMain = Cast<UKBEMain>(actorComponent);
 				KBEngine::KBVar::KBVarBytes bytes;
-				kbeMain->login("test111", "1234", bytes);
+				kbeMain->login(playerName, pwd, bytes);
 }
 
-void ABasicGameMode::ReqCreateAccount()
+void ABasicGameMode::ReqCreateAccount(FString playerName, FString pwd)
 {
 				UActorComponent* actorComponent = kbeMainActor->GetComponentByClass(UKBEMain::StaticClass());
 				UKBEMain* kbeMain = Cast<UKBEMain>(actorComponent);
 				KBEngine::KBVar::KBVarBytes bytes;
-				kbeMain->createAccount("test111", "1234", bytes);
+				kbeMain->createAccount(playerName, pwd, bytes);
 }
 
 void ABasicGameMode::InitKBEMain()

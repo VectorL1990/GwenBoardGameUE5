@@ -1,6 +1,7 @@
 ﻿#include "Avatar.h"
 #include "Engine/Entity.h"
 #include "LogicEvents.h"
+#include "BattleEvents.h"
 
 namespace KBEngine
 {
@@ -48,6 +49,13 @@ namespace KBEngine
     void Avatar::onLeaveSpace()
     {
         AvatarBase::onLeaveSpace();
+    }
+
+    void Avatar::onSyncPlayerBattleInfo(const SYNC_PLAYER_BATTLE_INFO& param)
+    {
+        UKBEventData_onSyncPlayerBattleInfo* eventData = NewObject<UKBEventData_onSyncPlayerBattleInfo>();
+        eventData->cardList = param.cardList;
+        KBENGINE_EVENT_FIRE("onSyncPlayerBattleInfo", eventData);
     }
 
     void Avatar::onStopCardSelection()

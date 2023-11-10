@@ -27,6 +27,8 @@ public:
     // Called every frame
     virtual void Tick(float DeltaTime) override;
 
+    void InitCard();
+
     FPLAY_CARD_INFO GetCardInfo();
 
     BattleCardStatus cardStatus = BattleCardStatus::Standby;

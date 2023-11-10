@@ -32,10 +32,10 @@ public:
     void InitKBEMain();
 
     UFUNCTION()
-    void ReqCreateAccount();
+    void ReqCreateAccount(FString playerName, FString pwd);
 
     UFUNCTION()
-    void ReqLogin();
+    void ReqLogin(FString playerName, FString pwd);
 
     UFUNCTION()
     void onCreateAccountResult(const UKBEventData* eventData);

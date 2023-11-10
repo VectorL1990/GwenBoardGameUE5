@@ -5,21 +5,12 @@ import d_spaces
 from KBEDebug import *
 
 def onBaseAppReady(isBootstrap):
-	"""
-	KBEngine method.
-	baseapp已经准备好了
-	@param isBootstrap: 是否为第一个启动的baseapp
-	@type isBootstrap: BOOL
-	"""
 	INFO_MSG('onBaseAppReady: isBootstrap=%s' % isBootstrap)
 	
-	# 安装监视器
 	Watcher.setup()
 	
 	if isBootstrap:
-		# 创建spacemanager
-		#KBEngine.createEntityLocally( "Spaces", {} )
-		return
+		KBEngine.createEntityLocally("Halls", {})
 
 def onReadyForShutDown():
 	"""

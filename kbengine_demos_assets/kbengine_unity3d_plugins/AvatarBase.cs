@@ -31,6 +31,7 @@ namespace KBEngine
 		public virtual void onUtypeChanged(UInt32 oldValue) {}
 
 		public abstract void onStopCardSelection(); 
+		public abstract void onSyncPlayerBattleInfo(SYNC_PLAYER_BATTLE_INFO arg1); 
 		public abstract void resumeBattle(); 
 		public abstract void startBattle(); 
 		public abstract void switchController(Byte arg1); 
@@ -126,20 +127,24 @@ namespace KBEngine
 
 			switch(method.methodUtype)
 			{
-				case 4:
+				case 5:
 					onStopCardSelection();
 					break;
-				case 8:
+				case 4:
+					SYNC_PLAYER_BATTLE_INFO onSyncPlayerBattleInfo_arg1 = ((DATATYPE_SYNC_PLAYER_BATTLE_INFO)method.args[0]).createFromStreamEx(stream);
+					onSyncPlayerBattleInfo(onSyncPlayerBattleInfo_arg1);
+					break;
+				case 9:
 					resumeBattle();
 					break;
-				case 6:
+				case 7:
 					startBattle();
 					break;
-				case 7:
+				case 8:
 					Byte switchController_arg1 = stream.readUint8();
 					switchController(switchController_arg1);
 					break;
-				case 5:
+				case 6:
 					SYNC_BATTLE_TIME_INFO syncTimeInterval_arg1 = ((DATATYPE_SYNC_BATTLE_TIME_INFO)method.args[0]).createFromStreamEx(stream);
 					syncTimeInterval(syncTimeInterval_arg1);
 					break;

@@ -161,5 +161,27 @@ void DATATYPE_SYNC_BATTLE_TIME_INFO::addToStreamEx(Bundle& stream, const SYNC_BA
 	stream.writeUint8(v.playerNb);
 }
 
+void DATATYPE_SYNC_PLAYER_BATTLE_INFO::createFromStreamEx(MemoryStream& stream, SYNC_PLAYER_BATTLE_INFO& datas)
+{
+	cardList_DataType.createFromStreamEx(stream, datas.cardList);
+}
+
+void DATATYPE_SYNC_PLAYER_BATTLE_INFO::addToStreamEx(Bundle& stream, const SYNC_PLAYER_BATTLE_INFO& v)
+{
+	cardList_DataType.addToStreamEx(stream, v.cardList);
+}
+
+void DATATYPE_PLAYER_PERSIST_INFO::createFromStreamEx(MemoryStream& stream, PLAYER_PERSIST_INFO& datas)
+{
+	persistCardList_DataType.createFromStreamEx(stream, datas.persistCardList);
+	datas.campNb = stream.readUint8();
+}
+
+void DATATYPE_PLAYER_PERSIST_INFO::addToStreamEx(Bundle& stream, const PLAYER_PERSIST_INFO& v)
+{
+	persistCardList_DataType.addToStreamEx(stream, v.persistCardList);
+	stream.writeUint8(v.campNb);
+}
+
 
 }

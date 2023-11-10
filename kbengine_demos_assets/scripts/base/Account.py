@@ -17,10 +17,13 @@ class Account(KBEngine.Proxy):
 		self.activeAvatar = None
 		self.relogin = time.time()
 
-	#def reqTest(self, param):
-	#	INFO_MSG("receive msg from ue!!!")
-	#	self.client.onReqTest(100)
-	#	return
+	def reqTest(self, param):
+		INFO_MSG("receive msg from ue!!!")
+		self.client.onReqTest(100)
+		return
+
+	def reqDispatchRoom(self):
+		return
 
 	def reqEnterRoom(self):
 		# spawn entity for
@@ -87,6 +90,10 @@ class Account(KBEngine.Proxy):
 			return
 		
 		avatar.accountEntity = self
+		#avatar.persistPlayerInfo = self.persistPlayerInfo
+		avatar.persistPlayerInfo = {
+			"persistCardList" : ["Adam", "Bale", "Charles"]
+		}
 		self.activeAvatar = avatar
 		self.giveClientTo(avatar)
 		

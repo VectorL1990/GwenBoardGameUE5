@@ -21,7 +21,7 @@ void ALoginGameModeBase::InitEvents()
 {
 				Super::InitEvents();
 
-				//KBENGINE_REGISTER_EVENT("onReqTest", onReqTest);
+				KBENGINE_REGISTER_EVENT("onSyncPlayerBattleInfo", onSyncPlayerBattleInfo);
 }
 
 void ALoginGameModeBase::ReqTest()
@@ -31,10 +31,25 @@ void ALoginGameModeBase::ReqTest()
 				KBENGINE_EVENT_FIRE("reqTest", eventData);
 }
 
+void ALoginGameModeBase::ReqEnterRoom()
+{
+				UKBEventData* eventData = NewObject<UKBEventData>();
+				KBENGINE_EVENT_FIRE("ReqEnterRoom", eventData);
+}
+
 void ALoginGameModeBase::onReqTest(const UKBEventData* eventData)
 {
 				const UKBEventData_onReqTest* onReqTestEventData = Cast<UKBEventData_onReqTest>(eventData);
 				GEngine->AddOnScreenDebugMessage(-1, 10.0, FColor::Red, FString::FromInt(onReqTestEventData->testParam));
+}
+
+void ALoginGameModeBase::onSyncPlayerBattleInfo(const UKBEventData* eventData)
+{
+				const UKBEventData_onSyncPlayerBattleInfo* onSyncPlayerBattleInfoData = Cast<UKBEventData_onSyncPlayerBattleInfo>(eventData);
+				for (int i = 0; i < onSyncPlayerBattleInfoData->cardList.Num(); i++)
+				{
+								GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, onSyncPlayerBattleInfoData->cardList[i]);
+				}
 }
 
 void ALoginGameModeBase::BasicInitDone_Implementation()

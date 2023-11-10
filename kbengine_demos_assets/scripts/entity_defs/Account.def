@@ -1,10 +1,10 @@
 <root>
 	<Properties>
-		<lastClientIpAddr>
-			<Type>			UINT32					</Type>
+		<persistPlayerInfo>
+			<Type>			PLAYER_PERSIST_INFO					</Type>
 			<Flags>			BASE					</Flags>
-			<Default>		0						</Default>
-		</lastClientIpAddr>
+			<Persistent>		true				</Persistent>
+		</persistPlayerInfo>
 	</Properties>
 
 	<ClientMethods>

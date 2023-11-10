@@ -4,9 +4,17 @@
 #include "CoreCardGameModeBase.h"
 #include "Scripts/BattleEvents.h"
 
+void ACoreCardGameModeBase::BeginPlay()
+{
+    InitEvents();
+    InitKBEMain();
+    InitDone();
+}
+
 void ACoreCardGameModeBase::InitEvents()
 {
-
+    Super::InitEvents();
+    KBENGINE_REGISTER_EVENT("onSyncPlayerBattleInfo", onSyncPlayerBattleInfo);
 }
 
 void ACoreCardGameModeBase::Tick(float deltaTime)
@@ -28,7 +36,8 @@ void ACoreCardGameModeBase::Tick(float deltaTime)
 
 void ACoreCardGameModeBase::ReqEnterRoom()
 {
-
+    UKBEventData* eventData = NewObject<UKBEventData>();
+    KBENGINE_EVENT_FIRE("ReqEnterRoom", eventData);
 }
 
 void ACoreCardGameModeBase::ReqPlayCard(int32 targetGridNb, int32 playCardUid)
@@ -101,5 +110,23 @@ void ACoreCardGameModeBase::onReceiveUpdateCoreGame(const UKBEventData* eventDat
             // we should move this card to grave
         }
     }
+}
+
+void ACoreCardGameModeBase::InitDone_Implementation()
+{
+
+}
+
+void ACoreCardGameModeBase::onSyncPlayerBattleInfo(const UKBEventData* eventData)
+{
+    const UKBEventData_onSyncPlayerBattleInfo* onSyncPlayerBattleInfoData = Cast<UKBEventData_onSyncPlayerBattleInfo>(eventData);
+    FRotator spawnRot = FRotator::ZeroRotator;
+    for (int i = 0; i < onSyncPlayerBattleInfoData->cardList.Num(); i++)
+    {
+        ACard* card = GetWorld()->SpawnActor<ACard>(cardBPClass, initSpawnCardLoc, spawnRot);
+        
+    }
+    // 
+
 }
 
