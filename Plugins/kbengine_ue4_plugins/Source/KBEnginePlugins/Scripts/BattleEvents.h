@@ -137,3 +137,13 @@ public:
 				UPROPERTY(EditAnywhere)
 				TArray<FString> cardList;
 };
+
+UCLASS(Blueprintable, BlueprintType)
+class KBENGINEPLUGINS_API UKBEventData_onSyncRoomCreated : public UKBEventData
+{
+				GENERATED_BODY()
+
+public:
+				UPROPERTY(EditAnywhere)
+				FString sRoomKey;
+};

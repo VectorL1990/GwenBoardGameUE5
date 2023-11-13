@@ -7,6 +7,7 @@ from KBEDebug import *
 class Room(KBEngine.Entity):
 	def __init__(self):
 		KBEngine.Entity.__init__(self)
+		self.accountEntityDict = {}
 		self.avatars = {}
 		self.gridInfoDict = {}
 		self.runLoop = False
@@ -24,6 +25,10 @@ class Room(KBEngine.Entity):
 
 		self.timerState = 0
 		self.avatars = {}
+
+	def tellAccountsRoomCreated(self):
+		for k,v in self.accountEntityDict.items():
+			v.syncRoomCreated(self.roomKey)
 
 	def playAction(self, entityCall, actionInfo):
 		if actionInfo["actionType"] == "playCard":

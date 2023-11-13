@@ -29,6 +29,12 @@ class Account(KBEngine.Proxy):
 	def reqEnterRoom(self):
 		# spawn entity for
 		KBEngine.createEntityAnywhere("Avatar", {}, self.onAvatarCreated)
+
+	def reqMatch(self):
+		KBEngine.globalData["Hall"].applyMatch(self)
+
+	def syncRoomCreated(self, roomKey):
+		self.onSyncRoomCreated(roomKey)
 	
 		
 	#--------------------------------------------------------------------------------------------
@@ -74,6 +80,9 @@ class Account(KBEngine.Proxy):
 				pass
 				
 			self.activeAvatar = None
+
+	def onSyncRoomCreated(self, roomKey):
+		self.client.onSyncRoomCreated(roomKey)
 			
 	def onAvatarCreated(self, baseRef):
 		if baseRef is None:

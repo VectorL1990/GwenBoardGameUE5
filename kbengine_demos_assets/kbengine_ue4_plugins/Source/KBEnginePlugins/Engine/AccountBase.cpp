@@ -89,10 +89,16 @@ void AccountBase::onRemoteMethodCall(MemoryStream& stream)
 
 	switch(pMethod->methodUtype)
 	{
-		case 3:
+		case 4:
 		{
 			int32 onReqTest_arg1 = stream.readInt32();
 			onReqTest(onReqTest_arg1);
+			break;
+		}
+		case 5:
+		{
+			uint64 onSyncRoomCreated_arg1 = stream.readUint64();
+			onSyncRoomCreated(onSyncRoomCreated_arg1);
 			break;
 		}
 		default:

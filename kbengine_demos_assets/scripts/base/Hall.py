@@ -1,4 +1,5 @@
 import KBEngine
+import Functor
 from KBEDebug import *
 import traceback
 
@@ -10,7 +11,8 @@ class Hall(KBEngine.Entity):
 		KBEngine.Entity.__init__(self)
 		KBEngine.globalData["Hall"] = self
 		self.rooms = {}
-		self.applyMatchDict = {}
+		self.matcherDict = {}
+		self.applyMatchPlayerDict = {}
 		self.matcherNb = 0
 		self.createMatcher()
 		
@@ -18,42 +20,39 @@ class Hall(KBEngine.Entity):
 	def createMatcher(self):
 		matcher = KBEngine.createEntityAnywhere("Matcher", {}, self.onMatcherCreated)
 		self.matcherNb += 1
+		# add this matcher to dictionary
+		self.matcherDict[self.matcherNb] = matcher
 		matcher.registerGlobalMatcher(self.matcherNb)
 		return
 
 	def applyMatch(self, accountEntityCall):
-		self.applyMatchDict[accountEntityCall.id] = accountEntityCall
+		for k,v in self.matcherDict.items():
+			if v.curMatchingPlayerNb < v.maxMatchingPlayerNb :
+				v.applyMatch(accountEntityCall)
+			else:
+				continue
+		self.applyMatchPlayerDict[accountEntityCall.id] = accountEntityCall
 
 
-	def createRoom(self, playerEntityList):
-		return
-		
-	def findRoom(self, roomKey, notFoundCreate = False):
-		roomDatas = self.rooms.get(roomKey)
-		
-		if not roomDatas:
-			if not notFoundCreate:
-				return FIND_ROOM_NOT_FOUND
-			
-			roomDatas = self.rooms.get(self.roomKey)
-			if roomDatas is not None:
-				return roomDatas
-
-			self.lastNewRoomKey = KBEngine.genUUID64()
-			
-			KBEngine.createEntityAnywhere("Room", \
-									{
-									"roomKey" : self.lastNewRoomKey,	\
-									}, \
-									Functor.Functor(self.onRoomCreatedCB, self.lastNewRoomKey))
-			
-			roomDatas = {"roomEntityCall" : None, "PlayerCount": 0, "enterRoomReqs" : [], "roomKey" : self.lastNewRoomKey}
-			self.rooms[self.lastNewRoomKey] = roomDatas
-			return roomDatas
-
-		return roomDatas
+	def createRoom(self, playerEntityIdList):
+		newRoomKey = KBEngine.genUUID64()
+		KBEngine.createEntityAnywhere("Room", \
+			{
+				"roomKey":newRoomKey, \
+			}, \
+			Functor.Functor(self.onRoomCreated, newRoomKey, playerEntityIdList))
 	
 	def onMatcherCreated(self):
 		return
+
+	def onRoomCreated(self, roomKey, playerEntityIdList, roomEntityCall):
+		DEBUG_MSG("Halls::onRoomCreatedCB: space %i. entityID=%i" % (roomKey, roomEntityCall.id))
+		for playerEntityId in playerEntityIdList:
+			roomEntityCall.accountEntityDict[playerEntityId] = self.applyMatchPlayerDict[playerEntityId]
+		# delete playerId in dictionary
+		for playerId in playerEntityList:
+			self.applyMatchPlayerDict.pop(playerId)
+		roomEntityCall.tellAccountsRoomCreated()
+
 
 

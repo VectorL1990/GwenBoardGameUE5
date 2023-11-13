@@ -10,6 +10,8 @@ class Matcher(KBEngine.Entity):
 		KBEngine.Entity.__init__(self)
 		self.applyMatchDict = {}
 		self.addTimer(1, 0.1)
+		self.maxMatchingPlayerNb = 20
+		self.curMatchingPlayerNb = 0
 
 	def applyMatch(self, accountEntityCall):
 		self.applyMatchDict[accountEntityCall.id] = accountEntityCall
@@ -25,6 +27,9 @@ class Matcher(KBEngine.Entity):
 					continue
 				else:
 					if abs(v1.syntheticMatchScore - v2.syntheticMatchScore) <= 10:
-						playerEntityList = [v1, v2]
-						KBEngine.globalData["Hall"].createRoom(playerEntityList)
+						playerEntityIdList = [k1, k2]
+						KBEngine.globalData["Hall"].createRoom(playerEntityIdList)
+						self.applyMatchDict.pop(k1)
+						self.applyMatchDict.pop(k2)
+						return
 						

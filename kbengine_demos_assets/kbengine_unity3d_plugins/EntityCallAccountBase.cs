@@ -30,6 +30,15 @@ namespace KBEngine
 			sendCall(null);
 		}
 
+		public void reqMatch()
+		{
+			Bundle pBundle = newCall("reqMatch", 0);
+			if(pBundle == null)
+				return;
+
+			sendCall(null);
+		}
+
 		public void reqTest(Int32 arg1)
 		{
 			Bundle pBundle = newCall("reqTest", 0);

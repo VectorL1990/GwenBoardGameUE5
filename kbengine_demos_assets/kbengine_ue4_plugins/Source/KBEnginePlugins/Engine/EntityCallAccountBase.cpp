@@ -22,6 +22,15 @@ void EntityBaseEntityCall_AccountBase::reqEnterRoom()
 	sendCall(NULL);
 }
 
+void EntityBaseEntityCall_AccountBase::reqMatch()
+{
+	Bundle* pBundleRet = newCall("reqMatch", 0);
+	if(!pBundleRet)
+		return;
+
+	sendCall(NULL);
+}
+
 void EntityBaseEntityCall_AccountBase::reqTest(int32 arg1)
 {
 	Bundle* pBundleRet = newCall("reqTest", 0);

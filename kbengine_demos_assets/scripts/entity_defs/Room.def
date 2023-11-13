@@ -1,9 +1,9 @@
 <root>
 	<Properties>
-		<roomId>
-			<Type>			UINT32			</Type>
-			<Flags>			BASE			</Flags>
-		</roomId>
+		<roomKey>
+			<Type>			UINT64			</Type>
+			<Flags>			BASE				</Flags>
+		</roomKey>
 	</Properties>
 
 	<ClientMethods>

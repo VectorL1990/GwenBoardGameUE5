@@ -89,35 +89,35 @@ void AvatarBase::onRemoteMethodCall(MemoryStream& stream)
 
 	switch(pMethod->methodUtype)
 	{
-		case 5:
+		case 7:
 		{
 			onStopCardSelection();
 			break;
 		}
-		case 4:
+		case 6:
 		{
 			SYNC_PLAYER_BATTLE_INFO onSyncPlayerBattleInfo_arg1;
 			((DATATYPE_SYNC_PLAYER_BATTLE_INFO*)pMethod->args[0])->createFromStreamEx(stream, onSyncPlayerBattleInfo_arg1);
 			onSyncPlayerBattleInfo(onSyncPlayerBattleInfo_arg1);
 			break;
 		}
-		case 9:
+		case 11:
 		{
 			resumeBattle();
 			break;
 		}
-		case 7:
+		case 9:
 		{
 			startBattle();
 			break;
 		}
-		case 8:
+		case 10:
 		{
 			uint8 switchController_arg1 = stream.readUint8();
 			switchController(switchController_arg1);
 			break;
 		}
-		case 6:
+		case 8:
 		{
 			SYNC_BATTLE_TIME_INFO syncTimeInterval_arg1;
 			((DATATYPE_SYNC_BATTLE_TIME_INFO*)pMethod->args[0])->createFromStreamEx(stream, syncTimeInterval_arg1);

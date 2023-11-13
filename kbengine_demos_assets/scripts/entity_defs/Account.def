@@ -11,6 +11,10 @@
 		<onReqTest>
 			<Arg> INT32 </Arg>
 		</onReqTest>
+
+		<onSyncRoomCreated>
+			<Arg> UINT64 </Arg>
+		</onSyncRoomCreated>
 	</ClientMethods>
 
 	<BaseMethods>
@@ -22,6 +26,10 @@
 		<reqEnterRoom>
 			<Exposed/>
 		</reqEnterRoom>
+
+		<reqMatch>
+			<Exposed/>
+		</reqMatch>
 	</BaseMethods>
 
 	<CellMethods>

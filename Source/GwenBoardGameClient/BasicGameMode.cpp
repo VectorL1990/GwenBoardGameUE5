@@ -4,6 +4,7 @@
 #include "BasicGameMode.h"
 #include "Engine/KBEngine.h"
 #include "Engine/KBEMain.h"
+#include "Scripts/BattleEvents.h"
 #include "Base/GwenBoardGameInstance.h"
 
 void ABasicGameMode::CallGameInstanceSendData(FString sendData)
@@ -25,6 +26,7 @@ void ABasicGameMode::InitEvents()
 {
     KBENGINE_REGISTER_EVENT(KBEngine::KBEventTypes::onKicked, onKicked);
 				KBENGINE_REGISTER_EVENT(KBEngine::KBEventTypes::onCreateAccountResult, onCreateAccountResult);
+				KBENGINE_REGISTER_EVENT("onSyncRoomCreated", onSyncRoomCreated);
 }
 
 void ABasicGameMode::onKicked(const UKBEventData* eventData)
@@ -43,6 +45,12 @@ void ABasicGameMode::ReqLogin(FString playerName, FString pwd)
 				UKBEMain* kbeMain = Cast<UKBEMain>(actorComponent);
 				KBEngine::KBVar::KBVarBytes bytes;
 				kbeMain->login(playerName, pwd, bytes);
+}
+
+void ABasicGameMode::ReqMatch()
+{
+				UKBEventData* eventData = NewObject<UKBEventData>();
+				KBENGINE_EVENT_FIRE("ReqMatch", eventData);
 }
 
 void ABasicGameMode::ReqCreateAccount(FString playerName, FString pwd)
@@ -64,4 +72,10 @@ void ABasicGameMode::onCreateAccountResult(const UKBEventData* eventData)
 {
 				const UKBEventData_onCreateAccountResult* onCreateAccountEventData = Cast<UKBEventData_onCreateAccountResult>(eventData);
 				GEngine->AddOnScreenDebugMessage(-1, 10.0, FColor::Red, onCreateAccountEventData->errorStr);
+}
+
+void ABasicGameMode::onSyncRoomCreated(const UKBEventData* eventData)
+{
+				const UKBEventData_onSyncRoomCreated* onSyncRoomCreatedData = Cast<UKBEventData_onSyncRoomCreated>(eventData);
+				sRoomKey = onSyncRoomCreatedData->sRoomKey;
 }

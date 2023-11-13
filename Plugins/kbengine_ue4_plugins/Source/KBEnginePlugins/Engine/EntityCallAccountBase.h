@@ -26,6 +26,7 @@ public:
 
 	virtual ~EntityBaseEntityCall_AccountBase();
 	void reqEnterRoom();
+	void reqMatch();
 	void reqTest(int32 arg1);
 };
 

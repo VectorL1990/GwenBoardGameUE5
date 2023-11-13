@@ -21,6 +21,7 @@ namespace KBEngine
 
 
 		public abstract void onReqTest(Int32 arg1); 
+		public abstract void onSyncRoomCreated(UInt64 arg1); 
 
 		public AccountBase()
 		{
@@ -112,9 +113,13 @@ namespace KBEngine
 
 			switch(method.methodUtype)
 			{
-				case 3:
+				case 4:
 					Int32 onReqTest_arg1 = stream.readInt32();
 					onReqTest(onReqTest_arg1);
+					break;
+				case 5:
+					UInt64 onSyncRoomCreated_arg1 = stream.readUint64();
+					onSyncRoomCreated(onSyncRoomCreated_arg1);
 					break;
 				default:
 					break;

@@ -227,8 +227,8 @@ void ClientSDKUpdater::moveDirectory(FString fromDicPath, FString toDicPath)
 	for (int i = 0; i < fileNames.Num(); i++)
 	{
 		tempFileName = fileNames[i];
-		FString replacePath = tempFileName.Replace(*fromDicPath, *toDicPath);
-		PlatformFile.MoveFile(*replacePath, *fileNames[i]);
+		FString replaceFileName = tempFileName.Replace(*fromDicPath, *toDicPath);
+		PlatformFile.MoveFile(*replaceFileName, *fileNames[i]);
 	}
 }
 

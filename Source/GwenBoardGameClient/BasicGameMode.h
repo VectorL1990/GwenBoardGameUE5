@@ -38,11 +38,19 @@ public:
     void ReqLogin(FString playerName, FString pwd);
 
     UFUNCTION()
+    void ReqMatch();
+
+    UFUNCTION()
     void onCreateAccountResult(const UKBEventData* eventData);
+
+    void onSyncRoomCreated(const UKBEventData* eventData);
 
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<AActor> kbeMainClass;
 
     UPROPERTY()
     AActor* kbeMainActor;
+
+    UPROPERTY()
+    FString sRoomKey;
 };

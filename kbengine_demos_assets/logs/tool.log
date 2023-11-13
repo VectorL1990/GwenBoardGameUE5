@@ -6595,3 +6595,525 @@ TabError: inconsistent use of tabs and spaces in indentation
  DEBUG root [2023-11-11 20:15:24,533] - UDPPacketReceiver::destroyObjPool(): size 0.
   INFO root [2023-11-11 20:15:25,387] - EventDispatcher()::~EventDispatcher: Num timers = 2
   INFO root [2023-11-11 20:15:25,545] - EventDispatcher()::~EventDispatcher: Num timers = 2
+  INFO root [2023-11-13 15:39:41,197] - 
+  INFO root [2023-11-13 15:39:41,197] - 
+  INFO root [2023-11-13 15:39:41,198] - -----------------------------------------------------------------------------------------
+
+
+  INFO root [2023-11-13 15:39:41,198] - -----------------------------------------------------------------------------------------
+
+
+  INFO root [2023-11-13 15:39:41,199] - Resmgr::initialize: KBE_ROOT=C:/kbengine/
+  INFO root [2023-11-13 15:39:41,199] - Resmgr::initialize: KBE_ROOT=C:/kbengine/
+  INFO root [2023-11-13 15:39:41,199] - Resmgr::initialize: KBE_RES_PATH=C:/kbengine/kbe/res/;D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/;D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/scripts/;D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/res/
+  INFO root [2023-11-13 15:39:41,199] - Resmgr::initialize: KBE_RES_PATH=C:/kbengine/kbe/res/;D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/;D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/scripts/;D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/res/
+  INFO root [2023-11-13 15:39:41,199] - Resmgr::initialize: KBE_BIN_PATH=C:/kbengine/kbe/bin/server/
+  INFO root [2023-11-13 15:39:41,199] - Resmgr::initialize: KBE_BIN_PATH=C:/kbengine/kbe/bin/server/
+  INFO root [2023-11-13 15:39:41,228] - NetworkInterface::initialize(INTERNAL-TCP): bound to all interfaces with default route interface on 192.168.10.52 ( 192.168.10.52:53504 )
+  INFO root [2023-11-13 15:39:41,228] - NetworkInterface::initialize(INTERNAL-TCP): bound to all interfaces with default route interface on 192.168.10.52 ( 192.168.10.52:53503 )
+  INFO root [2023-11-13 15:39:41,228] - NetworkInterface::initialize(INTERNAL-TCP): address 192.168.10.52:53504, SOMAXCONN=511.
+  INFO root [2023-11-13 15:39:41,228] - NetworkInterface::initialize(INTERNAL-TCP): address 192.168.10.52:53503, SOMAXCONN=511.
+  INFO root [2023-11-13 15:39:41,239] - ---- tool Version: 2.5.10. ScriptVersion: 0.1.0. Pythoncore: 3.7.3. Protocol: EB8AE9F114C8797B1E70E1A629686A27. Config: Debug X64. Built: 19:47:33 Oct 30 2023. AppID: 18446744073709551615. UID: 0. PID: 30116 ----
+  INFO root [2023-11-13 15:39:41,239] - ---- tool Version: 2.5.10. ScriptVersion: 0.1.0. Pythoncore: 3.7.3. Protocol: EB8AE9F114C8797B1E70E1A629686A27. Config: Debug X64. Built: 19:47:33 Oct 30 2023. AppID: 18446744073709551615. UID: 0. PID: 39824 ----
+  INFO root [2023-11-13 15:39:41,239] - Server 84217: AMD Ryzen 9 3950X 16-Core Processor             with 67052324kB RAM
+  INFO root [2023-11-13 15:39:41,240] - Server 84217: AMD Ryzen 9 3950X 16-Core Processor             with 67052324kB RAM
+  INFO root [2023-11-13 15:39:41,240] - ThreadPool::createThreadPool: creating  threadpool...
+  INFO root [2023-11-13 15:39:41,240] - ThreadPool::createThreadPool: creating  threadpool...
+  INFO root [2023-11-13 15:39:41,241] - ThreadPool::createThreadPool: successfully(2), newThreadCount=1, normalMaxThreadCount=2, maxThreadCount=8
+  INFO root [2023-11-13 15:39:41,241] - ThreadPool::createThreadPool: successfully(2), newThreadCount=1, normalMaxThreadCount=2, maxThreadCount=8
+  INFO root [2023-11-13 15:39:41,625] - Script::install(): is successfully, Python=(3.7.3 (tags/2.5.12:7d379b9f9, Oct 30 2023, 19:37:24) [MSC v.1929 64 bit (AMD64)])!
+  INFO root [2023-11-13 15:39:41,626] - Script::install(): is successfully, Python=(3.7.3 (tags/2.5.12:7d379b9f9, Oct 30 2023, 19:37:24) [MSC v.1929 64 bit (AMD64)])!
+  INFO root [2023-11-13 15:39:41,626] - Script::install(): KBExtra is successfully!
+  INFO root [2023-11-13 15:39:41,626] - Script::install(): KBExtra is successfully!
+ S_ERR root [2023-11-13 15:39:42,186] -   File "D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/scripts/base\Hall.py", line 14
+    self.matcherDict = {}
+                        ^
+IndentationErro S_ERR root [2023-11-13 15:39:42,186] -   File "D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/scripts/base\Hall.py", line 14
+    self.matcherDict = {}
+                        ^
+IndentationError: unindent does not match any outer indentation level
+r: unindent does not match any outer indentation level
+ ERROR root [2023-11-13 15:39:42,188] - app::initialize(): EntityDef initialization failed!
+ ERROR root [2023-11-13 15:39:42,188] - app::initialize(): EntityDef initialization failed!
+  INFO root [2023-11-13 15:39:42,195] - Script::uninstall(): is successfully!
+ DEBUG root [2023-11-13 15:39:42,196] - ThreadPool::destroy(): starting size 2.
+  INFO root [2023-11-13 15:39:42,196] - Script::uninstall(): is successfully!
+ DEBUG root [2023-11-13 15:39:42,196] - ThreadPool::destroy(): starting size 2.
+  WARN root [2023-11-13 15:39:42,496] - ThreadPool::destroy(): waiting for thread(2)[0x2bae200ac10,0x2bae200b7f0,], try=1
+  WARN root [2023-11-13 15:39:42,497] - ThreadPool::destroy(): waiting for thread(2)[0x284d5577850,0x284d5578bb0,], try=1
+ DEBUG root [2023-11-13 15:39:42,898] - TPThread::~TPThread(): 0x2bae200ac10
+ DEBUG root [2023-11-13 15:39:42,898] - TPThread::~TPThread(): 0x2bae200b7f0
+ DEBUG root [2023-11-13 15:39:42,898] - ThreadPool::destroy(): successfully!
+ DEBUG root [2023-11-13 15:39:42,899] - TPThread::~TPThread(): 0x284d5577850
+ DEBUG root [2023-11-13 15:39:42,899] - TPThread::~TPThread(): 0x284d5578bb0
+ DEBUG root [2023-11-13 15:39:42,899] - ThreadPool::destroy(): successfully!
+ DEBUG root [2023-11-13 15:39:42,908] - Bundle::destroyObjPool(): size 12.
+ DEBUG root [2023-11-13 15:39:42,908] - Bundle::destroyObjPool(): size 12.
+ DEBUG root [2023-11-13 15:39:42,908] - Channel::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:39:42,908] - Channel::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:39:42,908] - TCPPacket::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:39:42,908] - TCPPacket::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:39:42,909] - UDPPacket::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:39:42,909] - EndPoint::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:39:42,909] - UDPPacket::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:39:42,909] - Address::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:39:42,909] - EndPoint::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:39:42,909] - TCPPacketReceiver::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:39:42,909] - Address::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:39:42,909] - UDPPacketReceiver::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:39:42,909] - TCPPacketReceiver::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:39:42,909] - UDPPacketReceiver::destroyObjPool(): size 0.
+  INFO root [2023-11-13 15:39:43,910] - EventDispatcher()::~EventDispatcher: Num timers = 2
+  INFO root [2023-11-13 15:39:43,910] - EventDispatcher()::~EventDispatcher: Num timers = 2
+  INFO root [2023-11-13 15:39:46,597] - 
+  INFO root [2023-11-13 15:39:46,597] - -----------------------------------------------------------------------------------------
+
+
+  INFO root [2023-11-13 15:39:46,597] - Resmgr::initialize: KBE_ROOT=C:/kbengine/
+  INFO root [2023-11-13 15:39:46,598] - Resmgr::initialize: KBE_RES_PATH=C:/kbengine/kbe/res/;D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/;D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/scripts/;D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/res/
+  INFO root [2023-11-13 15:39:46,598] - Resmgr::initialize: KBE_BIN_PATH=C:/kbengine/kbe/bin/server/
+  INFO root [2023-11-13 15:39:46,614] - 
+  INFO root [2023-11-13 15:39:46,615] - -----------------------------------------------------------------------------------------
+
+
+  INFO root [2023-11-13 15:39:46,615] - Resmgr::initialize: KBE_ROOT=C:/kbengine/
+  INFO root [2023-11-13 15:39:46,615] - Resmgr::initialize: KBE_RES_PATH=C:/kbengine/kbe/res/;D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/;D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/scripts/;D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/res/
+  INFO root [2023-11-13 15:39:46,615] - Resmgr::initialize: KBE_BIN_PATH=C:/kbengine/kbe/bin/server/
+  INFO root [2023-11-13 15:39:46,617] - NetworkInterface::initialize(INTERNAL-TCP): bound to all interfaces with default route interface on 192.168.10.52 ( 192.168.10.52:53519 )
+  INFO root [2023-11-13 15:39:46,617] - NetworkInterface::initialize(INTERNAL-TCP): address 192.168.10.52:53519, SOMAXCONN=511.
+  INFO root [2023-11-13 15:39:46,621] - ---- tool Version: 2.5.10. ScriptVersion: 0.1.0. Pythoncore: 3.7.3. Protocol: EB8AE9F114C8797B1E70E1A629686A27. Config: Debug X64. Built: 19:47:33 Oct 30 2023. AppID: 18446744073709551615. UID: 0. PID: 45984 ----
+  INFO root [2023-11-13 15:39:46,621] - Server 84217: AMD Ryzen 9 3950X 16-Core Processor             with 67052324kB RAM
+  INFO root [2023-11-13 15:39:46,621] - ThreadPool::createThreadPool: creating  threadpool...
+  INFO root [2023-11-13 15:39:46,622] - ThreadPool::createThreadPool: successfully(2), newThreadCount=1, normalMaxThreadCount=2, maxThreadCount=8
+  INFO root [2023-11-13 15:39:46,635] - NetworkInterface::initialize(INTERNAL-TCP): bound to all interfaces with default route interface on 192.168.10.52 ( 192.168.10.52:53520 )
+  INFO root [2023-11-13 15:39:46,635] - NetworkInterface::initialize(INTERNAL-TCP): address 192.168.10.52:53520, SOMAXCONN=511.
+  INFO root [2023-11-13 15:39:46,639] - ---- tool Version: 2.5.10. ScriptVersion: 0.1.0. Pythoncore: 3.7.3. Protocol: EB8AE9F114C8797B1E70E1A629686A27. Config: Debug X64. Built: 19:47:33 Oct 30 2023. AppID: 18446744073709551615. UID: 0. PID: 70724 ----
+  INFO root [2023-11-13 15:39:46,640] - Server 84217: AMD Ryzen 9 3950X 16-Core Processor             with 67052324kB RAM
+  INFO root [2023-11-13 15:39:46,640] - ThreadPool::createThreadPool: creating  threadpool...
+  INFO root [2023-11-13 15:39:46,640] - ThreadPool::createThreadPool: successfully(2), newThreadCount=1, normalMaxThreadCount=2, maxThreadCount=8
+  INFO root [2023-11-13 15:39:46,788] - Script::install(): is successfully, Python=(3.7.3 (tags/2.5.12:7d379b9f9, Oct 30 2023, 19:37:24) [MSC v.1929 64 bit (AMD64)])!
+  INFO root [2023-11-13 15:39:46,789] - Script::install(): KBExtra is successfully!
+  INFO root [2023-11-13 15:39:46,804] - Script::install(): is successfully, Python=(3.7.3 (tags/2.5.12:7d379b9f9, Oct 30 2023, 19:37:24) [MSC v.1929 64 bit (AMD64)])!
+  INFO root [2023-11-13 15:39:46,804] - Script::install(): KBExtra is successfully!
+ S_ERR root [2023-11-13 15:39:47,102] -   File "D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/scripts/base\Hall.py", line 14
+    self.matcherDict = {}
+                        ^
+IndentationError: unindent does not match any outer indentation level
+ ERROR root [2023-11-13 15:39:47,103] - app::initialize(): EntityDef initialization failed!
+  INFO root [2023-11-13 15:39:47,110] - Script::uninstall(): is successfully!
+ DEBUG root [2023-11-13 15:39:47,110] - ThreadPool::destroy(): starting size 2.
+ S_ERR root [2023-11-13 15:39:47,112] -   File "D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/scripts/base\Hall.py", line 14
+    self.matcherDict = {}
+                        ^
+IndentationError: unindent does not match any outer indentation level
+ ERROR root [2023-11-13 15:39:47,114] - app::initialize(): EntityDef initialization failed!
+  INFO root [2023-11-13 15:39:47,120] - Script::uninstall(): is successfully!
+ DEBUG root [2023-11-13 15:39:47,121] - ThreadPool::destroy(): starting size 2.
+  WARN root [2023-11-13 15:39:47,411] - ThreadPool::destroy(): waiting for thread(2)[0x232e55f9a10,0x232e55fa690,], try=1
+  WARN root [2023-11-13 15:39:47,422] - ThreadPool::destroy(): waiting for thread(2)[0x1b7c3059e60,0x1b7c3058880,], try=1
+ DEBUG root [2023-11-13 15:39:47,813] - TPThread::~TPThread(): 0x232e55f9a10
+ DEBUG root [2023-11-13 15:39:47,813] - TPThread::~TPThread(): 0x232e55fa690
+ DEBUG root [2023-11-13 15:39:47,813] - ThreadPool::destroy(): successfully!
+ DEBUG root [2023-11-13 15:39:47,821] - Bundle::destroyObjPool(): size 12.
+ DEBUG root [2023-11-13 15:39:47,821] - Channel::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:39:47,821] - TCPPacket::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:39:47,821] - UDPPacket::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:39:47,821] - EndPoint::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:39:47,821] - Address::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:39:47,821] - TCPPacketReceiver::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:39:47,821] - UDPPacketReceiver::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:39:47,824] - TPThread::~TPThread(): 0x1b7c3059e60
+ DEBUG root [2023-11-13 15:39:47,824] - TPThread::~TPThread(): 0x1b7c3058880
+ DEBUG root [2023-11-13 15:39:47,824] - ThreadPool::destroy(): successfully!
+ DEBUG root [2023-11-13 15:39:47,831] - Bundle::destroyObjPool(): size 12.
+ DEBUG root [2023-11-13 15:39:47,832] - Channel::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:39:47,832] - TCPPacket::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:39:47,832] - UDPPacket::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:39:47,832] - EndPoint::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:39:47,832] - Address::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:39:47,832] - TCPPacketReceiver::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:39:47,832] - UDPPacketReceiver::destroyObjPool(): size 0.
+  INFO root [2023-11-13 15:39:48,822] - EventDispatcher()::~EventDispatcher: Num timers = 2
+  INFO root [2023-11-13 15:39:48,833] - EventDispatcher()::~EventDispatcher: Num timers = 2
+  INFO root [2023-11-13 15:41:36,494] - 
+  INFO root [2023-11-13 15:41:36,494] - -----------------------------------------------------------------------------------------
+
+
+  INFO root [2023-11-13 15:41:36,495] - Resmgr::initialize: KBE_ROOT=C:/kbengine/
+  INFO root [2023-11-13 15:41:36,495] - Resmgr::initialize: KBE_RES_PATH=C:/kbengine/kbe/res/;D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/;D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/scripts/;D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/res/
+  INFO root [2023-11-13 15:41:36,495] - Resmgr::initialize: KBE_BIN_PATH=C:/kbengine/kbe/bin/server/
+  INFO root [2023-11-13 15:41:36,510] - 
+  INFO root [2023-11-13 15:41:36,510] - -----------------------------------------------------------------------------------------
+
+
+  INFO root [2023-11-13 15:41:36,510] - Resmgr::initialize: KBE_ROOT=C:/kbengine/
+  INFO root [2023-11-13 15:41:36,511] - Resmgr::initialize: KBE_RES_PATH=C:/kbengine/kbe/res/;D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/;D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/scripts/;D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/res/
+  INFO root [2023-11-13 15:41:36,511] - Resmgr::initialize: KBE_BIN_PATH=C:/kbengine/kbe/bin/server/
+  INFO root [2023-11-13 15:41:36,513] - NetworkInterface::initialize(INTERNAL-TCP): bound to all interfaces with default route interface on 192.168.10.52 ( 192.168.10.52:53661 )
+  INFO root [2023-11-13 15:41:36,514] - NetworkInterface::initialize(INTERNAL-TCP): address 192.168.10.52:53661, SOMAXCONN=511.
+  INFO root [2023-11-13 15:41:36,517] - ---- tool Version: 2.5.10. ScriptVersion: 0.1.0. Pythoncore: 3.7.3. Protocol: EB8AE9F114C8797B1E70E1A629686A27. Config: Debug X64. Built: 19:47:33 Oct 30 2023. AppID: 18446744073709551615. UID: 0. PID: 33872 ----
+  INFO root [2023-11-13 15:41:36,517] - Server 84217: AMD Ryzen 9 3950X 16-Core Processor             with 67052324kB RAM
+  INFO root [2023-11-13 15:41:36,518] - ThreadPool::createThreadPool: creating  threadpool...
+  INFO root [2023-11-13 15:41:36,518] - ThreadPool::createThreadPool: successfully(2), newThreadCount=1, normalMaxThreadCount=2, maxThreadCount=8
+  INFO root [2023-11-13 15:41:36,529] - NetworkInterface::initialize(INTERNAL-TCP): bound to all interfaces with default route interface on 192.168.10.52 ( 192.168.10.52:53662 )
+  INFO root [2023-11-13 15:41:36,529] - NetworkInterface::initialize(INTERNAL-TCP): address 192.168.10.52:53662, SOMAXCONN=511.
+  INFO root [2023-11-13 15:41:36,533] - ---- tool Version: 2.5.10. ScriptVersion: 0.1.0. Pythoncore: 3.7.3. Protocol: EB8AE9F114C8797B1E70E1A629686A27. Config: Debug X64. Built: 19:47:33 Oct 30 2023. AppID: 18446744073709551615. UID: 0. PID: 57920 ----
+  INFO root [2023-11-13 15:41:36,533] - Server 84217: AMD Ryzen 9 3950X 16-Core Processor             with 67052324kB RAM
+  INFO root [2023-11-13 15:41:36,533] - ThreadPool::createThreadPool: creating  threadpool...
+  INFO root [2023-11-13 15:41:36,534] - ThreadPool::createThreadPool: successfully(2), newThreadCount=1, normalMaxThreadCount=2, maxThreadCount=8
+  INFO root [2023-11-13 15:41:36,682] - Script::install(): is successfully, Python=(3.7.3 (tags/2.5.12:7d379b9f9, Oct 30 2023, 19:37:24) [MSC v.1929 64 bit (AMD64)])!
+  INFO root [2023-11-13 15:41:36,682] - Script::install(): KBExtra is successfully!
+  INFO root [2023-11-13 15:41:36,698] - Script::install(): is successfully, Python=(3.7.3 (tags/2.5.12:7d379b9f9, Oct 30 2023, 19:37:24) [MSC v.1929 64 bit (AMD64)])!
+  INFO root [2023-11-13 15:41:36,698] - Script::install(): KBExtra is successfully!
+ S_ERR root [2023-11-13 15:41:36,995] -   File "D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/scripts/base\Hall.py", line 14
+    self.matcherDict = {}
+                        ^
+IndentationError: unindent does not match any outer indentation level
+ ERROR root [2023-11-13 15:41:36,996] - app::initialize(): EntityDef initialization failed!
+  INFO root [2023-11-13 15:41:37,002] - Script::uninstall(): is successfully!
+ DEBUG root [2023-11-13 15:41:37,002] - ThreadPool::destroy(): starting size 2.
+ S_ERR root [2023-11-13 15:41:37,009] -   File "D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/scripts/base\Hall.py", line 14
+    self.matcherDict = {}
+                        ^
+IndentationError: unindent does not match any outer indentation level
+ ERROR root [2023-11-13 15:41:37,010] - app::initialize(): EntityDef initialization failed!
+  INFO root [2023-11-13 15:41:37,017] - Script::uninstall(): is successfully!
+ DEBUG root [2023-11-13 15:41:37,017] - ThreadPool::destroy(): starting size 2.
+  WARN root [2023-11-13 15:41:37,302] - ThreadPool::destroy(): waiting for thread(2)[0x1d09c7470c0,0x1d09c747160,], try=1
+  WARN root [2023-11-13 15:41:37,317] - ThreadPool::destroy(): waiting for thread(2)[0x1e4c495f270,0x1e4c49600d0,], try=1
+ DEBUG root [2023-11-13 15:41:37,704] - TPThread::~TPThread(): 0x1d09c7470c0
+ DEBUG root [2023-11-13 15:41:37,704] - TPThread::~TPThread(): 0x1d09c747160
+ DEBUG root [2023-11-13 15:41:37,704] - ThreadPool::destroy(): successfully!
+ DEBUG root [2023-11-13 15:41:37,712] - Bundle::destroyObjPool(): size 12.
+ DEBUG root [2023-11-13 15:41:37,712] - Channel::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:41:37,712] - TCPPacket::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:41:37,712] - UDPPacket::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:41:37,712] - EndPoint::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:41:37,712] - Address::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:41:37,713] - TCPPacketReceiver::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:41:37,713] - UDPPacketReceiver::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:41:37,719] - TPThread::~TPThread(): 0x1e4c495f270
+ DEBUG root [2023-11-13 15:41:37,719] - TPThread::~TPThread(): 0x1e4c49600d0
+ DEBUG root [2023-11-13 15:41:37,719] - ThreadPool::destroy(): successfully!
+ DEBUG root [2023-11-13 15:41:37,726] - Bundle::destroyObjPool(): size 12.
+ DEBUG root [2023-11-13 15:41:37,727] - Channel::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:41:37,727] - TCPPacket::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:41:37,727] - UDPPacket::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:41:37,727] - EndPoint::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:41:37,727] - Address::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:41:37,727] - TCPPacketReceiver::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:41:37,727] - UDPPacketReceiver::destroyObjPool(): size 0.
+  INFO root [2023-11-13 15:41:38,714] - EventDispatcher()::~EventDispatcher: Num timers = 2
+  INFO root [2023-11-13 15:41:38,729] - EventDispatcher()::~EventDispatcher: Num timers = 2
+  INFO root [2023-11-13 15:44:52,350] - 
+  INFO root [2023-11-13 15:44:52,350] - -----------------------------------------------------------------------------------------
+
+
+  INFO root [2023-11-13 15:44:52,351] - Resmgr::initialize: KBE_ROOT=C:/kbengine/
+  INFO root [2023-11-13 15:44:52,351] - Resmgr::initialize: KBE_RES_PATH=C:/kbengine/kbe/res/;D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/;D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/scripts/;D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/res/
+  INFO root [2023-11-13 15:44:52,351] - Resmgr::initialize: KBE_BIN_PATH=C:/kbengine/kbe/bin/server/
+  INFO root [2023-11-13 15:44:52,365] - 
+  INFO root [2023-11-13 15:44:52,366] - -----------------------------------------------------------------------------------------
+
+
+  INFO root [2023-11-13 15:44:52,366] - Resmgr::initialize: KBE_ROOT=C:/kbengine/
+  INFO root [2023-11-13 15:44:52,366] - Resmgr::initialize: KBE_RES_PATH=C:/kbengine/kbe/res/;D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/;D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/scripts/;D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/res/
+  INFO root [2023-11-13 15:44:52,366] - Resmgr::initialize: KBE_BIN_PATH=C:/kbengine/kbe/bin/server/
+  INFO root [2023-11-13 15:44:52,369] - NetworkInterface::initialize(INTERNAL-TCP): bound to all interfaces with default route interface on 192.168.10.52 ( 192.168.10.52:53922 )
+  INFO root [2023-11-13 15:44:52,369] - NetworkInterface::initialize(INTERNAL-TCP): address 192.168.10.52:53922, SOMAXCONN=511.
+  INFO root [2023-11-13 15:44:52,372] - ---- tool Version: 2.5.10. ScriptVersion: 0.1.0. Pythoncore: 3.7.3. Protocol: EB8AE9F114C8797B1E70E1A629686A27. Config: Debug X64. Built: 19:47:33 Oct 30 2023. AppID: 18446744073709551615. UID: 0. PID: 61404 ----
+  INFO root [2023-11-13 15:44:52,373] - Server 84217: AMD Ryzen 9 3950X 16-Core Processor             with 67052324kB RAM
+  INFO root [2023-11-13 15:44:52,373] - ThreadPool::createThreadPool: creating  threadpool...
+  INFO root [2023-11-13 15:44:52,373] - ThreadPool::createThreadPool: successfully(2), newThreadCount=1, normalMaxThreadCount=2, maxThreadCount=8
+  INFO root [2023-11-13 15:44:52,385] - NetworkInterface::initialize(INTERNAL-TCP): bound to all interfaces with default route interface on 192.168.10.52 ( 192.168.10.52:53923 )
+  INFO root [2023-11-13 15:44:52,385] - NetworkInterface::initialize(INTERNAL-TCP): address 192.168.10.52:53923, SOMAXCONN=511.
+  INFO root [2023-11-13 15:44:52,388] - ---- tool Version: 2.5.10. ScriptVersion: 0.1.0. Pythoncore: 3.7.3. Protocol: EB8AE9F114C8797B1E70E1A629686A27. Config: Debug X64. Built: 19:47:33 Oct 30 2023. AppID: 18446744073709551615. UID: 0. PID: 51512 ----
+  INFO root [2023-11-13 15:44:52,389] - Server 84217: AMD Ryzen 9 3950X 16-Core Processor             with 67052324kB RAM
+  INFO root [2023-11-13 15:44:52,389] - ThreadPool::createThreadPool: creating  threadpool...
+  INFO root [2023-11-13 15:44:52,389] - ThreadPool::createThreadPool: successfully(2), newThreadCount=1, normalMaxThreadCount=2, maxThreadCount=8
+  INFO root [2023-11-13 15:44:52,538] - Script::install(): is successfully, Python=(3.7.3 (tags/2.5.12:7d379b9f9, Oct 30 2023, 19:37:24) [MSC v.1929 64 bit (AMD64)])!
+  INFO root [2023-11-13 15:44:52,539] - Script::install(): KBExtra is successfully!
+  INFO root [2023-11-13 15:44:52,553] - Script::install(): is successfully, Python=(3.7.3 (tags/2.5.12:7d379b9f9, Oct 30 2023, 19:37:24) [MSC v.1929 64 bit (AMD64)])!
+  INFO root [2023-11-13 15:44:52,553] - Script::install(): KBExtra is successfully!
+ S_ERR root [2023-11-13 15:44:52,853] -   File "D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/scripts/base\Hall.py", line 48
+    def onRoomCreated(self, roomKey, playerEntityIdList, roomEntityCall):
+                                                                        ^
+IndentationError: unindent does not match any outer indentation level
+ ERROR root [2023-11-13 15:44:52,854] - app::initialize(): EntityDef initialization failed!
+  INFO root [2023-11-13 15:44:52,860] - Script::uninstall(): is successfully!
+ DEBUG root [2023-11-13 15:44:52,861] - ThreadPool::destroy(): starting size 2.
+ S_ERR root [2023-11-13 15:44:52,865] -   File "D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/scripts/base\Hall.py", line 48
+    def onRoomCreated(self, roomKey, playerEntityIdList, roomEntityCall):
+                                                                        ^
+IndentationError: unindent does not match any outer indentation level
+ ERROR root [2023-11-13 15:44:52,866] - app::initialize(): EntityDef initialization failed!
+  INFO root [2023-11-13 15:44:52,873] - Script::uninstall(): is successfully!
+ DEBUG root [2023-11-13 15:44:52,873] - ThreadPool::destroy(): starting size 2.
+  WARN root [2023-11-13 15:44:53,162] - ThreadPool::destroy(): waiting for thread(2)[0x1b581a68570,0x1b581a67350,], try=1
+  WARN root [2023-11-13 15:44:53,174] - ThreadPool::destroy(): waiting for thread(2)[0x1d7495391d0,0x1d7495393b0,], try=1
+ DEBUG root [2023-11-13 15:44:53,564] - TPThread::~TPThread(): 0x1b581a68570
+ DEBUG root [2023-11-13 15:44:53,564] - TPThread::~TPThread(): 0x1b581a67350
+ DEBUG root [2023-11-13 15:44:53,564] - ThreadPool::destroy(): successfully!
+ DEBUG root [2023-11-13 15:44:53,572] - Bundle::destroyObjPool(): size 12.
+ DEBUG root [2023-11-13 15:44:53,572] - Channel::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:44:53,572] - TCPPacket::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:44:53,572] - UDPPacket::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:44:53,572] - EndPoint::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:44:53,572] - Address::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:44:53,572] - TCPPacketReceiver::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:44:53,572] - UDPPacketReceiver::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:44:53,576] - TPThread::~TPThread(): 0x1d7495391d0
+ DEBUG root [2023-11-13 15:44:53,576] - TPThread::~TPThread(): 0x1d7495393b0
+ DEBUG root [2023-11-13 15:44:53,576] - ThreadPool::destroy(): successfully!
+ DEBUG root [2023-11-13 15:44:53,583] - Bundle::destroyObjPool(): size 12.
+ DEBUG root [2023-11-13 15:44:53,584] - Channel::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:44:53,584] - TCPPacket::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:44:53,584] - UDPPacket::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:44:53,584] - EndPoint::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:44:53,584] - Address::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:44:53,584] - TCPPacketReceiver::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:44:53,584] - UDPPacketReceiver::destroyObjPool(): size 0.
+  INFO root [2023-11-13 15:44:54,573] - EventDispatcher()::~EventDispatcher: Num timers = 2
+  INFO root [2023-11-13 15:44:54,585] - EventDispatcher()::~EventDispatcher: Num timers = 2
+  INFO root [2023-11-13 15:45:26,445] - 
+  INFO root [2023-11-13 15:45:26,445] - -----------------------------------------------------------------------------------------
+
+
+  INFO root [2023-11-13 15:45:26,445] - Resmgr::initialize: KBE_ROOT=C:/kbengine/
+  INFO root [2023-11-13 15:45:26,446] - Resmgr::initialize: KBE_RES_PATH=C:/kbengine/kbe/res/;D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/;D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/scripts/;D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/res/
+  INFO root [2023-11-13 15:45:26,446] - Resmgr::initialize: KBE_BIN_PATH=C:/kbengine/kbe/bin/server/
+  INFO root [2023-11-13 15:45:26,461] - 
+  INFO root [2023-11-13 15:45:26,461] - -----------------------------------------------------------------------------------------
+
+
+  INFO root [2023-11-13 15:45:26,461] - Resmgr::initialize: KBE_ROOT=C:/kbengine/
+  INFO root [2023-11-13 15:45:26,461] - Resmgr::initialize: KBE_RES_PATH=C:/kbengine/kbe/res/;D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/;D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/scripts/;D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/res/
+  INFO root [2023-11-13 15:45:26,462] - Resmgr::initialize: KBE_BIN_PATH=C:/kbengine/kbe/bin/server/
+  INFO root [2023-11-13 15:45:26,464] - NetworkInterface::initialize(INTERNAL-TCP): bound to all interfaces with default route interface on 192.168.10.52 ( 192.168.10.52:53968 )
+  INFO root [2023-11-13 15:45:26,464] - NetworkInterface::initialize(INTERNAL-TCP): address 192.168.10.52:53968, SOMAXCONN=511.
+  INFO root [2023-11-13 15:45:26,468] - ---- tool Version: 2.5.10. ScriptVersion: 0.1.0. Pythoncore: 3.7.3. Protocol: EB8AE9F114C8797B1E70E1A629686A27. Config: Debug X64. Built: 19:47:33 Oct 30 2023. AppID: 18446744073709551615. UID: 0. PID: 49592 ----
+  INFO root [2023-11-13 15:45:26,468] - Server 84217: AMD Ryzen 9 3950X 16-Core Processor             with 67052324kB RAM
+  INFO root [2023-11-13 15:45:26,468] - ThreadPool::createThreadPool: creating  threadpool...
+  INFO root [2023-11-13 15:45:26,469] - ThreadPool::createThreadPool: successfully(2), newThreadCount=1, normalMaxThreadCount=2, maxThreadCount=8
+  INFO root [2023-11-13 15:45:26,481] - NetworkInterface::initialize(INTERNAL-TCP): bound to all interfaces with default route interface on 192.168.10.52 ( 192.168.10.52:53969 )
+  INFO root [2023-11-13 15:45:26,481] - NetworkInterface::initialize(INTERNAL-TCP): address 192.168.10.52:53969, SOMAXCONN=511.
+  INFO root [2023-11-13 15:45:26,485] - ---- tool Version: 2.5.10. ScriptVersion: 0.1.0. Pythoncore: 3.7.3. Protocol: EB8AE9F114C8797B1E70E1A629686A27. Config: Debug X64. Built: 19:47:33 Oct 30 2023. AppID: 18446744073709551615. UID: 0. PID: 42792 ----
+  INFO root [2023-11-13 15:45:26,485] - Server 84217: AMD Ryzen 9 3950X 16-Core Processor             with 67052324kB RAM
+  INFO root [2023-11-13 15:45:26,485] - ThreadPool::createThreadPool: creating  threadpool...
+  INFO root [2023-11-13 15:45:26,485] - ThreadPool::createThreadPool: successfully(2), newThreadCount=1, normalMaxThreadCount=2, maxThreadCount=8
+  INFO root [2023-11-13 15:45:26,635] - Script::install(): is successfully, Python=(3.7.3 (tags/2.5.12:7d379b9f9, Oct 30 2023, 19:37:24) [MSC v.1929 64 bit (AMD64)])!
+  INFO root [2023-11-13 15:45:26,635] - Script::install(): KBExtra is successfully!
+  INFO root [2023-11-13 15:45:26,650] - Script::install(): is successfully, Python=(3.7.3 (tags/2.5.12:7d379b9f9, Oct 30 2023, 19:37:24) [MSC v.1929 64 bit (AMD64)])!
+  INFO root [2023-11-13 15:45:26,650] - Script::install(): KBExtra is successfully!
+ DEBUG root [2023-11-13 15:45:27,639] - ClientSDK::writeServerErrorDescrsModule(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins//
+ DEBUG root [2023-11-13 15:45:27,640] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/ServerErrorDescrs.h
+ DEBUG root [2023-11-13 15:45:27,640] - ClientSDK::writeEngineMessagesModule(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins//Messages.cpp
+ DEBUG root [2023-11-13 15:45:27,645] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/Messages.cpp
+ DEBUG root [2023-11-13 15:45:27,646] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/Messages.h
+ DEBUG root [2023-11-13 15:45:27,648] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/KBETypes.h
+ DEBUG root [2023-11-13 15:45:27,649] - ClientSDK::writeEntityDefsModule(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins//EntityDef.cpp
+ DEBUG root [2023-11-13 15:45:27,653] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/EntityDef.cpp
+ DEBUG root [2023-11-13 15:45:27,654] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/EntityDef.h
+ DEBUG root [2023-11-13 15:45:27,656] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/CustomDataTypes.cpp
+ DEBUG root [2023-11-13 15:45:27,656] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/CustomDataTypes.h
+ DEBUG root [2023-11-13 15:45:27,657] - ClientSDK::writeEntityModule(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine//Account
+ DEBUG root [2023-11-13 15:45:27,658] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/AccountBase.cpp
+ DEBUG root [2023-11-13 15:45:27,658] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/AccountBase.h
+ DEBUG root [2023-11-13 15:45:27,659] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/EntityCallAccountBase.cpp
+ DEBUG root [2023-11-13 15:45:27,659] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/EntityCallAccountBase.h
+ DEBUG root [2023-11-13 15:45:27,660] - ClientSDK::writeEntityModule(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine//Avatar
+ DEBUG root [2023-11-13 15:45:27,661] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/AvatarBase.cpp
+ DEBUG root [2023-11-13 15:45:27,662] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/AvatarBase.h
+ DEBUG root [2023-11-13 15:45:27,663] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/EntityCallAvatarBase.cpp
+ DEBUG root [2023-11-13 15:45:27,663] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/EntityCallAvatarBase.h
+ DEBUG root [2023-11-13 15:45:27,664] - ClientSDK::writeEntityModule(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine//Gate
+ DEBUG root [2023-11-13 15:45:27,665] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/GateBase.cpp
+ DEBUG root [2023-11-13 15:45:27,666] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/GateBase.h
+ DEBUG root [2023-11-13 15:45:27,666] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/EntityCallGateBase.cpp
+ DEBUG root [2023-11-13 15:45:27,667] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/EntityCallGateBase.h
+ DEBUG root [2023-11-13 15:45:27,667] - ClientSDK::writeEntityModule(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine//TestEntity
+ DEBUG root [2023-11-13 15:45:27,668] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/TestEntityBase.cpp
+ DEBUG root [2023-11-13 15:45:27,669] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/TestEntityBase.h
+ DEBUG root [2023-11-13 15:45:27,669] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/EntityCallTestEntityBase.cpp
+ DEBUG root [2023-11-13 15:45:27,670] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/EntityCallTestEntityBase.h
+ DEBUG root [2023-11-13 15:45:27,670] - ClientSDK::writeEntityModule(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine//Player
+ DEBUG root [2023-11-13 15:45:27,671] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/PlayerBase.cpp
+ DEBUG root [2023-11-13 15:45:27,672] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/PlayerBase.h
+ DEBUG root [2023-11-13 15:45:27,672] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/EntityCallPlayerBase.cpp
+ DEBUG root [2023-11-13 15:45:27,672] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/EntityCallPlayerBase.h
+  INFO root [2023-11-13 15:45:27,686] - Script::uninstall(): is successfully!
+ DEBUG root [2023-11-13 15:45:27,687] - ThreadPool::destroy(): starting size 2.
+ DEBUG root [2023-11-13 15:45:27,718] - ClientSDK::writeServerErrorDescrsModule(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins//ServerErrorDescrs.cs
+ DEBUG root [2023-11-13 15:45:27,719] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins/ServerErrorDescrs.cs
+ DEBUG root [2023-11-13 15:45:27,719] - ClientSDK::writeEngineMessagesModule(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins//Messages.cs
+ DEBUG root [2023-11-13 15:45:27,723] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins/Messages.cs
+ DEBUG root [2023-11-13 15:45:27,727] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins/KBETypes.cs
+ DEBUG root [2023-11-13 15:45:27,728] - ClientSDK::writeEntityDefsModule(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins//EntityDef.cs
+ DEBUG root [2023-11-13 15:45:27,732] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins/EntityDef.cs
+ DEBUG root [2023-11-13 15:45:27,735] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins/CustomDataTypes.cs
+ DEBUG root [2023-11-13 15:45:27,735] - ClientSDK::writeEntityModule(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins//Account
+ DEBUG root [2023-11-13 15:45:27,736] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins/AccountBase.cs
+ DEBUG root [2023-11-13 15:45:27,736] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins/EntityCallAccountBase.cs
+ DEBUG root [2023-11-13 15:45:27,737] - ClientSDK::writeEntityModule(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins//Avatar
+ DEBUG root [2023-11-13 15:45:27,738] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins/AvatarBase.cs
+ DEBUG root [2023-11-13 15:45:27,739] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins/EntityCallAvatarBase.cs
+ DEBUG root [2023-11-13 15:45:27,739] - ClientSDK::writeEntityModule(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins//Gate
+ DEBUG root [2023-11-13 15:45:27,741] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins/GateBase.cs
+ DEBUG root [2023-11-13 15:45:27,741] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins/EntityCallGateBase.cs
+ DEBUG root [2023-11-13 15:45:27,742] - ClientSDK::writeEntityModule(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins//TestEntity
+ DEBUG root [2023-11-13 15:45:27,743] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins/TestEntityBase.cs
+ DEBUG root [2023-11-13 15:45:27,743] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins/EntityCallTestEntityBase.cs
+ DEBUG root [2023-11-13 15:45:27,744] - ClientSDK::writeEntityModule(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins//Player
+ DEBUG root [2023-11-13 15:45:27,745] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins/PlayerBase.cs
+ DEBUG root [2023-11-13 15:45:27,745] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins/EntityCallPlayerBase.cs
+  INFO root [2023-11-13 15:45:27,759] - Script::uninstall(): is successfully!
+ DEBUG root [2023-11-13 15:45:27,759] - ThreadPool::destroy(): starting size 2.
+  WARN root [2023-11-13 15:45:27,987] - ThreadPool::destroy(): waiting for thread(2)[0x200eedd8250,0x200eedd6950,], try=1
+  WARN root [2023-11-13 15:45:28,060] - ThreadPool::destroy(): waiting for thread(2)[0x1af19ac7960,0x1af19ac8680,], try=1
+ DEBUG root [2023-11-13 15:45:28,389] - TPThread::~TPThread(): 0x200eedd8250
+ DEBUG root [2023-11-13 15:45:28,389] - TPThread::~TPThread(): 0x200eedd6950
+ DEBUG root [2023-11-13 15:45:28,389] - ThreadPool::destroy(): successfully!
+ DEBUG root [2023-11-13 15:45:28,398] - Bundle::destroyObjPool(): size 10.
+ DEBUG root [2023-11-13 15:45:28,399] - Channel::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:45:28,399] - TCPPacket::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:45:28,399] - UDPPacket::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:45:28,399] - EndPoint::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:45:28,399] - Address::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:45:28,399] - TCPPacketReceiver::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:45:28,399] - UDPPacketReceiver::destroyObjPool(): size 0.
+  INFO root [2023-11-13 15:45:28,399] - tool(18446744073709551615) has shut down. ClientSDK=true
+ DEBUG root [2023-11-13 15:45:28,461] - TPThread::~TPThread(): 0x1af19ac7960
+ DEBUG root [2023-11-13 15:45:28,461] - TPThread::~TPThread(): 0x1af19ac8680
+ DEBUG root [2023-11-13 15:45:28,461] - ThreadPool::destroy(): successfully!
+ DEBUG root [2023-11-13 15:45:28,469] - Bundle::destroyObjPool(): size 7.
+ DEBUG root [2023-11-13 15:45:28,470] - Channel::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:45:28,470] - TCPPacket::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:45:28,470] - UDPPacket::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:45:28,470] - EndPoint::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:45:28,470] - Address::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:45:28,470] - TCPPacketReceiver::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 15:45:28,470] - UDPPacketReceiver::destroyObjPool(): size 0.
+  INFO root [2023-11-13 15:45:28,470] - tool(18446744073709551615) has shut down. ClientSDK=true
+  INFO root [2023-11-13 15:45:29,401] - EventDispatcher()::~EventDispatcher: Num timers = 2
+  INFO root [2023-11-13 15:45:29,471] - EventDispatcher()::~EventDispatcher: Num timers = 2
+  INFO root [2023-11-13 16:46:04,448] - 
+  INFO root [2023-11-13 16:46:04,448] - -----------------------------------------------------------------------------------------
+
+
+  INFO root [2023-11-13 16:46:04,449] - Resmgr::initialize: KBE_ROOT=C:/kbengine/
+  INFO root [2023-11-13 16:46:04,449] - Resmgr::initialize: KBE_RES_PATH=C:/kbengine/kbe/res/;D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/;D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/scripts/;D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/res/
+  INFO root [2023-11-13 16:46:04,449] - Resmgr::initialize: KBE_BIN_PATH=C:/kbengine/kbe/bin/server/
+  INFO root [2023-11-13 16:46:04,463] - 
+  INFO root [2023-11-13 16:46:04,463] - -----------------------------------------------------------------------------------------
+
+
+  INFO root [2023-11-13 16:46:04,464] - Resmgr::initialize: KBE_ROOT=C:/kbengine/
+  INFO root [2023-11-13 16:46:04,464] - Resmgr::initialize: KBE_RES_PATH=C:/kbengine/kbe/res/;D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/;D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/scripts/;D:/Unreal Projects/GwenBoardGameUE5/kbengine_demos_assets/res/
+  INFO root [2023-11-13 16:46:04,464] - Resmgr::initialize: KBE_BIN_PATH=C:/kbengine/kbe/bin/server/
+  INFO root [2023-11-13 16:46:04,466] - NetworkInterface::initialize(INTERNAL-TCP): bound to all interfaces with default route interface on 192.168.10.52 ( 192.168.10.52:59156 )
+  INFO root [2023-11-13 16:46:04,466] - NetworkInterface::initialize(INTERNAL-TCP): address 192.168.10.52:59156, SOMAXCONN=511.
+  INFO root [2023-11-13 16:46:04,470] - ---- tool Version: 2.5.10. ScriptVersion: 0.1.0. Pythoncore: 3.7.3. Protocol: EB8AE9F114C8797B1E70E1A629686A27. Config: Debug X64. Built: 19:47:33 Oct 30 2023. AppID: 18446744073709551615. UID: 0. PID: 33996 ----
+  INFO root [2023-11-13 16:46:04,470] - Server 84217: AMD Ryzen 9 3950X 16-Core Processor             with 67052324kB RAM
+  INFO root [2023-11-13 16:46:04,470] - ThreadPool::createThreadPool: creating  threadpool...
+  INFO root [2023-11-13 16:46:04,470] - ThreadPool::createThreadPool: successfully(2), newThreadCount=1, normalMaxThreadCount=2, maxThreadCount=8
+  INFO root [2023-11-13 16:46:04,481] - NetworkInterface::initialize(INTERNAL-TCP): bound to all interfaces with default route interface on 192.168.10.52 ( 192.168.10.52:59157 )
+  INFO root [2023-11-13 16:46:04,481] - NetworkInterface::initialize(INTERNAL-TCP): address 192.168.10.52:59157, SOMAXCONN=511.
+  INFO root [2023-11-13 16:46:04,484] - ---- tool Version: 2.5.10. ScriptVersion: 0.1.0. Pythoncore: 3.7.3. Protocol: EB8AE9F114C8797B1E70E1A629686A27. Config: Debug X64. Built: 19:47:33 Oct 30 2023. AppID: 18446744073709551615. UID: 0. PID: 57648 ----
+  INFO root [2023-11-13 16:46:04,485] - Server 84217: AMD Ryzen 9 3950X 16-Core Processor             with 67052324kB RAM
+  INFO root [2023-11-13 16:46:04,485] - ThreadPool::createThreadPool: creating  threadpool...
+  INFO root [2023-11-13 16:46:04,485] - ThreadPool::createThreadPool: successfully(2), newThreadCount=1, normalMaxThreadCount=2, maxThreadCount=8
+  INFO root [2023-11-13 16:46:04,632] - Script::install(): is successfully, Python=(3.7.3 (tags/2.5.12:7d379b9f9, Oct 30 2023, 19:37:24) [MSC v.1929 64 bit (AMD64)])!
+  INFO root [2023-11-13 16:46:04,633] - Script::install(): KBExtra is successfully!
+  INFO root [2023-11-13 16:46:04,647] - Script::install(): is successfully, Python=(3.7.3 (tags/2.5.12:7d379b9f9, Oct 30 2023, 19:37:24) [MSC v.1929 64 bit (AMD64)])!
+  INFO root [2023-11-13 16:46:04,647] - Script::install(): KBExtra is successfully!
+ DEBUG root [2023-11-13 16:46:05,098] - ClientSDK::writeServerErrorDescrsModule(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins//ServerErrorDescrs.cs
+ DEBUG root [2023-11-13 16:46:05,099] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins/ServerErrorDescrs.cs
+ DEBUG root [2023-11-13 16:46:05,099] - ClientSDK::writeEngineMessagesModule(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins//Messages.cs
+ DEBUG root [2023-11-13 16:46:05,103] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins/Messages.cs
+ DEBUG root [2023-11-13 16:46:05,106] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins/KBETypes.cs
+ DEBUG root [2023-11-13 16:46:05,107] - ClientSDK::writeEntityDefsModule(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins//EntityDef.cs
+ DEBUG root [2023-11-13 16:46:05,110] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins/EntityDef.cs
+ DEBUG root [2023-11-13 16:46:05,113] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins/CustomDataTypes.cs
+ DEBUG root [2023-11-13 16:46:05,113] - ClientSDK::writeEntityModule(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins//Account
+ DEBUG root [2023-11-13 16:46:05,114] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins/AccountBase.cs
+ DEBUG root [2023-11-13 16:46:05,114] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins/EntityCallAccountBase.cs
+ DEBUG root [2023-11-13 16:46:05,115] - ClientSDK::writeEntityModule(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins//Avatar
+ DEBUG root [2023-11-13 16:46:05,116] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins/AvatarBase.cs
+ DEBUG root [2023-11-13 16:46:05,117] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins/EntityCallAvatarBase.cs
+ DEBUG root [2023-11-13 16:46:05,117] - ClientSDK::writeEntityModule(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins//Gate
+ DEBUG root [2023-11-13 16:46:05,119] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins/GateBase.cs
+ DEBUG root [2023-11-13 16:46:05,119] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins/EntityCallGateBase.cs
+ DEBUG root [2023-11-13 16:46:05,120] - ClientSDK::writeEntityModule(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins//TestEntity
+ DEBUG root [2023-11-13 16:46:05,120] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins/TestEntityBase.cs
+ DEBUG root [2023-11-13 16:46:05,121] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins/EntityCallTestEntityBase.cs
+ DEBUG root [2023-11-13 16:46:05,121] - ClientSDK::writeEntityModule(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins//Player
+ DEBUG root [2023-11-13 16:46:05,122] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins/PlayerBase.cs
+ DEBUG root [2023-11-13 16:46:05,122] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_unity3d_plugins/EntityCallPlayerBase.cs
+  INFO root [2023-11-13 16:46:05,135] - Script::uninstall(): is successfully!
+ DEBUG root [2023-11-13 16:46:05,135] - ThreadPool::destroy(): starting size 2.
+ DEBUG root [2023-11-13 16:46:05,142] - ClientSDK::writeServerErrorDescrsModule(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins//
+ DEBUG root [2023-11-13 16:46:05,143] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/ServerErrorDescrs.h
+ DEBUG root [2023-11-13 16:46:05,143] - ClientSDK::writeEngineMessagesModule(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins//Messages.cpp
+ DEBUG root [2023-11-13 16:46:05,148] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/Messages.cpp
+ DEBUG root [2023-11-13 16:46:05,148] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/Messages.h
+ DEBUG root [2023-11-13 16:46:05,150] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/KBETypes.h
+ DEBUG root [2023-11-13 16:46:05,151] - ClientSDK::writeEntityDefsModule(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins//EntityDef.cpp
+ DEBUG root [2023-11-13 16:46:05,155] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/EntityDef.cpp
+ DEBUG root [2023-11-13 16:46:05,155] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/EntityDef.h
+ DEBUG root [2023-11-13 16:46:05,158] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/CustomDataTypes.cpp
+ DEBUG root [2023-11-13 16:46:05,158] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/CustomDataTypes.h
+ DEBUG root [2023-11-13 16:46:05,158] - ClientSDK::writeEntityModule(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine//Account
+ DEBUG root [2023-11-13 16:46:05,159] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/AccountBase.cpp
+ DEBUG root [2023-11-13 16:46:05,160] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/AccountBase.h
+ DEBUG root [2023-11-13 16:46:05,160] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/EntityCallAccountBase.cpp
+ DEBUG root [2023-11-13 16:46:05,161] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/EntityCallAccountBase.h
+ DEBUG root [2023-11-13 16:46:05,161] - ClientSDK::writeEntityModule(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine//Avatar
+ DEBUG root [2023-11-13 16:46:05,163] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/AvatarBase.cpp
+ DEBUG root [2023-11-13 16:46:05,163] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/AvatarBase.h
+ DEBUG root [2023-11-13 16:46:05,164] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/EntityCallAvatarBase.cpp
+ DEBUG root [2023-11-13 16:46:05,164] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/EntityCallAvatarBase.h
+ DEBUG root [2023-11-13 16:46:05,165] - ClientSDK::writeEntityModule(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine//Gate
+ DEBUG root [2023-11-13 16:46:05,166] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/GateBase.cpp
+ DEBUG root [2023-11-13 16:46:05,166] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/GateBase.h
+ DEBUG root [2023-11-13 16:46:05,167] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/EntityCallGateBase.cpp
+ DEBUG root [2023-11-13 16:46:05,167] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/EntityCallGateBase.h
+ DEBUG root [2023-11-13 16:46:05,167] - ClientSDK::writeEntityModule(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine//TestEntity
+ DEBUG root [2023-11-13 16:46:05,168] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/TestEntityBase.cpp
+ DEBUG root [2023-11-13 16:46:05,169] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/TestEntityBase.h
+ DEBUG root [2023-11-13 16:46:05,169] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/EntityCallTestEntityBase.cpp
+ DEBUG root [2023-11-13 16:46:05,170] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/EntityCallTestEntityBase.h
+ DEBUG root [2023-11-13 16:46:05,170] - ClientSDK::writeEntityModule(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine//Player
+ DEBUG root [2023-11-13 16:46:05,171] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/PlayerBase.cpp
+ DEBUG root [2023-11-13 16:46:05,171] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/PlayerBase.h
+ DEBUG root [2023-11-13 16:46:05,172] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/EntityCallPlayerBase.cpp
+ DEBUG root [2023-11-13 16:46:05,172] - ClientSDK::saveFile(): D:\Unreal Projects\GwenBoardGameUE5\kbengine_demos_assets\/kbengine_ue4_plugins/Source/KBEnginePlugins/Engine/EntityCallPlayerBase.h
+  INFO root [2023-11-13 16:46:05,182] - Script::uninstall(): is successfully!
+ DEBUG root [2023-11-13 16:46:05,183] - ThreadPool::destroy(): starting size 2.
+  WARN root [2023-11-13 16:46:05,436] - ThreadPool::destroy(): waiting for thread(2)[0x21582b5ad30,0x21582b58e90,], try=1
+  WARN root [2023-11-13 16:46:05,484] - ThreadPool::destroy(): waiting for thread(2)[0x283c3de5ff0,0x283c3de6270,], try=1
+ DEBUG root [2023-11-13 16:46:05,838] - TPThread::~TPThread(): 0x21582b5ad30
+ DEBUG root [2023-11-13 16:46:05,838] - TPThread::~TPThread(): 0x21582b58e90
+ DEBUG root [2023-11-13 16:46:05,838] - ThreadPool::destroy(): successfully!
+ DEBUG root [2023-11-13 16:46:05,845] - Bundle::destroyObjPool(): size 7.
+ DEBUG root [2023-11-13 16:46:05,845] - Channel::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 16:46:05,846] - TCPPacket::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 16:46:05,846] - UDPPacket::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 16:46:05,846] - EndPoint::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 16:46:05,846] - Address::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 16:46:05,846] - TCPPacketReceiver::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 16:46:05,846] - UDPPacketReceiver::destroyObjPool(): size 0.
+  INFO root [2023-11-13 16:46:05,846] - tool(18446744073709551615) has shut down. ClientSDK=true
+ DEBUG root [2023-11-13 16:46:05,886] - TPThread::~TPThread(): 0x283c3de5ff0
+ DEBUG root [2023-11-13 16:46:05,886] - TPThread::~TPThread(): 0x283c3de6270
+ DEBUG root [2023-11-13 16:46:05,886] - ThreadPool::destroy(): successfully!
+ DEBUG root [2023-11-13 16:46:05,893] - Bundle::destroyObjPool(): size 10.
+ DEBUG root [2023-11-13 16:46:05,893] - Channel::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 16:46:05,894] - TCPPacket::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 16:46:05,894] - UDPPacket::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 16:46:05,894] - EndPoint::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 16:46:05,894] - Address::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 16:46:05,894] - TCPPacketReceiver::destroyObjPool(): size 0.
+ DEBUG root [2023-11-13 16:46:05,894] - UDPPacketReceiver::destroyObjPool(): size 0.
+  INFO root [2023-11-13 16:46:05,894] - tool(18446744073709551615) has shut down. ClientSDK=true
+  INFO root [2023-11-13 16:46:06,847] - EventDispatcher()::~EventDispatcher: Num timers = 2
+  INFO root [2023-11-13 16:46:06,895] - EventDispatcher()::~EventDispatcher: Num timers = 2

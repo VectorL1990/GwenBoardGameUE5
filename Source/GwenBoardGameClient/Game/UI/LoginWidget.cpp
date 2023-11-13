@@ -25,11 +25,11 @@ void ULoginWidget::ClickButton(FString buttonName)
 								ALoginGameModeBase* loginGameMode = Cast<ALoginGameModeBase>(gameMode);
 								loginGameMode->ReqTest();
 				}
-				else if (buttonName == "EnterRoom")
+				else if (buttonName == "ApplyMatch")
 				{
 								AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
-								ALoginGameModeBase* loginGameMode = Cast<ALoginGameModeBase>(gameMode);
-								loginGameMode->ReqEnterRoom();
+								ABasicGameMode* basicGameMode = Cast<ABasicGameMode>(gameMode);
+								basicGameMode->ReqMatch();
 				}
 }
 

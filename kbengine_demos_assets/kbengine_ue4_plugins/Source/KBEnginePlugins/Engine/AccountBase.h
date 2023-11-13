@@ -28,6 +28,7 @@ public:
 
 
 	virtual void onReqTest(int32 arg1) = 0; 
+	virtual void onSyncRoomCreated(uint64 arg1) = 0; 
 
 	void onComponentsEnterworld() override;
 	void onComponentsLeaveworld() override;

@@ -29,6 +29,11 @@ namespace KBEngine
                 ReqEnterRoom();
             });
 
+        KBENGINE_REGISTER_EVENT_OVERRIDE_FUNC("ReqMatch", "ReqMatch", [this](const UKBEventData* pEventData)
+            {
+                ReqMatch();
+            });
+
         UKBEventData_onLoginSuccessfully* pEventData = NewObject<UKBEventData_onLoginSuccessfully>();
         pEventData->entity_uuid = KBEngineApp::getSingleton().entity_uuid();
         pEventData->entity_id = id();
@@ -51,9 +56,21 @@ namespace KBEngine
         pBaseEntityCall->reqEnterRoom();
     }
 
+    void Account::ReqMatch()
+    {
+        pBaseEntityCall->reqMatch();
+    }
+
     void Account::onReqTest(int32 param)
     {
         FString paramStr = FString::FromInt(param);
         GEngine->AddOnScreenDebugMessage(-1, 10.0, FColor::Red, paramStr);
+    }
+
+    void Account::onSyncRoomCreated(uint64 roomKey)
+    {
+        UKBEventData_onSyncRoomCreated* pEventData = NewObject<UKBEventData_onSyncRoomCreated>();
+        pEventData->sRoomKey = FString::Printf(TEXT("%lld"), roomKey);
+        KBENGINE_EVENT_FIRE("onSyncRoomCreated", pEventData);
     }
 }
