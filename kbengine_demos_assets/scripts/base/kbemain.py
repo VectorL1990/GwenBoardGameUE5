@@ -10,7 +10,7 @@ def onBaseAppReady(isBootstrap):
 	Watcher.setup()
 	
 	if isBootstrap:
-		KBEngine.createEntityLocally("Halls", {})
+		KBEngine.createEntityLocally("Hall", {})
 
 def onReadyForShutDown():
 	"""

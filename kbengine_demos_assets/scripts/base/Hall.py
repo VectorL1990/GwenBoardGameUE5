@@ -6,20 +6,30 @@ FIND_ROOM_NOT_FOUND = 0
 FIND_ROOM_CREATING = 1
 
 class Hall(KBEngine.Entity):
-  def __init__(self):
-    KBEngine.Entity.__init__(self)
-		
+	def __init__(self):
+		KBEngine.Entity.__init__(self)
 		KBEngine.globalData["Hall"] = self
 		self.rooms = {}
-
-  def applyMatch(self, accountEntityCall):
-
-
-  def createRoom(self, playerIdList):
-    return
+		self.applyMatchDict = {}
+		self.matcherNb = 0
+		self.createMatcher()
 		
-  def findRoom(self, roomKey, notFoundCreate = False):
-    roomDatas = self.rooms.get(roomKey)
+
+	def createMatcher(self):
+		matcher = KBEngine.createEntityAnywhere("Matcher", {}, self.onMatcherCreated)
+		self.matcherNb += 1
+		matcher.registerGlobalMatcher(self.matcherNb)
+		return
+
+	def applyMatch(self, accountEntityCall):
+		self.applyMatchDict[accountEntityCall.id] = accountEntityCall
+
+
+	def createRoom(self, playerEntityList):
+		return
+		
+	def findRoom(self, roomKey, notFoundCreate = False):
+		roomDatas = self.rooms.get(roomKey)
 		
 		if not roomDatas:
 			if not notFoundCreate:
@@ -42,5 +52,8 @@ class Hall(KBEngine.Entity):
 			return roomDatas
 
 		return roomDatas
+	
+	def onMatcherCreated(self):
+		return
 
 

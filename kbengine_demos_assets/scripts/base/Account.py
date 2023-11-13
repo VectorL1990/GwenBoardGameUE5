@@ -16,6 +16,7 @@ class Account(KBEngine.Proxy):
 		KBEngine.Proxy.__init__(self)
 		self.activeAvatar = None
 		self.relogin = time.time()
+		self.syntheticMatchScore = 0
 
 	def reqTest(self, param):
 		INFO_MSG("receive msg from ue!!!")
