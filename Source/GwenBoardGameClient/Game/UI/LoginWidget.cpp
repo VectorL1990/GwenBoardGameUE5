@@ -11,13 +11,13 @@ void ULoginWidget::ClickButton(FString buttonName)
 				{
 								AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
 								ABasicGameMode* basicGameMode = Cast<ABasicGameMode>(gameMode);
-								basicGameMode->ReqCreateAccount();
+								basicGameMode->ReqCreateAccount(playerName, password);
 				}
 				else if (buttonName == "Login")
 				{
 								AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
 								ABasicGameMode* basicGameMode = Cast<ABasicGameMode>(gameMode);
-								basicGameMode->ReqLogin();
+								basicGameMode->ReqLogin(playerName, password);
 				}
 				else if (buttonName == "ReqTest")
 				{
@@ -25,4 +25,20 @@ void ULoginWidget::ClickButton(FString buttonName)
 								ALoginGameModeBase* loginGameMode = Cast<ALoginGameModeBase>(gameMode);
 								loginGameMode->ReqTest();
 				}
+				else if (buttonName == "ApplyMatch")
+				{
+								AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
+								ABasicGameMode* basicGameMode = Cast<ABasicGameMode>(gameMode);
+								basicGameMode->ReqMatch();
+				}
+}
+
+void ULoginWidget::ChangePlayerName(FString name)
+{
+				playerName = name;
+}
+
+void ULoginWidget::ChangePassword(FString pwd)
+{
+				password = pwd;
 }

@@ -19,22 +19,23 @@ namespace KBEngine
 		public EntityBaseEntityCall_AvatarBase baseEntityCall = null;
 		public EntityCellEntityCall_AvatarBase cellEntityCall = null;
 
-		public UInt16 level = 0;
-		public virtual void onLevelChanged(UInt16 oldValue) {}
 		public UInt32 modelID = 0;
 		public virtual void onModelIDChanged(UInt32 oldValue) {}
 		public Byte modelScale = 30;
 		public virtual void onModelScaleChanged(Byte oldValue) {}
 		public string name = "";
 		public virtual void onNameChanged(string oldValue) {}
-		public UInt16 own_val = 0;
-		public virtual void onOwn_valChanged(UInt16 oldValue) {}
 		public UInt32 uid = 0;
 		public virtual void onUidChanged(UInt32 oldValue) {}
 		public UInt32 utype = 0;
 		public virtual void onUtypeChanged(UInt32 oldValue) {}
 
-		public abstract void onJump(); 
+		public abstract void onStopCardSelection(); 
+		public abstract void onSyncPlayerBattleInfo(SYNC_PLAYER_BATTLE_INFO arg1); 
+		public abstract void resumeBattle(); 
+		public abstract void startBattle(); 
+		public abstract void switchController(Byte arg1); 
+		public abstract void syncTimeInterval(SYNC_BATTLE_TIME_INFO arg1); 
 
 		public AvatarBase()
 		{
@@ -126,8 +127,26 @@ namespace KBEngine
 
 			switch(method.methodUtype)
 			{
+				case 7:
+					onStopCardSelection();
+					break;
+				case 6:
+					SYNC_PLAYER_BATTLE_INFO onSyncPlayerBattleInfo_arg1 = ((DATATYPE_SYNC_PLAYER_BATTLE_INFO)method.args[0]).createFromStreamEx(stream);
+					onSyncPlayerBattleInfo(onSyncPlayerBattleInfo_arg1);
+					break;
+				case 11:
+					resumeBattle();
+					break;
 				case 9:
-					onJump();
+					startBattle();
+					break;
+				case 10:
+					Byte switchController_arg1 = stream.readUint8();
+					switchController(switchController_arg1);
+					break;
+				case 8:
+					SYNC_BATTLE_TIME_INFO syncTimeInterval_arg1 = ((DATATYPE_SYNC_BATTLE_TIME_INFO)method.args[0]).createFromStreamEx(stream);
+					syncTimeInterval(syncTimeInterval_arg1);
 					break;
 				default:
 					break;
@@ -193,22 +212,6 @@ namespace KBEngine
 						}
 
 						break;
-					case 41002:
-						UInt16 oldval_level = level;
-						level = stream.readUint16();
-
-						if(prop.isBase())
-						{
-							if(inited)
-								onLevelChanged(oldval_level);
-						}
-						else
-						{
-							if(inWorld)
-								onLevelChanged(oldval_level);
-						}
-
-						break;
 					case 41006:
 						UInt32 oldval_modelID = modelID;
 						modelID = stream.readUint32();
@@ -254,22 +257,6 @@ namespace KBEngine
 						{
 							if(inWorld)
 								onNameChanged(oldval_name);
-						}
-
-						break;
-					case 6:
-						UInt16 oldval_own_val = own_val;
-						own_val = stream.readUint16();
-
-						if(prop.isBase())
-						{
-							if(inited)
-								onOwn_valChanged(oldval_own_val);
-						}
-						else
-						{
-							if(inWorld)
-								onOwn_valChanged(oldval_own_val);
 						}
 
 						break;
@@ -356,29 +343,8 @@ namespace KBEngine
 				}
 			}
 
-			UInt16 oldval_level = level;
-			Property prop_level = pdatas[4];
-			if(prop_level.isBase())
-			{
-				if(inited && !inWorld)
-					onLevelChanged(oldval_level);
-			}
-			else
-			{
-				if(inWorld)
-				{
-					if(prop_level.isOwnerOnly() && !isPlayer())
-					{
-					}
-					else
-					{
-						onLevelChanged(oldval_level);
-					}
-				}
-			}
-
 			UInt32 oldval_modelID = modelID;
-			Property prop_modelID = pdatas[5];
+			Property prop_modelID = pdatas[4];
 			if(prop_modelID.isBase())
 			{
 				if(inited && !inWorld)
@@ -399,7 +365,7 @@ namespace KBEngine
 			}
 
 			Byte oldval_modelScale = modelScale;
-			Property prop_modelScale = pdatas[6];
+			Property prop_modelScale = pdatas[5];
 			if(prop_modelScale.isBase())
 			{
 				if(inited && !inWorld)
@@ -420,7 +386,7 @@ namespace KBEngine
 			}
 
 			string oldval_name = name;
-			Property prop_name = pdatas[7];
+			Property prop_name = pdatas[6];
 			if(prop_name.isBase())
 			{
 				if(inited && !inWorld)
@@ -436,27 +402,6 @@ namespace KBEngine
 					else
 					{
 						onNameChanged(oldval_name);
-					}
-				}
-			}
-
-			UInt16 oldval_own_val = own_val;
-			Property prop_own_val = pdatas[8];
-			if(prop_own_val.isBase())
-			{
-				if(inited && !inWorld)
-					onOwn_valChanged(oldval_own_val);
-			}
-			else
-			{
-				if(inWorld)
-				{
-					if(prop_own_val.isOwnerOnly() && !isPlayer())
-					{
-					}
-					else
-					{
-						onOwn_valChanged(oldval_own_val);
 					}
 				}
 			}
@@ -483,7 +428,7 @@ namespace KBEngine
 			}
 
 			UInt32 oldval_uid = uid;
-			Property prop_uid = pdatas[9];
+			Property prop_uid = pdatas[7];
 			if(prop_uid.isBase())
 			{
 				if(inited && !inWorld)
@@ -504,7 +449,7 @@ namespace KBEngine
 			}
 
 			UInt32 oldval_utype = utype;
-			Property prop_utype = pdatas[10];
+			Property prop_utype = pdatas[8];
 			if(prop_utype.isBase())
 			{
 				if(inited && !inWorld)

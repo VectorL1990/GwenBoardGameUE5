@@ -167,142 +167,65 @@ void EntityDef::initScriptModules()
 
 	//DEBUG_MSG("EntityDef::initScriptModules: add(Account), property(spaceID / 40002).");
 
-	Property* pAccount_lastSelCharacter = new Property();
-	pAccount_lastSelCharacter->name = TEXT("lastSelCharacter");
-	pAccount_lastSelCharacter->properUtype = 2;
-	pAccount_lastSelCharacter->properFlags = 32;
-	pAccount_lastSelCharacter->aliasID = 4;
-	KBVar* pAccount_lastSelCharacter_defval = new KBVar((uint64)FCString::Atoi64(TEXT("0")));
-	pAccount_lastSelCharacter->pDefaultVal = pAccount_lastSelCharacter_defval;
-	pAccountModule->propertys.Add(TEXT("lastSelCharacter"), pAccount_lastSelCharacter); 
-
-	pAccountModule->usePropertyDescrAlias = true;
-	pAccountModule->idpropertys.Add((uint16)pAccount_lastSelCharacter->aliasID, pAccount_lastSelCharacter);
-
-	//DEBUG_MSG("EntityDef::initScriptModules: add(Account), property(lastSelCharacter / 2).");
-
-	TArray<DATATYPE_BASE*> Account_onCreateAvatarResult_args;
-	Account_onCreateAvatarResult_args.Add(EntityDef::id2datatypes[2]);
-
-	Method* pAccount_onCreateAvatarResult = new Method();
-	pAccount_onCreateAvatarResult->name = TEXT("onCreateAvatarResult");
-	pAccount_onCreateAvatarResult->methodUtype = 10005;
-	pAccount_onCreateAvatarResult->aliasID = 1;
-	pAccount_onCreateAvatarResult->args = Account_onCreateAvatarResult_args;
-
-	pAccountModule->methods.Add(TEXT("onCreateAvatarResult"), pAccount_onCreateAvatarResult); 
-	pAccountModule->useMethodDescrAlias = true;
-	pAccountModule->idmethods.Add((uint16)pAccount_onCreateAvatarResult->aliasID, pAccount_onCreateAvatarResult);
-
-	//DEBUG_MSG("EntityDef::initScriptModules: add(Account), method(onCreateAvatarResult / 10005).");
-
-	TArray<DATATYPE_BASE*> Account_onRemoveAvatar_args;
-	Account_onRemoveAvatar_args.Add(EntityDef::id2datatypes[5]);
-
-	Method* pAccount_onRemoveAvatar = new Method();
-	pAccount_onRemoveAvatar->name = TEXT("onRemoveAvatar");
-	pAccount_onRemoveAvatar->methodUtype = 4;
-	pAccount_onRemoveAvatar->aliasID = 2;
-	pAccount_onRemoveAvatar->args = Account_onRemoveAvatar_args;
-
-	pAccountModule->methods.Add(TEXT("onRemoveAvatar"), pAccount_onRemoveAvatar); 
-	pAccountModule->useMethodDescrAlias = true;
-	pAccountModule->idmethods.Add((uint16)pAccount_onRemoveAvatar->aliasID, pAccount_onRemoveAvatar);
-
-	//DEBUG_MSG("EntityDef::initScriptModules: add(Account), method(onRemoveAvatar / 4).");
-
-	TArray<DATATYPE_BASE*> Account_onReqAvatarList_args;
-
-	Method* pAccount_onReqAvatarList = new Method();
-	pAccount_onReqAvatarList->name = TEXT("onReqAvatarList");
-	pAccount_onReqAvatarList->methodUtype = 10003;
-	pAccount_onReqAvatarList->aliasID = 3;
-	pAccount_onReqAvatarList->args = Account_onReqAvatarList_args;
-
-	pAccountModule->methods.Add(TEXT("onReqAvatarList"), pAccount_onReqAvatarList); 
-	pAccountModule->useMethodDescrAlias = true;
-	pAccountModule->idmethods.Add((uint16)pAccount_onReqAvatarList->aliasID, pAccount_onReqAvatarList);
-
-	//DEBUG_MSG("EntityDef::initScriptModules: add(Account), method(onReqAvatarList / 10003).");
-
 	TArray<DATATYPE_BASE*> Account_onReqTest_args;
 	Account_onReqTest_args.Add(EntityDef::id2datatypes[8]);
 
 	Method* pAccount_onReqTest = new Method();
 	pAccount_onReqTest->name = TEXT("onReqTest");
-	pAccount_onReqTest->methodUtype = 5;
-	pAccount_onReqTest->aliasID = 4;
+	pAccount_onReqTest->methodUtype = 4;
+	pAccount_onReqTest->aliasID = 1;
 	pAccount_onReqTest->args = Account_onReqTest_args;
 
 	pAccountModule->methods.Add(TEXT("onReqTest"), pAccount_onReqTest); 
 	pAccountModule->useMethodDescrAlias = true;
 	pAccountModule->idmethods.Add((uint16)pAccount_onReqTest->aliasID, pAccount_onReqTest);
 
-	//DEBUG_MSG("EntityDef::initScriptModules: add(Account), method(onReqTest / 5).");
+	//DEBUG_MSG("EntityDef::initScriptModules: add(Account), method(onReqTest / 4).");
 
-	TArray<DATATYPE_BASE*> Account_reqAvatarList_args;
+	TArray<DATATYPE_BASE*> Account_onSyncRoomCreated_args;
+	Account_onSyncRoomCreated_args.Add(EntityDef::id2datatypes[5]);
 
-	Method* pAccount_reqAvatarList = new Method();
-	pAccount_reqAvatarList->name = TEXT("reqAvatarList");
-	pAccount_reqAvatarList->methodUtype = 10001;
-	pAccount_reqAvatarList->aliasID = -1;
-	pAccount_reqAvatarList->args = Account_reqAvatarList_args;
+	Method* pAccount_onSyncRoomCreated = new Method();
+	pAccount_onSyncRoomCreated->name = TEXT("onSyncRoomCreated");
+	pAccount_onSyncRoomCreated->methodUtype = 5;
+	pAccount_onSyncRoomCreated->aliasID = 2;
+	pAccount_onSyncRoomCreated->args = Account_onSyncRoomCreated_args;
 
-	pAccountModule->methods.Add(TEXT("reqAvatarList"), pAccount_reqAvatarList); 
-	pAccountModule->base_methods.Add(TEXT("reqAvatarList"), pAccount_reqAvatarList);
+	pAccountModule->methods.Add(TEXT("onSyncRoomCreated"), pAccount_onSyncRoomCreated); 
+	pAccountModule->useMethodDescrAlias = true;
+	pAccountModule->idmethods.Add((uint16)pAccount_onSyncRoomCreated->aliasID, pAccount_onSyncRoomCreated);
 
-	pAccountModule->idbase_methods.Add(pAccount_reqAvatarList->methodUtype, pAccount_reqAvatarList);
+	//DEBUG_MSG("EntityDef::initScriptModules: add(Account), method(onSyncRoomCreated / 5).");
 
-	//DEBUG_MSG("EntityDef::initScriptModules: add(Account), method(reqAvatarList / 10001).");
+	TArray<DATATYPE_BASE*> Account_reqEnterRoom_args;
 
-	TArray<DATATYPE_BASE*> Account_reqCreateAvatar_args;
-	Account_reqCreateAvatar_args.Add(EntityDef::id2datatypes[2]);
-	Account_reqCreateAvatar_args.Add(EntityDef::id2datatypes[12]);
+	Method* pAccount_reqEnterRoom = new Method();
+	pAccount_reqEnterRoom->name = TEXT("reqEnterRoom");
+	pAccount_reqEnterRoom->methodUtype = 2;
+	pAccount_reqEnterRoom->aliasID = -1;
+	pAccount_reqEnterRoom->args = Account_reqEnterRoom_args;
 
-	Method* pAccount_reqCreateAvatar = new Method();
-	pAccount_reqCreateAvatar->name = TEXT("reqCreateAvatar");
-	pAccount_reqCreateAvatar->methodUtype = 10002;
-	pAccount_reqCreateAvatar->aliasID = -1;
-	pAccount_reqCreateAvatar->args = Account_reqCreateAvatar_args;
+	pAccountModule->methods.Add(TEXT("reqEnterRoom"), pAccount_reqEnterRoom); 
+	pAccountModule->base_methods.Add(TEXT("reqEnterRoom"), pAccount_reqEnterRoom);
 
-	pAccountModule->methods.Add(TEXT("reqCreateAvatar"), pAccount_reqCreateAvatar); 
-	pAccountModule->base_methods.Add(TEXT("reqCreateAvatar"), pAccount_reqCreateAvatar);
+	pAccountModule->idbase_methods.Add(pAccount_reqEnterRoom->methodUtype, pAccount_reqEnterRoom);
 
-	pAccountModule->idbase_methods.Add(pAccount_reqCreateAvatar->methodUtype, pAccount_reqCreateAvatar);
+	//DEBUG_MSG("EntityDef::initScriptModules: add(Account), method(reqEnterRoom / 2).");
 
-	//DEBUG_MSG("EntityDef::initScriptModules: add(Account), method(reqCreateAvatar / 10002).");
+	TArray<DATATYPE_BASE*> Account_reqMatch_args;
 
-	TArray<DATATYPE_BASE*> Account_reqRemoveAvatar_args;
-	Account_reqRemoveAvatar_args.Add(EntityDef::id2datatypes[12]);
+	Method* pAccount_reqMatch = new Method();
+	pAccount_reqMatch->name = TEXT("reqMatch");
+	pAccount_reqMatch->methodUtype = 3;
+	pAccount_reqMatch->aliasID = -1;
+	pAccount_reqMatch->args = Account_reqMatch_args;
 
-	Method* pAccount_reqRemoveAvatar = new Method();
-	pAccount_reqRemoveAvatar->name = TEXT("reqRemoveAvatar");
-	pAccount_reqRemoveAvatar->methodUtype = 2;
-	pAccount_reqRemoveAvatar->aliasID = -1;
-	pAccount_reqRemoveAvatar->args = Account_reqRemoveAvatar_args;
+	pAccountModule->methods.Add(TEXT("reqMatch"), pAccount_reqMatch); 
+	pAccountModule->base_methods.Add(TEXT("reqMatch"), pAccount_reqMatch);
 
-	pAccountModule->methods.Add(TEXT("reqRemoveAvatar"), pAccount_reqRemoveAvatar); 
-	pAccountModule->base_methods.Add(TEXT("reqRemoveAvatar"), pAccount_reqRemoveAvatar);
+	pAccountModule->idbase_methods.Add(pAccount_reqMatch->methodUtype, pAccount_reqMatch);
 
-	pAccountModule->idbase_methods.Add(pAccount_reqRemoveAvatar->methodUtype, pAccount_reqRemoveAvatar);
-
-	//DEBUG_MSG("EntityDef::initScriptModules: add(Account), method(reqRemoveAvatar / 2).");
-
-	TArray<DATATYPE_BASE*> Account_reqRemoveAvatarDBID_args;
-	Account_reqRemoveAvatarDBID_args.Add(EntityDef::id2datatypes[5]);
-
-	Method* pAccount_reqRemoveAvatarDBID = new Method();
-	pAccount_reqRemoveAvatarDBID->name = TEXT("reqRemoveAvatarDBID");
-	pAccount_reqRemoveAvatarDBID->methodUtype = 3;
-	pAccount_reqRemoveAvatarDBID->aliasID = -1;
-	pAccount_reqRemoveAvatarDBID->args = Account_reqRemoveAvatarDBID_args;
-
-	pAccountModule->methods.Add(TEXT("reqRemoveAvatarDBID"), pAccount_reqRemoveAvatarDBID); 
-	pAccountModule->base_methods.Add(TEXT("reqRemoveAvatarDBID"), pAccount_reqRemoveAvatarDBID);
-
-	pAccountModule->idbase_methods.Add(pAccount_reqRemoveAvatarDBID->methodUtype, pAccount_reqRemoveAvatarDBID);
-
-	//DEBUG_MSG("EntityDef::initScriptModules: add(Account), method(reqRemoveAvatarDBID / 3).");
+	//DEBUG_MSG("EntityDef::initScriptModules: add(Account), method(reqMatch / 3).");
 
 	TArray<DATATYPE_BASE*> Account_reqTest_args;
 	Account_reqTest_args.Add(EntityDef::id2datatypes[8]);
@@ -319,22 +242,6 @@ void EntityDef::initScriptModules()
 	pAccountModule->idbase_methods.Add(pAccount_reqTest->methodUtype, pAccount_reqTest);
 
 	//DEBUG_MSG("EntityDef::initScriptModules: add(Account), method(reqTest / 1).");
-
-	TArray<DATATYPE_BASE*> Account_selectAvatarGame_args;
-	Account_selectAvatarGame_args.Add(EntityDef::id2datatypes[5]);
-
-	Method* pAccount_selectAvatarGame = new Method();
-	pAccount_selectAvatarGame->name = TEXT("selectAvatarGame");
-	pAccount_selectAvatarGame->methodUtype = 10004;
-	pAccount_selectAvatarGame->aliasID = -1;
-	pAccount_selectAvatarGame->args = Account_selectAvatarGame_args;
-
-	pAccountModule->methods.Add(TEXT("selectAvatarGame"), pAccount_selectAvatarGame); 
-	pAccountModule->base_methods.Add(TEXT("selectAvatarGame"), pAccount_selectAvatarGame);
-
-	pAccountModule->idbase_methods.Add(pAccount_selectAvatarGame->methodUtype, pAccount_selectAvatarGame);
-
-	//DEBUG_MSG("EntityDef::initScriptModules: add(Account), method(selectAvatarGame / 10004).");
 
 	ScriptModule* pAvatarModule = new ScriptModule("Avatar", 2);
 	EntityDef::moduledefs.Add(TEXT("Avatar"), pAvatarModule);
@@ -382,25 +289,11 @@ void EntityDef::initScriptModules()
 
 	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), property(spaceID / 40002).");
 
-	Property* pAvatar_level = new Property();
-	pAvatar_level->name = TEXT("level");
-	pAvatar_level->properUtype = 41002;
-	pAvatar_level->properFlags = 8;
-	pAvatar_level->aliasID = 4;
-	KBVar* pAvatar_level_defval = new KBVar((uint16)FCString::Atoi64(TEXT("")));
-	pAvatar_level->pDefaultVal = pAvatar_level_defval;
-	pAvatarModule->propertys.Add(TEXT("level"), pAvatar_level); 
-
-	pAvatarModule->usePropertyDescrAlias = true;
-	pAvatarModule->idpropertys.Add((uint16)pAvatar_level->aliasID, pAvatar_level);
-
-	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), property(level / 41002).");
-
 	Property* pAvatar_modelID = new Property();
 	pAvatar_modelID->name = TEXT("modelID");
 	pAvatar_modelID->properUtype = 41006;
 	pAvatar_modelID->properFlags = 4;
-	pAvatar_modelID->aliasID = 5;
+	pAvatar_modelID->aliasID = 4;
 	KBVar* pAvatar_modelID_defval = new KBVar((uint32)FCString::Atoi64(TEXT("0")));
 	pAvatar_modelID->pDefaultVal = pAvatar_modelID_defval;
 	pAvatarModule->propertys.Add(TEXT("modelID"), pAvatar_modelID); 
@@ -414,7 +307,7 @@ void EntityDef::initScriptModules()
 	pAvatar_modelScale->name = TEXT("modelScale");
 	pAvatar_modelScale->properUtype = 41007;
 	pAvatar_modelScale->properFlags = 4;
-	pAvatar_modelScale->aliasID = 6;
+	pAvatar_modelScale->aliasID = 5;
 	KBVar* pAvatar_modelScale_defval = new KBVar((uint8)FCString::Atoi64(TEXT("30")));
 	pAvatar_modelScale->pDefaultVal = pAvatar_modelScale_defval;
 	pAvatarModule->propertys.Add(TEXT("modelScale"), pAvatar_modelScale); 
@@ -428,7 +321,7 @@ void EntityDef::initScriptModules()
 	pAvatar_name->name = TEXT("name");
 	pAvatar_name->properUtype = 41003;
 	pAvatar_name->properFlags = 4;
-	pAvatar_name->aliasID = 7;
+	pAvatar_name->aliasID = 6;
 	KBVar* pAvatar_name_defval = new KBVar(FString());
 	pAvatar_name->pDefaultVal = pAvatar_name_defval;
 	pAvatarModule->propertys.Add(TEXT("name"), pAvatar_name); 
@@ -438,25 +331,11 @@ void EntityDef::initScriptModules()
 
 	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), property(name / 41003).");
 
-	Property* pAvatar_own_val = new Property();
-	pAvatar_own_val->name = TEXT("own_val");
-	pAvatar_own_val->properUtype = 6;
-	pAvatar_own_val->properFlags = 16;
-	pAvatar_own_val->aliasID = 8;
-	KBVar* pAvatar_own_val_defval = new KBVar((uint16)FCString::Atoi64(TEXT("")));
-	pAvatar_own_val->pDefaultVal = pAvatar_own_val_defval;
-	pAvatarModule->propertys.Add(TEXT("own_val"), pAvatar_own_val); 
-
-	pAvatarModule->usePropertyDescrAlias = true;
-	pAvatarModule->idpropertys.Add((uint16)pAvatar_own_val->aliasID, pAvatar_own_val);
-
-	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), property(own_val / 6).");
-
 	Property* pAvatar_uid = new Property();
 	pAvatar_uid->name = TEXT("uid");
 	pAvatar_uid->properUtype = 41004;
 	pAvatar_uid->properFlags = 4;
-	pAvatar_uid->aliasID = 9;
+	pAvatar_uid->aliasID = 7;
 	KBVar* pAvatar_uid_defval = new KBVar((uint32)FCString::Atoi64(TEXT("0")));
 	pAvatar_uid->pDefaultVal = pAvatar_uid_defval;
 	pAvatarModule->propertys.Add(TEXT("uid"), pAvatar_uid); 
@@ -470,7 +349,7 @@ void EntityDef::initScriptModules()
 	pAvatar_utype->name = TEXT("utype");
 	pAvatar_utype->properUtype = 41005;
 	pAvatar_utype->properFlags = 4;
-	pAvatar_utype->aliasID = 10;
+	pAvatar_utype->aliasID = 8;
 	KBVar* pAvatar_utype_defval = new KBVar((uint32)FCString::Atoi64(TEXT("0")));
 	pAvatar_utype->pDefaultVal = pAvatar_utype_defval;
 	pAvatarModule->propertys.Add(TEXT("utype"), pAvatar_utype); 
@@ -480,50 +359,92 @@ void EntityDef::initScriptModules()
 
 	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), property(utype / 41005).");
 
-	TArray<DATATYPE_BASE*> Avatar_onJump_args;
+	TArray<DATATYPE_BASE*> Avatar_onStopCardSelection_args;
 
-	Method* pAvatar_onJump = new Method();
-	pAvatar_onJump->name = TEXT("onJump");
-	pAvatar_onJump->methodUtype = 9;
-	pAvatar_onJump->aliasID = 1;
-	pAvatar_onJump->args = Avatar_onJump_args;
+	Method* pAvatar_onStopCardSelection = new Method();
+	pAvatar_onStopCardSelection->name = TEXT("onStopCardSelection");
+	pAvatar_onStopCardSelection->methodUtype = 7;
+	pAvatar_onStopCardSelection->aliasID = 1;
+	pAvatar_onStopCardSelection->args = Avatar_onStopCardSelection_args;
 
-	pAvatarModule->methods.Add(TEXT("onJump"), pAvatar_onJump); 
+	pAvatarModule->methods.Add(TEXT("onStopCardSelection"), pAvatar_onStopCardSelection); 
 	pAvatarModule->useMethodDescrAlias = true;
-	pAvatarModule->idmethods.Add((uint16)pAvatar_onJump->aliasID, pAvatar_onJump);
+	pAvatarModule->idmethods.Add((uint16)pAvatar_onStopCardSelection->aliasID, pAvatar_onStopCardSelection);
 
-	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(onJump / 9).");
+	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(onStopCardSelection / 7).");
 
-	TArray<DATATYPE_BASE*> Avatar_jump_args;
+	TArray<DATATYPE_BASE*> Avatar_onSyncPlayerBattleInfo_args;
+	Avatar_onSyncPlayerBattleInfo_args.Add(EntityDef::id2datatypes[37]);
 
-	Method* pAvatar_jump = new Method();
-	pAvatar_jump->name = TEXT("jump");
-	pAvatar_jump->methodUtype = 7;
-	pAvatar_jump->aliasID = -1;
-	pAvatar_jump->args = Avatar_jump_args;
+	Method* pAvatar_onSyncPlayerBattleInfo = new Method();
+	pAvatar_onSyncPlayerBattleInfo->name = TEXT("onSyncPlayerBattleInfo");
+	pAvatar_onSyncPlayerBattleInfo->methodUtype = 6;
+	pAvatar_onSyncPlayerBattleInfo->aliasID = 2;
+	pAvatar_onSyncPlayerBattleInfo->args = Avatar_onSyncPlayerBattleInfo_args;
 
-	pAvatarModule->methods.Add(TEXT("jump"), pAvatar_jump); 
-	pAvatarModule->cell_methods.Add(TEXT("jump"), pAvatar_jump);
+	pAvatarModule->methods.Add(TEXT("onSyncPlayerBattleInfo"), pAvatar_onSyncPlayerBattleInfo); 
+	pAvatarModule->useMethodDescrAlias = true;
+	pAvatarModule->idmethods.Add((uint16)pAvatar_onSyncPlayerBattleInfo->aliasID, pAvatar_onSyncPlayerBattleInfo);
 
-	pAvatarModule->idcell_methods.Add(pAvatar_jump->methodUtype, pAvatar_jump);
+	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(onSyncPlayerBattleInfo / 6).");
 
-	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(jump / 7).");
+	TArray<DATATYPE_BASE*> Avatar_resumeBattle_args;
 
-	TArray<DATATYPE_BASE*> Avatar_relive_args;
-	Avatar_relive_args.Add(EntityDef::id2datatypes[2]);
+	Method* pAvatar_resumeBattle = new Method();
+	pAvatar_resumeBattle->name = TEXT("resumeBattle");
+	pAvatar_resumeBattle->methodUtype = 11;
+	pAvatar_resumeBattle->aliasID = 3;
+	pAvatar_resumeBattle->args = Avatar_resumeBattle_args;
 
-	Method* pAvatar_relive = new Method();
-	pAvatar_relive->name = TEXT("relive");
-	pAvatar_relive->methodUtype = 6;
-	pAvatar_relive->aliasID = -1;
-	pAvatar_relive->args = Avatar_relive_args;
+	pAvatarModule->methods.Add(TEXT("resumeBattle"), pAvatar_resumeBattle); 
+	pAvatarModule->useMethodDescrAlias = true;
+	pAvatarModule->idmethods.Add((uint16)pAvatar_resumeBattle->aliasID, pAvatar_resumeBattle);
 
-	pAvatarModule->methods.Add(TEXT("relive"), pAvatar_relive); 
-	pAvatarModule->cell_methods.Add(TEXT("relive"), pAvatar_relive);
+	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(resumeBattle / 11).");
 
-	pAvatarModule->idcell_methods.Add(pAvatar_relive->methodUtype, pAvatar_relive);
+	TArray<DATATYPE_BASE*> Avatar_startBattle_args;
 
-	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(relive / 6).");
+	Method* pAvatar_startBattle = new Method();
+	pAvatar_startBattle->name = TEXT("startBattle");
+	pAvatar_startBattle->methodUtype = 9;
+	pAvatar_startBattle->aliasID = 4;
+	pAvatar_startBattle->args = Avatar_startBattle_args;
+
+	pAvatarModule->methods.Add(TEXT("startBattle"), pAvatar_startBattle); 
+	pAvatarModule->useMethodDescrAlias = true;
+	pAvatarModule->idmethods.Add((uint16)pAvatar_startBattle->aliasID, pAvatar_startBattle);
+
+	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(startBattle / 9).");
+
+	TArray<DATATYPE_BASE*> Avatar_switchController_args;
+	Avatar_switchController_args.Add(EntityDef::id2datatypes[2]);
+
+	Method* pAvatar_switchController = new Method();
+	pAvatar_switchController->name = TEXT("switchController");
+	pAvatar_switchController->methodUtype = 10;
+	pAvatar_switchController->aliasID = 5;
+	pAvatar_switchController->args = Avatar_switchController_args;
+
+	pAvatarModule->methods.Add(TEXT("switchController"), pAvatar_switchController); 
+	pAvatarModule->useMethodDescrAlias = true;
+	pAvatarModule->idmethods.Add((uint16)pAvatar_switchController->aliasID, pAvatar_switchController);
+
+	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(switchController / 10).");
+
+	TArray<DATATYPE_BASE*> Avatar_syncTimeInterval_args;
+	Avatar_syncTimeInterval_args.Add(EntityDef::id2datatypes[36]);
+
+	Method* pAvatar_syncTimeInterval = new Method();
+	pAvatar_syncTimeInterval->name = TEXT("syncTimeInterval");
+	pAvatar_syncTimeInterval->methodUtype = 8;
+	pAvatar_syncTimeInterval->aliasID = 6;
+	pAvatar_syncTimeInterval->args = Avatar_syncTimeInterval_args;
+
+	pAvatarModule->methods.Add(TEXT("syncTimeInterval"), pAvatar_syncTimeInterval); 
+	pAvatarModule->useMethodDescrAlias = true;
+	pAvatarModule->idmethods.Add((uint16)pAvatar_syncTimeInterval->aliasID, pAvatar_syncTimeInterval);
+
+	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(syncTimeInterval / 8).");
 
 	ScriptModule* pGateModule = new ScriptModule("Gate", 3);
 	EntityDef::moduledefs.Add(TEXT("Gate"), pGateModule);
@@ -769,7 +690,7 @@ void EntityDef::initScriptModules()
 
 	Method* pPlayer_onUpdateBattle = new Method();
 	pPlayer_onUpdateBattle->name = TEXT("onUpdateBattle");
-	pPlayer_onUpdateBattle->methodUtype = 10;
+	pPlayer_onUpdateBattle->methodUtype = 12;
 	pPlayer_onUpdateBattle->aliasID = 1;
 	pPlayer_onUpdateBattle->args = Player_onUpdateBattle_args;
 
@@ -777,14 +698,14 @@ void EntityDef::initScriptModules()
 	pPlayerModule->useMethodDescrAlias = true;
 	pPlayerModule->idmethods.Add((uint16)pPlayer_onUpdateBattle->aliasID, pPlayer_onUpdateBattle);
 
-	//DEBUG_MSG("EntityDef::initScriptModules: add(Player), method(onUpdateBattle / 10).");
+	//DEBUG_MSG("EntityDef::initScriptModules: add(Player), method(onUpdateBattle / 12).");
 
 	TArray<DATATYPE_BASE*> Player_onUpdateGridInfoList_args;
 	Player_onUpdateGridInfoList_args.Add(EntityDef::id2datatypes[31]);
 
 	Method* pPlayer_onUpdateGridInfoList = new Method();
 	pPlayer_onUpdateGridInfoList->name = TEXT("onUpdateGridInfoList");
-	pPlayer_onUpdateGridInfoList->methodUtype = 11;
+	pPlayer_onUpdateGridInfoList->methodUtype = 13;
 	pPlayer_onUpdateGridInfoList->aliasID = 2;
 	pPlayer_onUpdateGridInfoList->args = Player_onUpdateGridInfoList_args;
 
@@ -792,7 +713,7 @@ void EntityDef::initScriptModules()
 	pPlayerModule->useMethodDescrAlias = true;
 	pPlayerModule->idmethods.Add((uint16)pPlayer_onUpdateGridInfoList->aliasID, pPlayer_onUpdateGridInfoList);
 
-	//DEBUG_MSG("EntityDef::initScriptModules: add(Player), method(onUpdateGridInfoList / 11).");
+	//DEBUG_MSG("EntityDef::initScriptModules: add(Player), method(onUpdateGridInfoList / 13).");
 
 }
 
@@ -1114,6 +1035,33 @@ void EntityDef::initDefTypes()
 		uint16 utype = 34;
 		FString typeName = TEXT("CORE_UPDATE_BATLLE_INFO");
 		DATATYPE_CORE_UPDATE_BATLLE_INFO* pDatatype = new DATATYPE_CORE_UPDATE_BATLLE_INFO();
+		EntityDef::datatypes.Add(typeName, (DATATYPE_BASE*)pDatatype);
+		EntityDef::id2datatypes.Add(utype, EntityDef::datatypes[typeName]);
+		EntityDef::datatype2id.Add(typeName, utype);
+	}
+
+	{
+		uint16 utype = 36;
+		FString typeName = TEXT("SYNC_BATTLE_TIME_INFO");
+		DATATYPE_SYNC_BATTLE_TIME_INFO* pDatatype = new DATATYPE_SYNC_BATTLE_TIME_INFO();
+		EntityDef::datatypes.Add(typeName, (DATATYPE_BASE*)pDatatype);
+		EntityDef::id2datatypes.Add(utype, EntityDef::datatypes[typeName]);
+		EntityDef::datatype2id.Add(typeName, utype);
+	}
+
+	{
+		uint16 utype = 37;
+		FString typeName = TEXT("SYNC_PLAYER_BATTLE_INFO");
+		DATATYPE_SYNC_PLAYER_BATTLE_INFO* pDatatype = new DATATYPE_SYNC_PLAYER_BATTLE_INFO();
+		EntityDef::datatypes.Add(typeName, (DATATYPE_BASE*)pDatatype);
+		EntityDef::id2datatypes.Add(utype, EntityDef::datatypes[typeName]);
+		EntityDef::datatype2id.Add(typeName, utype);
+	}
+
+	{
+		uint16 utype = 39;
+		FString typeName = TEXT("PLAYER_PERSIST_INFO");
+		DATATYPE_PLAYER_PERSIST_INFO* pDatatype = new DATATYPE_PLAYER_PERSIST_INFO();
 		EntityDef::datatypes.Add(typeName, (DATATYPE_BASE*)pDatatype);
 		EntityDef::id2datatypes.Add(utype, EntityDef::datatypes[typeName]);
 		EntityDef::datatype2id.Add(typeName, utype);

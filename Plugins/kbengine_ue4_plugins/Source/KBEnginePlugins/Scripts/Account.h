@@ -19,12 +19,11 @@ namespace KBEngine
         virtual void onDestroy() override;
 
         void reqTest(int32 param);
+        void ReqEnterRoom();
+        void ReqMatch();
 
-        virtual void onCreateAvatarResult(uint8 arg1) override;
-        virtual void onRemoveAvatar(uint64 arg1) override;
-        virtual void onReqAvatarList() override;
         virtual void onReqTest(int32 param) override;
-
+        virtual void onSyncRoomCreated(uint64 roomKey) override;
     };
 
 }

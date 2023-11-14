@@ -19,13 +19,9 @@ namespace KBEngine
 		public EntityBaseEntityCall_AccountBase baseEntityCall = null;
 		public EntityCellEntityCall_AccountBase cellEntityCall = null;
 
-		public UInt64 lastSelCharacter = 0;
-		public virtual void onLastSelCharacterChanged(UInt64 oldValue) {}
 
-		public abstract void onCreateAvatarResult(Byte arg1); 
-		public abstract void onRemoveAvatar(UInt64 arg1); 
-		public abstract void onReqAvatarList(); 
 		public abstract void onReqTest(Int32 arg1); 
+		public abstract void onSyncRoomCreated(UInt64 arg1); 
 
 		public AccountBase()
 		{
@@ -117,20 +113,13 @@ namespace KBEngine
 
 			switch(method.methodUtype)
 			{
-				case 10005:
-					Byte onCreateAvatarResult_arg1 = stream.readUint8();
-					onCreateAvatarResult(onCreateAvatarResult_arg1);
-					break;
 				case 4:
-					UInt64 onRemoveAvatar_arg1 = stream.readUint64();
-					onRemoveAvatar(onRemoveAvatar_arg1);
-					break;
-				case 10003:
-					onReqAvatarList();
-					break;
-				case 5:
 					Int32 onReqTest_arg1 = stream.readInt32();
 					onReqTest(onReqTest_arg1);
+					break;
+				case 5:
+					UInt64 onSyncRoomCreated_arg1 = stream.readUint64();
+					onSyncRoomCreated(onSyncRoomCreated_arg1);
 					break;
 				default:
 					break;
@@ -196,22 +185,6 @@ namespace KBEngine
 						}
 
 						break;
-					case 2:
-						UInt64 oldval_lastSelCharacter = lastSelCharacter;
-						lastSelCharacter = stream.readUint64();
-
-						if(prop.isBase())
-						{
-							if(inited)
-								onLastSelCharacterChanged(oldval_lastSelCharacter);
-						}
-						else
-						{
-							if(inWorld)
-								onLastSelCharacterChanged(oldval_lastSelCharacter);
-						}
-
-						break;
 					case 40000:
 						Vector3 oldval_position = position;
 						position = stream.readVector3();
@@ -259,27 +232,6 @@ namespace KBEngine
 					else
 					{
 						onDirectionChanged(oldval_direction);
-					}
-				}
-			}
-
-			UInt64 oldval_lastSelCharacter = lastSelCharacter;
-			Property prop_lastSelCharacter = pdatas[4];
-			if(prop_lastSelCharacter.isBase())
-			{
-				if(inited && !inWorld)
-					onLastSelCharacterChanged(oldval_lastSelCharacter);
-			}
-			else
-			{
-				if(inWorld)
-				{
-					if(prop_lastSelCharacter.isOwnerOnly() && !isPlayer())
-					{
-					}
-					else
-					{
-						onLastSelCharacterChanged(oldval_lastSelCharacter);
 					}
 				}
 			}

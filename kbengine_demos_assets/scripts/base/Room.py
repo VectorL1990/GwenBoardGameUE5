@@ -7,45 +7,48 @@ from KBEDebug import *
 class Room(KBEngine.Entity):
 	def __init__(self):
 		KBEngine.Entity.__init__(self)
+		self.accountEntityDict = {}
 		self.avatars = {}
 		self.gridInfoDict = {}
 		self.runLoop = False
 		self.curControlNb = 0
 		self.roomPlayerNb = 2
 		self.curTimeClockInterval = 0
-		self.maxTimeClockInterval = 10000
+		self.maxSelectCardTimeInterval = 20000
+		self.maxSelectCardDoneAnimTime = 4000
+		self.maxLaunchActionTimeInterval = 10000
+		self.maxSwitchControllerAnimTime = 4000
 		self.lastTimeClock = -1
 		self.curTimeClock = 0.0
 		self.startTimeCount = False
 		self.receiveConfirmNb = 0
 
+		self.timerState = 0
+		self.avatars = {}
+
+	def tellAccountsRoomCreated(self):
+		for k,v in self.accountEntityDict.items():
+			DEBUG_MSG("Room::tellAccountsRoomCreated: tell account room created and entityID=%i" % (k))
+			v.syncRoomCreated(self.roomKey)
+
 	def playAction(self, entityCall, actionInfo):
 		if actionInfo["actionType"] == "playCard":
 			if self.gridInfoDict.has_key(actionInfo["targetGridNb"]):
-                # this action is not allowed, grid already occupied
+        # this action is not allowed, grid already occupied
 				return
 			else:
-                # add this card to dictionary
-                # calculate card effect
+        # add this card to dictionary
+        # calculate card effect
 				playCardAction()
 				self.avatars[entityCall.id].playCardCallback()
 		elif actionInfo["actionType"] == "assignEffectTarget":
 			# calcualte effect in this place
 			return
 
-	def enterRoom(self, entityCall, position, direction):
-		"""
-		defined method.
-		请求进入某个space中
-		"""
-		entityCall.createCell(self.cell, self.roomKey)
-		self.onEnter(entityCall)
+	def enterRoom(self, entityCall):
+		self.avatars[entityCall.id] = entityCall
 
 	def leaveRoom(self, entityID):
-		"""
-		defined method.
-		某个玩家请求退出这个space
-		"""
 		self.onLeave(entityID)
 
 	def switchControllerConfirm(self, entityCall, turnNb, roundNb):
@@ -66,34 +69,56 @@ class Room(KBEngine.Entity):
 		#   it should stop for a moment to wait for animations playing for all clients
 		#   if animation confirm information is missing of some clients
 		#   force keep counting
-
-		if self.curTimeClockInterval >= self.maxTimeClockInterval and self.startTimeCount == True:
-			# which means we should modify controller to another player
-			self.curControlNb += 1
-			if self.curControlNb >= self.roomPlayerNb:
-				self.curControlNb = 0
-			self.curTimeClockInterval = 0.0
-			# send messages to all proxys to switch controller
-			for avatar in self.avatars:
-				self.avatars[avatar].onSwitchController(self.curControlNb)
-
-			# stop counting right now, until every player send msg about recovering
-			self.keepCounting = False
-		else:
-			self.curTimeClockInterval += 1
-			if self.startTimeCount == False:
-				self.startTimeCount = True
-			else:
-				# send messages to all clients to sync counting time
+		if self.timerState == 0:
+			return
+		elif self.timerState == 1:
+			# which means room is waiting for card selection
+			if self.curTimeClockInterval >= self.maxSelectCardTimeInterval:
+				# force all players stopping card selection
 				for avatar in self.avatars:
-					self.avatars[avatar].onSyncTimeInterval(self.curTimeClockInterval)
+					self.avatars[avatar].stopCardSelection()
+				self.curTimeClockInterval = 0.0
+				# make timer state to 2 for players to play animations
+				self.timerState = 2
+			else:
+				self.curTimeClockInterval += 1
+				for avatar in self.avatars:
+					self.avatars[avatar].syncTimeInterval(self.curTimeClockInterval, self.timerState)
+		elif self.timerState == 2:
+			if self.curTimeClockInterval >= self.maxSelectCardDoneAnimTime:
+				for avatar in self.avatars:
+					self.avatars[avatar].startBattle()
+				self.curTimeClockInterval = 0.0
+				self.timerState = 3
+			else:
+				self.curTimeClockInterval += 1
+		elif self.timerState == 3:
+			if self.curTimeClockInterval >= self.maxLaunchActionTimeInterval:
+				# which means we should modify controller to another player
+				self.curControlNb += 1
+				if self.curControlNb >= self.roomPlayerNb:
+					self.curControlNb = 0
+				# send messages to all proxys to switch controller
+				for avatar in self.avatars:
+					self.avatars[avatar].switchController(self.curControlNb)
+				self.curTimeClockInterval = 0.0
+				self.timerState = 4
+			else:
+				self.curTimeClockInterval += 1
+				for avatar in self.avatars:
+					self.avatars[avatar].syncTimeInterval(self.curTimeClockInterval, self.timerState)
+		elif self.timerState == 4:
+			if self.curTimeClockInterval >= self.maxSwitchControllerAnimTime:
+				for avatar in self.avatars:
+					self.avatars[avatar].resumeBattle()
+				self.curTimeClockInterval = 0.0
+				self.timerState = 3
+			else:
+				self.curTimeClockInterval += 1
+
+			
+
 		
-	def onEnter(self, entityCall):
-		"""
-		defined method.
-		进入场景
-		"""
-		self.avatars[entityCall.id] = entityCall
 		
 	def onLeave(self, entityID):
 		"""

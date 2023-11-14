@@ -89,9 +89,39 @@ void AvatarBase::onRemoteMethodCall(MemoryStream& stream)
 
 	switch(pMethod->methodUtype)
 	{
+		case 7:
+		{
+			onStopCardSelection();
+			break;
+		}
+		case 6:
+		{
+			SYNC_PLAYER_BATTLE_INFO onSyncPlayerBattleInfo_arg1;
+			((DATATYPE_SYNC_PLAYER_BATTLE_INFO*)pMethod->args[0])->createFromStreamEx(stream, onSyncPlayerBattleInfo_arg1);
+			onSyncPlayerBattleInfo(onSyncPlayerBattleInfo_arg1);
+			break;
+		}
+		case 11:
+		{
+			resumeBattle();
+			break;
+		}
 		case 9:
 		{
-			onJump();
+			startBattle();
+			break;
+		}
+		case 10:
+		{
+			uint8 switchController_arg1 = stream.readUint8();
+			switchController(switchController_arg1);
+			break;
+		}
+		case 8:
+		{
+			SYNC_BATTLE_TIME_INFO syncTimeInterval_arg1;
+			((DATATYPE_SYNC_BATTLE_TIME_INFO*)pMethod->args[0])->createFromStreamEx(stream, syncTimeInterval_arg1);
+			syncTimeInterval(syncTimeInterval_arg1);
 			break;
 		}
 		default:
@@ -148,24 +178,6 @@ void AvatarBase::onUpdatePropertys(MemoryStream& stream)
 
 				break;
 			}
-			case 41002:
-			{
-				uint16 oldval_level = level;
-				level = stream.readUint16();
-
-				if(pProp->isBase())
-				{
-					if(inited())
-						onLevelChanged(oldval_level);
-				}
-				else
-				{
-					if(inWorld())
-						onLevelChanged(oldval_level);
-				}
-
-				break;
-			}
 			case 41006:
 			{
 				uint32 oldval_modelID = modelID;
@@ -216,24 +228,6 @@ void AvatarBase::onUpdatePropertys(MemoryStream& stream)
 				{
 					if(inWorld())
 						onNameChanged(oldval_name);
-				}
-
-				break;
-			}
-			case 6:
-			{
-				uint16 oldval_own_val = own_val;
-				own_val = stream.readUint16();
-
-				if(pProp->isBase())
-				{
-					if(inited())
-						onOwn_valChanged(oldval_own_val);
-				}
-				else
-				{
-					if(inWorld())
-						onOwn_valChanged(oldval_own_val);
 				}
 
 				break;
@@ -329,29 +323,8 @@ void AvatarBase::callPropertysSetMethods()
 		}
 	}
 
-	uint16 oldval_level = level;
-	Property* pProp_level = pdatas[4];
-	if(pProp_level->isBase())
-	{
-		if(inited() && !inWorld())
-			onLevelChanged(oldval_level);
-	}
-	else
-	{
-		if(inWorld())
-		{
-			if(pProp_level->isOwnerOnly() && !isPlayer())
-			{
-			}
-			else
-			{
-				onLevelChanged(oldval_level);
-			}
-		}
-	}
-
 	uint32 oldval_modelID = modelID;
-	Property* pProp_modelID = pdatas[5];
+	Property* pProp_modelID = pdatas[4];
 	if(pProp_modelID->isBase())
 	{
 		if(inited() && !inWorld())
@@ -372,7 +345,7 @@ void AvatarBase::callPropertysSetMethods()
 	}
 
 	uint8 oldval_modelScale = modelScale;
-	Property* pProp_modelScale = pdatas[6];
+	Property* pProp_modelScale = pdatas[5];
 	if(pProp_modelScale->isBase())
 	{
 		if(inited() && !inWorld())
@@ -393,7 +366,7 @@ void AvatarBase::callPropertysSetMethods()
 	}
 
 	FString oldval_name = name;
-	Property* pProp_name = pdatas[7];
+	Property* pProp_name = pdatas[6];
 	if(pProp_name->isBase())
 	{
 		if(inited() && !inWorld())
@@ -409,27 +382,6 @@ void AvatarBase::callPropertysSetMethods()
 			else
 			{
 				onNameChanged(oldval_name);
-			}
-		}
-	}
-
-	uint16 oldval_own_val = own_val;
-	Property* pProp_own_val = pdatas[8];
-	if(pProp_own_val->isBase())
-	{
-		if(inited() && !inWorld())
-			onOwn_valChanged(oldval_own_val);
-	}
-	else
-	{
-		if(inWorld())
-		{
-			if(pProp_own_val->isOwnerOnly() && !isPlayer())
-			{
-			}
-			else
-			{
-				onOwn_valChanged(oldval_own_val);
 			}
 		}
 	}
@@ -456,7 +408,7 @@ void AvatarBase::callPropertysSetMethods()
 	}
 
 	uint32 oldval_uid = uid;
-	Property* pProp_uid = pdatas[9];
+	Property* pProp_uid = pdatas[7];
 	if(pProp_uid->isBase())
 	{
 		if(inited() && !inWorld())
@@ -477,7 +429,7 @@ void AvatarBase::callPropertysSetMethods()
 	}
 
 	uint32 oldval_utype = utype;
-	Property* pProp_utype = pdatas[10];
+	Property* pProp_utype = pdatas[8];
 	if(pProp_utype->isBase())
 	{
 		if(inited() && !inWorld())
@@ -503,11 +455,9 @@ AvatarBase::AvatarBase():
 	Entity(),
 	pBaseEntityCall(NULL),
 	pCellEntityCall(NULL),
-	level((uint16)FCString::Atoi64(TEXT("0"))),
 	modelID((uint32)FCString::Atoi64(TEXT("0"))),
 	modelScale((uint8)FCString::Atoi64(TEXT("30"))),
 	name(TEXT("")),
-	own_val((uint16)FCString::Atoi64(TEXT("0"))),
 	uid((uint32)FCString::Atoi64(TEXT("0"))),
 	utype((uint32)FCString::Atoi64(TEXT("0")))
 {

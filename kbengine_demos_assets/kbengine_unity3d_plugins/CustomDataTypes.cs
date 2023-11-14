@@ -342,4 +342,115 @@ namespace KBEngine
 	}
 
 
+
+	public class DATATYPE_SYNC_BATTLE_TIME_INFO : DATATYPE_BASE
+	{
+		public SYNC_BATTLE_TIME_INFO createFromStreamEx(MemoryStream stream)
+		{
+			SYNC_BATTLE_TIME_INFO datas = new SYNC_BATTLE_TIME_INFO();
+			datas.curTime = stream.readInt32();
+			datas.playerNb = stream.readUint8();
+			return datas;
+		}
+
+		public void addToStreamEx(Bundle stream, SYNC_BATTLE_TIME_INFO v)
+		{
+			stream.writeInt32(v.curTime);
+			stream.writeUint8(v.playerNb);
+		}
+	}
+
+
+
+	public class DATATYPE_SYNC_PLAYER_BATTLE_INFO : DATATYPE_BASE
+	{
+		private DATATYPE__SYNC_PLAYER_BATTLE_INFO_cardList_ArrayType_ChildArray cardList_DataType = new DATATYPE__SYNC_PLAYER_BATTLE_INFO_cardList_ArrayType_ChildArray();
+
+		public class DATATYPE__SYNC_PLAYER_BATTLE_INFO_cardList_ArrayType_ChildArray : DATATYPE_BASE
+		{
+			public List<string> createFromStreamEx(MemoryStream stream)
+			{
+				UInt32 size = stream.readUint32();
+				List<string> datas = new List<string>();
+
+				while(size > 0)
+				{
+					--size;
+					datas.Add(stream.readString());
+				};
+
+				return datas;
+			}
+
+			public void addToStreamEx(Bundle stream, List<string> v)
+			{
+				stream.writeUint32((UInt32)v.Count);
+				for(int i=0; i<v.Count; ++i)
+				{
+					stream.writeString(v[i]);
+				};
+			}
+		}
+
+		public SYNC_PLAYER_BATTLE_INFO createFromStreamEx(MemoryStream stream)
+		{
+			SYNC_PLAYER_BATTLE_INFO datas = new SYNC_PLAYER_BATTLE_INFO();
+			datas.cardList = cardList_DataType.createFromStreamEx(stream);
+			return datas;
+		}
+
+		public void addToStreamEx(Bundle stream, SYNC_PLAYER_BATTLE_INFO v)
+		{
+			cardList_DataType.addToStreamEx(stream, v.cardList);
+		}
+	}
+
+
+
+	public class DATATYPE_PLAYER_PERSIST_INFO : DATATYPE_BASE
+	{
+		private DATATYPE__PLAYER_PERSIST_INFO_persistCardList_ArrayType_ChildArray persistCardList_DataType = new DATATYPE__PLAYER_PERSIST_INFO_persistCardList_ArrayType_ChildArray();
+
+		public class DATATYPE__PLAYER_PERSIST_INFO_persistCardList_ArrayType_ChildArray : DATATYPE_BASE
+		{
+			public List<string> createFromStreamEx(MemoryStream stream)
+			{
+				UInt32 size = stream.readUint32();
+				List<string> datas = new List<string>();
+
+				while(size > 0)
+				{
+					--size;
+					datas.Add(stream.readString());
+				};
+
+				return datas;
+			}
+
+			public void addToStreamEx(Bundle stream, List<string> v)
+			{
+				stream.writeUint32((UInt32)v.Count);
+				for(int i=0; i<v.Count; ++i)
+				{
+					stream.writeString(v[i]);
+				};
+			}
+		}
+
+		public PLAYER_PERSIST_INFO createFromStreamEx(MemoryStream stream)
+		{
+			PLAYER_PERSIST_INFO datas = new PLAYER_PERSIST_INFO();
+			datas.persistCardList = persistCardList_DataType.createFromStreamEx(stream);
+			datas.campNb = stream.readUint8();
+			return datas;
+		}
+
+		public void addToStreamEx(Bundle stream, PLAYER_PERSIST_INFO v)
+		{
+			persistCardList_DataType.addToStreamEx(stream, v.persistCardList);
+			stream.writeUint8(v.campNb);
+		}
+	}
+
+
 }

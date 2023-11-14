@@ -11,24 +11,31 @@ from KBEDebug import *
 import d_avatar_inittab
 
 class Account(KBEngine.Proxy):
-	"""
-	账号实体
-	客户端登陆到服务端后，服务端将自动创建这个实体，通过这个实体与客户端进行交互
-	"""
 	def __init__(self):
 		INFO_MSG("create Account!!!")
 		KBEngine.Proxy.__init__(self)
 		self.activeAvatar = None
 		self.relogin = time.time()
+		self.syntheticMatchScore = 0
 
 	def reqTest(self, param):
 		INFO_MSG("receive msg from ue!!!")
 		self.client.onReqTest(100)
 		return
 
+	def reqDispatchRoom(self):
+		return
+
 	def reqEnterRoom(self):
 		# spawn entity for
 		KBEngine.createEntityAnywhere("Avatar", {}, self.onAvatarCreated)
+
+	def reqMatch(self):
+		DEBUG_MSG("Account::reqMatch: entityID=%i" % (self.id))
+		KBEngine.globalData["Hall"].applyMatch(self)
+
+	def syncRoomCreated(self, roomKey):
+		self.onSyncRoomCreated(roomKey)
 	
 		
 	#--------------------------------------------------------------------------------------------
@@ -74,6 +81,9 @@ class Account(KBEngine.Proxy):
 				pass
 				
 			self.activeAvatar = None
+
+	def onSyncRoomCreated(self, roomKey):
+		self.client.onSyncRoomCreated(roomKey)
 			
 	def onAvatarCreated(self, baseRef):
 		if baseRef is None:
@@ -91,6 +101,10 @@ class Account(KBEngine.Proxy):
 			return
 		
 		avatar.accountEntity = self
+		#avatar.persistPlayerInfo = self.persistPlayerInfo
+		avatar.persistPlayerInfo = {
+			"persistCardList" : ["Adam", "Bale", "Charles"]
+		}
 		self.activeAvatar = avatar
 		self.giveClientTo(avatar)
 		

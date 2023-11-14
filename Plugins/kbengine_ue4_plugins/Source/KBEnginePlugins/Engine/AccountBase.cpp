@@ -89,27 +89,16 @@ void AccountBase::onRemoteMethodCall(MemoryStream& stream)
 
 	switch(pMethod->methodUtype)
 	{
-		case 10005:
-		{
-			uint8 onCreateAvatarResult_arg1 = stream.readUint8();
-			onCreateAvatarResult(onCreateAvatarResult_arg1);
-			break;
-		}
 		case 4:
 		{
-			uint64 onRemoveAvatar_arg1 = stream.readUint64();
-			onRemoveAvatar(onRemoveAvatar_arg1);
-			break;
-		}
-		case 10003:
-		{
-			onReqAvatarList();
+			int32 onReqTest_arg1 = stream.readInt32();
+			onReqTest(onReqTest_arg1);
 			break;
 		}
 		case 5:
 		{
-			int32 onReqTest_arg1 = stream.readInt32();
-			onReqTest(onReqTest_arg1);
+			uint64 onSyncRoomCreated_arg1 = stream.readUint64();
+			onSyncRoomCreated(onSyncRoomCreated_arg1);
 			break;
 		}
 		default:
@@ -162,24 +151,6 @@ void AccountBase::onUpdatePropertys(MemoryStream& stream)
 				{
 					if(inWorld())
 						onDirectionChanged(oldval_direction);
-				}
-
-				break;
-			}
-			case 2:
-			{
-				uint64 oldval_lastSelCharacter = lastSelCharacter;
-				lastSelCharacter = stream.readUint64();
-
-				if(pProp->isBase())
-				{
-					if(inited())
-						onLastSelCharacterChanged(oldval_lastSelCharacter);
-				}
-				else
-				{
-					if(inWorld())
-						onLastSelCharacterChanged(oldval_lastSelCharacter);
 				}
 
 				break;
@@ -239,27 +210,6 @@ void AccountBase::callPropertysSetMethods()
 		}
 	}
 
-	uint64 oldval_lastSelCharacter = lastSelCharacter;
-	Property* pProp_lastSelCharacter = pdatas[4];
-	if(pProp_lastSelCharacter->isBase())
-	{
-		if(inited() && !inWorld())
-			onLastSelCharacterChanged(oldval_lastSelCharacter);
-	}
-	else
-	{
-		if(inWorld())
-		{
-			if(pProp_lastSelCharacter->isOwnerOnly() && !isPlayer())
-			{
-			}
-			else
-			{
-				onLastSelCharacterChanged(oldval_lastSelCharacter);
-			}
-		}
-	}
-
 	FVector oldval_position = position;
 	Property* pProp_position = pdatas[1];
 	if(pProp_position->isBase())
@@ -286,8 +236,7 @@ void AccountBase::callPropertysSetMethods()
 AccountBase::AccountBase():
 	Entity(),
 	pBaseEntityCall(NULL),
-	pCellEntityCall(NULL),
-	lastSelCharacter((uint64)FCString::Atoi64(TEXT("0")))
+	pCellEntityCall(NULL)
 {
 }
 

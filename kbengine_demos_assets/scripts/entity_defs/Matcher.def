@@ -1,9 +1,5 @@
 <root>
 	<Properties>
-		<roomKey>
-			<Type>			UINT64			</Type>
-			<Flags>			BASE				</Flags>
-		</roomKey>
 	</Properties>
 
 	<ClientMethods>

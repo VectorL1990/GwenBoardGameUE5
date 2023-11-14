@@ -17,6 +17,15 @@ class GWENBOARDGAMECLIENT_API ULoginWidget : public UUserWidget
 				UFUNCTION(BlueprintCallable)
 				void ClickButton(FString buttonName);
 
+				UFUNCTION(BlueprintCallable)
+				void ChangePlayerName(FString name);
+
+				UFUNCTION(BlueprintCallable)
+				void ChangePassword(FString pwd);
+
 				AActor* owner;
-	
+
+				FString playerName;
+
+				FString password;
 };

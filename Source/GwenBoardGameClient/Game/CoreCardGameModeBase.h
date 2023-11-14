@@ -20,9 +20,20 @@ class GWENBOARDGAMECLIENT_API ACoreCardGameModeBase : public ABasicGameMode
     GENERATED_BODY()
 public:
 
+    virtual void BeginPlay() override;
+
     virtual void InitEvents() override;
 
     virtual void Tick(float deltaTime) override;
+
+    UFUNCTION(BlueprintNativeEvent)
+    void InitDone();
+
+    UPROPERTY(EditDefaultsOnly)
+    TSubclassOf<ACard> cardBPClass;
+
+    UPROPERTY(EditDefaultsOnly)
+    FVector initSpawnCardLoc;
 
 private:
     //void ReceivePlayCardResponse();
@@ -35,6 +46,8 @@ private:
     void onReceiveUpdateCoreGame(const UKBEventData* eventData);
 
     void onUpdateGridInfoList(const UKBEventData* eventData);
+
+    void onSyncPlayerBattleInfo(const UKBEventData* eventData);
 
     BattleStatus curBattleStatus = BattleStatus::Default;
 

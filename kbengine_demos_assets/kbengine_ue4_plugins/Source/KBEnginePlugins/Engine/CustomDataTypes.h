@@ -202,4 +202,80 @@ public:
 };
 
 
+class KBENGINEPLUGINS_API DATATYPE_SYNC_BATTLE_TIME_INFO : DATATYPE_BASE
+{
+public:
+	void createFromStreamEx(MemoryStream& stream, SYNC_BATTLE_TIME_INFO& datas);
+	void addToStreamEx(Bundle& stream, const SYNC_BATTLE_TIME_INFO& v);
+};
+
+
+class KBENGINEPLUGINS_API DATATYPE_SYNC_PLAYER_BATTLE_INFO : DATATYPE_BASE
+{
+public:
+	class KBENGINEPLUGINS_API DATATYPE__SYNC_PLAYER_BATTLE_INFO_cardList_ArrayType_ChildArray : public DATATYPE_BASE
+	{
+	public:
+		void createFromStreamEx(MemoryStream& stream, TArray<FString>& datas)
+		{
+			uint32 size = stream.readUint32();
+			while(size > 0)
+			{
+				--size;
+				datas.Add(stream.readString());
+			};
+
+		}
+
+		void addToStreamEx(Bundle& stream, const TArray<FString>& v)
+		{
+			stream.writeUint32((uint32)v.Num());
+			for(int i=0; i<v.Num(); ++i)
+			{
+				stream.writeString(v[i]);
+			};
+		}
+	};
+
+	DATATYPE__SYNC_PLAYER_BATTLE_INFO_cardList_ArrayType_ChildArray cardList_DataType;
+
+	void createFromStreamEx(MemoryStream& stream, SYNC_PLAYER_BATTLE_INFO& datas);
+	void addToStreamEx(Bundle& stream, const SYNC_PLAYER_BATTLE_INFO& v);
+};
+
+
+class KBENGINEPLUGINS_API DATATYPE_PLAYER_PERSIST_INFO : DATATYPE_BASE
+{
+public:
+	class KBENGINEPLUGINS_API DATATYPE__PLAYER_PERSIST_INFO_persistCardList_ArrayType_ChildArray : public DATATYPE_BASE
+	{
+	public:
+		void createFromStreamEx(MemoryStream& stream, TArray<FString>& datas)
+		{
+			uint32 size = stream.readUint32();
+			while(size > 0)
+			{
+				--size;
+				datas.Add(stream.readString());
+			};
+
+		}
+
+		void addToStreamEx(Bundle& stream, const TArray<FString>& v)
+		{
+			stream.writeUint32((uint32)v.Num());
+			for(int i=0; i<v.Num(); ++i)
+			{
+				stream.writeString(v[i]);
+			};
+		}
+	};
+
+	DATATYPE__PLAYER_PERSIST_INFO_persistCardList_ArrayType_ChildArray persistCardList_DataType;
+
+	void createFromStreamEx(MemoryStream& stream, PLAYER_PERSIST_INFO& datas);
+	void addToStreamEx(Bundle& stream, const PLAYER_PERSIST_INFO& v);
+};
+
+
 }

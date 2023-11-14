@@ -24,6 +24,16 @@ namespace KBEngine
                 reqTest(data.testParam);
             });
 
+        KBENGINE_REGISTER_EVENT_OVERRIDE_FUNC("ReqEnterRoom", "ReqEnterRoom", [this](const UKBEventData* pEventData)
+            {
+                ReqEnterRoom();
+            });
+
+        KBENGINE_REGISTER_EVENT_OVERRIDE_FUNC("ReqMatch", "ReqMatch", [this](const UKBEventData* pEventData)
+            {
+                ReqMatch();
+            });
+
         UKBEventData_onLoginSuccessfully* pEventData = NewObject<UKBEventData_onLoginSuccessfully>();
         pEventData->entity_uuid = KBEngineApp::getSingleton().entity_uuid();
         pEventData->entity_id = id();
@@ -41,18 +51,26 @@ namespace KBEngine
         pBaseEntityCall->reqTest(param);
     }
 
-    void Account::onCreateAvatarResult(uint8 arg1)
-    {}
+    void Account::ReqEnterRoom()
+    {
+        pBaseEntityCall->reqEnterRoom();
+    }
 
-    void Account::onRemoveAvatar(uint64 arg1)
-    {}
-
-    void Account::onReqAvatarList()
-    {}
+    void Account::ReqMatch()
+    {
+        pBaseEntityCall->reqMatch();
+    }
 
     void Account::onReqTest(int32 param)
     {
         FString paramStr = FString::FromInt(param);
         GEngine->AddOnScreenDebugMessage(-1, 10.0, FColor::Red, paramStr);
+    }
+
+    void Account::onSyncRoomCreated(uint64 roomKey)
+    {
+        UKBEventData_onSyncRoomCreated* pEventData = NewObject<UKBEventData_onSyncRoomCreated>();
+        pEventData->sRoomKey = FString::Printf(TEXT("%lld"), roomKey);
+        KBENGINE_EVENT_FIRE("onSyncRoomCreated", pEventData);
     }
 }

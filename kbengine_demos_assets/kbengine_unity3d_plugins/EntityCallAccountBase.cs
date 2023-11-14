@@ -21,43 +21,21 @@ namespace KBEngine
 			type = ENTITYCALL_TYPE.ENTITYCALL_TYPE_BASE;
 		}
 
-		public void reqAvatarList()
+		public void reqEnterRoom()
 		{
-			Bundle pBundle = newCall("reqAvatarList", 0);
+			Bundle pBundle = newCall("reqEnterRoom", 0);
 			if(pBundle == null)
 				return;
 
 			sendCall(null);
 		}
 
-		public void reqCreateAvatar(Byte arg1, string arg2)
+		public void reqMatch()
 		{
-			Bundle pBundle = newCall("reqCreateAvatar", 0);
+			Bundle pBundle = newCall("reqMatch", 0);
 			if(pBundle == null)
 				return;
 
-			bundle.writeUint8(arg1);
-			bundle.writeUnicode(arg2);
-			sendCall(null);
-		}
-
-		public void reqRemoveAvatar(string arg1)
-		{
-			Bundle pBundle = newCall("reqRemoveAvatar", 0);
-			if(pBundle == null)
-				return;
-
-			bundle.writeUnicode(arg1);
-			sendCall(null);
-		}
-
-		public void reqRemoveAvatarDBID(UInt64 arg1)
-		{
-			Bundle pBundle = newCall("reqRemoveAvatarDBID", 0);
-			if(pBundle == null)
-				return;
-
-			bundle.writeUint64(arg1);
 			sendCall(null);
 		}
 
@@ -68,16 +46,6 @@ namespace KBEngine
 				return;
 
 			bundle.writeInt32(arg1);
-			sendCall(null);
-		}
-
-		public void selectAvatarGame(UInt64 arg1)
-		{
-			Bundle pBundle = newCall("selectAvatarGame", 0);
-			if(pBundle == null)
-				return;
-
-			bundle.writeUint64(arg1);
 			sendCall(null);
 		}
 

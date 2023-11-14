@@ -1624,5 +1624,25 @@ namespace KBEngine
 
 	}
 
+	public class SYNC_BATTLE_TIME_INFO
+	{
+		public Int32 curTime = 0;
+		public Byte playerNb = 0;
+
+	}
+
+	public class SYNC_PLAYER_BATTLE_INFO
+	{
+		public List<string> cardList = new List<string>();
+
+	}
+
+	public class PLAYER_PERSIST_INFO
+	{
+		public List<string> persistCardList = new List<string>();
+		public Byte campNb = 0;
+
+	}
+
 
 }

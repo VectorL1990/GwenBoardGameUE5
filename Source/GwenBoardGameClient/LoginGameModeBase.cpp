@@ -21,7 +21,7 @@ void ALoginGameModeBase::InitEvents()
 {
 				Super::InitEvents();
 
-				//KBENGINE_REGISTER_EVENT("onReqTest", onReqTest);
+				
 }
 
 void ALoginGameModeBase::ReqTest()

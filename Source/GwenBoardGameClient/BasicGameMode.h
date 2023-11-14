@@ -32,17 +32,30 @@ public:
     void InitKBEMain();
 
     UFUNCTION()
-    void ReqCreateAccount();
+    void ReqCreateAccount(FString playerName, FString pwd);
 
     UFUNCTION()
-    void ReqLogin();
+    void ReqLogin(FString playerName, FString pwd);
+
+    UFUNCTION()
+    void ReqMatch();
+
+    UFUNCTION()
+    void ReqEnterRoom();
 
     UFUNCTION()
     void onCreateAccountResult(const UKBEventData* eventData);
+
+    void onSyncRoomCreated(const UKBEventData* eventData);
+
+    void onSyncPlayerBattleInfo(const UKBEventData* eventData);
 
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<AActor> kbeMainClass;
 
     UPROPERTY()
     AActor* kbeMainActor;
+
+    UPROPERTY()
+    FString sRoomKey;
 };
