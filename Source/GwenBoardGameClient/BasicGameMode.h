@@ -41,9 +41,14 @@ public:
     void ReqMatch();
 
     UFUNCTION()
+    void ReqEnterRoom();
+
+    UFUNCTION()
     void onCreateAccountResult(const UKBEventData* eventData);
 
     void onSyncRoomCreated(const UKBEventData* eventData);
+
+    void onSyncPlayerBattleInfo(const UKBEventData* eventData);
 
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<AActor> kbeMainClass;

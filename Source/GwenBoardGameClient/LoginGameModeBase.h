@@ -21,11 +21,9 @@ public:
 
     void ReqTest();
 
-    void ReqEnterRoom();
-
     void onReqTest(const UKBEventData* eventData);
 
-    void onSyncPlayerBattleInfo(const UKBEventData* eventData);
+    
 
     UFUNCTION(BlueprintNativeEvent)
     void BasicInitDone();

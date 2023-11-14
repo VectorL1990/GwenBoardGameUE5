@@ -27,6 +27,7 @@ void ABasicGameMode::InitEvents()
     KBENGINE_REGISTER_EVENT(KBEngine::KBEventTypes::onKicked, onKicked);
 				KBENGINE_REGISTER_EVENT(KBEngine::KBEventTypes::onCreateAccountResult, onCreateAccountResult);
 				KBENGINE_REGISTER_EVENT("onSyncRoomCreated", onSyncRoomCreated);
+				KBENGINE_REGISTER_EVENT("onSyncPlayerBattleInfo", onSyncPlayerBattleInfo);
 }
 
 void ABasicGameMode::onKicked(const UKBEventData* eventData)
@@ -51,6 +52,12 @@ void ABasicGameMode::ReqMatch()
 {
 				UKBEventData* eventData = NewObject<UKBEventData>();
 				KBENGINE_EVENT_FIRE("ReqMatch", eventData);
+}
+
+void ABasicGameMode::ReqEnterRoom()
+{
+				UKBEventData* eventData = NewObject<UKBEventData>();
+				KBENGINE_EVENT_FIRE("ReqEnterRoom", eventData);
 }
 
 void ABasicGameMode::ReqCreateAccount(FString playerName, FString pwd)
@@ -78,4 +85,15 @@ void ABasicGameMode::onSyncRoomCreated(const UKBEventData* eventData)
 {
 				const UKBEventData_onSyncRoomCreated* onSyncRoomCreatedData = Cast<UKBEventData_onSyncRoomCreated>(eventData);
 				sRoomKey = onSyncRoomCreatedData->sRoomKey;
+				GEngine->AddOnScreenDebugMessage(-1, 10.0, FColor::Red, "onSyncRoomCreated room key is: " + sRoomKey);
+				ReqEnterRoom();
+}
+
+void ABasicGameMode::onSyncPlayerBattleInfo(const UKBEventData* eventData)
+{
+				const UKBEventData_onSyncPlayerBattleInfo* onSyncPlayerBattleInfoData = Cast<UKBEventData_onSyncPlayerBattleInfo>(eventData);
+				for (int i = 0; i < onSyncPlayerBattleInfoData->cardList.Num(); i++)
+				{
+								GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, onSyncPlayerBattleInfoData->cardList[i]);
+				}
 }

@@ -28,6 +28,7 @@ class Room(KBEngine.Entity):
 
 	def tellAccountsRoomCreated(self):
 		for k,v in self.accountEntityDict.items():
+			DEBUG_MSG("Room::tellAccountsRoomCreated: tell account room created and entityID=%i" % (k))
 			v.syncRoomCreated(self.roomKey)
 
 	def playAction(self, entityCall, actionInfo):

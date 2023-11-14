@@ -18,20 +18,17 @@ class Hall(KBEngine.Entity):
 		
 
 	def createMatcher(self):
-		matcher = KBEngine.createEntityAnywhere("Matcher", {}, self.onMatcherCreated)
-		self.matcherNb += 1
-		# add this matcher to dictionary
-		self.matcherDict[self.matcherNb] = matcher
-		matcher.registerGlobalMatcher(self.matcherNb)
-		return
+		KBEngine.createEntityAnywhere("Matcher", {}, self.onMatcherCreated)
 
 	def applyMatch(self, accountEntityCall):
-		for k,v in self.matcherDict.items():
-			if v.curMatchingPlayerNb < v.maxMatchingPlayerNb :
-				v.applyMatch(accountEntityCall)
-			else:
-				continue
-		self.applyMatchPlayerDict[accountEntityCall.id] = accountEntityCall
+		DEBUG_MSG("Halls::applyMatch: accountEntityCall entityID=%i" % (accountEntityCall.id))
+		if accountEntityCall.id not in self.applyMatchPlayerDict:
+			for k,v in self.matcherDict.items():
+				if v.curMatchingPlayerNb < v.maxMatchingPlayerNb :
+					v.applyMatch(accountEntityCall)
+				else:
+					continue
+			self.applyMatchPlayerDict[accountEntityCall.id] = accountEntityCall
 
 
 	def createRoom(self, playerEntityIdList):
@@ -42,7 +39,11 @@ class Hall(KBEngine.Entity):
 			}, \
 			Functor.Functor(self.onRoomCreated, newRoomKey, playerEntityIdList))
 	
-	def onMatcherCreated(self):
+	def onMatcherCreated(self, matcherEntityCall):
+		self.matcherNb += 1
+		# add this matcher to dictionary
+		self.matcherDict[self.matcherNb] = matcherEntityCall
+		matcherEntityCall.registerGlobalMatcher(self.matcherNb)
 		return
 
 	def onRoomCreated(self, roomKey, playerEntityIdList, roomEntityCall):
@@ -50,7 +51,8 @@ class Hall(KBEngine.Entity):
 		for playerEntityId in playerEntityIdList:
 			roomEntityCall.accountEntityDict[playerEntityId] = self.applyMatchPlayerDict[playerEntityId]
 		# delete playerId in dictionary
-		for playerId in playerEntityList:
+		for playerId in playerEntityIdList:
+			DEBUG_MSG("Halls::onRoomCreatedCB: delete player in apply match dict and entityID=%i" % (playerId))
 			self.applyMatchPlayerDict.pop(playerId)
 		roomEntityCall.tellAccountsRoomCreated()
 

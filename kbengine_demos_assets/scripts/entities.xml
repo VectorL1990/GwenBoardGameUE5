@@ -11,4 +11,7 @@
 	<Gate hasClient="true"></Gate>
 	<TestEntity hasClient="true"></TestEntity>
 	<Player hasClient="true"></Player>
+	<Hall></Hall>
+	<Room></Room>
+	<Matcher></Matcher>
 </root>

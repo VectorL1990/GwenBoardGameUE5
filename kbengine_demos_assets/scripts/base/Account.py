@@ -31,6 +31,7 @@ class Account(KBEngine.Proxy):
 		KBEngine.createEntityAnywhere("Avatar", {}, self.onAvatarCreated)
 
 	def reqMatch(self):
+		DEBUG_MSG("Account::reqMatch: entityID=%i" % (self.id))
 		KBEngine.globalData["Hall"].applyMatch(self)
 
 	def syncRoomCreated(self, roomKey):
