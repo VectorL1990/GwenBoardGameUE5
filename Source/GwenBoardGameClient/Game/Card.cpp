@@ -25,7 +25,7 @@ void ACard::Tick(float DeltaTime)
 
 }
 
-void ACard::InitCard()
+void ACard::InitCard(FString cardName)
 {
 
 }

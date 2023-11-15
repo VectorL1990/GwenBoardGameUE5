@@ -96,4 +96,10 @@ void ABasicGameMode::onSyncPlayerBattleInfo(const UKBEventData* eventData)
 				{
 								GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, onSyncPlayerBattleInfoData->cardList[i]);
 				}
+				InitPlayerBattleInfoDone(onSyncPlayerBattleInfoData->cardList);
+}
+
+void ABasicGameMode::InitPlayerBattleInfoDone(TArray<FString> cardList)
+{
+
 }

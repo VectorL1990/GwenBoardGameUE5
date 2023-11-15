@@ -27,4 +27,6 @@ public:
 
     UFUNCTION(BlueprintNativeEvent)
     void BasicInitDone();
+
+    virtual void InitPlayerBattleInfoDone(TArray<FString> cardList) override;
 };
