@@ -49,6 +49,8 @@ private:
 
     void onSyncPlayerBattleInfo(const UKBEventData* eventData);
 
+    virtual void InitPlayerBattleInfoDone(TArray<FString> cardList) override;
+
     BattleStatus curBattleStatus = BattleStatus::Default;
 
     TMap<FString, float> maxCoutingTicksMap;

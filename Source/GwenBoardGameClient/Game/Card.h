@@ -27,7 +27,7 @@ public:
     // Called every frame
     virtual void Tick(float DeltaTime) override;
 
-    void InitCard();
+    void InitCard(FString cardName);
 
     FPLAY_CARD_INFO GetCardInfo();
 

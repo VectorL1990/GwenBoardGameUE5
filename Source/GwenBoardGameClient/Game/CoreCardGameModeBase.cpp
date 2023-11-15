@@ -130,3 +130,12 @@ void ACoreCardGameModeBase::onSyncPlayerBattleInfo(const UKBEventData* eventData
 
 }
 
+void ACoreCardGameModeBase::InitPlayerBattleInfoDone(TArray<FString> cardList)
+{
+    FRotator spawnRot = FRotator::ZeroRotator;
+    for (int32 i = 0; i < cardList.Num(); i++)
+    {
+        ACard* newCard = GetWorld()->SpawnActor<ACard>(cardBPClass, initSpawnCardLoc, spawnRot);
+    }
+}
+
