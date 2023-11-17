@@ -9,8 +9,9 @@
 UENUM(BlueprintType)
 enum class BattleCardStatus : uint8
 {
-    Standby = 0,
-    InBattle = 1,
+    Select,
+    Standby,
+    InBattle,
     InGrave,
     UnUsed,
 };

@@ -143,6 +143,12 @@
 			<cardList>
 				<Type> ARRAY <of>	STRING </of>	</Type>
 			</cardList>
+			<selectCardList>
+				<Type> ARRAY <of>	STRING </of>	</Type>
+			</selectCardList>
+			<pileCardList>
+				<Type> ARRAY <of>	STRING </of>	</Type>
+			</pileCardList>
 		</Properties>
 	</SYNC_PLAYER_BATTLE_INFO>
 
