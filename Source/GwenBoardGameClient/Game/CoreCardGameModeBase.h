@@ -35,6 +35,19 @@ public:
     UPROPERTY(EditDefaultsOnly)
     FVector initSpawnCardLoc;
 
+    UPROPERTY(EditDefaultsOnly)
+    FVector selectCardDemoLoc;
+
+    UPROPERTY(EditDefaultsOnly)
+    float selectCardInterval;
+
+    UPROPERTY(EditDefaultsOnly)
+    int32 maxSelectCardNb;
+
+    UPROPERTY(EditDefaultsOnly)
+    int32 availableSwitchCardNb;
+
+
 private:
     //void ReceivePlayCardResponse();
     void ReqEnterRoom();
@@ -64,6 +77,9 @@ private:
 
     UPROPERTY()
         TMap<int32, ACard*> occupiedGridCardMap;
+
+        UPROPERTY()
+        TArray<ACard*> selectCards;
 
     UPROPERTY()
         TMap<int32, ACard*> allCards;

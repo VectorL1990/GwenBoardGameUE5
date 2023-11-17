@@ -48,7 +48,11 @@ void ACoreCardGamePC::DealLeftClick()
             ACard* card = Cast<ACard>(hitResult.GetActor());
             if (card)
             {
-                if (card->cardStatus == BattleCardStatus::Standby)
+                if (card->cardStatus == BattleCardStatus::Select)
+                {
+                    
+                }
+                else if (card->cardStatus == BattleCardStatus::Standby)
                 {
                     // which means player wants to look into the detail of this card
                     // show detail in battle widget

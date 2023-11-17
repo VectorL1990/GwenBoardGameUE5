@@ -24,14 +24,8 @@ class Avatar(KBEngine.Proxy,
 	def reqTellRoomSelectCardDone(self):
 		# notify room that player has cards selected
 		return
-
-	def onClientEnabled(self):
-		INFO_MSG("Avatar[%i-%s] entities enable. spaceUTypeB=%s, entityCall:%s" % (self.id, self.nameB, self.spaceUTypeB, self.client))
-		# generate rand data for card pile initialization
-		self.getShuffleCardList()
-		self.client.onInitShuffleCardList()
 		
-	def getShuffleCardList(self):
+	def getShuffleCardList(self, allCardList):
 		randCardList = self.cardList
 		random.shuffle(randCardList)
 		for i in range(10):
@@ -56,6 +50,7 @@ class Avatar(KBEngine.Proxy,
 			self.destroy()
 
 	def syncPlayerBattleInfo(self, playerBattleInfo):
+		self.getShuffleCardList(playerBattleInfo["cardList"])
 		self.client.onSyncPlayerBattleInfo(playerBattleInfo)
 		return
 
