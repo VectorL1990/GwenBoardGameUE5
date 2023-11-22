@@ -3,6 +3,7 @@ import KBEngine
 import math
 import time
 from KBEDebug import *
+import d_all_cards
 
 class Room(KBEngine.Entity):
 	def __init__(self):
@@ -45,8 +46,16 @@ class Room(KBEngine.Entity):
 			# calcualte effect in this place
 			return
 
-	def enterRoom(self, entityCall):
-		self.avatars[entityCall.id] = entityCall
+	def avatarEnterRoom(self, avatarEntityCall):
+		self.avatars[avatarEntityCall.id] = avatarEntityCall
+		# get corresponding card info from data list
+		for cardKey in avatarEntityCall.allCardDict.keys():
+			strs = cardKey.split("_")
+			cardInfo = d_all_cards.datas.get(strs[1])
+			avatarEntityCall.allCardDict[cardKey] = {
+				"hp": cardInfo["hp"],
+				
+			}
 
 	def leaveRoom(self, entityID):
 		self.onLeave(entityID)

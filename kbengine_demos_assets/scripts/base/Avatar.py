@@ -16,10 +16,11 @@ class Avatar(KBEngine.Proxy,
 		self.accountEntity = None
 		self.persistPlayerInfo = None
 		self.cardList = []
-		self.handCardList = []
-		self.pileCardList = []
-		self.graveCardList = []
-		self.room = None
+		self.allCardDict = {}
+		self.handCardDict = {}
+		self.pileCardDict = {}
+		self.graveCardDict = {}
+		self.roomEntityCall = None
 
 	def reqTellRoomSelectCardDone(self):
 		# notify room that player has cards selected
@@ -28,6 +29,11 @@ class Avatar(KBEngine.Proxy,
 	def getShuffleCardList(self, allCardList):
 		randCardList = self.cardList
 		random.shuffle(randCardList)
+		cardListLen = len(randCardList)
+		for i in cardListLen:
+			cardKey = self.id + '_' + randCardList[i] + '_' + str(i)
+			self.allCardDict[cardKey] = {}
+
 		for i in range(10):
 			self.handCardList.append(randCardList[i])
 		del randCardList[0:10]
@@ -77,6 +83,8 @@ class Avatar(KBEngine.Proxy,
 		playerBattleInfo = {
 			"cardList" : cardList,
 		}
+		# tell room avatar is ready
+		self.roomEntityCall.
 		self.syncPlayerBattleInfo(playerBattleInfo)
 		
 	def onClientDeath(self):

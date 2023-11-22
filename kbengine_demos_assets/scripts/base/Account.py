@@ -17,6 +17,7 @@ class Account(KBEngine.Proxy):
 		self.activeAvatar = None
 		self.relogin = time.time()
 		self.syntheticMatchScore = 0
+		self.roomKey = 0
 
 	def reqTest(self, param):
 		INFO_MSG("receive msg from ue!!!")
@@ -35,6 +36,7 @@ class Account(KBEngine.Proxy):
 		KBEngine.globalData["Hall"].applyMatch(self)
 
 	def syncRoomCreated(self, roomKey):
+		self.roomKey = roomKey
 		self.onSyncRoomCreated(roomKey)
 	
 		
@@ -101,6 +103,7 @@ class Account(KBEngine.Proxy):
 			return
 		
 		avatar.accountEntity = self
+		avatar.roomEntityCall = KBEngine.globalData["Halls"].rooms[self.roomKey]
 		#avatar.persistPlayerInfo = self.persistPlayerInfo
 		avatar.persistPlayerInfo = {
 			"persistCardList" : ["Adam", "Bale", "Charles"]
