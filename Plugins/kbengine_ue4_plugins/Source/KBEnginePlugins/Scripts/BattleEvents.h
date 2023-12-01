@@ -152,6 +152,33 @@ public:
 								TArray<FString> tags;
 };
 
+USTRUCT(BlueprintType)
+struct FPLAY_CARD_INFO
+{
+				GENERATED_BODY()
+public:
+				UPROPERTY(EditAnywhere)
+								FString cardName;
+
+				UPROPERTY(EditAnywhere)
+								int32 hp;
+
+				UPROPERTY(EditAnywhere)
+								int32 defence;
+
+				UPROPERTY(EditAnywhere)
+								int32 agility;
+
+				UPROPERTY(EditAnywhere)
+								TArray<FString> tags;
+
+				UPROPERTY(EditAnywhere)
+				FString cardDescriptionCn;
+
+				UPROPERTY(EditAnywhere)
+				FString cardDescriptionEn;
+};
+
 UCLASS(Blueprintable, BlueprintType)
 class KBENGINEPLUGINS_API UKBEventData_onSyncPlayerBattleInfo : public UKBEventData
 {

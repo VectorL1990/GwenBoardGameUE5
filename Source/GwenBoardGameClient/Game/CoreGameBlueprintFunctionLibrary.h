@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "Scripts/BattleEvents.h"
 #include "CoreGameBlueprintFunctionLibrary.generated.h"
 
 UENUM(BlueprintType)
@@ -25,23 +26,7 @@ enum class BattleStatus : uint8
 
 };
 
-USTRUCT(BlueprintType)
-struct FPLAY_CARD_INFO
-{
-    GENERATED_BODY()
-public:
-    UPROPERTY(EditAnywhere)
-        FString cardName;
 
-    UPROPERTY(EditAnywhere)
-        int32 hp;
-
-    UPROPERTY(EditAnywhere)
-        int32 defence;
-
-    UPROPERTY(EditAnywhere)
-        int32 agility;
-};
 
 /**
  *

@@ -47,6 +47,9 @@ public:
     UPROPERTY(EditDefaultsOnly)
     int32 availableSwitchCardNb;
 
+    UPROPERTY(EditAnywhere)
+    TArray<FVector> selectCardSpawnPts;
+
 
 private:
     //void ReceivePlayCardResponse();
@@ -60,7 +63,7 @@ private:
 
     void onUpdateGridInfoList(const UKBEventData* eventData);
 
-    void onSyncPlayerBattleInfo(const UKBEventData* eventData);
+    virtual void onSyncPlayerBattleInfo(const UKBEventData* eventData) override;
 
     virtual void InitPlayerBattleInfoDone(TArray<FString> cardList) override;
 
@@ -78,9 +81,18 @@ private:
     UPROPERTY()
         TMap<int32, ACard*> occupiedGridCardMap;
 
-        UPROPERTY()
-        TArray<ACard*> selectCards;
+    UPROPERTY()
+    TMap<FString, FSYNC_CARD_INFO> allCardInfoMap;
 
     UPROPERTY()
-        TMap<int32, ACard*> allCards;
+    TArray<FString> handCardKeyList;
+
+    UPROPERTY()
+    TArray<FString> pileCardKeyList;
+
+    UPROPERTY()
+    TMap<FString, ACard*> handCardMap;
+
+    UPROPERTY()
+    TMap<FString, ACard*> allCardMap;
 };

@@ -48,7 +48,7 @@ public:
 
     void onSyncRoomCreated(const UKBEventData* eventData);
 
-    void onSyncPlayerBattleInfo(const UKBEventData* eventData);
+    virtual void onSyncPlayerBattleInfo(const UKBEventData* eventData);
 
     virtual void InitPlayerBattleInfoDone(TArray<FString> cardList);
 

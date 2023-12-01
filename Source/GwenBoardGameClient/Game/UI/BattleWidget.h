@@ -15,6 +15,6 @@ class GWENBOARDGAMECLIENT_API UBattleWidget : public UUserWidget
 {
     GENERATED_BODY()
 public:
-    void SetupCardDetail(FPLAY_CARD_INFO info);
+    void SetupCardDetail();
 
 };

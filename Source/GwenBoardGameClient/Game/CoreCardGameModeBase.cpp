@@ -53,7 +53,7 @@ void ACoreCardGameModeBase::ReqPlayCard(int32 targetGridNb, int32 playCardUid)
 
 void ACoreCardGameModeBase::onUpdateGridInfoList(const UKBEventData* eventData)
 {
-    auto updateGridInfoListData = Cast<UKBEventData_onUpdateGridInfoList>(eventData);
+    /*auto updateGridInfoListData = Cast<UKBEventData_onUpdateGridInfoList>(eventData);
     if (updateGridInfoListData->updateInfoList.updateId - curReceiveUpdateId == 1)
     {
         // which means receives latest data
@@ -73,7 +73,7 @@ void ACoreCardGameModeBase::onUpdateGridInfoList(const UKBEventData* eventData)
 
             }
         }
-    }
+    }*/
 }
 
 void ACoreCardGameModeBase::onReceiveNewTurnMessage(const UKBEventData* eventData)
@@ -85,7 +85,7 @@ void ACoreCardGameModeBase::onReceiveUpdateCoreGame(const UKBEventData* eventDat
 {
     auto updateBattleEventData = Cast<UKBEventData_onUpdateBattle>(eventData);
 
-    TArray<int32> latestOccupiedGrids;
+    /*TArray<int32> latestOccupiedGrids;
     // update all grids
     for (int32 i = 0; i < updateBattleEventData->updateInfo.updateInfos.Num(); i++)
     {
@@ -109,7 +109,7 @@ void ACoreCardGameModeBase::onReceiveUpdateCoreGame(const UKBEventData* eventDat
             // which means card in this grid is removed!
             // we should move this card to grave
         }
-    }
+    }*/
 }
 
 void ACoreCardGameModeBase::InitDone_Implementation()
@@ -120,20 +120,21 @@ void ACoreCardGameModeBase::InitDone_Implementation()
 void ACoreCardGameModeBase::onSyncPlayerBattleInfo(const UKBEventData* eventData)
 {
     const UKBEventData_onSyncPlayerBattleInfo* onSyncPlayerBattleInfoData = Cast<UKBEventData_onSyncPlayerBattleInfo>(eventData);
-    FRotator spawnRot = FRotator::ZeroRotator;
-    for (int i = 0; i < onSyncPlayerBattleInfoData->cardList.Num(); i++)
-    {
-        //FVector spawnLoc = selectCardDemoLoc + i * cardIntervalVector;
-        //ACard* newCard = GetWorld()->SpawnActor<ACard>(cardBPClass, spawnLoc, spawnRot);
-    }
-    // 
 
+    for (int32 i = 0; i < onSyncPlayerBattleInfoData->cardList.Num(); i++)
+    {
+        if (!onSyncPlayerBattleInfoData->handCardList.Contains(onSyncPlayerBattleInfoData->cardList[i].cardKey))
+        {
+            pileCardKeyList.Add(onSyncPlayerBattleInfoData->cardList[i].cardKey);
+        }
+        allCardInfoMap.Add(onSyncPlayerBattleInfoData->cardList[i].cardKey, onSyncPlayerBattleInfoData->cardList[i]);
+    }
+    handCardKeyList = onSyncPlayerBattleInfoData->handCardList;
 }
 
 void ACoreCardGameModeBase::InitPlayerBattleInfoDone(TArray<FString> cardList)
 {
-    FRotator spawnRot = FRotator::ZeroRotator;
-    FVector cardIntervalVector = FVector(selectCardInterval, 0.0, 0.0);
+    /*FRotator spawnRot = FRotator::ZeroRotator;
     for (int32 i = 0; i < cardList.Num(); i++)
     {
         FVector spawnLoc = selectCardDemoLoc + i * cardIntervalVector;
@@ -141,6 +142,20 @@ void ACoreCardGameModeBase::InitPlayerBattleInfoDone(TArray<FString> cardList)
         newCard->cardStatus = BattleCardStatus::Select;
         newCard->InitCard(cardList[i]);
         selectCards.Add(newCard);
+    }*/
+
+    FRotator spawnRot = FRotator::ZeroRotator;
+    for (int32 i = 0; i < handCardKeyList.Num(); i++)
+    {
+        if (i >= selectCardSpawnPts.Num())
+        {
+            break;
+        }
+        FVector spawnLoc = selectCardSpawnPts[i];
+        ACard* handCard = GetWorld()->SpawnActor<ACard>(cardBPClass, spawnLoc, spawnRot);
+        handCard->cardStatus = BattleCardStatus::Select;
+        handCard->InitCard(allCardInfoMap[handCardKeyList[i]].cardName);
+        handCardMap.Add(handCardKeyList[i], handCard);
     }
 }
 

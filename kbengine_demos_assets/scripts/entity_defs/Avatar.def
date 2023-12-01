@@ -10,6 +10,10 @@
 	</Properties>
 
 	<BaseMethods>
+		<reqChangeSelectCard>
+			<Exposed/>
+			<Arg> STRING </Arg>
+		</reqChangeSelectCard>
 	</BaseMethods>
 
 	<CellMethods>

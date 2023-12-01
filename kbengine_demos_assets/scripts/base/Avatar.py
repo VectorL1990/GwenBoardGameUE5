@@ -30,7 +30,7 @@ class Avatar(KBEngine.Proxy,
 		randCardList = allCardList
 		random.shuffle(randCardList)
 		cardListLen = len(randCardList)
-		for i in range(1, cardListLen):
+		for i in range(cardListLen):
 			cardKey = str(self.id) + '_' + str(i) + '_' + randCardList[i]
 			self.allCardDict[cardKey] = {}
 			# append g_handCardAmount cards into hand holding pile
@@ -69,6 +69,20 @@ class Avatar(KBEngine.Proxy,
 
 	def resumeBattle(self):
 		return
+
+	def reqChangeSelectCard(self, cardKey):
+		handCardListLen = len(self.handCardList)
+		if cardKey in self.handCardList:
+			# switch hand cards
+			for i in range(handCardListLen):
+				if self.handCardList[i] == cardKey:
+					# which means this is the card to be switched
+					# put the first pile card into this position
+					switchCard = self.handCardList[i]
+					self.handCardList[i] = pileCardList[0]
+					self.pileCardList.pop(0)
+					self.pileCardList.append(switchCard)
+
 
 	#--------------------------------------------------------------------------------------------
 	#                              Callbacks
