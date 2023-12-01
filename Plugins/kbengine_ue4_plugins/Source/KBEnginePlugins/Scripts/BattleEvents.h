@@ -128,6 +128,30 @@ public:
 								int32 testParam;
 };
 
+USTRUCT(BlueprintType)
+struct FSYNC_CARD_INFO
+{
+				GENERATED_BODY()
+public:
+				UPROPERTY(EditAnywhere)
+				FString cardKey;
+
+				UPROPERTY(EditAnywhere)
+								FString cardName;
+
+				UPROPERTY(EditAnywhere)
+								uint8 hp;
+
+				UPROPERTY(EditAnywhere)
+								uint8 defence;
+
+				UPROPERTY(EditAnywhere)
+								uint8 agility;
+
+				UPROPERTY(EditAnywhere)
+								TArray<FString> tags;
+};
+
 UCLASS(Blueprintable, BlueprintType)
 class KBENGINEPLUGINS_API UKBEventData_onSyncPlayerBattleInfo : public UKBEventData
 {
@@ -135,7 +159,9 @@ class KBENGINEPLUGINS_API UKBEventData_onSyncPlayerBattleInfo : public UKBEventD
 
 public:
 				UPROPERTY(EditAnywhere)
-				TArray<FString> cardList;
+				TArray<FSYNC_CARD_INFO> cardList;
+
+				TArray<FString> handCardList;
 };
 
 UCLASS(Blueprintable, BlueprintType)

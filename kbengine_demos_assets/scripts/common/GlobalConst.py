@@ -2,6 +2,8 @@
 
 """
 """
+g_handCardAmount = 10
+
 GC_OK								= 0x000
 
 # 技能相关

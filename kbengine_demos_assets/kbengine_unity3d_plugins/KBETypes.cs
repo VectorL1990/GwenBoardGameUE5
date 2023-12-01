@@ -1631,9 +1631,21 @@ namespace KBEngine
 
 	}
 
+	public class SYNC_CARD_INFO
+	{
+		public string cardKey = "";
+		public string cardName = "";
+		public Byte hp = 0;
+		public Byte defence = 0;
+		public Byte agility = 0;
+		public List<string> tags = new List<string>();
+
+	}
+
 	public class SYNC_PLAYER_BATTLE_INFO
 	{
-		public List<string> cardList = new List<string>();
+		public List<SYNC_CARD_INFO> cardList = new List<SYNC_CARD_INFO>();
+		public List<string> handCardList = new List<string>();
 
 	}
 

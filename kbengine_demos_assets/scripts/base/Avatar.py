@@ -5,6 +5,7 @@ import SCDefine
 import time
 import GlobalConst
 from KBEDebug import *
+
 from interfaces.GameObject import GameObject
 
 class Avatar(KBEngine.Proxy,
@@ -15,29 +16,28 @@ class Avatar(KBEngine.Proxy,
 		
 		self.accountEntity = None
 		self.persistPlayerInfo = None
-		self.cardList = []
 		self.allCardDict = {}
-		self.handCardDict = {}
-		self.pileCardDict = {}
-		self.graveCardDict = {}
+		self.handCardList = []
+		self.pileCardList = []
+		self.graveCardList = []
 		self.roomEntityCall = None
 
 	def reqTellRoomSelectCardDone(self):
 		# notify room that player has cards selected
 		return
 		
-	def getShuffleCardList(self, allCardList):
-		randCardList = self.cardList
+	def shuffleCardList(self, allCardList):
+		randCardList = allCardList
 		random.shuffle(randCardList)
 		cardListLen = len(randCardList)
-		for i in cardListLen:
-			cardKey = self.id + '_' + randCardList[i] + '_' + str(i)
+		for i in range(1, cardListLen):
+			cardKey = str(self.id) + '_' + str(i) + '_' + randCardList[i]
 			self.allCardDict[cardKey] = {}
-
-		for i in range(10):
-			self.handCardList.append(randCardList[i])
-		del randCardList[0:10]
-		self.pileCardList = randCardList
+			# append g_handCardAmount cards into hand holding pile
+			if i < GlobalConst.g_handCardAmount:
+				self.handCardList.append(cardKey)
+			else:
+				self.pileCardList.append(cardKey)
 
 	def destroySelf(self):
 		"""
@@ -54,11 +54,6 @@ class Avatar(KBEngine.Proxy,
 		
 		if not self.isDestroyed:
 			self.destroy()
-
-	def syncPlayerBattleInfo(self, playerBattleInfo):
-		self.getShuffleCardList(playerBattleInfo["cardList"])
-		self.client.onSyncPlayerBattleInfo(playerBattleInfo)
-		return
 
 	def stopCardSelection(self):
 		return
@@ -83,9 +78,29 @@ class Avatar(KBEngine.Proxy,
 		playerBattleInfo = {
 			"cardList" : cardList,
 		}
+		# shuffle and encode all cards
+		self.shuffleCardList(playerBattleInfo["cardList"])
+
 		# tell room avatar is ready
-		self.roomEntityCall.
-		self.syncPlayerBattleInfo(playerBattleInfo)
+		self.roomEntityCall.avatarEnterRoom(self)
+
+		allCardList = []
+		for k, v in self.allCardDict.items():
+			cardInfo = {
+				"cardKey": k,
+				"cardName": v["CardName"],
+				"hp": v["Hp"],
+				"defence": v["Defence"],
+				"agility": v["Agility"],
+				"tags": v["Tags"],
+			}
+			allCardList.append(cardInfo)
+
+		syncPlayerBattleInfo = {
+			"cardList" : allCardList,
+			"handCardList" : self.handCardList
+		}
+		self.client.onSyncPlayerBattleInfo(syncPlayerBattleInfo)
 		
 	def onClientDeath(self):
 		DEBUG_MSG("Avatar[%i].onClientDeath:" % self.id)

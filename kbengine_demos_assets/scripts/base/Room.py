@@ -3,13 +3,13 @@ import KBEngine
 import math
 import time
 from KBEDebug import *
-import d_all_cards
+from d_all_cards import allDatas
 
 class Room(KBEngine.Entity):
 	def __init__(self):
 		KBEngine.Entity.__init__(self)
 		self.accountEntityDict = {}
-		self.avatars = {}
+		self.accountEntityIdList = []
 		self.gridInfoDict = {}
 		self.runLoop = False
 		self.curControlNb = 0
@@ -26,10 +26,14 @@ class Room(KBEngine.Entity):
 
 		self.timerState = 0
 		self.avatars = {}
+		self.enterRoomAccountList = []
+
+		self.uniqueCardDict = {}
 
 	def tellAccountsRoomCreated(self):
 		for k,v in self.accountEntityDict.items():
 			DEBUG_MSG("Room::tellAccountsRoomCreated: tell account room created and entityID=%i" % (k))
+			self.accountEntityIdList.append(k)
 			v.syncRoomCreated(self.roomKey)
 
 	def playAction(self, entityCall, actionInfo):
@@ -47,15 +51,23 @@ class Room(KBEngine.Entity):
 			return
 
 	def avatarEnterRoom(self, avatarEntityCall):
-		self.avatars[avatarEntityCall.id] = avatarEntityCall
-		# get corresponding card info from data list
-		for cardKey in avatarEntityCall.allCardDict.keys():
-			strs = cardKey.split("_")
-			cardInfo = d_all_cards.datas.get(strs[1])
-			avatarEntityCall.allCardDict[cardKey] = {
-				"hp": cardInfo["hp"],
-				
-			}
+		if avatarEntityCall not in self.enterRoomAccountList:
+			self.enterRoomAccountList.append(avatarEntityCall.accountEntity)
+			self.avatars[avatarEntityCall.id] = avatarEntityCall
+			# get corresponding card info from data list
+			for cardKey in avatarEntityCall.allCardDict.keys():
+				strs = cardKey.split("_")
+				cardInfo = allDatas["allCards"][strs[2]]
+				#cardInfo = d_all_cards.datas.get(strs[1])
+				avatarEntityCall.allCardDict[cardKey] = {
+					"CardName": strs[1],
+					"Hp": cardInfo["Hp"],
+					"Defence": cardInfo["Defence"],
+					"Agility": cardInfo["Agility"],
+					"Tags": cardInfo["Tags"]
+				}
+				self.uniqueCardDict[cardKey] = avatarEntityCall.allCardDict[cardKey]
+		
 
 	def leaveRoom(self, entityID):
 		self.onLeave(entityID)
@@ -142,7 +154,7 @@ class Room(KBEngine.Entity):
 		KBEngine method.
 		entity的cell部分实体丢失
 		"""
-		KBEngine.globalData["Halls"].onRoomLoseCell(self.roomKey)
+		KBEngine.globalData["Hall"].onRoomLoseCell(self.roomKey)
 		
 		self.avatars = {}
 		self.destroy()
@@ -153,7 +165,7 @@ class Room(KBEngine.Entity):
 		entity的cell部分实体被创建成功
 		"""
 		DEBUG_MSG("Room::onGetCell: %i" % self.id)
-		KBEngine.globalData["Halls"].onRoomGetCell(self, self.roomKey)
+		KBEngine.globalData["Hall"].onRoomGetCell(self, self.roomKey)
 
 	def playCardAction(self, targetGrid, playCardInfoDict):
 		if self.gridInfoDict.has_key(targetGrid):

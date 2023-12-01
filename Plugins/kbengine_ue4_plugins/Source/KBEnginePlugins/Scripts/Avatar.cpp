@@ -54,7 +54,19 @@ namespace KBEngine
     void Avatar::onSyncPlayerBattleInfo(const SYNC_PLAYER_BATTLE_INFO& param)
     {
         UKBEventData_onSyncPlayerBattleInfo* eventData = NewObject<UKBEventData_onSyncPlayerBattleInfo>();
-        eventData->cardList = param.cardList;
+        for (int32 i = 0; i < param.cardList.Num(); i++)
+        {
+            FSYNC_CARD_INFO syncCardInfo;
+            syncCardInfo.cardKey = param.cardList[i].cardKey;
+            syncCardInfo.cardName = param.cardList[i].cardName;
+            syncCardInfo.hp = param.cardList[i].hp;
+            syncCardInfo.defence = param.cardList[i].defence;
+            syncCardInfo.agility = param.cardList[i].agility;
+            syncCardInfo.tags = param.cardList[i].tags;
+            eventData->cardList.Add(syncCardInfo);
+        }
+        eventData->handCardList = param.handCardList;
+        
         KBENGINE_EVENT_FIRE("onSyncPlayerBattleInfo", eventData);
     }
 

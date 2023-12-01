@@ -334,7 +334,7 @@ namespace KBEngine
 			//Dbg.DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(onStopCardSelection / 7).");
 
 			List<DATATYPE_BASE> pAvatar_onSyncPlayerBattleInfo_args = new List<DATATYPE_BASE>();
-			pAvatar_onSyncPlayerBattleInfo_args.Add(EntityDef.id2datatypes[37]);
+			pAvatar_onSyncPlayerBattleInfo_args.Add(EntityDef.id2datatypes[39]);
 
 			Method pAvatar_onSyncPlayerBattleInfo = new Method();
 			pAvatar_onSyncPlayerBattleInfo.name = "onSyncPlayerBattleInfo";
@@ -1018,6 +1018,15 @@ namespace KBEngine
 
 			{
 				UInt16 utype = 37;
+				string typeName = "SYNC_CARD_INFO";
+				DATATYPE_SYNC_CARD_INFO datatype = new DATATYPE_SYNC_CARD_INFO();
+				EntityDef.datatypes[typeName] = datatype;
+				EntityDef.id2datatypes[utype] = EntityDef.datatypes[typeName];
+				EntityDef.datatype2id[typeName] = utype;
+			}
+
+			{
+				UInt16 utype = 39;
 				string typeName = "SYNC_PLAYER_BATTLE_INFO";
 				DATATYPE_SYNC_PLAYER_BATTLE_INFO datatype = new DATATYPE_SYNC_PLAYER_BATTLE_INFO();
 				EntityDef.datatypes[typeName] = datatype;
@@ -1026,7 +1035,7 @@ namespace KBEngine
 			}
 
 			{
-				UInt16 utype = 39;
+				UInt16 utype = 42;
 				string typeName = "PLAYER_PERSIST_INFO";
 				DATATYPE_PLAYER_PERSIST_INFO datatype = new DATATYPE_PLAYER_PERSIST_INFO();
 				EntityDef.datatypes[typeName] = datatype;

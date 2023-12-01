@@ -94,9 +94,9 @@ void ABasicGameMode::onSyncPlayerBattleInfo(const UKBEventData* eventData)
 				const UKBEventData_onSyncPlayerBattleInfo* onSyncPlayerBattleInfoData = Cast<UKBEventData_onSyncPlayerBattleInfo>(eventData);
 				for (int i = 0; i < onSyncPlayerBattleInfoData->cardList.Num(); i++)
 				{
-								GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, onSyncPlayerBattleInfoData->cardList[i]);
+								GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, onSyncPlayerBattleInfoData->cardList[i].cardKey);
 				}
-				InitPlayerBattleInfoDone(onSyncPlayerBattleInfoData->cardList);
+				//InitPlayerBattleInfoDone(onSyncPlayerBattleInfoData->cardList);
 }
 
 void ABasicGameMode::InitPlayerBattleInfoDone(TArray<FString> cardList)

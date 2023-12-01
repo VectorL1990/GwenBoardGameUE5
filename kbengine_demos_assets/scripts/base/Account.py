@@ -103,10 +103,10 @@ class Account(KBEngine.Proxy):
 			return
 		
 		avatar.accountEntity = self
-		avatar.roomEntityCall = KBEngine.globalData["Halls"].rooms[self.roomKey]
+		avatar.roomEntityCall = KBEngine.globalData["Hall"].rooms[self.roomKey]
 		#avatar.persistPlayerInfo = self.persistPlayerInfo
 		avatar.persistPlayerInfo = {
-			"persistCardList" : ["Adam", "Bale", "Charles"]
+			"persistCardList" : ["DustyRanger", "BlackGuard", "PhoenixChariot", "BlackGuard","BlackGuard","BlackGuard","BlackGuard","BlackGuard","BlackGuard","BlackGuard",]
 		}
 		self.activeAvatar = avatar
 		self.giveClientTo(avatar)
