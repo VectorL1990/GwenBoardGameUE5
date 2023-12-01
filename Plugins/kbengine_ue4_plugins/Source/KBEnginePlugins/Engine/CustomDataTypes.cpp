@@ -161,14 +161,36 @@ void DATATYPE_SYNC_BATTLE_TIME_INFO::addToStreamEx(Bundle& stream, const SYNC_BA
 	stream.writeUint8(v.playerNb);
 }
 
+void DATATYPE_SYNC_CARD_INFO::createFromStreamEx(MemoryStream& stream, SYNC_CARD_INFO& datas)
+{
+	datas.cardKey = stream.readString();
+	datas.cardName = stream.readString();
+	datas.hp = stream.readUint8();
+	datas.defence = stream.readUint8();
+	datas.agility = stream.readUint8();
+	tags_DataType.createFromStreamEx(stream, datas.tags);
+}
+
+void DATATYPE_SYNC_CARD_INFO::addToStreamEx(Bundle& stream, const SYNC_CARD_INFO& v)
+{
+	stream.writeString(v.cardKey);
+	stream.writeString(v.cardName);
+	stream.writeUint8(v.hp);
+	stream.writeUint8(v.defence);
+	stream.writeUint8(v.agility);
+	tags_DataType.addToStreamEx(stream, v.tags);
+}
+
 void DATATYPE_SYNC_PLAYER_BATTLE_INFO::createFromStreamEx(MemoryStream& stream, SYNC_PLAYER_BATTLE_INFO& datas)
 {
 	cardList_DataType.createFromStreamEx(stream, datas.cardList);
+	handCardList_DataType.createFromStreamEx(stream, datas.handCardList);
 }
 
 void DATATYPE_SYNC_PLAYER_BATTLE_INFO::addToStreamEx(Bundle& stream, const SYNC_PLAYER_BATTLE_INFO& v)
 {
 	cardList_DataType.addToStreamEx(stream, v.cardList);
+	handCardList_DataType.addToStreamEx(stream, v.handCardList);
 }
 
 void DATATYPE_PLAYER_PERSIST_INFO::createFromStreamEx(MemoryStream& stream, PLAYER_PERSIST_INFO& datas)

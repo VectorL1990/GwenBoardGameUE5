@@ -2,10 +2,12 @@
 
 
 #include "CoreCardGamePC.h"
+//#include "CoreCardGameModeBase.h"
 #include "../CoreGameManager.h"
 #include "Card.h"
 #include "BoardGrid.h"
 #include "CoreGameBlueprintFunctionLibrary.h"
+//#include "Kismet/GameplayStatics.h"
 #include "../Base/GwenBoardGameInstance.h"
 
 void ACoreCardGamePC::BeginPlay()
@@ -50,7 +52,8 @@ void ACoreCardGamePC::DealLeftClick()
             {
                 if (card->cardStatus == BattleCardStatus::Select)
                 {
-                    
+                    //AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
+                    //ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
                 }
                 else if (card->cardStatus == BattleCardStatus::Standby)
                 {

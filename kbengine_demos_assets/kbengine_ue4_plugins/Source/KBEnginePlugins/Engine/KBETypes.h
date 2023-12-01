@@ -309,13 +309,42 @@ inline bool operator ==(const SYNC_BATTLE_TIME_INFO& a, const SYNC_BATTLE_TIME_I
 	return a.curTime == b.curTime && a.playerNb == b.playerNb;
 };
 
+class SYNC_CARD_INFO
+{
+public:
+	FString cardKey;
+	FString cardName;
+	uint8 hp;
+	uint8 defence;
+	uint8 agility;
+	TArray<FString> tags;
+
+	SYNC_CARD_INFO():
+	cardKey(),
+	cardName(),
+	hp(0),
+	defence(0),
+	agility(0),
+	tags()
+	{
+	}
+
+};
+
+inline bool operator ==(const SYNC_CARD_INFO& a, const SYNC_CARD_INFO& b)
+{
+	return a.cardKey == b.cardKey && a.cardName == b.cardName && a.hp == b.hp && a.defence == b.defence && a.agility == b.agility && a.tags == b.tags;
+};
+
 class SYNC_PLAYER_BATTLE_INFO
 {
 public:
-	TArray<FString> cardList;
+	TArray<SYNC_CARD_INFO> cardList;
+	TArray<FString> handCardList;
 
 	SYNC_PLAYER_BATTLE_INFO():
-	cardList()
+	cardList(),
+	handCardList()
 	{
 	}
 
@@ -323,7 +352,7 @@ public:
 
 inline bool operator ==(const SYNC_PLAYER_BATTLE_INFO& a, const SYNC_PLAYER_BATTLE_INFO& b)
 {
-	return a.cardList == b.cardList;
+	return a.cardList == b.cardList && a.handCardList == b.handCardList;
 };
 
 class PLAYER_PERSIST_INFO

@@ -138,17 +138,37 @@
 		</Properties>
 	</SYNC_BATTLE_TIME_INFO>
 
+	<SYNC_CARD_INFO> FIXED_DICT
+		<Properties>
+			<cardKey>
+				<Type> STRING </Type>
+			</cardKey>
+			<cardName>
+				<Type> STRING </Type>
+			</cardName>
+			<hp>
+				<Type> UINT8 </Type>
+			</hp>
+			<defence>
+				<Type> UINT8 </Type>
+			</defence>
+			<agility>
+				<Type> UINT8 </Type>
+			</agility>
+			<tags>
+				<Type> ARRAY <of> STRING </of> </Type>
+			</tags>
+		</Properties>
+	</SYNC_CARD_INFO>
+
 	<SYNC_PLAYER_BATTLE_INFO> FIXED_DICT
 		<Properties>
 			<cardList>
-				<Type> ARRAY <of>	STRING </of>	</Type>
+				<Type> ARRAY <of> SYNC_CARD_INFO </of> </Type>
 			</cardList>
-			<selectCardList>
+			<handCardList>
 				<Type> ARRAY <of>	STRING </of>	</Type>
-			</selectCardList>
-			<pileCardList>
-				<Type> ARRAY <of>	STRING </of>	</Type>
-			</pileCardList>
+			</handCardList>
 		</Properties>
 	</SYNC_PLAYER_BATTLE_INFO>
 

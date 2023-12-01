@@ -362,11 +362,96 @@ namespace KBEngine
 
 
 
+	public class DATATYPE_SYNC_CARD_INFO : DATATYPE_BASE
+	{
+		private DATATYPE__SYNC_CARD_INFO_tags_ArrayType_ChildArray tags_DataType = new DATATYPE__SYNC_CARD_INFO_tags_ArrayType_ChildArray();
+
+		public class DATATYPE__SYNC_CARD_INFO_tags_ArrayType_ChildArray : DATATYPE_BASE
+		{
+			public List<string> createFromStreamEx(MemoryStream stream)
+			{
+				UInt32 size = stream.readUint32();
+				List<string> datas = new List<string>();
+
+				while(size > 0)
+				{
+					--size;
+					datas.Add(stream.readString());
+				};
+
+				return datas;
+			}
+
+			public void addToStreamEx(Bundle stream, List<string> v)
+			{
+				stream.writeUint32((UInt32)v.Count);
+				for(int i=0; i<v.Count; ++i)
+				{
+					stream.writeString(v[i]);
+				};
+			}
+		}
+
+		public SYNC_CARD_INFO createFromStreamEx(MemoryStream stream)
+		{
+			SYNC_CARD_INFO datas = new SYNC_CARD_INFO();
+			datas.cardKey = stream.readString();
+			datas.cardName = stream.readString();
+			datas.hp = stream.readUint8();
+			datas.defence = stream.readUint8();
+			datas.agility = stream.readUint8();
+			datas.tags = tags_DataType.createFromStreamEx(stream);
+			return datas;
+		}
+
+		public void addToStreamEx(Bundle stream, SYNC_CARD_INFO v)
+		{
+			stream.writeString(v.cardKey);
+			stream.writeString(v.cardName);
+			stream.writeUint8(v.hp);
+			stream.writeUint8(v.defence);
+			stream.writeUint8(v.agility);
+			tags_DataType.addToStreamEx(stream, v.tags);
+		}
+	}
+
+
+
 	public class DATATYPE_SYNC_PLAYER_BATTLE_INFO : DATATYPE_BASE
 	{
 		private DATATYPE__SYNC_PLAYER_BATTLE_INFO_cardList_ArrayType_ChildArray cardList_DataType = new DATATYPE__SYNC_PLAYER_BATTLE_INFO_cardList_ArrayType_ChildArray();
 
 		public class DATATYPE__SYNC_PLAYER_BATTLE_INFO_cardList_ArrayType_ChildArray : DATATYPE_BASE
+		{
+			private DATATYPE_SYNC_CARD_INFO itemType = new DATATYPE_SYNC_CARD_INFO();
+
+			public List<SYNC_CARD_INFO> createFromStreamEx(MemoryStream stream)
+			{
+				UInt32 size = stream.readUint32();
+				List<SYNC_CARD_INFO> datas = new List<SYNC_CARD_INFO>();
+
+				while(size > 0)
+				{
+					--size;
+					datas.Add(itemType.createFromStreamEx(stream));
+				};
+
+				return datas;
+			}
+
+			public void addToStreamEx(Bundle stream, List<SYNC_CARD_INFO> v)
+			{
+				stream.writeUint32((UInt32)v.Count);
+				for(int i=0; i<v.Count; ++i)
+				{
+					itemType.addToStreamEx(stream, v[i]);
+				};
+			}
+		}
+
+		private DATATYPE__SYNC_PLAYER_BATTLE_INFO_handCardList_ArrayType_ChildArray handCardList_DataType = new DATATYPE__SYNC_PLAYER_BATTLE_INFO_handCardList_ArrayType_ChildArray();
+
+		public class DATATYPE__SYNC_PLAYER_BATTLE_INFO_handCardList_ArrayType_ChildArray : DATATYPE_BASE
 		{
 			public List<string> createFromStreamEx(MemoryStream stream)
 			{
@@ -396,12 +481,14 @@ namespace KBEngine
 		{
 			SYNC_PLAYER_BATTLE_INFO datas = new SYNC_PLAYER_BATTLE_INFO();
 			datas.cardList = cardList_DataType.createFromStreamEx(stream);
+			datas.handCardList = handCardList_DataType.createFromStreamEx(stream);
 			return datas;
 		}
 
 		public void addToStreamEx(Bundle stream, SYNC_PLAYER_BATTLE_INFO v)
 		{
 			cardList_DataType.addToStreamEx(stream, v.cardList);
+			handCardList_DataType.addToStreamEx(stream, v.handCardList);
 		}
 	}
 

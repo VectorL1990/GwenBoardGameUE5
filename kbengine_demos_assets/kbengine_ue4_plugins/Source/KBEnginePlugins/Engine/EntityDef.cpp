@@ -374,7 +374,7 @@ void EntityDef::initScriptModules()
 	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(onStopCardSelection / 7).");
 
 	TArray<DATATYPE_BASE*> Avatar_onSyncPlayerBattleInfo_args;
-	Avatar_onSyncPlayerBattleInfo_args.Add(EntityDef::id2datatypes[37]);
+	Avatar_onSyncPlayerBattleInfo_args.Add(EntityDef::id2datatypes[39]);
 
 	Method* pAvatar_onSyncPlayerBattleInfo = new Method();
 	pAvatar_onSyncPlayerBattleInfo->name = TEXT("onSyncPlayerBattleInfo");
@@ -1051,6 +1051,15 @@ void EntityDef::initDefTypes()
 
 	{
 		uint16 utype = 37;
+		FString typeName = TEXT("SYNC_CARD_INFO");
+		DATATYPE_SYNC_CARD_INFO* pDatatype = new DATATYPE_SYNC_CARD_INFO();
+		EntityDef::datatypes.Add(typeName, (DATATYPE_BASE*)pDatatype);
+		EntityDef::id2datatypes.Add(utype, EntityDef::datatypes[typeName]);
+		EntityDef::datatype2id.Add(typeName, utype);
+	}
+
+	{
+		uint16 utype = 39;
 		FString typeName = TEXT("SYNC_PLAYER_BATTLE_INFO");
 		DATATYPE_SYNC_PLAYER_BATTLE_INFO* pDatatype = new DATATYPE_SYNC_PLAYER_BATTLE_INFO();
 		EntityDef::datatypes.Add(typeName, (DATATYPE_BASE*)pDatatype);
@@ -1059,7 +1068,7 @@ void EntityDef::initDefTypes()
 	}
 
 	{
-		uint16 utype = 39;
+		uint16 utype = 42;
 		FString typeName = TEXT("PLAYER_PERSIST_INFO");
 		DATATYPE_PLAYER_PERSIST_INFO* pDatatype = new DATATYPE_PLAYER_PERSIST_INFO();
 		EntityDef::datatypes.Add(typeName, (DATATYPE_BASE*)pDatatype);
