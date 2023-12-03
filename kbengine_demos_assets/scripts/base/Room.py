@@ -27,6 +27,7 @@ class Room(KBEngine.Entity):
 		self.timerState = 0
 		self.avatars = {}
 		self.enterRoomAccountList = []
+		self.finishSelectCardAvatarList = []
 
 		self.uniqueCardDict = {}
 
@@ -67,6 +68,14 @@ class Room(KBEngine.Entity):
 					"Tags": cardInfo["Tags"]
 				}
 				self.uniqueCardDict[cardKey] = avatarEntityCall.allCardDict[cardKey]
+
+	def avatarFinishSelectCards(self, avatarEntityCall):
+		if avatarEntityCall not in self.finishSelectCardAvatarList:
+			self.finishSelectCardAvatarList.append(avatarEntityCall)
+			finishSelectCardAvatarNb = len(self.finishSelectCardAvatarList)
+			if (len(self.enterRoomAccountList) == finishSelectCardAvatarNb):
+				# which means all avatars finish card selection
+				return
 		
 
 	def leaveRoom(self, entityID):

@@ -25,6 +25,9 @@ public:
 	EntityBaseEntityCall_AvatarBase(int32 eid, const FString& ename);
 
 	virtual ~EntityBaseEntityCall_AvatarBase();
+	void reqChangeSelectCard(const FString& arg1);
+	void reqFinishSelectCards();
+	void reqUpdateSelectedCard();
 };
 
 class KBENGINEPLUGINS_API EntityCellEntityCall_AvatarBase : public EntityCall

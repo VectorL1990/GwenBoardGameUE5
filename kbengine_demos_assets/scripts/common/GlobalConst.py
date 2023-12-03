@@ -3,6 +3,7 @@
 """
 """
 g_handCardAmount = 10
+g_maxChangeHandCardNb = 3
 
 GC_OK								= 0x000
 

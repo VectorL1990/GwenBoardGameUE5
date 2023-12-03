@@ -14,6 +14,14 @@
 			<Exposed/>
 			<Arg> STRING </Arg>
 		</reqChangeSelectCard>
+
+		<reqFinishSelectCards>
+			<Exposed/>
+		</reqFinishSelectCards>
+
+		<reqUpdateSelectedCard>
+			<Exposed/>
+		</reqUpdateSelectedCard>
 	</BaseMethods>
 
 	<CellMethods>
@@ -23,6 +31,24 @@
 		<onSyncPlayerBattleInfo>
 			<Arg> SYNC_PLAYER_BATTLE_INFO </Arg>
 		</onSyncPlayerBattleInfo>
+
+		<onSyncExhaustCardReplacement>
+		</onSyncExhaustCardReplacement>
+
+		<onSyncChangeHandCardSuccess>
+			<Exposed/>
+			<Arg> UINT8 </Arg>
+			<Arg> STRING </Arg>
+			<Arg> STRING </Arg>
+		</onSyncChangeHandCardSuccess>
+
+		<onSyncUpdateSelectedCards>
+			<Arg> UINT8 </Arg>
+			<Arg> SYNC_PLAYER_BATTLE_INFO </Arg>
+		</onSyncUpdateSelectedCards>
+
+		<onSyncRoomStartBattle>
+		</onSyncRoomStartBattle>
 
 		<onStopCardSelection>
 		</onStopCardSelection>

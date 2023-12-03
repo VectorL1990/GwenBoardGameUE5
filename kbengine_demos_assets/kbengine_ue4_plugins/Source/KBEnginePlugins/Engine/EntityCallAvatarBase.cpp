@@ -13,6 +13,34 @@ EntityBaseEntityCall_AvatarBase::~EntityBaseEntityCall_AvatarBase()
 {
 }
 
+void EntityBaseEntityCall_AvatarBase::reqChangeSelectCard(const FString& arg1)
+{
+	Bundle* pBundleRet = newCall("reqChangeSelectCard", 0);
+	if(!pBundleRet)
+		return;
+
+	pBundleRet->writeString(arg1);
+	sendCall(NULL);
+}
+
+void EntityBaseEntityCall_AvatarBase::reqFinishSelectCards()
+{
+	Bundle* pBundleRet = newCall("reqFinishSelectCards", 0);
+	if(!pBundleRet)
+		return;
+
+	sendCall(NULL);
+}
+
+void EntityBaseEntityCall_AvatarBase::reqUpdateSelectedCard()
+{
+	Bundle* pBundleRet = newCall("reqUpdateSelectedCard", 0);
+	if(!pBundleRet)
+		return;
+
+	sendCall(NULL);
+}
+
 
 
 EntityCellEntityCall_AvatarBase::EntityCellEntityCall_AvatarBase(int32 eid, const FString& ename) : EntityCall(eid, ename)

@@ -57,11 +57,15 @@ private:
 
     void ReqPlayCard(int32 targetGridNb, int32 playCardUid);
 
+    void ReqChangeSelectCard(FString changeCardKey);
+
     void onReceiveNewTurnMessage(const UKBEventData* eventData);
 
     void onReceiveUpdateCoreGame(const UKBEventData* eventData);
 
     void onUpdateGridInfoList(const UKBEventData* eventData);
+
+    void onSyncChangeHandCardSuccess(const UKBEventData* eventData);
 
     virtual void onSyncPlayerBattleInfo(const UKBEventData* eventData) override;
 
@@ -95,4 +99,7 @@ private:
 
     UPROPERTY()
     TMap<FString, ACard*> allCardMap;
+
+    uint8 maxChangeSelectCardNb = 3;
+    uint8 curChangeSelectCardNb = 0;
 };

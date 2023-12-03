@@ -75,6 +75,30 @@ namespace KBEngine
 
     }
 
+    void Avatar::onSyncChangeHandCardSuccess(uint8 changeCardNb, const FString& changeHandCardKey, const FString& pileCardKey)
+    {
+        UKBEventData_onSyncChangeHandCardSuccess* eventData = NewObject<UKBEventData_onSyncChangeHandCardSuccess>();
+        eventData->changeSelectCardNb = changeCardNb;
+        eventData->changeHandCardKey = changeHandCardKey;
+        eventData->changePileCardKey = pileCardKey;
+        KBENGINE_EVENT_FIRE("onSyncChangeHandCardSuccess", eventData);
+    }
+
+    void Avatar::onSyncExhaustCardReplacement()
+    {
+
+    }
+
+    void Avatar::onSyncUpdateSelectedCards(uint8 changeNb, const SYNC_PLAYER_BATTLE_INFO& allCardInfos)
+    {
+
+    }
+
+    void Avatar::onSyncRoomStartBattle()
+    {
+
+    }
+
     void Avatar::resumeBattle()
     {
 

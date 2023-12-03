@@ -27,6 +27,10 @@ namespace KBEngine
     public:
         virtual void onSyncPlayerBattleInfo(const SYNC_PLAYER_BATTLE_INFO& arg1) override;
         virtual void onStopCardSelection() override;
+        virtual void onSyncChangeHandCardSuccess(uint8 changeCardNb, const FString& changeHandCardKey, const FString& pileCardKey) override;
+        virtual void onSyncExhaustCardReplacement() override;
+        virtual void onSyncUpdateSelectedCards(uint8 changeNb, const SYNC_PLAYER_BATTLE_INFO& allCardInfos) override;
+        virtual void onSyncRoomStartBattle() override;
         virtual void resumeBattle() override;
         virtual void startBattle() override;
         virtual void switchController(uint8 playerNb) override;

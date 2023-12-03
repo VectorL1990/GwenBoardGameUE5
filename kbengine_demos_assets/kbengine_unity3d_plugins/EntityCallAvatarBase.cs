@@ -21,6 +21,34 @@ namespace KBEngine
 			type = ENTITYCALL_TYPE.ENTITYCALL_TYPE_BASE;
 		}
 
+		public void reqChangeSelectCard(string arg1)
+		{
+			Bundle pBundle = newCall("reqChangeSelectCard", 0);
+			if(pBundle == null)
+				return;
+
+			bundle.writeString(arg1);
+			sendCall(null);
+		}
+
+		public void reqFinishSelectCards()
+		{
+			Bundle pBundle = newCall("reqFinishSelectCards", 0);
+			if(pBundle == null)
+				return;
+
+			sendCall(null);
+		}
+
+		public void reqUpdateSelectedCard()
+		{
+			Bundle pBundle = newCall("reqUpdateSelectedCard", 0);
+			if(pBundle == null)
+				return;
+
+			sendCall(null);
+		}
+
 	}
 
 	public class EntityCellEntityCall_AvatarBase : EntityCall
