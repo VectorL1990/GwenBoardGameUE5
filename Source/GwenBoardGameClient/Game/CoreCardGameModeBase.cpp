@@ -15,6 +15,10 @@ void ACoreCardGameModeBase::InitEvents()
 {
     Super::InitEvents();
     KBENGINE_REGISTER_EVENT("onSyncPlayerBattleInfo", onSyncPlayerBattleInfo);
+    KBENGINE_REGISTER_EVENT("onSyncChangeHandCardSuccess", onSyncChangeHandCardSuccess);
+    KBENGINE_REGISTER_EVENT("onSyncExhaustCardReplacement", onSyncExhaustCardReplacement);
+    KBENGINE_REGISTER_EVENT("onSyncUpdateSelectedCards", onSyncUpdateSelectedCards);
+    KBENGINE_REGISTER_EVENT("onSyncRoomStartBattle", onSyncRoomStartBattle);
 }
 
 void ACoreCardGameModeBase::Tick(float deltaTime)
@@ -185,6 +189,22 @@ void ACoreCardGameModeBase::onSyncPlayerBattleInfo(const UKBEventData* eventData
         allCardInfoMap.Add(onSyncPlayerBattleInfoData->cardList[i].cardKey, onSyncPlayerBattleInfoData->cardList[i]);
     }
     handCardKeyList = onSyncPlayerBattleInfoData->handCardList;
+}
+
+void ACoreCardGameModeBase::onSyncExhaustCardReplacement(const UKBEventData* eventData)
+{
+
+}
+
+void ACoreCardGameModeBase::onSyncUpdateSelectedCards(const UKBEventData* eventData)
+{
+    const UKBEventData_onSyncUpdateSelectedCards* onSyncUpdateSelectedCardsData = Cast<UKBEventData_onSyncUpdateSelectedCards>(eventData);
+    
+}
+
+void ACoreCardGameModeBase::onSyncRoomStartBattle(const UKBEventData* eventData)
+{
+
 }
 
 void ACoreCardGameModeBase::InitPlayerBattleInfoDone(TArray<FString> cardList)

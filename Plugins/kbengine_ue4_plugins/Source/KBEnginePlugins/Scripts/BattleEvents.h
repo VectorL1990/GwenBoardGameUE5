@@ -188,6 +188,7 @@ public:
 	UPROPERTY(EditAnywhere)
 		TArray<FSYNC_CARD_INFO> cardList;
 
+	UPROPERTY()
 	TArray<FString> handCardList;
 };
 
@@ -228,4 +229,20 @@ public:
 
 	UPROPERTY(EditAnywhere)
 		FString changeCardKey;
+};
+
+UCLASS(Blueprintable, BlueprintType)
+class KBENGINEPLUGINS_API UKBEventData_onSyncUpdateSelectedCards : public UKBEventData
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere)
+		uint8 changeNb;
+
+	UPROPERTY(EditAnywhere)
+	TArray<FSYNC_CARD_INFO> cardList;
+
+	UPROPERTY(EditAnywhere)
+	TArray<FString> handCardList;
 };

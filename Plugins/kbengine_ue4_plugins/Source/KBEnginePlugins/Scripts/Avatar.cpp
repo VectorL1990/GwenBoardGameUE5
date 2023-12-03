@@ -86,17 +86,33 @@ namespace KBEngine
 
     void Avatar::onSyncExhaustCardReplacement()
     {
-
+        UKBEventData* eventData = NewObject<UKBEventData>();
+        KBENGINE_EVENT_FIRE("onSyncExhaustCardReplacement", eventData);
     }
 
     void Avatar::onSyncUpdateSelectedCards(uint8 changeNb, const SYNC_PLAYER_BATTLE_INFO& allCardInfos)
     {
-
+        UKBEventData_onSyncUpdateSelectedCards* eventData = NewObject<UKBEventData_onSyncUpdateSelectedCards>();
+        eventData->changeNb = changeNb;
+        for (int32 i = 0; i < allCardInfos.cardList.Num(); i++)
+        {
+            FSYNC_CARD_INFO syncCardInfo;
+            syncCardInfo.cardKey = allCardInfos.cardList[i].cardKey;
+            syncCardInfo.cardName = allCardInfos.cardList[i].cardName;
+            syncCardInfo.hp = allCardInfos.cardList[i].hp;
+            syncCardInfo.defence = allCardInfos.cardList[i].defence;
+            syncCardInfo.agility = allCardInfos.cardList[i].agility;
+            syncCardInfo.tags = allCardInfos.cardList[i].tags;
+            eventData->cardList.Add(syncCardInfo);
+        }
+        eventData->handCardList = allCardInfos.handCardList;
+        KBENGINE_EVENT_FIRE("onSyncUpdateSelectedCards", eventData);
     }
 
     void Avatar::onSyncRoomStartBattle()
     {
-
+        UKBEventData* eventData = NewObject<UKBEventData>();
+        KBENGINE_EVENT_FIRE("onSyncRoomStartBattle", eventData);
     }
 
     void Avatar::resumeBattle()

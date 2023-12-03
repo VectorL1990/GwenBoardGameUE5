@@ -69,6 +69,12 @@ private:
 
     virtual void onSyncPlayerBattleInfo(const UKBEventData* eventData) override;
 
+    void onSyncExhaustCardReplacement(const UKBEventData* eventData);
+
+    void onSyncUpdateSelectedCards(const UKBEventData* eventData);
+
+    void onSyncRoomStartBattle(const UKBEventData* eventData);
+
     virtual void InitPlayerBattleInfoDone(TArray<FString> cardList) override;
 
     BattleStatus curBattleStatus = BattleStatus::Default;
