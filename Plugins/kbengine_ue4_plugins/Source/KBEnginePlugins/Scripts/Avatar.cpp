@@ -20,6 +20,16 @@ namespace KBEngine
         // 注册事件
         if (isPlayer())
         {
+            
+            KBENGINE_REGISTER_EVENT_OVERRIDE_FUNC("ReqChangeSelectCard", "ReqChangeSelectCard", [this](const UKBEventData* pEventData)
+            {
+                const UKBEventData_reqChangeSelectCard* reqChangeSelectCardData = Cast<UKBEventData_reqChangeSelectCard>(pEventData);
+                ReqChangeSelectCard(reqChangeSelectCardData->changeCardKey);
+            });
+            KBENGINE_REGISTER_EVENT_OVERRIDE_FUNC("ReqUpdateSelectedCard", "ReqUpdateSelectedCard", [this](const UKBEventData* pEventData)
+            {
+                ReqUpdateSelectedCard();
+            });
         }
     }
 
@@ -133,6 +143,16 @@ namespace KBEngine
     void Avatar::syncTimeInterval(const SYNC_BATTLE_TIME_INFO& param)
     {
 
+    }
+
+    void Avatar::ReqChangeSelectCard(FString changeCardKey)
+    {
+        pBaseEntityCall->reqChangeSelectCard(changeCardKey);
+    }
+
+    void Avatar::ReqUpdateSelectedCard()
+    {
+        pBaseEntityCall->reqUpdateSelectedCard();
     }
 
 }

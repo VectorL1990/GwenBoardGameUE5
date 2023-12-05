@@ -59,6 +59,13 @@ void ACoreCardGameModeBase::ReqChangeSelectCard(FString changeCardKey)
 {
     UKBEventData_reqChangeSelectCard* eventData = NewObject<UKBEventData_reqChangeSelectCard>();
     eventData->changeCardKey = changeCardKey;
+    KBENGINE_EVENT_FIRE("ReqChangeSelectCard", eventData);
+}
+
+void ACoreCardGameModeBase::ReqUpdateSelectedCard()
+{
+    UKBEventData* eventData = NewObject<UKBEventData>();
+    KBENGINE_EVENT_FIRE("ReqUpdateSelectedCard", eventData);
 }
 
 void ACoreCardGameModeBase::onUpdateGridInfoList(const UKBEventData* eventData)
@@ -193,13 +200,17 @@ void ACoreCardGameModeBase::onSyncPlayerBattleInfo(const UKBEventData* eventData
 
 void ACoreCardGameModeBase::onSyncExhaustCardReplacement(const UKBEventData* eventData)
 {
-
+    // which means this player lost some information
+    // player should ask server to supplement all informations
+    UKBEventData* eventData = NewObject<UKBEventData>();
+    KBENGINE_EVENT_FIRE("ReqUpdateSelectedCard", eventData);
 }
 
 void ACoreCardGameModeBase::onSyncUpdateSelectedCards(const UKBEventData* eventData)
 {
     const UKBEventData_onSyncUpdateSelectedCards* onSyncUpdateSelectedCardsData = Cast<UKBEventData_onSyncUpdateSelectedCards>(eventData);
-    
+    // delete all existing hand cards and replace them with data from server
+
 }
 
 void ACoreCardGameModeBase::onSyncRoomStartBattle(const UKBEventData* eventData)

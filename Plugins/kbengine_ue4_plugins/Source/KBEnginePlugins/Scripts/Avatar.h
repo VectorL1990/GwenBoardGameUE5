@@ -36,6 +36,8 @@ namespace KBEngine
         virtual void switchController(uint8 playerNb) override;
         virtual void syncTimeInterval(const SYNC_BATTLE_TIME_INFO& param) override;
 
+        void ReqChangeSelectCard(FString changeCardKey);
+        void ReqUpdateSelectedCard();
     };
 
 }

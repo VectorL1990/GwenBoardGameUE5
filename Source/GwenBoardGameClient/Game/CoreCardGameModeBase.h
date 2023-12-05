@@ -59,6 +59,8 @@ private:
 
     void ReqChangeSelectCard(FString changeCardKey);
 
+    void ReqUpdateSelectedCard();
+
     void onReceiveNewTurnMessage(const UKBEventData* eventData);
 
     void onReceiveUpdateCoreGame(const UKBEventData* eventData);
