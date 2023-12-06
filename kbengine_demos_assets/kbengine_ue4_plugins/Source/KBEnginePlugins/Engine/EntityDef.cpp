@@ -363,7 +363,7 @@ void EntityDef::initScriptModules()
 
 	Method* pAvatar_onStopCardSelection = new Method();
 	pAvatar_onStopCardSelection->name = TEXT("onStopCardSelection");
-	pAvatar_onStopCardSelection->methodUtype = 7;
+	pAvatar_onStopCardSelection->methodUtype = 14;
 	pAvatar_onStopCardSelection->aliasID = 1;
 	pAvatar_onStopCardSelection->args = Avatar_onStopCardSelection_args;
 
@@ -371,80 +371,187 @@ void EntityDef::initScriptModules()
 	pAvatarModule->useMethodDescrAlias = true;
 	pAvatarModule->idmethods.Add((uint16)pAvatar_onStopCardSelection->aliasID, pAvatar_onStopCardSelection);
 
-	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(onStopCardSelection / 7).");
+	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(onStopCardSelection / 14).");
+
+	TArray<DATATYPE_BASE*> Avatar_onSyncChangeHandCardSuccess_args;
+	Avatar_onSyncChangeHandCardSuccess_args.Add(EntityDef::id2datatypes[2]);
+	Avatar_onSyncChangeHandCardSuccess_args.Add(EntityDef::id2datatypes[1]);
+	Avatar_onSyncChangeHandCardSuccess_args.Add(EntityDef::id2datatypes[1]);
+
+	Method* pAvatar_onSyncChangeHandCardSuccess = new Method();
+	pAvatar_onSyncChangeHandCardSuccess->name = TEXT("onSyncChangeHandCardSuccess");
+	pAvatar_onSyncChangeHandCardSuccess->methodUtype = 11;
+	pAvatar_onSyncChangeHandCardSuccess->aliasID = 2;
+	pAvatar_onSyncChangeHandCardSuccess->args = Avatar_onSyncChangeHandCardSuccess_args;
+
+	pAvatarModule->methods.Add(TEXT("onSyncChangeHandCardSuccess"), pAvatar_onSyncChangeHandCardSuccess); 
+	pAvatarModule->useMethodDescrAlias = true;
+	pAvatarModule->idmethods.Add((uint16)pAvatar_onSyncChangeHandCardSuccess->aliasID, pAvatar_onSyncChangeHandCardSuccess);
+
+	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(onSyncChangeHandCardSuccess / 11).");
+
+	TArray<DATATYPE_BASE*> Avatar_onSyncExhaustCardReplacement_args;
+
+	Method* pAvatar_onSyncExhaustCardReplacement = new Method();
+	pAvatar_onSyncExhaustCardReplacement->name = TEXT("onSyncExhaustCardReplacement");
+	pAvatar_onSyncExhaustCardReplacement->methodUtype = 10;
+	pAvatar_onSyncExhaustCardReplacement->aliasID = 3;
+	pAvatar_onSyncExhaustCardReplacement->args = Avatar_onSyncExhaustCardReplacement_args;
+
+	pAvatarModule->methods.Add(TEXT("onSyncExhaustCardReplacement"), pAvatar_onSyncExhaustCardReplacement); 
+	pAvatarModule->useMethodDescrAlias = true;
+	pAvatarModule->idmethods.Add((uint16)pAvatar_onSyncExhaustCardReplacement->aliasID, pAvatar_onSyncExhaustCardReplacement);
+
+	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(onSyncExhaustCardReplacement / 10).");
 
 	TArray<DATATYPE_BASE*> Avatar_onSyncPlayerBattleInfo_args;
 	Avatar_onSyncPlayerBattleInfo_args.Add(EntityDef::id2datatypes[39]);
 
 	Method* pAvatar_onSyncPlayerBattleInfo = new Method();
 	pAvatar_onSyncPlayerBattleInfo->name = TEXT("onSyncPlayerBattleInfo");
-	pAvatar_onSyncPlayerBattleInfo->methodUtype = 6;
-	pAvatar_onSyncPlayerBattleInfo->aliasID = 2;
+	pAvatar_onSyncPlayerBattleInfo->methodUtype = 9;
+	pAvatar_onSyncPlayerBattleInfo->aliasID = 4;
 	pAvatar_onSyncPlayerBattleInfo->args = Avatar_onSyncPlayerBattleInfo_args;
 
 	pAvatarModule->methods.Add(TEXT("onSyncPlayerBattleInfo"), pAvatar_onSyncPlayerBattleInfo); 
 	pAvatarModule->useMethodDescrAlias = true;
 	pAvatarModule->idmethods.Add((uint16)pAvatar_onSyncPlayerBattleInfo->aliasID, pAvatar_onSyncPlayerBattleInfo);
 
-	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(onSyncPlayerBattleInfo / 6).");
+	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(onSyncPlayerBattleInfo / 9).");
+
+	TArray<DATATYPE_BASE*> Avatar_onSyncRoomStartBattle_args;
+
+	Method* pAvatar_onSyncRoomStartBattle = new Method();
+	pAvatar_onSyncRoomStartBattle->name = TEXT("onSyncRoomStartBattle");
+	pAvatar_onSyncRoomStartBattle->methodUtype = 13;
+	pAvatar_onSyncRoomStartBattle->aliasID = 5;
+	pAvatar_onSyncRoomStartBattle->args = Avatar_onSyncRoomStartBattle_args;
+
+	pAvatarModule->methods.Add(TEXT("onSyncRoomStartBattle"), pAvatar_onSyncRoomStartBattle); 
+	pAvatarModule->useMethodDescrAlias = true;
+	pAvatarModule->idmethods.Add((uint16)pAvatar_onSyncRoomStartBattle->aliasID, pAvatar_onSyncRoomStartBattle);
+
+	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(onSyncRoomStartBattle / 13).");
+
+	TArray<DATATYPE_BASE*> Avatar_onSyncUpdateSelectedCards_args;
+	Avatar_onSyncUpdateSelectedCards_args.Add(EntityDef::id2datatypes[2]);
+	Avatar_onSyncUpdateSelectedCards_args.Add(EntityDef::id2datatypes[39]);
+
+	Method* pAvatar_onSyncUpdateSelectedCards = new Method();
+	pAvatar_onSyncUpdateSelectedCards->name = TEXT("onSyncUpdateSelectedCards");
+	pAvatar_onSyncUpdateSelectedCards->methodUtype = 12;
+	pAvatar_onSyncUpdateSelectedCards->aliasID = 6;
+	pAvatar_onSyncUpdateSelectedCards->args = Avatar_onSyncUpdateSelectedCards_args;
+
+	pAvatarModule->methods.Add(TEXT("onSyncUpdateSelectedCards"), pAvatar_onSyncUpdateSelectedCards); 
+	pAvatarModule->useMethodDescrAlias = true;
+	pAvatarModule->idmethods.Add((uint16)pAvatar_onSyncUpdateSelectedCards->aliasID, pAvatar_onSyncUpdateSelectedCards);
+
+	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(onSyncUpdateSelectedCards / 12).");
 
 	TArray<DATATYPE_BASE*> Avatar_resumeBattle_args;
 
 	Method* pAvatar_resumeBattle = new Method();
 	pAvatar_resumeBattle->name = TEXT("resumeBattle");
-	pAvatar_resumeBattle->methodUtype = 11;
-	pAvatar_resumeBattle->aliasID = 3;
+	pAvatar_resumeBattle->methodUtype = 18;
+	pAvatar_resumeBattle->aliasID = 7;
 	pAvatar_resumeBattle->args = Avatar_resumeBattle_args;
 
 	pAvatarModule->methods.Add(TEXT("resumeBattle"), pAvatar_resumeBattle); 
 	pAvatarModule->useMethodDescrAlias = true;
 	pAvatarModule->idmethods.Add((uint16)pAvatar_resumeBattle->aliasID, pAvatar_resumeBattle);
 
-	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(resumeBattle / 11).");
+	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(resumeBattle / 18).");
 
 	TArray<DATATYPE_BASE*> Avatar_startBattle_args;
 
 	Method* pAvatar_startBattle = new Method();
 	pAvatar_startBattle->name = TEXT("startBattle");
-	pAvatar_startBattle->methodUtype = 9;
-	pAvatar_startBattle->aliasID = 4;
+	pAvatar_startBattle->methodUtype = 16;
+	pAvatar_startBattle->aliasID = 8;
 	pAvatar_startBattle->args = Avatar_startBattle_args;
 
 	pAvatarModule->methods.Add(TEXT("startBattle"), pAvatar_startBattle); 
 	pAvatarModule->useMethodDescrAlias = true;
 	pAvatarModule->idmethods.Add((uint16)pAvatar_startBattle->aliasID, pAvatar_startBattle);
 
-	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(startBattle / 9).");
+	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(startBattle / 16).");
 
 	TArray<DATATYPE_BASE*> Avatar_switchController_args;
 	Avatar_switchController_args.Add(EntityDef::id2datatypes[2]);
 
 	Method* pAvatar_switchController = new Method();
 	pAvatar_switchController->name = TEXT("switchController");
-	pAvatar_switchController->methodUtype = 10;
-	pAvatar_switchController->aliasID = 5;
+	pAvatar_switchController->methodUtype = 17;
+	pAvatar_switchController->aliasID = 9;
 	pAvatar_switchController->args = Avatar_switchController_args;
 
 	pAvatarModule->methods.Add(TEXT("switchController"), pAvatar_switchController); 
 	pAvatarModule->useMethodDescrAlias = true;
 	pAvatarModule->idmethods.Add((uint16)pAvatar_switchController->aliasID, pAvatar_switchController);
 
-	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(switchController / 10).");
+	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(switchController / 17).");
 
 	TArray<DATATYPE_BASE*> Avatar_syncTimeInterval_args;
 	Avatar_syncTimeInterval_args.Add(EntityDef::id2datatypes[36]);
 
 	Method* pAvatar_syncTimeInterval = new Method();
 	pAvatar_syncTimeInterval->name = TEXT("syncTimeInterval");
-	pAvatar_syncTimeInterval->methodUtype = 8;
-	pAvatar_syncTimeInterval->aliasID = 6;
+	pAvatar_syncTimeInterval->methodUtype = 15;
+	pAvatar_syncTimeInterval->aliasID = 10;
 	pAvatar_syncTimeInterval->args = Avatar_syncTimeInterval_args;
 
 	pAvatarModule->methods.Add(TEXT("syncTimeInterval"), pAvatar_syncTimeInterval); 
 	pAvatarModule->useMethodDescrAlias = true;
 	pAvatarModule->idmethods.Add((uint16)pAvatar_syncTimeInterval->aliasID, pAvatar_syncTimeInterval);
 
-	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(syncTimeInterval / 8).");
+	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(syncTimeInterval / 15).");
+
+	TArray<DATATYPE_BASE*> Avatar_reqChangeSelectCard_args;
+	Avatar_reqChangeSelectCard_args.Add(EntityDef::id2datatypes[1]);
+
+	Method* pAvatar_reqChangeSelectCard = new Method();
+	pAvatar_reqChangeSelectCard->name = TEXT("reqChangeSelectCard");
+	pAvatar_reqChangeSelectCard->methodUtype = 6;
+	pAvatar_reqChangeSelectCard->aliasID = -1;
+	pAvatar_reqChangeSelectCard->args = Avatar_reqChangeSelectCard_args;
+
+	pAvatarModule->methods.Add(TEXT("reqChangeSelectCard"), pAvatar_reqChangeSelectCard); 
+	pAvatarModule->base_methods.Add(TEXT("reqChangeSelectCard"), pAvatar_reqChangeSelectCard);
+
+	pAvatarModule->idbase_methods.Add(pAvatar_reqChangeSelectCard->methodUtype, pAvatar_reqChangeSelectCard);
+
+	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(reqChangeSelectCard / 6).");
+
+	TArray<DATATYPE_BASE*> Avatar_reqFinishSelectCards_args;
+
+	Method* pAvatar_reqFinishSelectCards = new Method();
+	pAvatar_reqFinishSelectCards->name = TEXT("reqFinishSelectCards");
+	pAvatar_reqFinishSelectCards->methodUtype = 7;
+	pAvatar_reqFinishSelectCards->aliasID = -1;
+	pAvatar_reqFinishSelectCards->args = Avatar_reqFinishSelectCards_args;
+
+	pAvatarModule->methods.Add(TEXT("reqFinishSelectCards"), pAvatar_reqFinishSelectCards); 
+	pAvatarModule->base_methods.Add(TEXT("reqFinishSelectCards"), pAvatar_reqFinishSelectCards);
+
+	pAvatarModule->idbase_methods.Add(pAvatar_reqFinishSelectCards->methodUtype, pAvatar_reqFinishSelectCards);
+
+	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(reqFinishSelectCards / 7).");
+
+	TArray<DATATYPE_BASE*> Avatar_reqUpdateSelectedCard_args;
+
+	Method* pAvatar_reqUpdateSelectedCard = new Method();
+	pAvatar_reqUpdateSelectedCard->name = TEXT("reqUpdateSelectedCard");
+	pAvatar_reqUpdateSelectedCard->methodUtype = 8;
+	pAvatar_reqUpdateSelectedCard->aliasID = -1;
+	pAvatar_reqUpdateSelectedCard->args = Avatar_reqUpdateSelectedCard_args;
+
+	pAvatarModule->methods.Add(TEXT("reqUpdateSelectedCard"), pAvatar_reqUpdateSelectedCard); 
+	pAvatarModule->base_methods.Add(TEXT("reqUpdateSelectedCard"), pAvatar_reqUpdateSelectedCard);
+
+	pAvatarModule->idbase_methods.Add(pAvatar_reqUpdateSelectedCard->methodUtype, pAvatar_reqUpdateSelectedCard);
+
+	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(reqUpdateSelectedCard / 8).");
 
 	ScriptModule* pGateModule = new ScriptModule("Gate", 3);
 	EntityDef::moduledefs.Add(TEXT("Gate"), pGateModule);
@@ -690,7 +797,7 @@ void EntityDef::initScriptModules()
 
 	Method* pPlayer_onUpdateBattle = new Method();
 	pPlayer_onUpdateBattle->name = TEXT("onUpdateBattle");
-	pPlayer_onUpdateBattle->methodUtype = 12;
+	pPlayer_onUpdateBattle->methodUtype = 19;
 	pPlayer_onUpdateBattle->aliasID = 1;
 	pPlayer_onUpdateBattle->args = Player_onUpdateBattle_args;
 
@@ -698,14 +805,14 @@ void EntityDef::initScriptModules()
 	pPlayerModule->useMethodDescrAlias = true;
 	pPlayerModule->idmethods.Add((uint16)pPlayer_onUpdateBattle->aliasID, pPlayer_onUpdateBattle);
 
-	//DEBUG_MSG("EntityDef::initScriptModules: add(Player), method(onUpdateBattle / 12).");
+	//DEBUG_MSG("EntityDef::initScriptModules: add(Player), method(onUpdateBattle / 19).");
 
 	TArray<DATATYPE_BASE*> Player_onUpdateGridInfoList_args;
 	Player_onUpdateGridInfoList_args.Add(EntityDef::id2datatypes[31]);
 
 	Method* pPlayer_onUpdateGridInfoList = new Method();
 	pPlayer_onUpdateGridInfoList->name = TEXT("onUpdateGridInfoList");
-	pPlayer_onUpdateGridInfoList->methodUtype = 13;
+	pPlayer_onUpdateGridInfoList->methodUtype = 20;
 	pPlayer_onUpdateGridInfoList->aliasID = 2;
 	pPlayer_onUpdateGridInfoList->args = Player_onUpdateGridInfoList_args;
 
@@ -713,7 +820,7 @@ void EntityDef::initScriptModules()
 	pPlayerModule->useMethodDescrAlias = true;
 	pPlayerModule->idmethods.Add((uint16)pPlayer_onUpdateGridInfoList->aliasID, pPlayer_onUpdateGridInfoList);
 
-	//DEBUG_MSG("EntityDef::initScriptModules: add(Player), method(onUpdateGridInfoList / 13).");
+	//DEBUG_MSG("EntityDef::initScriptModules: add(Player), method(onUpdateGridInfoList / 20).");
 
 }
 

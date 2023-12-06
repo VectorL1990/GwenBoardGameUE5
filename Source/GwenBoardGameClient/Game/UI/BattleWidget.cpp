@@ -3,7 +3,7 @@
 
 #include "Game/UI/BattleWidget.h"
 
-void UBattleWidget::SetupCardDetail(FPLAY_CARD_INFO info)
+void UBattleWidget::SetupCardDetail()
 {
 
 }

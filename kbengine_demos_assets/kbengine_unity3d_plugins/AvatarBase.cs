@@ -31,7 +31,11 @@ namespace KBEngine
 		public virtual void onUtypeChanged(UInt32 oldValue) {}
 
 		public abstract void onStopCardSelection(); 
+		public abstract void onSyncChangeHandCardSuccess(Byte arg1, string arg2, string arg3); 
+		public abstract void onSyncExhaustCardReplacement(); 
 		public abstract void onSyncPlayerBattleInfo(SYNC_PLAYER_BATTLE_INFO arg1); 
+		public abstract void onSyncRoomStartBattle(); 
+		public abstract void onSyncUpdateSelectedCards(Byte arg1, SYNC_PLAYER_BATTLE_INFO arg2); 
 		public abstract void resumeBattle(); 
 		public abstract void startBattle(); 
 		public abstract void switchController(Byte arg1); 
@@ -127,24 +131,41 @@ namespace KBEngine
 
 			switch(method.methodUtype)
 			{
-				case 7:
+				case 14:
 					onStopCardSelection();
 					break;
-				case 6:
+				case 11:
+					Byte onSyncChangeHandCardSuccess_arg1 = stream.readUint8();
+					string onSyncChangeHandCardSuccess_arg2 = stream.readString();
+					string onSyncChangeHandCardSuccess_arg3 = stream.readString();
+					onSyncChangeHandCardSuccess(onSyncChangeHandCardSuccess_arg1, onSyncChangeHandCardSuccess_arg2, onSyncChangeHandCardSuccess_arg3);
+					break;
+				case 10:
+					onSyncExhaustCardReplacement();
+					break;
+				case 9:
 					SYNC_PLAYER_BATTLE_INFO onSyncPlayerBattleInfo_arg1 = ((DATATYPE_SYNC_PLAYER_BATTLE_INFO)method.args[0]).createFromStreamEx(stream);
 					onSyncPlayerBattleInfo(onSyncPlayerBattleInfo_arg1);
 					break;
-				case 11:
+				case 13:
+					onSyncRoomStartBattle();
+					break;
+				case 12:
+					Byte onSyncUpdateSelectedCards_arg1 = stream.readUint8();
+					SYNC_PLAYER_BATTLE_INFO onSyncUpdateSelectedCards_arg2 = ((DATATYPE_SYNC_PLAYER_BATTLE_INFO)method.args[1]).createFromStreamEx(stream);
+					onSyncUpdateSelectedCards(onSyncUpdateSelectedCards_arg1, onSyncUpdateSelectedCards_arg2);
+					break;
+				case 18:
 					resumeBattle();
 					break;
-				case 9:
+				case 16:
 					startBattle();
 					break;
-				case 10:
+				case 17:
 					Byte switchController_arg1 = stream.readUint8();
 					switchController(switchController_arg1);
 					break;
-				case 8:
+				case 15:
 					SYNC_BATTLE_TIME_INFO syncTimeInterval_arg1 = ((DATATYPE_SYNC_BATTLE_TIME_INFO)method.args[0]).createFromStreamEx(stream);
 					syncTimeInterval(syncTimeInterval_arg1);
 					break;

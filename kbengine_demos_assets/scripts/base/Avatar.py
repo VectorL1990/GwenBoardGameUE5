@@ -21,6 +21,7 @@ class Avatar(KBEngine.Proxy,
 		self.pileCardList = []
 		self.graveCardList = []
 		self.roomEntityCall = None
+		self.changeSelectCardNb = 0
 
 	def reqTellRoomSelectCardDone(self):
 		# notify room that player has cards selected
@@ -30,7 +31,7 @@ class Avatar(KBEngine.Proxy,
 		randCardList = allCardList
 		random.shuffle(randCardList)
 		cardListLen = len(randCardList)
-		for i in range(1, cardListLen):
+		for i in range(cardListLen):
 			cardKey = str(self.id) + '_' + str(i) + '_' + randCardList[i]
 			self.allCardDict[cardKey] = {}
 			# append g_handCardAmount cards into hand holding pile
@@ -69,6 +70,64 @@ class Avatar(KBEngine.Proxy,
 
 	def resumeBattle(self):
 		return
+	
+	# ---
+	#
+	# ---
+	def roomReqStartBattle(self):
+		# card selection finished, start battle now
+		self.client.onSyncRoomStartBattle()
+		return
+
+	#---
+	#
+	#---
+	def reqChangeSelectCard(self, cardKey):
+		leftChangeCardNb = GlobalConst.g_maxChangeCardNb - self.changeSelectCardNb
+		if leftChangeCardNb <= 1:
+			# which means player can not change any card no more
+			self.client.onSyncExhaustCardReplacement()
+		else:
+			handCardListLen = len(self.handCardList)
+			if cardKey in self.handCardList:
+				# switch hand cards
+				for i in range(handCardListLen):
+					if self.handCardList[i] == cardKey:
+						# which means this is the card to be switched
+						# put the first pile card into this position
+						switchCard = self.handCardList[i]
+						self.handCardList[i] = self.pileCardList[0]
+						switchCardKey = self.pileCardList[0]
+						self.pileCardList.pop(0)
+						self.pileCardList.append(switchCard)
+						self.changeSelectCardNb += 1
+						self.client.onSyncChangeHandCardSuccess(self.changeSelectCardNb, cardKey, switchCardKey)
+						break
+
+	def reqUpdateSelectedCard(self):
+		allCardList = []
+		for k, v in self.allCardDict.items():
+			cardInfo = {
+				"cardKey": k,
+				"cardName": v["CardName"],
+				"hp": v["Hp"],
+				"defence": v["Defence"],
+				"agility": v["Agility"],
+				"tags": v["Tags"],
+			}
+			allCardList.append(cardInfo)
+
+		syncPlayerBattleInfo = {
+			"cardList" : allCardList,
+			"handCardList" : self.handCardList
+		}
+		self.client.onSyncUpdateSelectedCards(self.changeSelectCardNb, syncPlayerBattleInfo)
+		return
+	
+	def reqFinishSelectCards(self):
+		
+		return
+
 
 	#--------------------------------------------------------------------------------------------
 	#                              Callbacks
@@ -111,6 +170,12 @@ class Avatar(KBEngine.Proxy,
 		if self.accountEntity != None:
 			self.accountEntity.activeAvatar = None
 			self.accountEntity = None
+
+	def onSyncExhaustCardReplacement(self):
+		return
+	
+	def onSyncRoomStartBattle(self):
+		return
 
 
 
