@@ -55,7 +55,10 @@ class Hall(KBEngine.Entity):
 			DEBUG_MSG("Halls::onRoomCreatedCB: delete player in apply match dict and entityID=%i" % (playerId))
 			self.applyMatchPlayerDict.pop(playerId)
 		self.rooms[roomKey] = roomEntityCall
-		roomEntityCall.tellAccountsRoomCreated()
+		roomEntityCall.hallReqAccountsRoomCreated()
+
+	def roomReqDelete(self, roomKey):
+		self.rooms.pop(roomKey)
 
 
 

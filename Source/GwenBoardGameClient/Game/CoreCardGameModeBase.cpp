@@ -210,7 +210,40 @@ void ACoreCardGameModeBase::onSyncUpdateSelectedCards(const UKBEventData* eventD
 {
     const UKBEventData_onSyncUpdateSelectedCards* onSyncUpdateSelectedCardsData = Cast<UKBEventData_onSyncUpdateSelectedCards>(eventData);
     // delete all existing hand cards and replace them with data from server
+    for (TMap<FString, ACard*>::TConstIterator iter = handCardMap.CreateConstIterator(); iter; ++iter)
+    {
+        if (iter->Value->IsValidLowLevel())
+        {
+            iter->Value->Destroy();
+        }
+    }
+    handCardMap.Empty();
 
+    allCardInfoMap.Empty();
+    pileCardKeyList.Empty();
+    for (int32 i = 0; i < onSyncUpdateSelectedCardsData->cardList.Num(); i++)
+    {
+        if (!onSyncUpdateSelectedCardsData->handCardList.Contains(onSyncUpdateSelectedCardsData->cardList[i].cardKey))
+        {
+            pileCardKeyList.Add(onSyncUpdateSelectedCardsData->cardList[i].cardKey, onSyncUpdateSelectedCardsData->cardList[i]);
+        }
+        allCardInfoMap.Add(onSyncUpdateSelectedCardsData->cardList[i].cardKey, onSyncUpdateSelectedCardsData->cardList[i]);
+    }
+    handCardKeyList = onSyncUpdateSelectedCardsData->handCardList;
+
+    FRotator spawnRot = FRotator::ZeroRotator;
+    for (int32 i = 0; i < handCardKeyList.Num(); i++)
+    {
+        if (i >= selectCardSpawnPts.Num())
+        {
+            break;
+        }
+        FVector spawnLoc = selectCardSpawnPts[i];
+        ACard* handCard = GetWorld()->SpawnActor<ACard>(cardBPClass, spawnLoc, spawnRot);
+        handCard->cardStatus = BattleCardStatus::Select;
+        handCard->InitCard(allCardInfoMap[handCardKeyList[i]].cardName);
+        handCardMap.Add(handCardKeyList[i], handCard);
+    }
 }
 
 void ACoreCardGameModeBase::onSyncRoomStartBattle(const UKBEventData* eventData)

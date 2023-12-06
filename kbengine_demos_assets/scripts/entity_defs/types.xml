@@ -132,9 +132,9 @@
 			<curTime>
 				<Type>	INT32	</Type>
 			</curTime>
-			<playerNb>
+			<battleState>
 				<Type>	UINT8	</Type>
-			</playerNb>
+			</battleState>
 		</Properties>
 	</SYNC_BATTLE_TIME_INFO>
 

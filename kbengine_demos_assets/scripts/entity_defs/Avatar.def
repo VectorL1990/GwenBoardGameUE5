@@ -53,19 +53,25 @@
 		<onStopCardSelection>
 		</onStopCardSelection>
 
-		<syncTimeInterval>
+		<onSyncTimeInterval>
 			<Arg> SYNC_BATTLE_TIME_INFO </Arg>
-		</syncTimeInterval>
+		</onSyncTimeInterval>
+
+		<onSyncSelectCardInterlude>
+			<Arg> SYNC_PLAYER_BATTLE_INFO </Arg>
+		</onSyncSelectCardInterlude>
 
 		<startBattle>
 		</startBattle>
 
-		<switchController>
+		<onSyncSwitchController>
 			<Arg> UINT8 </Arg>
-		</switchController>
+			<Arg> UINT64 </Arg>
+		</onSyncSwitchController>
 
-		<resumeBattle>
-		</resumeBattle>
+		<onSyncResumeBattle>
+			<Arg> UINT8 </Arg>
+		</onSyncResumeBattle>
 	</ClientMethods>
 </root>
 

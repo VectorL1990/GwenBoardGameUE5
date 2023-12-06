@@ -1,9 +1,17 @@
 # -*- coding: utf-8 -*-
 
-"""
-"""
+from enum import Enum
+
 g_handCardAmount = 10
 g_maxChangeHandCardNb = 3
+
+class g_battleState(Enum):
+	DEFAULT = 1
+	WAIT_AVATAR_ENTER_ROOM = 2
+	SELECT_CARD = 3
+	SELECT_CARD_INTERLUDE = 4
+	BATTLE = 5
+	BATTLE_INTERLUDE = 6
 
 GC_OK								= 0x000
 

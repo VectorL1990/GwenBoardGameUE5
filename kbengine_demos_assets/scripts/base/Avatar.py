@@ -22,10 +22,7 @@ class Avatar(KBEngine.Proxy,
 		self.graveCardList = []
 		self.roomEntityCall = None
 		self.changeSelectCardNb = 0
-
-	def reqTellRoomSelectCardDone(self):
-		# notify room that player has cards selected
-		return
+		self.battleState = GlobalConst.g_battleState.DEFAULT
 		
 	def shuffleCardList(self, allCardList):
 		randCardList = allCardList
@@ -56,20 +53,9 @@ class Avatar(KBEngine.Proxy,
 		if not self.isDestroyed:
 			self.destroy()
 
-	def stopCardSelection(self):
-		return
-
-	def syncTimeInterval(self, curTime, state):
-		return
-
 	def startBattle(self):
 		return
 
-	def switchController(self, controlNb):
-		return
-
-	def resumeBattle(self):
-		return
 	
 	# ---
 	#
@@ -77,7 +63,56 @@ class Avatar(KBEngine.Proxy,
 	def roomReqStartBattle(self):
 		# card selection finished, start battle now
 		self.client.onSyncRoomStartBattle()
-		return
+
+	def roomReqDispatchCardInfos(self):
+		allCardList = []
+		for k, v in self.allCardDict.items():
+			cardInfo = {
+				"cardKey": k,
+				"cardName": v["CardName"],
+				"hp": v["Hp"],
+				"defence": v["Defence"],
+				"agility": v["Agility"],
+				"tags": v["Tags"],
+			}
+			allCardList.append(cardInfo)
+
+		syncPlayerBattleInfo = {
+			"cardList" : allCardList,
+			"handCardList" : self.handCardList
+		}
+		self.client.onSyncPlayerBattleInfo(syncPlayerBattleInfo)
+
+	def roomReqSyncTimeInfo(self, curTimeClock, battleState):
+		syncBattleTimeInfo = {
+			"curTime": curTimeClock,
+			"battleState": battleState
+		}
+		self.client.onSyncTimeInterval(syncBattleTimeInfo)
+
+	def roomReqSelectCardInterlude(self):
+		allCardList = []
+		for k, v in self.allCardDict.items():
+			cardInfo = {
+				"cardKey": k,
+				"cardName": v["CardName"],
+				"hp": v["Hp"],
+				"defence": v["Defence"],
+				"agility": v["Agility"],
+				"tags": v["Tags"],
+			}
+			allCardList.append(cardInfo)
+
+		syncPlayerBattleInfo = {
+			"cardList" : allCardList,
+			"handCardList" : self.handCardList
+		}
+		self.client.onSyncSelectCardInterlude(syncPlayerBattleInfo)
+
+	def roomReqSwitchController(self, switchNb, controllerId):
+		self.client.onSyncSwitchController(switchNb, controllerId)
+
+	def roomReqResumeBattle(self, switchNb):
 
 	#---
 	#
@@ -122,11 +157,9 @@ class Avatar(KBEngine.Proxy,
 			"handCardList" : self.handCardList
 		}
 		self.client.onSyncUpdateSelectedCards(self.changeSelectCardNb, syncPlayerBattleInfo)
-		return
 	
 	def reqFinishSelectCards(self):
-		
-		return
+		self.roomEntityCall.avatarFinishSelectCards(self)
 
 
 	#--------------------------------------------------------------------------------------------
@@ -143,23 +176,7 @@ class Avatar(KBEngine.Proxy,
 		# tell room avatar is ready
 		self.roomEntityCall.avatarEnterRoom(self)
 
-		allCardList = []
-		for k, v in self.allCardDict.items():
-			cardInfo = {
-				"cardKey": k,
-				"cardName": v["CardName"],
-				"hp": v["Hp"],
-				"defence": v["Defence"],
-				"agility": v["Agility"],
-				"tags": v["Tags"],
-			}
-			allCardList.append(cardInfo)
-
-		syncPlayerBattleInfo = {
-			"cardList" : allCardList,
-			"handCardList" : self.handCardList
-		}
-		self.client.onSyncPlayerBattleInfo(syncPlayerBattleInfo)
+		
 		
 	def onClientDeath(self):
 		DEBUG_MSG("Avatar[%i].onClientDeath:" % self.id)
@@ -170,9 +187,6 @@ class Avatar(KBEngine.Proxy,
 		if self.accountEntity != None:
 			self.accountEntity.activeAvatar = None
 			self.accountEntity = None
-
-	def onSyncExhaustCardReplacement(self):
-		return
 	
 	def onSyncRoomStartBattle(self):
 		return

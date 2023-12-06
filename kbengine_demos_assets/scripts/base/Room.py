@@ -3,39 +3,52 @@ import KBEngine
 import math
 import time
 from KBEDebug import *
+import GlobalConst
 from d_all_cards import allDatas
 
 class Room(KBEngine.Entity):
 	def __init__(self):
 		KBEngine.Entity.__init__(self)
 		self.accountEntityDict = {}
-		self.accountEntityIdList = []
 		self.gridInfoDict = {}
 		self.runLoop = False
+		self.curSwitchNb = 0
 		self.curControlNb = 0
-		self.roomPlayerNb = 2
+
+		# --- time counting variables
 		self.curTimeClockInterval = 0
-		self.maxSelectCardTimeInterval = 20000
-		self.maxSelectCardDoneAnimTime = 4000
-		self.maxLaunchActionTimeInterval = 10000
-		self.maxSwitchControllerAnimTime = 4000
-		self.lastTimeClock = -1
-		self.curTimeClock = 0.0
-		self.startTimeCount = False
+		self.maxWaitAvatarsEnterRoom = 30
+		self.maxSelectCardTimeInterval = 30
+		self.maxSelectCardInterludeTime = 5
+		self.maxLaunchActionTimeInterval = 20
+		self.maxSwitchControllerInterludeTime = 4
+
 		self.receiveConfirmNb = 0
 
-		self.timerState = 0
 		self.avatars = {}
-		self.enterRoomAccountList = []
-		self.finishSelectCardAvatarList = []
+		self.inBattleAvatarList = []
 
 		self.uniqueCardDict = {}
+		self.battleState = GlobalConst.g_battleState.DEFAULT
 
-	def tellAccountsRoomCreated(self):
+	def roomDestroySelf(self):
+		KBEngine.globalData["Hall"].roomReqDelete(self.roomKey)
+		# tell all players that room is destroied
+		self.accountEntityDict = {}
+		self.avatars = {}
+		self.uniqueCardDict = {}
+		self.inBattleAvatarList = []
+		self.destroy()
+		return
+
+	def hallReqAccountsRoomCreated(self):
 		for k,v in self.accountEntityDict.items():
-			DEBUG_MSG("Room::tellAccountsRoomCreated: tell account room created and entityID=%i" % (k))
-			self.accountEntityIdList.append(k)
+			DEBUG_MSG("Room::hallReqAccountsRoomCreated: tell account room created and entityID=%i" % (k))
 			v.syncRoomCreated(self.roomKey)
+		
+		# at this point we could countdown for avatar entering room
+		self.battleState = GlobalConst.g_battleState.WAIT_AVATAR_ENTER_ROOM
+		self.addTimer(0.0, 1.0, 1.0)
 
 	def playAction(self, entityCall, actionInfo):
 		if actionInfo["actionType"] == "playCard":
@@ -52,8 +65,7 @@ class Room(KBEngine.Entity):
 			return
 
 	def avatarEnterRoom(self, avatarEntityCall):
-		if avatarEntityCall not in self.enterRoomAccountList:
-			self.enterRoomAccountList.append(avatarEntityCall.accountEntity)
+		if avatarEntityCall.id not in self.avatars:
 			self.avatars[avatarEntityCall.id] = avatarEntityCall
 			# get corresponding card info from data list
 			for cardKey in avatarEntityCall.allCardDict.keys():
@@ -69,13 +81,18 @@ class Room(KBEngine.Entity):
 				}
 				self.uniqueCardDict[cardKey] = avatarEntityCall.allCardDict[cardKey]
 
+
 	def avatarFinishSelectCards(self, avatarEntityCall):
-		if avatarEntityCall not in self.finishSelectCardAvatarList:
-			self.finishSelectCardAvatarList.append(avatarEntityCall)
-			finishSelectCardAvatarNb = len(self.finishSelectCardAvatarList)
+		if avatarEntityCall not in self.inBattleAvatarList:
+			self.inBattleAvatarList.append(avatarEntityCall)
+			finishSelectCardAvatarNb = len(self.inBattleAvatarList)
 			if (len(self.enterRoomAccountList) == finishSelectCardAvatarNb):
 				# which means all avatars finish card selection
-				return
+				for avatar in self.avatars:
+					self.avatars[avatar].roomReqSelectCardInterlude()
+				self.battleState = GlobalConst.g_battleState.SELECT_CARD_INTERLUDE
+				random.shuffle(self.inBattleAvatarList)
+				self.curTimeClockInterval = 0.0
 		
 
 	def leaveRoom(self, entityID):
@@ -85,60 +102,65 @@ class Room(KBEngine.Entity):
 		self.receiveConfirmNb += 1
 		
 	def onTimer(self, tid, userArg):
-		if self.keepCounting == False:
+		if self.battleState == GlobalConst.g_battleState.DEFAULT:
 			return
-		
-		# room should tell which stage it's in right now
-		# 1. which including wait for players cards selection
-		#  if players do not finish cards selection in limited time
-		#  force them start right now
-		# 2. wait for a moment to receive informations about all clients have played prepared animations
-		#  if some confirm information is missing, force start counting
-		# 3. counting for real battle
-		#  3.1 when it comes to switch controller between players
-		#   it should stop for a moment to wait for animations playing for all clients
-		#   if animation confirm information is missing of some clients
-		#   force keep counting
-		if self.timerState == 0:
-			return
-		elif self.timerState == 1:
-			# which means room is waiting for card selection
+
+		if self.battleState == GlobalConst.g_battleState.WAIT_AVATAR_ENTER_ROOM:
+			if self.curTimeClockInterval >= self.maxWaitAvatarsEnterRoom:
+				# countdown for all avatars entering room
+				# if there are still accounts out of room when clock comes to the end
+				# room dismissed
+				self.roomDestroySelf()
+			else:
+				if len(self.avatars) == len(self.accountEntityDict):
+					# which means all avatars have entered room
+					# dispatch informations to all players
+					for avatar in self.avatars:
+						self.avatars[avatar].roomReqDispatchCardInfos()
+					# switch battle state to select card
+					self.battleState = GlobalConst.g_battleState.SELECT_CARD
+					self.curTimeClockInterval = 0.0
+				else:
+					self.curTimeClockInterval += 1
+		elif self.battleState == GlobalConst.g_battleState.SELECT_CARD:
 			if self.curTimeClockInterval >= self.maxSelectCardTimeInterval:
 				# force all players stopping card selection
 				for avatar in self.avatars:
-					self.avatars[avatar].stopCardSelection()
+					self.avatars[avatar].roomReqSelectCardInterlude()
+				self.battleState = GlobalConst.g_battleState.SELECT_CARD_INTERLUDE
+				random.shuffle(self.inBattleAvatarList)
 				self.curTimeClockInterval = 0.0
-				# make timer state to 2 for players to play animations
-				self.timerState = 2
+			else:
+				for avatar in self.avatars:
+					self.avatars[avatar].roomReqSyncTimeInfo(self.curTimeClockInterval, self.battleState.value)
+				self.curTimeClockInterval += 1
+		elif self.battleState == GlobalConst.g_battleState.SELECT_CARD_INTERLUDE:
+			if self.curTimeClockInterval >= self.maxSelectCardInterludeTime:
+				# start battle
+				for avatar in self.avatars:
+					self.avatars[avatar].roomReqStartBattle()
+				self.battleState = GlobalConst.g_battleState.BATTLE
+				self.curTimeClockInterval = 0.0
 			else:
 				self.curTimeClockInterval += 1
-				for avatar in self.avatars:
-					self.avatars[avatar].syncTimeInterval(self.curTimeClockInterval, self.timerState)
-		elif self.timerState == 2:
-			if self.curTimeClockInterval >= self.maxSelectCardDoneAnimTime:
-				for avatar in self.avatars:
-					self.avatars[avatar].startBattle()
-				self.curTimeClockInterval = 0.0
-				self.timerState = 3
-			else:
-				self.curTimeClockInterval += 1
-		elif self.timerState == 3:
+		elif self.battleState == GlobalConst.g_battleState.BATTLE:
 			if self.curTimeClockInterval >= self.maxLaunchActionTimeInterval:
 				# which means we should modify controller to another player
+				self.curSwitchNb += 1
 				self.curControlNb += 1
-				if self.curControlNb >= self.roomPlayerNb:
+				if self.curControlNb >= len(self.inBattleAvatarList):
 					self.curControlNb = 0
 				# send messages to all proxys to switch controller
 				for avatar in self.avatars:
-					self.avatars[avatar].switchController(self.curControlNb)
+					self.avatars[avatar].roomReqSwitchController(self.curSwitchNb, self.inBattleAvatarList[self.curControlNb].id)
 				self.curTimeClockInterval = 0.0
-				self.timerState = 4
+				self.battleState = GlobalConst.g_battleState.BATTLE_INTERLUDE
 			else:
 				self.curTimeClockInterval += 1
 				for avatar in self.avatars:
-					self.avatars[avatar].syncTimeInterval(self.curTimeClockInterval, self.timerState)
-		elif self.timerState == 4:
-			if self.curTimeClockInterval >= self.maxSwitchControllerAnimTime:
+					self.avatars[avatar].roomReqSyncTimeInfo(self.curTimeClockInterval, self.battleState.value)
+		elif self.battleState == GlobalConst.g_battleState.BATTLE_INTERLUDE:
+			if self.curTimeClockInterval >= self.maxSwitchControllerInterludeTime:
 				for avatar in self.avatars:
 					self.avatars[avatar].resumeBattle()
 				self.curTimeClockInterval = 0.0
