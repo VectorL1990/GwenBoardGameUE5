@@ -162,9 +162,9 @@ class Room(KBEngine.Entity):
 		elif self.battleState == GlobalConst.g_battleState.BATTLE_INTERLUDE:
 			if self.curTimeClockInterval >= self.maxSwitchControllerInterludeTime:
 				for avatar in self.avatars:
-					self.avatars[avatar].resumeBattle()
+					self.avatars[avatar].roomReqResumeBattle(self.curSwitchNb)
 				self.curTimeClockInterval = 0.0
-				self.timerState = 3
+				self.battleState = GlobalConst.g_battleState.BATTLE
 			else:
 				self.curTimeClockInterval += 1
 

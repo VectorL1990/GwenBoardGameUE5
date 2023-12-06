@@ -113,6 +113,7 @@ class Avatar(KBEngine.Proxy,
 		self.client.onSyncSwitchController(switchNb, controllerId)
 
 	def roomReqResumeBattle(self, switchNb):
+		self.client.onSyncResumeBattle(switchNb)
 
 	#---
 	#
