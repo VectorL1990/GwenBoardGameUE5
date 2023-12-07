@@ -14,9 +14,16 @@ void ACoreCardGameModeBase::BeginPlay()
 void ACoreCardGameModeBase::InitEvents()
 {
     Super::InitEvents();
-    KBENGINE_REGISTER_EVENT("onSyncPlayerBattleInfo", onSyncPlayerBattleInfo);
+    KBENGINE_REGISTER_EVENT("onStopCardSelection", onStopCardSelection);
+    KBENGINE_REGISTER_EVENT("onSyncBattleResult", onSyncBattleResult);
     KBENGINE_REGISTER_EVENT("onSyncChangeHandCardSuccess", onSyncChangeHandCardSuccess);
     KBENGINE_REGISTER_EVENT("onSyncExhaustCardReplacement", onSyncExhaustCardReplacement);
+    KBENGINE_REGISTER_EVENT("onSyncHeartBeat", onSyncHeartBeat);
+    KBENGINE_REGISTER_EVENT("onSyncLatestBattleState", onSyncLatestBattleState);
+    KBENGINE_REGISTER_EVENT("onSyncPlayerBattleInfo", onSyncPlayerBattleInfo);
+    KBENGINE_REGISTER_EVENT("onSyncPlayerBattleInfo", onSyncPlayerBattleInfo);
+    
+    
     KBENGINE_REGISTER_EVENT("onSyncUpdateSelectedCards", onSyncUpdateSelectedCards);
     KBENGINE_REGISTER_EVENT("onSyncRoomStartBattle", onSyncRoomStartBattle);
 }
@@ -134,6 +141,12 @@ void ACoreCardGameModeBase::InitDone_Implementation()
 
 }
 
+void ACoreCardGameModeBase::onStopCardSelection(const UKBEventData* eventData)
+{}
+
+void ACoreCardGameModeBase::onSyncBattleResult(const UKBEventData* eventData)
+{}
+
 void ACoreCardGameModeBase::onSyncChangeHandCardSuccess(const UKBEventData* eventData)
 {
     const UKBEventData_onSyncChangeHandCardSuccess* onSyncChangeHandCardSuccessData = Cast<UKBEventData_onSyncChangeHandCardSuccess>(eventData);
@@ -202,21 +215,72 @@ void ACoreCardGameModeBase::onSyncExhaustCardReplacement(const UKBEventData* eve
 {
     // which means this player lost some information
     // player should ask server to supplement all informations
-    UKBEventData* eventData = NewObject<UKBEventData>();
-    KBENGINE_EVENT_FIRE("ReqUpdateSelectedCard", eventData);
+    UKBEventData* reqUpdateSelectCardData = NewObject<UKBEventData>();
+    KBENGINE_EVENT_FIRE("ReqUpdateSelectedCard", reqUpdateSelectCardData);
 }
+
+void ACoreCardGameModeBase::onSyncHeartBeat(const UKBEventData* eventData)
+{}
+
+void ACoreCardGameModeBase::onSyncLatestBattleState(const UKBEventData* eventData)
+{}
+
+void ACoreCardGameModeBase::onSyncResumeBattle(const UKBEventData* eventData)
+{}
 
 void ACoreCardGameModeBase::onSyncUpdateSelectedCards(const UKBEventData* eventData)
 {
     const UKBEventData_onSyncUpdateSelectedCards* onSyncUpdateSelectedCardsData = Cast<UKBEventData_onSyncUpdateSelectedCards>(eventData);
     // delete all existing hand cards and replace them with data from server
+    for (TMap<FString, ACard*>::TConstIterator iter = handCardMap.CreateConstIterator(); iter; ++iter)
+    {
+        if (iter->Value->IsValidLowLevel())
+        {
+            iter->Value->Destroy();
+        }
+    }
+    handCardMap.Empty();
 
+    allCardInfoMap.Empty();
+    pileCardKeyList.Empty();
+    for (int32 i = 0; i < onSyncUpdateSelectedCardsData->cardList.Num(); i++)
+    {
+        if (!onSyncUpdateSelectedCardsData->handCardList.Contains(onSyncUpdateSelectedCardsData->cardList[i].cardKey))
+        {
+            pileCardKeyList.Add(onSyncUpdateSelectedCardsData->cardList[i].cardKey);
+        }
+        allCardInfoMap.Add(onSyncUpdateSelectedCardsData->cardList[i].cardKey, onSyncUpdateSelectedCardsData->cardList[i]);
+    }
+    handCardKeyList = onSyncUpdateSelectedCardsData->handCardList;
+
+    FRotator spawnRot = FRotator::ZeroRotator;
+    for (int32 i = 0; i < handCardKeyList.Num(); i++)
+    {
+        if (i >= selectCardSpawnPts.Num())
+        {
+            break;
+        }
+        FVector spawnLoc = selectCardSpawnPts[i];
+        ACard* handCard = GetWorld()->SpawnActor<ACard>(cardBPClass, spawnLoc, spawnRot);
+        handCard->cardStatus = BattleCardStatus::Select;
+        handCard->InitCard(allCardInfoMap[handCardKeyList[i]].cardName);
+        handCardMap.Add(handCardKeyList[i], handCard);
+    }
 }
 
 void ACoreCardGameModeBase::onSyncRoomStartBattle(const UKBEventData* eventData)
 {
 
 }
+
+void ACoreCardGameModeBase::onSyncSelectCardInterlude(const UKBEventData* eventData)
+{}
+
+void ACoreCardGameModeBase::onSyncSwitchController(const UKBEventData* eventData)
+{}
+
+void ACoreCardGameModeBase::onSyncTimeInterval(const UKBEventData* eventData)
+{}
 
 void ACoreCardGameModeBase::InitPlayerBattleInfoDone(TArray<FString> cardList)
 {

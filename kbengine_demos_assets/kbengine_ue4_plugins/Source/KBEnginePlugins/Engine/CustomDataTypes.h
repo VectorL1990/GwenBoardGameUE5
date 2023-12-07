@@ -166,50 +166,6 @@ public:
 };
 
 
-class KBENGINEPLUGINS_API DATATYPE_CORE_UPDATE_BATLLE_INFO : DATATYPE_BASE
-{
-public:
-	class KBENGINEPLUGINS_API DATATYPE__CORE_UPDATE_BATLLE_INFO_updateList_ArrayType_ChildArray : public DATATYPE_BASE
-	{
-	public:
-		DATATYPE_BATTLE_GRID_INFO itemType;
-
-		void createFromStreamEx(MemoryStream& stream, TArray<BATTLE_GRID_INFO>& datas)
-		{
-			uint32 size = stream.readUint32();
-			while(size > 0)
-			{
-				--size;
-				itemType.createFromStreamEx(stream, datas.EmplaceAt_GetRef(datas.Num()));
-			};
-
-		}
-
-		void addToStreamEx(Bundle& stream, const TArray<BATTLE_GRID_INFO>& v)
-		{
-			stream.writeUint32((uint32)v.Num());
-			for(int i=0; i<v.Num(); ++i)
-			{
-				itemType.addToStreamEx(stream, v[i]);
-			};
-		}
-	};
-
-	DATATYPE__CORE_UPDATE_BATLLE_INFO_updateList_ArrayType_ChildArray updateList_DataType;
-
-	void createFromStreamEx(MemoryStream& stream, CORE_UPDATE_BATLLE_INFO& datas);
-	void addToStreamEx(Bundle& stream, const CORE_UPDATE_BATLLE_INFO& v);
-};
-
-
-class KBENGINEPLUGINS_API DATATYPE_SYNC_BATTLE_TIME_INFO : DATATYPE_BASE
-{
-public:
-	void createFromStreamEx(MemoryStream& stream, SYNC_BATTLE_TIME_INFO& datas);
-	void addToStreamEx(Bundle& stream, const SYNC_BATTLE_TIME_INFO& v);
-};
-
-
 class KBENGINEPLUGINS_API DATATYPE_SYNC_CARD_INFO : DATATYPE_BASE
 {
 public:
@@ -306,6 +262,51 @@ public:
 };
 
 
+class KBENGINEPLUGINS_API DATATYPE_CORE_UPDATE_BATLLE_INFO : DATATYPE_BASE
+{
+public:
+	class KBENGINEPLUGINS_API DATATYPE__CORE_UPDATE_BATLLE_INFO_updateList_ArrayType_ChildArray : public DATATYPE_BASE
+	{
+	public:
+		DATATYPE_BATTLE_GRID_INFO itemType;
+
+		void createFromStreamEx(MemoryStream& stream, TArray<BATTLE_GRID_INFO>& datas)
+		{
+			uint32 size = stream.readUint32();
+			while(size > 0)
+			{
+				--size;
+				itemType.createFromStreamEx(stream, datas.EmplaceAt_GetRef(datas.Num()));
+			};
+
+		}
+
+		void addToStreamEx(Bundle& stream, const TArray<BATTLE_GRID_INFO>& v)
+		{
+			stream.writeUint32((uint32)v.Num());
+			for(int i=0; i<v.Num(); ++i)
+			{
+				itemType.addToStreamEx(stream, v[i]);
+			};
+		}
+	};
+
+	DATATYPE__CORE_UPDATE_BATLLE_INFO_updateList_ArrayType_ChildArray updateList_DataType;
+
+	DATATYPE_SYNC_PLAYER_BATTLE_INFO playerInfo_DataType;
+	void createFromStreamEx(MemoryStream& stream, CORE_UPDATE_BATLLE_INFO& datas);
+	void addToStreamEx(Bundle& stream, const CORE_UPDATE_BATLLE_INFO& v);
+};
+
+
+class KBENGINEPLUGINS_API DATATYPE_SYNC_BATTLE_TIME_INFO : DATATYPE_BASE
+{
+public:
+	void createFromStreamEx(MemoryStream& stream, SYNC_BATTLE_TIME_INFO& datas);
+	void addToStreamEx(Bundle& stream, const SYNC_BATTLE_TIME_INFO& v);
+};
+
+
 class KBENGINEPLUGINS_API DATATYPE_PLAYER_PERSIST_INFO : DATATYPE_BASE
 {
 public:
@@ -337,6 +338,40 @@ public:
 
 	void createFromStreamEx(MemoryStream& stream, PLAYER_PERSIST_INFO& datas);
 	void addToStreamEx(Bundle& stream, const PLAYER_PERSIST_INFO& v);
+};
+
+
+class KBENGINEPLUGINS_API DATATYPE_STRING_LIST : DATATYPE_BASE
+{
+public:
+	class KBENGINEPLUGINS_API DATATYPE__STRING_LIST_persistCardList_ArrayType_ChildArray : public DATATYPE_BASE
+	{
+	public:
+		void createFromStreamEx(MemoryStream& stream, TArray<FString>& datas)
+		{
+			uint32 size = stream.readUint32();
+			while(size > 0)
+			{
+				--size;
+				datas.Add(stream.readString());
+			};
+
+		}
+
+		void addToStreamEx(Bundle& stream, const TArray<FString>& v)
+		{
+			stream.writeUint32((uint32)v.Num());
+			for(int i=0; i<v.Num(); ++i)
+			{
+				stream.writeString(v[i]);
+			};
+		}
+	};
+
+	DATATYPE__STRING_LIST_persistCardList_ArrayType_ChildArray persistCardList_DataType;
+
+	void createFromStreamEx(MemoryStream& stream, STRING_LIST& datas);
+	void addToStreamEx(Bundle& stream, const STRING_LIST& v);
 };
 
 

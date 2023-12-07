@@ -105,38 +105,19 @@
 				<Type> INT32 </Type>
 			</gridNb>
 			<cardUid>
-				<Type> INT32 </Type>
+				<Type> STRING </Type>
 			</cardUid>
 			<hp>
-				<Type> INT32 </Type>
+				<Type> UINT8 </Type>
 			</hp>
 			<defence>
-				<Type> INT32 </Type>
+				<Type> UINT8 </Type>
 			</defence>
 			<agility>
 				<Type> UINT8 </Type>
 			</agility>
 		</Properties>
 	</BATTLE_GRID_INFO>
-
-	<CORE_UPDATE_BATLLE_INFO> FIXED_DICT
-		<Properties>
-			<updateList>
-				<Type>	ARRAY <of> BATTLE_GRID_INFO </of>	</Type>
-			</updateList>
-		</Properties>
-	</CORE_UPDATE_BATLLE_INFO>
-
-	<SYNC_BATTLE_TIME_INFO> FIXED_DICT
-		<Properties>
-			<curTime>
-				<Type>	INT32	</Type>
-			</curTime>
-			<playerNb>
-				<Type>	UINT8	</Type>
-			</playerNb>
-		</Properties>
-	</SYNC_BATTLE_TIME_INFO>
 
 	<SYNC_CARD_INFO> FIXED_DICT
 		<Properties>
@@ -172,6 +153,35 @@
 		</Properties>
 	</SYNC_PLAYER_BATTLE_INFO>
 
+	<CORE_UPDATE_BATLLE_INFO> FIXED_DICT
+		<Properties>
+			<curTick>
+				<Type> INT32 </Type>
+			</curTick>
+			<updateList>
+				<Type>	ARRAY <of> BATTLE_GRID_INFO </of>	</Type>
+			</updateList>
+			<playerInfo>
+				<Type> SYNC_PLAYER_BATTLE_INFO </Type>
+			</playerInfo>
+		</Properties>
+	</CORE_UPDATE_BATLLE_INFO>
+
+	<SYNC_BATTLE_TIME_INFO> FIXED_DICT
+		<Properties>
+			<curTime>
+				<Type>	INT32	</Type>
+			</curTime>
+			<battleState>
+				<Type>	UINT8	</Type>
+			</battleState>
+		</Properties>
+	</SYNC_BATTLE_TIME_INFO>
+
+	
+
+	
+
 	<PLAYER_PERSIST_INFO> FIXED_DICT
 		<Properties>
 			<persistCardList>
@@ -182,5 +192,14 @@
 			</campNb>
 		</Properties>
 	</PLAYER_PERSIST_INFO>
+
+	<STRING_LIST> FIXED_DICT
+		<Properties>
+			<persistCardList>
+				<Type> ARRAY <of>	STRING </of>	</Type>
+			</persistCardList>
+		</Properties>
+	</STRING_LIST>
+
 	
 </root>

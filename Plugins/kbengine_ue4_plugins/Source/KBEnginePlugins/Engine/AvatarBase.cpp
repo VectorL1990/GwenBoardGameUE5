@@ -89,12 +89,19 @@ void AvatarBase::onRemoteMethodCall(MemoryStream& stream)
 
 	switch(pMethod->methodUtype)
 	{
-		case 14:
+		case 16:
 		{
 			onStopCardSelection();
 			break;
 		}
-		case 11:
+		case 23:
+		{
+			STRING_LIST onSyncBattleResult_arg1;
+			((DATATYPE_STRING_LIST*)pMethod->args[0])->createFromStreamEx(stream, onSyncBattleResult_arg1);
+			onSyncBattleResult(onSyncBattleResult_arg1);
+			break;
+		}
+		case 13:
 		{
 			uint8 onSyncChangeHandCardSuccess_arg1 = stream.readUint8();
 			FString onSyncChangeHandCardSuccess_arg2 = stream.readString();
@@ -102,52 +109,69 @@ void AvatarBase::onRemoteMethodCall(MemoryStream& stream)
 			onSyncChangeHandCardSuccess(onSyncChangeHandCardSuccess_arg1, onSyncChangeHandCardSuccess_arg2, onSyncChangeHandCardSuccess_arg3);
 			break;
 		}
-		case 10:
+		case 12:
 		{
 			onSyncExhaustCardReplacement();
 			break;
 		}
-		case 9:
+		case 21:
+		{
+			int32 onSyncHeartBeat_arg1 = stream.readInt32();
+			onSyncHeartBeat(onSyncHeartBeat_arg1);
+			break;
+		}
+		case 22:
+		{
+			CORE_UPDATE_BATLLE_INFO onSyncLatestBattleState_arg1;
+			((DATATYPE_CORE_UPDATE_BATLLE_INFO*)pMethod->args[0])->createFromStreamEx(stream, onSyncLatestBattleState_arg1);
+			onSyncLatestBattleState(onSyncLatestBattleState_arg1);
+			break;
+		}
+		case 11:
 		{
 			SYNC_PLAYER_BATTLE_INFO onSyncPlayerBattleInfo_arg1;
 			((DATATYPE_SYNC_PLAYER_BATTLE_INFO*)pMethod->args[0])->createFromStreamEx(stream, onSyncPlayerBattleInfo_arg1);
 			onSyncPlayerBattleInfo(onSyncPlayerBattleInfo_arg1);
 			break;
 		}
-		case 13:
+		case 20:
+		{
+			uint8 onSyncResumeBattle_arg1 = stream.readUint8();
+			onSyncResumeBattle(onSyncResumeBattle_arg1);
+			break;
+		}
+		case 15:
 		{
 			onSyncRoomStartBattle();
 			break;
 		}
-		case 12:
+		case 18:
+		{
+			SYNC_PLAYER_BATTLE_INFO onSyncSelectCardInterlude_arg1;
+			((DATATYPE_SYNC_PLAYER_BATTLE_INFO*)pMethod->args[0])->createFromStreamEx(stream, onSyncSelectCardInterlude_arg1);
+			onSyncSelectCardInterlude(onSyncSelectCardInterlude_arg1);
+			break;
+		}
+		case 19:
+		{
+			uint8 onSyncSwitchController_arg1 = stream.readUint8();
+			uint64 onSyncSwitchController_arg2 = stream.readUint64();
+			onSyncSwitchController(onSyncSwitchController_arg1, onSyncSwitchController_arg2);
+			break;
+		}
+		case 17:
+		{
+			SYNC_BATTLE_TIME_INFO onSyncTimeInterval_arg1;
+			((DATATYPE_SYNC_BATTLE_TIME_INFO*)pMethod->args[0])->createFromStreamEx(stream, onSyncTimeInterval_arg1);
+			onSyncTimeInterval(onSyncTimeInterval_arg1);
+			break;
+		}
+		case 14:
 		{
 			uint8 onSyncUpdateSelectedCards_arg1 = stream.readUint8();
 			SYNC_PLAYER_BATTLE_INFO onSyncUpdateSelectedCards_arg2;
 			((DATATYPE_SYNC_PLAYER_BATTLE_INFO*)pMethod->args[1])->createFromStreamEx(stream, onSyncUpdateSelectedCards_arg2);
 			onSyncUpdateSelectedCards(onSyncUpdateSelectedCards_arg1, onSyncUpdateSelectedCards_arg2);
-			break;
-		}
-		case 18:
-		{
-			resumeBattle();
-			break;
-		}
-		case 16:
-		{
-			startBattle();
-			break;
-		}
-		case 17:
-		{
-			uint8 switchController_arg1 = stream.readUint8();
-			switchController(switchController_arg1);
-			break;
-		}
-		case 15:
-		{
-			SYNC_BATTLE_TIME_INFO syncTimeInterval_arg1;
-			((DATATYPE_SYNC_BATTLE_TIME_INFO*)pMethod->args[0])->createFromStreamEx(stream, syncTimeInterval_arg1);
-			syncTimeInterval(syncTimeInterval_arg1);
 			break;
 		}
 		default:

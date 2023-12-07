@@ -22,6 +22,14 @@
 		<reqUpdateSelectedCard>
 			<Exposed/>
 		</reqUpdateSelectedCard>
+
+		<reqSyncHeartBeat>
+			<Exposed/>
+		</reqSyncHeartBeat>
+
+		<reqLatestBattleInfo>
+			<Exposed/>
+		</reqLatestBattleInfo>
 	</BaseMethods>
 
 	<CellMethods>
@@ -53,19 +61,35 @@
 		<onStopCardSelection>
 		</onStopCardSelection>
 
-		<syncTimeInterval>
+		<onSyncTimeInterval>
 			<Arg> SYNC_BATTLE_TIME_INFO </Arg>
-		</syncTimeInterval>
+		</onSyncTimeInterval>
 
-		<startBattle>
-		</startBattle>
+		<onSyncSelectCardInterlude>
+			<Arg> SYNC_PLAYER_BATTLE_INFO </Arg>
+		</onSyncSelectCardInterlude>
 
-		<switchController>
+
+		<onSyncSwitchController>
 			<Arg> UINT8 </Arg>
-		</switchController>
+			<Arg> UINT64 </Arg>
+		</onSyncSwitchController>
 
-		<resumeBattle>
-		</resumeBattle>
+		<onSyncResumeBattle>
+			<Arg> UINT8 </Arg>
+		</onSyncResumeBattle>
+
+		<onSyncHeartBeat>
+			<Arg> INT32 </Arg>
+		</onSyncHeartBeat>
+
+		<onSyncLatestBattleState>
+			<Arg> CORE_UPDATE_BATLLE_INFO </Arg>
+		</onSyncLatestBattleState>
+
+		<onSyncBattleResult>
+			<Arg> STRING_LIST </Arg>
+		</onSyncBattleResult>
 	</ClientMethods>
 </root>
 

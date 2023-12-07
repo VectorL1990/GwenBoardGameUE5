@@ -124,41 +124,19 @@ void DATATYPE_UPDATE_GRID_INFO_LIST::addToStreamEx(Bundle& stream, const UPDATE_
 void DATATYPE_BATTLE_GRID_INFO::createFromStreamEx(MemoryStream& stream, BATTLE_GRID_INFO& datas)
 {
 	datas.gridNb = stream.readInt32();
-	datas.cardUid = stream.readInt32();
-	datas.hp = stream.readInt32();
-	datas.defence = stream.readInt32();
+	datas.cardUid = stream.readString();
+	datas.hp = stream.readUint8();
+	datas.defence = stream.readUint8();
 	datas.agility = stream.readUint8();
 }
 
 void DATATYPE_BATTLE_GRID_INFO::addToStreamEx(Bundle& stream, const BATTLE_GRID_INFO& v)
 {
 	stream.writeInt32(v.gridNb);
-	stream.writeInt32(v.cardUid);
-	stream.writeInt32(v.hp);
-	stream.writeInt32(v.defence);
+	stream.writeString(v.cardUid);
+	stream.writeUint8(v.hp);
+	stream.writeUint8(v.defence);
 	stream.writeUint8(v.agility);
-}
-
-void DATATYPE_CORE_UPDATE_BATLLE_INFO::createFromStreamEx(MemoryStream& stream, CORE_UPDATE_BATLLE_INFO& datas)
-{
-	updateList_DataType.createFromStreamEx(stream, datas.updateList);
-}
-
-void DATATYPE_CORE_UPDATE_BATLLE_INFO::addToStreamEx(Bundle& stream, const CORE_UPDATE_BATLLE_INFO& v)
-{
-	updateList_DataType.addToStreamEx(stream, v.updateList);
-}
-
-void DATATYPE_SYNC_BATTLE_TIME_INFO::createFromStreamEx(MemoryStream& stream, SYNC_BATTLE_TIME_INFO& datas)
-{
-	datas.curTime = stream.readInt32();
-	datas.playerNb = stream.readUint8();
-}
-
-void DATATYPE_SYNC_BATTLE_TIME_INFO::addToStreamEx(Bundle& stream, const SYNC_BATTLE_TIME_INFO& v)
-{
-	stream.writeInt32(v.curTime);
-	stream.writeUint8(v.playerNb);
 }
 
 void DATATYPE_SYNC_CARD_INFO::createFromStreamEx(MemoryStream& stream, SYNC_CARD_INFO& datas)
@@ -193,6 +171,32 @@ void DATATYPE_SYNC_PLAYER_BATTLE_INFO::addToStreamEx(Bundle& stream, const SYNC_
 	handCardList_DataType.addToStreamEx(stream, v.handCardList);
 }
 
+void DATATYPE_CORE_UPDATE_BATLLE_INFO::createFromStreamEx(MemoryStream& stream, CORE_UPDATE_BATLLE_INFO& datas)
+{
+	datas.curTick = stream.readInt32();
+	updateList_DataType.createFromStreamEx(stream, datas.updateList);
+	playerInfo_DataType.createFromStreamEx(stream, datas.playerInfo);
+}
+
+void DATATYPE_CORE_UPDATE_BATLLE_INFO::addToStreamEx(Bundle& stream, const CORE_UPDATE_BATLLE_INFO& v)
+{
+	stream.writeInt32(v.curTick);
+	updateList_DataType.addToStreamEx(stream, v.updateList);
+	playerInfo_DataType.addToStreamEx(stream, v.playerInfo);
+}
+
+void DATATYPE_SYNC_BATTLE_TIME_INFO::createFromStreamEx(MemoryStream& stream, SYNC_BATTLE_TIME_INFO& datas)
+{
+	datas.curTime = stream.readInt32();
+	datas.battleState = stream.readUint8();
+}
+
+void DATATYPE_SYNC_BATTLE_TIME_INFO::addToStreamEx(Bundle& stream, const SYNC_BATTLE_TIME_INFO& v)
+{
+	stream.writeInt32(v.curTime);
+	stream.writeUint8(v.battleState);
+}
+
 void DATATYPE_PLAYER_PERSIST_INFO::createFromStreamEx(MemoryStream& stream, PLAYER_PERSIST_INFO& datas)
 {
 	persistCardList_DataType.createFromStreamEx(stream, datas.persistCardList);
@@ -203,6 +207,16 @@ void DATATYPE_PLAYER_PERSIST_INFO::addToStreamEx(Bundle& stream, const PLAYER_PE
 {
 	persistCardList_DataType.addToStreamEx(stream, v.persistCardList);
 	stream.writeUint8(v.campNb);
+}
+
+void DATATYPE_STRING_LIST::createFromStreamEx(MemoryStream& stream, STRING_LIST& datas)
+{
+	persistCardList_DataType.createFromStreamEx(stream, datas.persistCardList);
+}
+
+void DATATYPE_STRING_LIST::addToStreamEx(Bundle& stream, const STRING_LIST& v)
+{
+	persistCardList_DataType.addToStreamEx(stream, v.persistCardList);
 }
 
 

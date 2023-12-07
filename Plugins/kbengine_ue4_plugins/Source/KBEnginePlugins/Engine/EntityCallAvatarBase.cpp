@@ -32,6 +32,24 @@ void EntityBaseEntityCall_AvatarBase::reqFinishSelectCards()
 	sendCall(NULL);
 }
 
+void EntityBaseEntityCall_AvatarBase::reqLatestBattleInfo()
+{
+	Bundle* pBundleRet = newCall("reqLatestBattleInfo", 0);
+	if(!pBundleRet)
+		return;
+
+	sendCall(NULL);
+}
+
+void EntityBaseEntityCall_AvatarBase::reqSyncHeartBeat()
+{
+	Bundle* pBundleRet = newCall("reqSyncHeartBeat", 0);
+	if(!pBundleRet)
+		return;
+
+	sendCall(NULL);
+}
+
 void EntityBaseEntityCall_AvatarBase::reqUpdateSelectedCard()
 {
 	Bundle* pBundleRet = newCall("reqUpdateSelectedCard", 0);
