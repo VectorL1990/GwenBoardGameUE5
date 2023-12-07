@@ -250,6 +250,9 @@ public:
 UCLASS(Blueprintable, BlueprintType)
 class KBENGINEPLUGINS_API UKBEventData_onSyncBattleResult : public UKBEventData
 {
+				GENERATED_BODY()
+
+public:
 				UPROPERTY(EditAnywhere)
 				TArray<FString> losePlayerList;
 };
@@ -257,6 +260,9 @@ class KBENGINEPLUGINS_API UKBEventData_onSyncBattleResult : public UKBEventData
 UCLASS(Blueprintable, BlueprintType)
 class KBENGINEPLUGINS_API UKBEventData_onSyncHeartBeat : public UKBEventData
 {
+				GENERATED_BODY()
+
+public:
 				UPROPERTY(EditAnywhere)
 				int32 curBattleTick;
 };
@@ -264,6 +270,9 @@ class KBENGINEPLUGINS_API UKBEventData_onSyncHeartBeat : public UKBEventData
 UCLASS(Blueprintable, BlueprintType)
 class KBENGINEPLUGINS_API UKBEventData_onSyncLatestBattleState : public UKBEventData
 {
+				GENERATED_BODY()
+
+public:
 				UPROPERTY(EditAnywhere)
 				int32 curBattleTick;
 
@@ -280,6 +289,9 @@ class KBENGINEPLUGINS_API UKBEventData_onSyncLatestBattleState : public UKBEvent
 UCLASS(Blueprintable, BlueprintType)
 class KBENGINEPLUGINS_API UKBEventData_onSyncResumeBattle : public UKBEventData
 {
+				GENERATED_BODY()
+
+public:
 				UPROPERTY(EditAnywhere)
 				uint8 controllerNb;
 };
@@ -287,6 +299,9 @@ class KBENGINEPLUGINS_API UKBEventData_onSyncResumeBattle : public UKBEventData
 UCLASS(Blueprintable, BlueprintType)
 class KBENGINEPLUGINS_API UKBEventData_onSyncSelectCardInterlude : public UKBEventData
 {
+				GENERATED_BODY()
+
+public:
 				UPROPERTY(EditAnywhere)
 								TArray<FSYNC_CARD_INFO> cardList;
 

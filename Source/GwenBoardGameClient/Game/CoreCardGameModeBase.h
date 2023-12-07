@@ -67,15 +67,32 @@ private:
 
     void onUpdateGridInfoList(const UKBEventData* eventData);
 
-    void onSyncChangeHandCardSuccess(const UKBEventData* eventData);
+    void onStopCardSelection(const UKBEventData* eventData);
 
-    virtual void onSyncPlayerBattleInfo(const UKBEventData* eventData) override;
+    void onSyncBattleResult(const UKBEventData* eventData);
+
+    void onSyncChangeHandCardSuccess(const UKBEventData* eventData);
 
     void onSyncExhaustCardReplacement(const UKBEventData* eventData);
 
-    void onSyncUpdateSelectedCards(const UKBEventData* eventData);
+    void onSyncHeartBeat(const UKBEventData* eventData);
+
+    void onSyncLatestBattleState(const UKBEventData* eventData);
+
+    virtual void onSyncPlayerBattleInfo(const UKBEventData* eventData) override;
+
+    void onSyncResumeBattle(const UKBEventData* eventData);
 
     void onSyncRoomStartBattle(const UKBEventData* eventData);
+
+    void onSyncSelectCardInterlude(const UKBEventData* eventData);
+
+    void onSyncSwitchController(const UKBEventData* eventData);
+
+    void onSyncTimeInterval(const UKBEventData* eventData);
+
+    void onSyncUpdateSelectedCards(const UKBEventData* eventData);
+
 
     virtual void InitPlayerBattleInfoDone(TArray<FString> cardList) override;
 
