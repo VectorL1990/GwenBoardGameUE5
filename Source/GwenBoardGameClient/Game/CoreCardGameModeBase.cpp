@@ -202,8 +202,8 @@ void ACoreCardGameModeBase::onSyncExhaustCardReplacement(const UKBEventData* eve
 {
     // which means this player lost some information
     // player should ask server to supplement all informations
-    UKBEventData* eventData = NewObject<UKBEventData>();
-    KBENGINE_EVENT_FIRE("ReqUpdateSelectedCard", eventData);
+    UKBEventData* reqUpdateSelectCardData = NewObject<UKBEventData>();
+    KBENGINE_EVENT_FIRE("ReqUpdateSelectedCard", reqUpdateSelectCardData);
 }
 
 void ACoreCardGameModeBase::onSyncUpdateSelectedCards(const UKBEventData* eventData)
@@ -225,7 +225,7 @@ void ACoreCardGameModeBase::onSyncUpdateSelectedCards(const UKBEventData* eventD
     {
         if (!onSyncUpdateSelectedCardsData->handCardList.Contains(onSyncUpdateSelectedCardsData->cardList[i].cardKey))
         {
-            pileCardKeyList.Add(onSyncUpdateSelectedCardsData->cardList[i].cardKey, onSyncUpdateSelectedCardsData->cardList[i]);
+            pileCardKeyList.Add(onSyncUpdateSelectedCardsData->cardList[i].cardKey);
         }
         allCardInfoMap.Add(onSyncUpdateSelectedCardsData->cardList[i].cardKey, onSyncUpdateSelectedCardsData->cardList[i]);
     }

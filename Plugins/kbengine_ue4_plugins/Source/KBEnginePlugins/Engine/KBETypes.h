@@ -252,14 +252,14 @@ class BATTLE_GRID_INFO
 {
 public:
 	int32 gridNb;
-	int32 cardUid;
-	int32 hp;
-	int32 defence;
+	FString cardUid;
+	uint8 hp;
+	uint8 defence;
 	uint8 agility;
 
 	BATTLE_GRID_INFO():
 	gridNb(0),
-	cardUid(0),
+	cardUid(),
 	hp(0),
 	defence(0),
 	agility(0)
@@ -271,42 +271,6 @@ public:
 inline bool operator ==(const BATTLE_GRID_INFO& a, const BATTLE_GRID_INFO& b)
 {
 	return a.gridNb == b.gridNb && a.cardUid == b.cardUid && a.hp == b.hp && a.defence == b.defence && a.agility == b.agility;
-};
-
-class CORE_UPDATE_BATLLE_INFO
-{
-public:
-	TArray<BATTLE_GRID_INFO> updateList;
-
-	CORE_UPDATE_BATLLE_INFO():
-	updateList()
-	{
-	}
-
-};
-
-inline bool operator ==(const CORE_UPDATE_BATLLE_INFO& a, const CORE_UPDATE_BATLLE_INFO& b)
-{
-	return a.updateList == b.updateList;
-};
-
-class SYNC_BATTLE_TIME_INFO
-{
-public:
-	int32 curTime;
-	uint8 playerNb;
-
-	SYNC_BATTLE_TIME_INFO():
-	curTime(0),
-	playerNb(0)
-	{
-	}
-
-};
-
-inline bool operator ==(const SYNC_BATTLE_TIME_INFO& a, const SYNC_BATTLE_TIME_INFO& b)
-{
-	return a.curTime == b.curTime && a.playerNb == b.playerNb;
 };
 
 class SYNC_CARD_INFO
@@ -355,6 +319,46 @@ inline bool operator ==(const SYNC_PLAYER_BATTLE_INFO& a, const SYNC_PLAYER_BATT
 	return a.cardList == b.cardList && a.handCardList == b.handCardList;
 };
 
+class CORE_UPDATE_BATLLE_INFO
+{
+public:
+	int32 curTick;
+	TArray<BATTLE_GRID_INFO> updateList;
+	SYNC_PLAYER_BATTLE_INFO playerInfo;
+
+	CORE_UPDATE_BATLLE_INFO():
+	curTick(0),
+	updateList(),
+	playerInfo()
+	{
+	}
+
+};
+
+inline bool operator ==(const CORE_UPDATE_BATLLE_INFO& a, const CORE_UPDATE_BATLLE_INFO& b)
+{
+	return a.curTick == b.curTick && a.updateList == b.updateList && a.playerInfo == b.playerInfo;
+};
+
+class SYNC_BATTLE_TIME_INFO
+{
+public:
+	int32 curTime;
+	uint8 battleState;
+
+	SYNC_BATTLE_TIME_INFO():
+	curTime(0),
+	battleState(0)
+	{
+	}
+
+};
+
+inline bool operator ==(const SYNC_BATTLE_TIME_INFO& a, const SYNC_BATTLE_TIME_INFO& b)
+{
+	return a.curTime == b.curTime && a.battleState == b.battleState;
+};
+
 class PLAYER_PERSIST_INFO
 {
 public:
@@ -372,6 +376,23 @@ public:
 inline bool operator ==(const PLAYER_PERSIST_INFO& a, const PLAYER_PERSIST_INFO& b)
 {
 	return a.persistCardList == b.persistCardList && a.campNb == b.campNb;
+};
+
+class STRING_LIST
+{
+public:
+	TArray<FString> persistCardList;
+
+	STRING_LIST():
+	persistCardList()
+	{
+	}
+
+};
+
+inline bool operator ==(const STRING_LIST& a, const STRING_LIST& b)
+{
+	return a.persistCardList == b.persistCardList;
 };
 
 

@@ -27,6 +27,8 @@ public:
 	virtual ~EntityBaseEntityCall_AvatarBase();
 	void reqChangeSelectCard(const FString& arg1);
 	void reqFinishSelectCards();
+	void reqLatestBattleInfo();
+	void reqSyncHeartBeat();
 	void reqUpdateSelectedCard();
 };
 

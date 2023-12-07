@@ -80,7 +80,17 @@ namespace KBEngine
         KBENGINE_EVENT_FIRE("onSyncPlayerBattleInfo", eventData);
     }
 
+    void Avatar::onSyncResumeBattle(uint8 controllerNb)
+    {
+
+    }
+
     void Avatar::onStopCardSelection()
+    {
+
+    }
+
+    void Avatar::onSyncBattleResult(const STRING_LIST& losePlayerList)
     {
 
     }
@@ -98,6 +108,16 @@ namespace KBEngine
     {
         UKBEventData* eventData = NewObject<UKBEventData>();
         KBENGINE_EVENT_FIRE("onSyncExhaustCardReplacement", eventData);
+    }
+
+    void Avatar::onSyncHeartBeat(int32 curBattleTick)
+    {
+
+    }
+
+    void Avatar::onSyncLatestBattleState(const CORE_UPDATE_BATLLE_INFO& battleInfo)
+    {
+
     }
 
     void Avatar::onSyncUpdateSelectedCards(uint8 changeNb, const SYNC_PLAYER_BATTLE_INFO& allCardInfos)
@@ -125,22 +145,17 @@ namespace KBEngine
         KBENGINE_EVENT_FIRE("onSyncRoomStartBattle", eventData);
     }
 
-    void Avatar::resumeBattle()
+    void Avatar::onSyncSelectCardInterlude(const SYNC_PLAYER_BATTLE_INFO& playerInfo)
     {
 
     }
 
-    void Avatar::startBattle()
+    void Avatar::onSyncSwitchController(uint8 controllerNb, uint64 avatarId)
     {
 
     }
 
-    void Avatar::switchController(uint8 playerNb)
-    {
-
-    }
-
-    void Avatar::syncTimeInterval(const SYNC_BATTLE_TIME_INFO& param)
+    void Avatar::onSyncTimeInterval(const SYNC_BATTLE_TIME_INFO& syncTimeInfo)
     {
 
     }
@@ -150,9 +165,23 @@ namespace KBEngine
         pBaseEntityCall->reqChangeSelectCard(changeCardKey);
     }
 
+    void Avatar::ReqFinishSelectCards()
+    {
+
+    }
+
     void Avatar::ReqUpdateSelectedCard()
     {
         pBaseEntityCall->reqUpdateSelectedCard();
     }
 
+    void Avatar::ReqSyncHeartBeat()
+    {
+
+    }
+
+    void Avatar::ReqLatestBattleInfo()
+    {
+
+    }
 }

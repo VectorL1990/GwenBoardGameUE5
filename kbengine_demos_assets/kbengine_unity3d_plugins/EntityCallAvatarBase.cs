@@ -40,6 +40,24 @@ namespace KBEngine
 			sendCall(null);
 		}
 
+		public void reqLatestBattleInfo()
+		{
+			Bundle pBundle = newCall("reqLatestBattleInfo", 0);
+			if(pBundle == null)
+				return;
+
+			sendCall(null);
+		}
+
+		public void reqSyncHeartBeat()
+		{
+			Bundle pBundle = newCall("reqSyncHeartBeat", 0);
+			if(pBundle == null)
+				return;
+
+			sendCall(null);
+		}
+
 		public void reqUpdateSelectedCard()
 		{
 			Bundle pBundle = newCall("reqUpdateSelectedCard", 0);

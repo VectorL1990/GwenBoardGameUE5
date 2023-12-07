@@ -9,9 +9,9 @@ from d_all_cards import allDatas
 class Room(KBEngine.Entity):
 	def __init__(self):
 		KBEngine.Entity.__init__(self)
+		self.curBattleTick = 0
 		self.accountEntityDict = {}
 		self.gridInfoDict = {}
-		self.runLoop = False
 		self.curSwitchNb = 0
 		self.curControlNb = 0
 
@@ -23,10 +23,9 @@ class Room(KBEngine.Entity):
 		self.maxLaunchActionTimeInterval = 20
 		self.maxSwitchControllerInterludeTime = 4
 
-		self.receiveConfirmNb = 0
-
 		self.avatars = {}
 		self.inBattleAvatarList = []
+		self.avatarsHeartBeatCount = {}
 
 		self.uniqueCardDict = {}
 		self.battleState = GlobalConst.g_battleState.DEFAULT
@@ -67,6 +66,7 @@ class Room(KBEngine.Entity):
 	def avatarEnterRoom(self, avatarEntityCall):
 		if avatarEntityCall.id not in self.avatars:
 			self.avatars[avatarEntityCall.id] = avatarEntityCall
+			self.avatarsHeartBeatCount[avatarEntityCall.id] = 0
 			# get corresponding card info from data list
 			for cardKey in avatarEntityCall.allCardDict.keys():
 				strs = cardKey.split("_")
@@ -93,13 +93,36 @@ class Room(KBEngine.Entity):
 				self.battleState = GlobalConst.g_battleState.SELECT_CARD_INTERLUDE
 				random.shuffle(self.inBattleAvatarList)
 				self.curTimeClockInterval = 0.0
-		
+
+	def avatarReqHeartBeat(self, avatarEntityCall):
+		# avatar should send heart beat to room to keep alive
+		if avatarEntityCall.id in self.avatarsHeartBeatCount:
+			self.avatarsHeartBeatCount[avatarEntityCall.id] = 0
+
+	def avatarReqLatestBattleInfo(self, avatarEntityCall):
+		if avatarEntityCall.id in self.avatars:
+			allGridInfo = []
+			for k,v in self.gridInfoDict.items():
+				battleGridInfo = {
+					"gridNb": k,
+					"cardUid": v["cardKey"],
+					"hp": v["curHp"],
+					"defence": v["defence"],
+					"agility": v["agility"]
+				}
+				allGridInfo.append(battleGridInfo)
+
+			coreUpdateBattleInfo = {
+				"curTick": self.curBattleTick,
+				"updateList": allGridInfo,
+				"playerInfo": {}
+			}
+			avatarEntityCall.roomReqUpdateLatestBattleInfo(coreUpdateBattleInfo)
+
 
 	def leaveRoom(self, entityID):
 		self.onLeave(entityID)
 
-	def switchControllerConfirm(self, entityCall, turnNb, roundNb):
-		self.receiveConfirmNb += 1
 		
 	def onTimer(self, tid, userArg):
 		if self.battleState == GlobalConst.g_battleState.DEFAULT:
@@ -144,6 +167,8 @@ class Room(KBEngine.Entity):
 			else:
 				self.curTimeClockInterval += 1
 		elif self.battleState == GlobalConst.g_battleState.BATTLE:
+			self.curBattleTick += 1
+			self.updateAvatarHeartBeat()
 			if self.curTimeClockInterval >= self.maxLaunchActionTimeInterval:
 				# which means we should modify controller to another player
 				self.curSwitchNb += 1
@@ -160,6 +185,8 @@ class Room(KBEngine.Entity):
 				for avatar in self.avatars:
 					self.avatars[avatar].roomReqSyncTimeInfo(self.curTimeClockInterval, self.battleState.value)
 		elif self.battleState == GlobalConst.g_battleState.BATTLE_INTERLUDE:
+			self.curBattleTick += 1
+			self.updateAvatarHeartBeat()
 			if self.curTimeClockInterval >= self.maxSwitchControllerInterludeTime:
 				for avatar in self.avatars:
 					self.avatars[avatar].roomReqResumeBattle(self.curSwitchNb)
@@ -180,23 +207,6 @@ class Room(KBEngine.Entity):
 		if entityID in self.avatars:
 			del self.avatars[entityID]
 
-	def onLoseCell(self):
-		"""
-		KBEngine method.
-		entity的cell部分实体丢失
-		"""
-		KBEngine.globalData["Hall"].onRoomLoseCell(self.roomKey)
-		
-		self.avatars = {}
-		self.destroy()
-
-	def onGetCell(self):
-		"""
-		KBEngine method.
-		entity的cell部分实体被创建成功
-		"""
-		DEBUG_MSG("Room::onGetCell: %i" % self.id)
-		KBEngine.globalData["Hall"].onRoomGetCell(self, self.roomKey)
 
 	def playCardAction(self, targetGrid, playCardInfoDict):
 		if self.gridInfoDict.has_key(targetGrid):
@@ -211,6 +221,24 @@ class Room(KBEngine.Entity):
 			elif playCardInfoDict.has_key("assignEffects"):
 				# which means this effect requires play to assign target
 				return 2
+
+	def updateAvatarHeartBeat(self):
+		lostAvatars = []
+		for avatar in self.avatarsHeartBeatCount:
+			if self.avatarsHeartBeatCount[avatar] > GlobalConst.g_maxHeartBeatCount:
+				# which means this avatar is loss
+				# in this case it judges this player lose
+				lostAvatars.append(avatar)
+			else:
+				self.avatarsHeartBeatCount[avatar] += 1
+		
+		# sync result to all active avatars 
+		for avatar in self.avatars:
+			self.avatars[avatar].roomReqSyncBattleResult(lostAvatars)
+			self.avatars[avatar].roomReqAvatarDie()
+
+		# notify hall to record battle result
+
 
 	def launchEffect(self, targetGrid, launchGrid, effectInfo):
 		if effectInfo["auto"] == True:

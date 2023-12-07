@@ -4,6 +4,7 @@ from enum import Enum
 
 g_handCardAmount = 10
 g_maxChangeHandCardNb = 3
+g_maxHeartBeatCount = 60
 
 class g_battleState(Enum):
 	DEFAULT = 1

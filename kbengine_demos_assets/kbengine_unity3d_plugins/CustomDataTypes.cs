@@ -277,9 +277,9 @@ namespace KBEngine
 		{
 			BATTLE_GRID_INFO datas = new BATTLE_GRID_INFO();
 			datas.gridNb = stream.readInt32();
-			datas.cardUid = stream.readInt32();
-			datas.hp = stream.readInt32();
-			datas.defence = stream.readInt32();
+			datas.cardUid = stream.readString();
+			datas.hp = stream.readUint8();
+			datas.defence = stream.readUint8();
 			datas.agility = stream.readUint8();
 			return datas;
 		}
@@ -287,76 +287,10 @@ namespace KBEngine
 		public void addToStreamEx(Bundle stream, BATTLE_GRID_INFO v)
 		{
 			stream.writeInt32(v.gridNb);
-			stream.writeInt32(v.cardUid);
-			stream.writeInt32(v.hp);
-			stream.writeInt32(v.defence);
+			stream.writeString(v.cardUid);
+			stream.writeUint8(v.hp);
+			stream.writeUint8(v.defence);
 			stream.writeUint8(v.agility);
-		}
-	}
-
-
-
-	public class DATATYPE_CORE_UPDATE_BATLLE_INFO : DATATYPE_BASE
-	{
-		private DATATYPE__CORE_UPDATE_BATLLE_INFO_updateList_ArrayType_ChildArray updateList_DataType = new DATATYPE__CORE_UPDATE_BATLLE_INFO_updateList_ArrayType_ChildArray();
-
-		public class DATATYPE__CORE_UPDATE_BATLLE_INFO_updateList_ArrayType_ChildArray : DATATYPE_BASE
-		{
-			private DATATYPE_BATTLE_GRID_INFO itemType = new DATATYPE_BATTLE_GRID_INFO();
-
-			public List<BATTLE_GRID_INFO> createFromStreamEx(MemoryStream stream)
-			{
-				UInt32 size = stream.readUint32();
-				List<BATTLE_GRID_INFO> datas = new List<BATTLE_GRID_INFO>();
-
-				while(size > 0)
-				{
-					--size;
-					datas.Add(itemType.createFromStreamEx(stream));
-				};
-
-				return datas;
-			}
-
-			public void addToStreamEx(Bundle stream, List<BATTLE_GRID_INFO> v)
-			{
-				stream.writeUint32((UInt32)v.Count);
-				for(int i=0; i<v.Count; ++i)
-				{
-					itemType.addToStreamEx(stream, v[i]);
-				};
-			}
-		}
-
-		public CORE_UPDATE_BATLLE_INFO createFromStreamEx(MemoryStream stream)
-		{
-			CORE_UPDATE_BATLLE_INFO datas = new CORE_UPDATE_BATLLE_INFO();
-			datas.updateList = updateList_DataType.createFromStreamEx(stream);
-			return datas;
-		}
-
-		public void addToStreamEx(Bundle stream, CORE_UPDATE_BATLLE_INFO v)
-		{
-			updateList_DataType.addToStreamEx(stream, v.updateList);
-		}
-	}
-
-
-
-	public class DATATYPE_SYNC_BATTLE_TIME_INFO : DATATYPE_BASE
-	{
-		public SYNC_BATTLE_TIME_INFO createFromStreamEx(MemoryStream stream)
-		{
-			SYNC_BATTLE_TIME_INFO datas = new SYNC_BATTLE_TIME_INFO();
-			datas.curTime = stream.readInt32();
-			datas.playerNb = stream.readUint8();
-			return datas;
-		}
-
-		public void addToStreamEx(Bundle stream, SYNC_BATTLE_TIME_INFO v)
-		{
-			stream.writeInt32(v.curTime);
-			stream.writeUint8(v.playerNb);
 		}
 	}
 
@@ -494,6 +428,77 @@ namespace KBEngine
 
 
 
+	public class DATATYPE_CORE_UPDATE_BATLLE_INFO : DATATYPE_BASE
+	{
+		private DATATYPE__CORE_UPDATE_BATLLE_INFO_updateList_ArrayType_ChildArray updateList_DataType = new DATATYPE__CORE_UPDATE_BATLLE_INFO_updateList_ArrayType_ChildArray();
+
+		public class DATATYPE__CORE_UPDATE_BATLLE_INFO_updateList_ArrayType_ChildArray : DATATYPE_BASE
+		{
+			private DATATYPE_BATTLE_GRID_INFO itemType = new DATATYPE_BATTLE_GRID_INFO();
+
+			public List<BATTLE_GRID_INFO> createFromStreamEx(MemoryStream stream)
+			{
+				UInt32 size = stream.readUint32();
+				List<BATTLE_GRID_INFO> datas = new List<BATTLE_GRID_INFO>();
+
+				while(size > 0)
+				{
+					--size;
+					datas.Add(itemType.createFromStreamEx(stream));
+				};
+
+				return datas;
+			}
+
+			public void addToStreamEx(Bundle stream, List<BATTLE_GRID_INFO> v)
+			{
+				stream.writeUint32((UInt32)v.Count);
+				for(int i=0; i<v.Count; ++i)
+				{
+					itemType.addToStreamEx(stream, v[i]);
+				};
+			}
+		}
+
+		private DATATYPE_SYNC_PLAYER_BATTLE_INFO playerInfo_DataType = new DATATYPE_SYNC_PLAYER_BATTLE_INFO();
+		public CORE_UPDATE_BATLLE_INFO createFromStreamEx(MemoryStream stream)
+		{
+			CORE_UPDATE_BATLLE_INFO datas = new CORE_UPDATE_BATLLE_INFO();
+			datas.curTick = stream.readInt32();
+			datas.updateList = updateList_DataType.createFromStreamEx(stream);
+			datas.playerInfo = playerInfo_DataType.createFromStreamEx(stream);
+			return datas;
+		}
+
+		public void addToStreamEx(Bundle stream, CORE_UPDATE_BATLLE_INFO v)
+		{
+			stream.writeInt32(v.curTick);
+			updateList_DataType.addToStreamEx(stream, v.updateList);
+			playerInfo_DataType.addToStreamEx(stream, v.playerInfo);
+		}
+	}
+
+
+
+	public class DATATYPE_SYNC_BATTLE_TIME_INFO : DATATYPE_BASE
+	{
+		public SYNC_BATTLE_TIME_INFO createFromStreamEx(MemoryStream stream)
+		{
+			SYNC_BATTLE_TIME_INFO datas = new SYNC_BATTLE_TIME_INFO();
+			datas.curTime = stream.readInt32();
+			datas.battleState = stream.readUint8();
+			return datas;
+		}
+
+		public void addToStreamEx(Bundle stream, SYNC_BATTLE_TIME_INFO v)
+		{
+			stream.writeInt32(v.curTime);
+			stream.writeUint8(v.battleState);
+		}
+	}
+
+
+
 	public class DATATYPE_PLAYER_PERSIST_INFO : DATATYPE_BASE
 	{
 		private DATATYPE__PLAYER_PERSIST_INFO_persistCardList_ArrayType_ChildArray persistCardList_DataType = new DATATYPE__PLAYER_PERSIST_INFO_persistCardList_ArrayType_ChildArray();
@@ -536,6 +541,51 @@ namespace KBEngine
 		{
 			persistCardList_DataType.addToStreamEx(stream, v.persistCardList);
 			stream.writeUint8(v.campNb);
+		}
+	}
+
+
+
+	public class DATATYPE_STRING_LIST : DATATYPE_BASE
+	{
+		private DATATYPE__STRING_LIST_persistCardList_ArrayType_ChildArray persistCardList_DataType = new DATATYPE__STRING_LIST_persistCardList_ArrayType_ChildArray();
+
+		public class DATATYPE__STRING_LIST_persistCardList_ArrayType_ChildArray : DATATYPE_BASE
+		{
+			public List<string> createFromStreamEx(MemoryStream stream)
+			{
+				UInt32 size = stream.readUint32();
+				List<string> datas = new List<string>();
+
+				while(size > 0)
+				{
+					--size;
+					datas.Add(stream.readString());
+				};
+
+				return datas;
+			}
+
+			public void addToStreamEx(Bundle stream, List<string> v)
+			{
+				stream.writeUint32((UInt32)v.Count);
+				for(int i=0; i<v.Count; ++i)
+				{
+					stream.writeString(v[i]);
+				};
+			}
+		}
+
+		public STRING_LIST createFromStreamEx(MemoryStream stream)
+		{
+			STRING_LIST datas = new STRING_LIST();
+			datas.persistCardList = persistCardList_DataType.createFromStreamEx(stream);
+			return datas;
+		}
+
+		public void addToStreamEx(Bundle stream, STRING_LIST v)
+		{
+			persistCardList_DataType.addToStreamEx(stream, v.persistCardList);
 		}
 	}
 

@@ -53,8 +53,6 @@ class Avatar(KBEngine.Proxy,
 		if not self.isDestroyed:
 			self.destroy()
 
-	def startBattle(self):
-		return
 
 	
 	# ---
@@ -115,6 +113,40 @@ class Avatar(KBEngine.Proxy,
 	def roomReqResumeBattle(self, switchNb):
 		self.client.onSyncResumeBattle(switchNb)
 
+	def roomReqSyncBattleResult(self, losePlayerList):
+		self.client.onSyncBattleResult(losePlayerList)
+
+	def roomReqAvatarDie(self):
+		self.persistPlayerInfo = None
+		self.allCardDict = {}
+		self.handCardList = []
+		self.pileCardList = []
+		self.graveCardList = []
+		self.roomEntityCall = None
+		self.changeSelectCardNb = 0
+		if self.client is not None:
+				self.giveClientTo(self.accountEntity)
+		self.destroy()
+
+	def roomReqUpdateLatestBattleInfo(self, battleInfo):
+		allCardList = []
+		for k, v in self.allCardDict.items():
+			cardInfo = {
+				"cardKey": k,
+				"cardName": v["CardName"],
+				"hp": v["Hp"],
+				"defence": v["Defence"],
+				"agility": v["Agility"],
+				"tags": v["Tags"],
+			}
+			allCardList.append(cardInfo)
+
+		battleInfo["playerInfo"] = {
+			"cardList": allCardList,
+			"handCardList" : self.handCardList
+		}
+		self.client.onSyncLatestBattleState(battleInfo)
+
 	#---
 	#
 	#---
@@ -162,6 +194,12 @@ class Avatar(KBEngine.Proxy,
 	def reqFinishSelectCards(self):
 		self.roomEntityCall.avatarFinishSelectCards(self)
 
+	def reqSyncHeartBeat(self):
+		self.roomEntityCall.avatarReqHeartBeat(self)
+
+	def reqLatestBattleInfo(self):
+		self.roomEntityCall.avatarReqLatestBattleInfo(self)
+
 
 	#--------------------------------------------------------------------------------------------
 	#                              Callbacks
@@ -188,9 +226,7 @@ class Avatar(KBEngine.Proxy,
 		if self.accountEntity != None:
 			self.accountEntity.activeAvatar = None
 			self.accountEntity = None
-	
-	def onSyncRoomStartBattle(self):
-		return
+
 
 
 

@@ -22,6 +22,14 @@
 		<reqUpdateSelectedCard>
 			<Exposed/>
 		</reqUpdateSelectedCard>
+
+		<reqSyncHeartBeat>
+			<Exposed/>
+		</reqSyncHeartBeat>
+
+		<reqLatestBattleInfo>
+			<Exposed/>
+		</reqLatestBattleInfo>
 	</BaseMethods>
 
 	<CellMethods>
@@ -61,8 +69,6 @@
 			<Arg> SYNC_PLAYER_BATTLE_INFO </Arg>
 		</onSyncSelectCardInterlude>
 
-		<startBattle>
-		</startBattle>
 
 		<onSyncSwitchController>
 			<Arg> UINT8 </Arg>
@@ -72,6 +78,18 @@
 		<onSyncResumeBattle>
 			<Arg> UINT8 </Arg>
 		</onSyncResumeBattle>
+
+		<onSyncHeartBeat>
+			<Arg> INT32 </Arg>
+		</onSyncHeartBeat>
+
+		<onSyncLatestBattleState>
+			<Arg> CORE_UPDATE_BATLLE_INFO </Arg>
+		</onSyncLatestBattleState>
+
+		<onSyncBattleResult>
+			<Arg> STRING_LIST </Arg>
+		</onSyncBattleResult>
 	</ClientMethods>
 </root>
 

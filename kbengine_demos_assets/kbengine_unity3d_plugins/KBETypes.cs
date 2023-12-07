@@ -1611,23 +1611,10 @@ namespace KBEngine
 	public class BATTLE_GRID_INFO
 	{
 		public Int32 gridNb = 0;
-		public Int32 cardUid = 0;
-		public Int32 hp = 0;
-		public Int32 defence = 0;
+		public string cardUid = "";
+		public Byte hp = 0;
+		public Byte defence = 0;
 		public Byte agility = 0;
-
-	}
-
-	public class CORE_UPDATE_BATLLE_INFO
-	{
-		public List<BATTLE_GRID_INFO> updateList = new List<BATTLE_GRID_INFO>();
-
-	}
-
-	public class SYNC_BATTLE_TIME_INFO
-	{
-		public Int32 curTime = 0;
-		public Byte playerNb = 0;
 
 	}
 
@@ -1649,10 +1636,31 @@ namespace KBEngine
 
 	}
 
+	public class CORE_UPDATE_BATLLE_INFO
+	{
+		public Int32 curTick = 0;
+		public List<BATTLE_GRID_INFO> updateList = new List<BATTLE_GRID_INFO>();
+		public SYNC_PLAYER_BATTLE_INFO playerInfo = new SYNC_PLAYER_BATTLE_INFO();
+
+	}
+
+	public class SYNC_BATTLE_TIME_INFO
+	{
+		public Int32 curTime = 0;
+		public Byte battleState = 0;
+
+	}
+
 	public class PLAYER_PERSIST_INFO
 	{
 		public List<string> persistCardList = new List<string>();
 		public Byte campNb = 0;
+
+	}
+
+	public class STRING_LIST
+	{
+		public List<string> persistCardList = new List<string>();
 
 	}
 
