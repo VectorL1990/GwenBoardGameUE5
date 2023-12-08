@@ -112,6 +112,11 @@ namespace KBEngine
         KBENGINE_EVENT_FIRE("onSyncBattleResult", eventData);
     }
 
+    void Avatar::onSyncBattleResult(const STRING_LIST& losePlayerList)
+    {
+
+    }
+
     void Avatar::onSyncChangeHandCardSuccess(uint8 changeCardNb, const FString& changeHandCardKey, const FString& pileCardKey)
     {
         UKBEventData_onSyncChangeHandCardSuccess* eventData = NewObject<UKBEventData_onSyncChangeHandCardSuccess>();
