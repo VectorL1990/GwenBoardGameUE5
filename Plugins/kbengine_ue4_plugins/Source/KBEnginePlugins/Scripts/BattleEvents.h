@@ -77,7 +77,7 @@ public:
 								int32 gridNb;
 
 				UPROPERTY(EditAnywhere)
-								int32 cardUid;
+								FString cardUid;
 
 				UPROPERTY(EditAnywhere)
 								int32 hp;

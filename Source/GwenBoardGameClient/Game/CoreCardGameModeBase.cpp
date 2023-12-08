@@ -84,13 +84,13 @@ void ACoreCardGameModeBase::ReqUpdateSelectedCard()
 
 void ACoreCardGameModeBase::ReqSyncHeartBeat()
 {
-    UKBEventData* eventData = NewObject<UKEventData>();
+    UKBEventData* eventData = NewObject<UKBEventData>();
     KBENGINE_EVENT_FIRE("ReqSyncHeartBeat", eventData);
 }
 
 void ACoreCardGameModeBase::ReqLatestBattleInfo()
 {
-    UKBEventData* eventData = NewObject<UKEventData>();
+    UKBEventData* eventData = NewObject<UKBEventData>();
     KBENGINE_EVENT_FIRE("ReqLatestBattleInfo", eventData);
 }
 
