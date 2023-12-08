@@ -77,7 +77,7 @@ public:
 								int32 gridNb;
 
 				UPROPERTY(EditAnywhere)
-								int32 cardUid;
+								FString cardUid;
 
 				UPROPERTY(EditAnywhere)
 								int32 hp;
@@ -307,4 +307,30 @@ public:
 
 				UPROPERTY(EditAnywhere)
 								TArray<FString> handCardList;
+};
+
+UCLASS(Blueprintable, BlueprintType)
+class KBENGINEPLUGINS_API UKBEventData_onSyncSwitchController : public UKBEventData
+{
+				GENERATED_BODY()
+
+public:
+				UPROPERTY(EditAnywhere)
+				uint8 controllerNb;
+
+				UPROPERTY(EditAnywhere)
+								FString avatarId;
+};
+
+UCLASS(Blueprintable, BlueprintType)
+class KBENGINEPLUGINS_API UKBEventData_onSyncTimeInterval : public UKBEventData
+{
+				GENERATED_BODY()
+
+public:
+				UPROPERTY(EditAnywhere)
+								uint8 battleState;
+
+				UPROPERTY(EditAnywhere)
+								int32 curTime;
 };

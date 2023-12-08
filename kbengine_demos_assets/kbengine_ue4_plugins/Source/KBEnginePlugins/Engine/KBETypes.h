@@ -381,10 +381,10 @@ inline bool operator ==(const PLAYER_PERSIST_INFO& a, const PLAYER_PERSIST_INFO&
 class STRING_LIST
 {
 public:
-	TArray<FString> persistCardList;
+	TArray<FString> stringList;
 
 	STRING_LIST():
-	persistCardList()
+	stringList()
 	{
 	}
 
@@ -392,7 +392,7 @@ public:
 
 inline bool operator ==(const STRING_LIST& a, const STRING_LIST& b)
 {
-	return a.persistCardList == b.persistCardList;
+	return a.stringList == b.stringList;
 };
 
 

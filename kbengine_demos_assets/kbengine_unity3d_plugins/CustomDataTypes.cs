@@ -548,9 +548,9 @@ namespace KBEngine
 
 	public class DATATYPE_STRING_LIST : DATATYPE_BASE
 	{
-		private DATATYPE__STRING_LIST_persistCardList_ArrayType_ChildArray persistCardList_DataType = new DATATYPE__STRING_LIST_persistCardList_ArrayType_ChildArray();
+		private DATATYPE__STRING_LIST_stringList_ArrayType_ChildArray stringList_DataType = new DATATYPE__STRING_LIST_stringList_ArrayType_ChildArray();
 
-		public class DATATYPE__STRING_LIST_persistCardList_ArrayType_ChildArray : DATATYPE_BASE
+		public class DATATYPE__STRING_LIST_stringList_ArrayType_ChildArray : DATATYPE_BASE
 		{
 			public List<string> createFromStreamEx(MemoryStream stream)
 			{
@@ -579,13 +579,13 @@ namespace KBEngine
 		public STRING_LIST createFromStreamEx(MemoryStream stream)
 		{
 			STRING_LIST datas = new STRING_LIST();
-			datas.persistCardList = persistCardList_DataType.createFromStreamEx(stream);
+			datas.stringList = stringList_DataType.createFromStreamEx(stream);
 			return datas;
 		}
 
 		public void addToStreamEx(Bundle stream, STRING_LIST v)
 		{
-			persistCardList_DataType.addToStreamEx(stream, v.persistCardList);
+			stringList_DataType.addToStreamEx(stream, v.stringList);
 		}
 	}
 

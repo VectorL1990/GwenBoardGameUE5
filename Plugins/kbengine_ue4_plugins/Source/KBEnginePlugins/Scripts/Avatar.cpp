@@ -26,9 +26,21 @@ namespace KBEngine
                 const UKBEventData_reqChangeSelectCard* reqChangeSelectCardData = Cast<UKBEventData_reqChangeSelectCard>(pEventData);
                 ReqChangeSelectCard(reqChangeSelectCardData->changeCardKey);
             });
+            KBENGINE_REGISTER_EVENT_OVERRIDE_FUNC("ReqFinishSelectCards", "ReqFinishSelectCards", [this](const UKBEventData* pEventData)
+            {
+                ReqFinishSelectCards();
+            });
             KBENGINE_REGISTER_EVENT_OVERRIDE_FUNC("ReqUpdateSelectedCard", "ReqUpdateSelectedCard", [this](const UKBEventData* pEventData)
             {
                 ReqUpdateSelectedCard();
+            });
+            KBENGINE_REGISTER_EVENT_OVERRIDE_FUNC("ReqSyncHeartBeat", "ReqSyncHeartBeat", [this](const UKBEventData* pEventData)
+            {
+                ReqSyncHeartBeat();
+            });
+            KBENGINE_REGISTER_EVENT_OVERRIDE_FUNC("ReqLatestBattleInfo", "ReqLatestBattleInfo", [this](const UKBEventData* pEventData)
+            {
+                ReqLatestBattleInfo();
             });
         }
     }
@@ -82,17 +94,22 @@ namespace KBEngine
 
     void Avatar::onSyncResumeBattle(uint8 controllerNb)
     {
-
+        UKBEventData_onSyncResumeBattle* eventData = NewObject<UKBEventData_onSyncResumeBattle>();
+        eventData->controllerNb = controllerNb;
+        KBENGINE_EVENT_FIRE("onSyncResumeBattle", eventData);
     }
 
     void Avatar::onStopCardSelection()
     {
-
+        UKBEventData* eventData = NewObject<UKBEventData>();
+        KBENGINE_EVENT_FIRE("onStopCardSelection", eventData);
     }
 
     void Avatar::onSyncBattleResult(const STRING_LIST& losePlayerList)
     {
-
+        UKBEventData_onSyncBattleResult* eventData = NewObject<UKBEventData_onSyncBattleResult>();
+        eventData->losePlayerList = losePlayerList.stringList;
+        KBENGINE_EVENT_FIRE("onSyncBattleResult", eventData);
     }
 
     void Avatar::onSyncChangeHandCardSuccess(uint8 changeCardNb, const FString& changeHandCardKey, const FString& pileCardKey)
@@ -112,12 +129,38 @@ namespace KBEngine
 
     void Avatar::onSyncHeartBeat(int32 curBattleTick)
     {
-
+        UKBEventData_onSyncHeartBeat* eventData = NewObject<UKBEventData_onSyncHeartBeat>();
+        eventData->curBattleTick = curBattleTick;
+        KBENGINE_EVENT_FIRE("onSyncHeartBeat", eventData);
     }
 
     void Avatar::onSyncLatestBattleState(const CORE_UPDATE_BATLLE_INFO& battleInfo)
     {
-
+        UKBEventData_onSyncLatestBattleState* eventData = NewObject<UKBEventData_onSyncLatestBattleState>();
+        eventData->curBattleTick = battleInfo.curTick;
+        for (int32 i = 0; i < battleInfo.updateList.Num(); i++)
+        {
+            FBATTLE_GRID_INFO gridInfo;
+            gridInfo.gridNb = battleInfo.updateList[i].gridNb;
+            gridInfo.cardUid = battleInfo.updateList[i].cardUid;
+            gridInfo.hp = battleInfo.updateList[i].hp;
+            gridInfo.defence = battleInfo.updateList[i].defence;
+            gridInfo.agility = battleInfo.updateList[i].agility;
+            eventData->updateGridInfos.Add(gridInfo);
+        }
+        for (int32 i = 0; i < battleInfo.playerInfo.cardList.Num(); i++)
+        {
+            FSYNC_CARD_INFO cardInfo;
+            cardInfo.cardKey = battleInfo.playerInfo.cardList[i].cardKey;
+            cardInfo.cardName = battleInfo.playerInfo.cardList[i].cardName;
+            cardInfo.hp = battleInfo.playerInfo.cardList[i].hp;
+            cardInfo.defence = battleInfo.playerInfo.cardList[i].defence;
+            cardInfo.agility = battleInfo.playerInfo.cardList[i].agility;
+            cardInfo.tags = battleInfo.playerInfo.cardList[i].tags;
+            eventData->cardList.Add(cardInfo);
+        }
+        eventData->handCardList = battleInfo.playerInfo.handCardList;
+        KBENGINE_EVENT_FIRE("onSyncLatestBattleState", eventData);
     }
 
     void Avatar::onSyncUpdateSelectedCards(uint8 changeNb, const SYNC_PLAYER_BATTLE_INFO& allCardInfos)
@@ -147,17 +190,35 @@ namespace KBEngine
 
     void Avatar::onSyncSelectCardInterlude(const SYNC_PLAYER_BATTLE_INFO& playerInfo)
     {
-
+        UKBEventData_onSyncSelectCardInterlude* eventData = NewObject<UKBEventData_onSyncSelectCardInterlude>();
+        for (int32 i = 0; i < playerInfo.cardList.Num(); i++)
+        {
+            FSYNC_CARD_INFO syncCardInfo;
+            syncCardInfo.cardKey = playerInfo.cardList[i].cardKey;
+            syncCardInfo.cardName = playerInfo.cardList[i].cardName;
+            syncCardInfo.hp = playerInfo.cardList[i].hp;
+            syncCardInfo.defence = playerInfo.cardList[i].defence;
+            syncCardInfo.agility = playerInfo.cardList[i].agility;
+            syncCardInfo.tags = playerInfo.cardList[i].tags;
+        }
+        eventData->handCardList = playerInfo.handCardList;
+        KBENGINE_EVENT_FIRE("onSyncSelectCardInterlude", eventData);
     }
 
     void Avatar::onSyncSwitchController(uint8 controllerNb, uint64 avatarId)
     {
-
+        UKBEventData_onSyncSwitchController* eventData = NewObject<UKBEventData_onSyncSwitchController>();
+        eventData->controllerNb = controllerNb;
+        eventData->avatarId = FString::Printf(TEXT("%lld"), avatarId);
+        KBENGINE_EVENT_FIRE("onSyncSwitchController", eventData);
     }
 
     void Avatar::onSyncTimeInterval(const SYNC_BATTLE_TIME_INFO& syncTimeInfo)
     {
-
+        UKBEventData_onSyncTimeInterval* eventData = NewObject<UKBEventData_onSyncTimeInterval>();
+        eventData->curTime = syncTimeInfo.curTime;
+        eventData->battleState = syncTimeInfo.battleState;
+        KBENGINE_EVENT_FIRE("onSyncTimeInterval", eventData);
     }
 
     void Avatar::ReqChangeSelectCard(FString changeCardKey)
@@ -167,7 +228,7 @@ namespace KBEngine
 
     void Avatar::ReqFinishSelectCards()
     {
-
+        pBaseEntityCall->reqFinishSelectCards();
     }
 
     void Avatar::ReqUpdateSelectedCard()
@@ -177,11 +238,11 @@ namespace KBEngine
 
     void Avatar::ReqSyncHeartBeat()
     {
-
+        pBaseEntityCall->reqSyncHeartBeat();
     }
 
     void Avatar::ReqLatestBattleInfo()
     {
-
+        pBaseEntityCall->reqLatestBattleInfo();
     }
 }

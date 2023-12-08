@@ -1660,7 +1660,7 @@ namespace KBEngine
 
 	public class STRING_LIST
 	{
-		public List<string> persistCardList = new List<string>();
+		public List<string> stringList = new List<string>();
 
 	}
 
