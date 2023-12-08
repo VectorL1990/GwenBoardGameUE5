@@ -21,11 +21,12 @@ void ACoreCardGameModeBase::InitEvents()
     KBENGINE_REGISTER_EVENT("onSyncHeartBeat", onSyncHeartBeat);
     KBENGINE_REGISTER_EVENT("onSyncLatestBattleState", onSyncLatestBattleState);
     KBENGINE_REGISTER_EVENT("onSyncPlayerBattleInfo", onSyncPlayerBattleInfo);
-    KBENGINE_REGISTER_EVENT("onSyncPlayerBattleInfo", onSyncPlayerBattleInfo);
-    
-    
-    KBENGINE_REGISTER_EVENT("onSyncUpdateSelectedCards", onSyncUpdateSelectedCards);
+    KBENGINE_REGISTER_EVENT("onSyncResumeBattle", onSyncResumeBattle);
     KBENGINE_REGISTER_EVENT("onSyncRoomStartBattle", onSyncRoomStartBattle);
+    KBENGINE_REGISTER_EVENT("onSyncSelectCardInterlude", onSyncSelectCardInterlude);
+    KBENGINE_REGISTER_EVENT("onSyncSwitchController", onSyncSwitchController);
+    KBENGINE_REGISTER_EVENT("onSyncTimeInterval", onSyncTimeInterval);
+    KBENGINE_REGISTER_EVENT("onSyncUpdateSelectedCards", onSyncUpdateSelectedCards);
 }
 
 void ACoreCardGameModeBase::Tick(float deltaTime)
@@ -69,10 +70,28 @@ void ACoreCardGameModeBase::ReqChangeSelectCard(FString changeCardKey)
     KBENGINE_EVENT_FIRE("ReqChangeSelectCard", eventData);
 }
 
+void ACoreCardGameModeBase::ReqFinishSelectCards()
+{
+    UKBEventData* eventData = NewObject<UKBEventData>();
+    KBENGINE_EVENT_FIRE("ReqFinishSelectCards", eventData);
+}
+
 void ACoreCardGameModeBase::ReqUpdateSelectedCard()
 {
     UKBEventData* eventData = NewObject<UKBEventData>();
     KBENGINE_EVENT_FIRE("ReqUpdateSelectedCard", eventData);
+}
+
+void ACoreCardGameModeBase::ReqSyncHeartBeat()
+{
+    UKBEventData* eventData = NewObject<UKEventData>();
+    KBENGINE_EVENT_FIRE("ReqSyncHeartBeat", eventData);
+}
+
+void ACoreCardGameModeBase::ReqLatestBattleInfo()
+{
+    UKBEventData* eventData = NewObject<UKEventData>();
+    KBENGINE_EVENT_FIRE("ReqLatestBattleInfo", eventData);
 }
 
 void ACoreCardGameModeBase::onUpdateGridInfoList(const UKBEventData* eventData)

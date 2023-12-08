@@ -344,7 +344,7 @@ public:
 class KBENGINEPLUGINS_API DATATYPE_STRING_LIST : DATATYPE_BASE
 {
 public:
-	class KBENGINEPLUGINS_API DATATYPE__STRING_LIST_persistCardList_ArrayType_ChildArray : public DATATYPE_BASE
+	class KBENGINEPLUGINS_API DATATYPE__STRING_LIST_stringList_ArrayType_ChildArray : public DATATYPE_BASE
 	{
 	public:
 		void createFromStreamEx(MemoryStream& stream, TArray<FString>& datas)
@@ -368,7 +368,7 @@ public:
 		}
 	};
 
-	DATATYPE__STRING_LIST_persistCardList_ArrayType_ChildArray persistCardList_DataType;
+	DATATYPE__STRING_LIST_stringList_ArrayType_ChildArray stringList_DataType;
 
 	void createFromStreamEx(MemoryStream& stream, STRING_LIST& datas);
 	void addToStreamEx(Bundle& stream, const STRING_LIST& v);

@@ -52,15 +52,23 @@ public:
 
 
 private:
-    //void ReceivePlayCardResponse();
+    // --- Account req functions
     void ReqEnterRoom();
 
     void ReqPlayCard(int32 targetGridNb, int32 playCardUid);
 
+    // --- Avatar req functions
     void ReqChangeSelectCard(FString changeCardKey);
+
+    void ReqFinishSelectCards();
 
     void ReqUpdateSelectedCard();
 
+    void ReqSyncHeartBeat();
+
+    void ReqLatestBattleInfo();
+
+    // --- Avatar sync functions
     void onReceiveNewTurnMessage(const UKBEventData* eventData);
 
     void onReceiveUpdateCoreGame(const UKBEventData* eventData);

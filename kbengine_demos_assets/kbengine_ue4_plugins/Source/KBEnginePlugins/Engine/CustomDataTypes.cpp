@@ -211,12 +211,12 @@ void DATATYPE_PLAYER_PERSIST_INFO::addToStreamEx(Bundle& stream, const PLAYER_PE
 
 void DATATYPE_STRING_LIST::createFromStreamEx(MemoryStream& stream, STRING_LIST& datas)
 {
-	persistCardList_DataType.createFromStreamEx(stream, datas.persistCardList);
+	stringList_DataType.createFromStreamEx(stream, datas.stringList);
 }
 
 void DATATYPE_STRING_LIST::addToStreamEx(Bundle& stream, const STRING_LIST& v)
 {
-	persistCardList_DataType.addToStreamEx(stream, v.persistCardList);
+	stringList_DataType.addToStreamEx(stream, v.stringList);
 }
 
 

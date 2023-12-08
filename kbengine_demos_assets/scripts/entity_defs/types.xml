@@ -195,9 +195,9 @@
 
 	<STRING_LIST> FIXED_DICT
 		<Properties>
-			<persistCardList>
+			<stringList>
 				<Type> ARRAY <of>	STRING </of>	</Type>
-			</persistCardList>
+			</stringList>
 		</Properties>
 	</STRING_LIST>
 
