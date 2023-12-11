@@ -62,13 +62,11 @@ public:
 
 private:
     // --- Local logic functions
-    void LockOperation();
-
-    void UnlockOperation();
-
     void GetAllPresetObjects();
 
     void SetupBattleBoardAndCards();
+
+    void TriggerBattlePreparation();
 
     // --- Account req functions
     void ReqEnterRoom();
@@ -125,7 +123,11 @@ private:
 
     NetworkStatus networkStatus = NetworkStatus::Default;
 
+    ClientBattleState clientBattleState = ClientBattleState::BeforeBattle;
+
     TMap<FString, float> interludeStateTicksMap;
+
+    TMap<FString, float> battleStateTicksMap;
 
     float curCountingTick = 0.0;
 

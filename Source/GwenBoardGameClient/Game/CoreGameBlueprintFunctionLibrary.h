@@ -22,6 +22,15 @@ enum class InterludeState : uint8
 {
     Default = 0,
     SelectCardDemoPauseInterlude = 1,
+    MoveCameraCardSelectionToBattle = 2,
+    DemoBoardInterlude = 3,
+};
+
+UENUM(BlueprintType)
+enum class ClientBattleState : uint8
+{
+    BeforeBattle = 0,
+    SyncHeartBeat = 1,
 };
 
 UENUM(BLueprintType)
