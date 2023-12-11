@@ -18,12 +18,25 @@ enum class BattleCardStatus : uint8
 };
 
 UENUM(BlueprintType)
-enum class BattleStatus : uint8
+enum class InterludeState : uint8
 {
     Default = 0,
-    BattleCountDown = 1,
-    SwitchControllerAnimationCounting = 2,
+    SelectCardDemoPauseInterlude = 1,
+};
 
+UENUM(BLueprintType)
+enum class NetworkStatus : uint8
+{
+    Default = 0,
+    LossInfo = 1,
+};
+
+UENUM(BlueprintType)
+enum class CameraType : uint8
+{
+    Default = 0,
+    SelectCardCamera = 1,
+    BattleCamera = 2,
 };
 
 

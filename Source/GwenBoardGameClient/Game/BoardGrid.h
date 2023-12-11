@@ -25,7 +25,7 @@ public:
     // Called every frame
     virtual void Tick(float DeltaTime) override;
 
-    int32 gridNb;
+    int32 gridId;
 
     UPROPERTY()
         ACard* card;
