@@ -3,10 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Kismet/GameplayStatics.h"
 #include "GameFramework/GameModeBase.h"
 
 #include "../BasicGameMode.h"
 #include "BoardGrid.h"
+#include "BattleCamera.h"
 #include "CoreCardGameModeBase.generated.h"
 
 /**
@@ -50,8 +52,24 @@ public:
     UPROPERTY(EditAnywhere)
     TArray<FVector> selectCardSpawnPts;
 
+    UPROPERTY(EditDefaultsOnly)
+    TSubclassOf<AActor> battleCameraBPClass;
+
+    UPROPERTY(EditDefaultsOnly)
+    TSubclassOf<AActor> boardGridBPClass;
+
+    
 
 private:
+    // --- Local logic functions
+    void LockOperation();
+
+    void UnlockOperation();
+
+    void GetAllPresetObjects();
+
+    void SetupBattleBoardAndCards();
+
     // --- Account req functions
     void ReqEnterRoom();
 
@@ -69,7 +87,6 @@ private:
     void ReqLatestBattleInfo();
 
     // --- Avatar sync functions
-    void onReceiveNewTurnMessage(const UKBEventData* eventData);
 
     void onReceiveUpdateCoreGame(const UKBEventData* eventData);
 
@@ -104,16 +121,21 @@ private:
 
     virtual void InitPlayerBattleInfoDone(TArray<FString> cardList) override;
 
-    BattleStatus curBattleStatus = BattleStatus::Default;
+    InterludeState interludeState = InterludeState::Default;
 
-    TMap<FString, float> maxCoutingTicksMap;
+    NetworkStatus networkStatus = NetworkStatus::Default;
+
+    TMap<FString, float> interludeStateTicksMap;
 
     float curCountingTick = 0.0;
 
     int32 curReceiveUpdateId = 0;
 
+    UPROPERTY(EditAnywhere)
+        TMap<CameraType, ABattleCamera*> camerasMap;
+
     UPROPERTY()
-        TArray<ABoardGrid*> boardGrids;
+        TMap<int32, ABoardGrid*> boardGrids;
 
     UPROPERTY()
         TMap<int32, ACard*> occupiedGridCardMap;

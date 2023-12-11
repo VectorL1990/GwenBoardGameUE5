@@ -9,6 +9,7 @@ void ACoreCardGameModeBase::BeginPlay()
     InitEvents();
     InitKBEMain();
     InitDone();
+    GetAllPresetObjects();
 }
 
 void ACoreCardGameModeBase::InitEvents()
@@ -31,19 +32,74 @@ void ACoreCardGameModeBase::InitEvents()
 
 void ACoreCardGameModeBase::Tick(float deltaTime)
 {
-    if (curBattleStatus == BattleStatus::SwitchControllerAnimationCounting)
+    if (interludeState == InterludeState::SelectCardDemoPauseInterlude)
     {
-        if (curCountingTick >= maxCoutingTicksMap["SwitchControllerAnimationCounting"])
+        if (curCountingTick >= interludeStateTicksMap["SelectCardDemoPauseInterlude"])
         {
-            // which means tick ends, send message to server 
+            // which means selected cards demonstration ends
             curCountingTick = 0.0;
-            curBattleStatus = BattleStatus::Default;
+            interludeState = InterludeState::Default;
+            // delete all demo hand cards and spawn 2D hand cards
+            SetupBattleBoardAndCards();
         }
         else
         {
             curCountingTick += deltaTime;
         }
     }
+}
+
+void ACoreCardGameModeBase::LockOperation()
+{
+    networkStatus = NetworkStatus::LossInfo;
+}
+
+void ACoreCardGameModeBase::UnlockOperation()
+{
+    networkStatus = NetworkStatus::Default;
+}
+
+void ACoreCardGameModeBase::GetAllPresetObjects()
+{
+    TArray<AActor*> presetCameras;
+    UGameplayStatics::GetAllActorsOfClass(this, battleCameraBPClass, presetCameras);
+    for (int32 i = 0; i < presetCameras.Num(); i++)
+    {
+        ABattleCamera* battleCamera = Cast<ABattleCamera>(presetCameras[i]);
+        if (!camerasMap.Contains(battleCamera->cameraType))
+        {
+            camerasMap.Add(battleCamera->cameraType, battleCamera);
+        }
+    }
+
+    TArray<AActor*> presetBoardGrids;
+    UGameplayStatics::GetAllActorsOfClass(this, boardGridBPClass, presetBoardGrids);
+    for (int32 i = 0; i < presetBoardGrids.Num(); i++)
+    {
+        ABoardGrid* boardGrid = Cast<ABoardGrid>(presetBoardGrids[i]);
+        if (!boardGrids.Contains(boardGrid->gridId))
+        {
+            boardGrids.Add(boardGrid->gridId, boardGrid);
+        }
+    }
+}
+
+void ACoreCardGameModeBase::SetupBattleBoardAndCards()
+{
+    // delete all demonstrated hand cards fist
+    for (TMap<FString, ACard*>::TConstIterator iter = handCardMap.CreateConstIterator(); iter; ++iter)
+    {
+        if (iter->Value->IsValidLowLevel())
+        {
+            iter->Value->Destroy();
+        }
+    }
+    handCardMap.Empty();
+
+    // move camera to specific location
+    APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
+    AActor* targetCamera = camerasMap[CameraType::SelectCardCamera];
+    playerController->SetViewTargetWithBlend(targetCamera, 2.0);
 }
 
 void ACoreCardGameModeBase::ReqEnterRoom()
@@ -119,10 +175,6 @@ void ACoreCardGameModeBase::onUpdateGridInfoList(const UKBEventData* eventData)
     }*/
 }
 
-void ACoreCardGameModeBase::onReceiveNewTurnMessage(const UKBEventData* eventData)
-{
-    curBattleStatus = BattleStatus::BattleCountDown;
-}
 
 void ACoreCardGameModeBase::onReceiveUpdateCoreGame(const UKBEventData* eventData)
 {
@@ -201,17 +253,20 @@ void ACoreCardGameModeBase::onSyncChangeHandCardSuccess(const UKBEventData* even
             if (maxChangeSelectCardNb - curChangeSelectCardNb <= 1)
             {
                 // which means all opportunity exhausted
-                // tell server 
+                // tell server card selection done
+                ReqFinishSelectCards();
             }
         }
         else
         {
             // which means information loss, require latest select hand cards!
+            ReqUpdateSelectedCard();
         }
     }
     else
     {
         // which means information loss, require latest select hand cards!
+        ReqUpdateSelectedCard();
     }
 }
 
@@ -285,6 +340,7 @@ void ACoreCardGameModeBase::onSyncUpdateSelectedCards(const UKBEventData* eventD
         handCard->InitCard(allCardInfoMap[handCardKeyList[i]].cardName);
         handCardMap.Add(handCardKeyList[i], handCard);
     }
+
 }
 
 void ACoreCardGameModeBase::onSyncRoomStartBattle(const UKBEventData* eventData)
@@ -293,7 +349,11 @@ void ACoreCardGameModeBase::onSyncRoomStartBattle(const UKBEventData* eventData)
 }
 
 void ACoreCardGameModeBase::onSyncSelectCardInterlude(const UKBEventData* eventData)
-{}
+{
+    // which means all players have already finished card selection
+    // play interlude and setup cards on board
+
+}
 
 void ACoreCardGameModeBase::onSyncSwitchController(const UKBEventData* eventData)
 {}
@@ -303,16 +363,6 @@ void ACoreCardGameModeBase::onSyncTimeInterval(const UKBEventData* eventData)
 
 void ACoreCardGameModeBase::InitPlayerBattleInfoDone(TArray<FString> cardList)
 {
-    /*FRotator spawnRot = FRotator::ZeroRotator;
-    for (int32 i = 0; i < cardList.Num(); i++)
-    {
-        FVector spawnLoc = selectCardDemoLoc + i * cardIntervalVector;
-        ACard* newCard = GetWorld()->SpawnActor<ACard>(cardBPClass, spawnLoc, spawnRot);
-        newCard->cardStatus = BattleCardStatus::Select;
-        newCard->InitCard(cardList[i]);
-        selectCards.Add(newCard);
-    }*/
-
     FRotator spawnRot = FRotator::ZeroRotator;
     for (int32 i = 0; i < handCardKeyList.Num(); i++)
     {

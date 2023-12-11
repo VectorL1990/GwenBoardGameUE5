@@ -169,6 +169,8 @@ class Avatar(KBEngine.Proxy,
 						self.pileCardList.pop(0)
 						self.pileCardList.append(switchCard)
 						self.changeSelectCardNb += 1
+						# if player has exhausted all opportunities
+						# in this case client will notify room card selection done
 						self.client.onSyncChangeHandCardSuccess(self.changeSelectCardNb, cardKey, switchCardKey)
 						break
 
