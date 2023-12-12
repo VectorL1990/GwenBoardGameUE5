@@ -1638,7 +1638,7 @@ namespace KBEngine
 
 	public class CORE_UPDATE_BATLLE_INFO
 	{
-		public Int32 curTick = 0;
+		public Int32 curActionSequence = 0;
 		public List<BATTLE_GRID_INFO> updateList = new List<BATTLE_GRID_INFO>();
 		public SYNC_PLAYER_BATTLE_INFO playerInfo = new SYNC_PLAYER_BATTLE_INFO();
 

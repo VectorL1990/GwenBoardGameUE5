@@ -30,7 +30,7 @@ UENUM(BlueprintType)
 enum class ClientBattleState : uint8
 {
     BeforeBattle = 0,
-    SyncHeartBeat = 1,
+    InBattle = 1,
 };
 
 UENUM(BLueprintType)

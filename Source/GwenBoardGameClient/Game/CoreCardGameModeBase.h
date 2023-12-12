@@ -68,6 +68,8 @@ private:
 
     void TriggerBattlePreparation();
 
+    void CalibrateGridInfos(TArray<FBATTLE_GRID_INFO> gridInfos);
+
     // --- Account req functions
     void ReqEnterRoom();
 
@@ -128,6 +130,8 @@ private:
     TMap<FString, float> interludeStateTicksMap;
 
     TMap<FString, float> battleStateTicksMap;
+
+    int32 receiveActionSequence = 0;
 
     float curCountingTick = 0.0;
 

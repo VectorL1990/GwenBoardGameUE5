@@ -464,7 +464,7 @@ namespace KBEngine
 		public CORE_UPDATE_BATLLE_INFO createFromStreamEx(MemoryStream stream)
 		{
 			CORE_UPDATE_BATLLE_INFO datas = new CORE_UPDATE_BATLLE_INFO();
-			datas.curTick = stream.readInt32();
+			datas.curActionSequence = stream.readInt32();
 			datas.updateList = updateList_DataType.createFromStreamEx(stream);
 			datas.playerInfo = playerInfo_DataType.createFromStreamEx(stream);
 			return datas;
@@ -472,7 +472,7 @@ namespace KBEngine
 
 		public void addToStreamEx(Bundle stream, CORE_UPDATE_BATLLE_INFO v)
 		{
-			stream.writeInt32(v.curTick);
+			stream.writeInt32(v.curActionSequence);
 			updateList_DataType.addToStreamEx(stream, v.updateList);
 			playerInfo_DataType.addToStreamEx(stream, v.playerInfo);
 		}

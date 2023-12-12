@@ -14,6 +14,7 @@ class Room(KBEngine.Entity):
 		self.accountEntityDict = {}
 		self.gridInfoDict = {}
 		self.curSwitchNb = 0
+		self.curActionSequence = 0
 		self.curControlNb = 0
 
 		# --- time counting variables
@@ -114,7 +115,7 @@ class Room(KBEngine.Entity):
 				allGridInfo.append(battleGridInfo)
 
 			coreUpdateBattleInfo = {
-				"curTick": self.curBattleTick,
+				"curActionSequence": self.curActionSequence,
 				"updateList": allGridInfo,
 				"playerInfo": {}
 			}

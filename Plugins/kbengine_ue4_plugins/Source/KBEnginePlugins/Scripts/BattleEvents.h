@@ -274,7 +274,7 @@ class KBENGINEPLUGINS_API UKBEventData_onSyncLatestBattleState : public UKBEvent
 
 public:
 				UPROPERTY(EditAnywhere)
-				int32 curBattleTick;
+				int32 curActionSequence;
 
 				UPROPERTY(EditAnywhere)
 				TArray<FBATTLE_GRID_INFO> updateGridInfos;

@@ -35,7 +35,7 @@ public:
 
     FString cardName;
 
-    int32 cardUid;
+    FString cardUid;
 
     int32 hp;
 

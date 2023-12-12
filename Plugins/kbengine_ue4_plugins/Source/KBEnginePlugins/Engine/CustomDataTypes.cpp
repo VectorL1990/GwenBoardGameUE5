@@ -173,14 +173,14 @@ void DATATYPE_SYNC_PLAYER_BATTLE_INFO::addToStreamEx(Bundle& stream, const SYNC_
 
 void DATATYPE_CORE_UPDATE_BATLLE_INFO::createFromStreamEx(MemoryStream& stream, CORE_UPDATE_BATLLE_INFO& datas)
 {
-	datas.curTick = stream.readInt32();
+	datas.curActionSequence = stream.readInt32();
 	updateList_DataType.createFromStreamEx(stream, datas.updateList);
 	playerInfo_DataType.createFromStreamEx(stream, datas.playerInfo);
 }
 
 void DATATYPE_CORE_UPDATE_BATLLE_INFO::addToStreamEx(Bundle& stream, const CORE_UPDATE_BATLLE_INFO& v)
 {
-	stream.writeInt32(v.curTick);
+	stream.writeInt32(v.curActionSequence);
 	updateList_DataType.addToStreamEx(stream, v.updateList);
 	playerInfo_DataType.addToStreamEx(stream, v.playerInfo);
 }

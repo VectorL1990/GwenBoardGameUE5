@@ -96,11 +96,17 @@ void ACoreCardGameModeBase::Tick(float deltaTime)
 								}
 				}
 
-				if (clientBattleState == ClientBattleState::SyncHeartBeat)
+				if (clientBattleState == ClientBattleState::InBattle)
 				{
+								// we should always keep sending sync information to server
 								if (curCountingTick >= battleStateTicksMap["SyncHeartBeatInterval"])
 								{
 												ReqSyncHeartBeat();
+								}
+
+								if (curCountingTick >= battleStateTicksMap["SyncBattleInterval"])
+								{
+												ReqLatestBattleInfo();
 								}
 				}
 }
@@ -127,6 +133,58 @@ void ACoreCardGameModeBase::GetAllPresetObjects()
 								if (!boardGrids.Contains(boardGrid->gridId))
 								{
 												boardGrids.Add(boardGrid->gridId, boardGrid);
+								}
+				}
+}
+
+void ACoreCardGameModeBase::CalibrateGridInfos(TArray<FBATTLE_GRID_INFO> gridInfos)
+{
+				for (TMap<int32, ABoardGrid*>::TConstIterator iter = boardGrids.CreateConstIterator(); iter; ++iter)
+				{
+								iter->Value->DemonstrateInitEffect();
+				}
+				for (int32 i = 0; i < gridInfos.Num(); i++)
+				{
+								if (boardGrids.Contains(gridInfos[i].gridNb))
+								{
+												if (!boardGrids[gridInfos[i].gridNb])
+												{
+																// which means card is missed in this grid, we should spawn a brand new card corresponding to supplement information from server
+
+												}
+												else
+												{
+																if (boardGrids[gridInfos[i].gridNb]->card->cardUid != gridInfos[i].cardUid)
+																{
+																				// which means a wrong card is placed in this grid
+																				// delete occupied card first
+																				FString cardUid = boardGrids[gridInfos[i].gridNb]->card->cardUid;
+																				if (boardGrids[gridInfos[i].gridNb]->card->IsValidLowLevel())
+																				{
+																								boardGrids[gridInfos[i].gridNb]->card->ConditionalBeginDestroy();
+																				}
+																				allCardMap.Remove(cardUid);
+																				
+																				// replace or spawn sync card for this grid
+																				if (allCardMap.Contains(gridInfos[i].cardUid))
+																				{
+																								// which means a existing card which should be placed in this grid is located somewhere else
+																								// in this case we should delete that card
+																								if (allCardMap[gridInfos[i].cardUid]->IsValidLowLevel())
+																								{
+																												allCardMap[gridInfos[i].cardUid]->Destroy();
+																								}
+																								allCardMap.Remove(gridInfos[i].cardUid);
+																				}
+
+																				ACard* changeHandCard = GetWorld()->SpawnActor<ACard>(cardBPClass, changeHandCardLoc, changeHandCardRot);
+																}
+																else
+																{
+																				// which means card id is correct, calibrate card information
+																				boardGrids[gridInfos[i].gridNb]->card->hp
+																}
+												}
 								}
 				}
 }
@@ -272,7 +330,10 @@ void ACoreCardGameModeBase::onSyncChangeHandCardSuccess(const UKBEventData* even
 												{
 																FVector changeHandCardLoc = handCardMap[onSyncChangeHandCardSuccessData->changeHandCardKey]->GetActorLocation();
 																FRotator changeHandCardRot = handCardMap[onSyncChangeHandCardSuccessData->changeHandCardKey]->GetActorRotation();
-																handCardMap[onSyncChangeHandCardSuccessData->changeHandCardKey]->Destroy();
+																if (handCardMap[onSyncChangeHandCardSuccessData->changeHandCardKey]->IsValidLowLevel())
+																{
+																				handCardMap[onSyncChangeHandCardSuccessData->changeHandCardKey]->Destroy();
+																}
 																handCardMap.Remove(onSyncChangeHandCardSuccessData->changeHandCardKey);
 																ACard* changeHandCard = GetWorld()->SpawnActor<ACard>(cardBPClass, changeHandCardLoc, changeHandCardRot);
 																changeHandCard->cardStatus = BattleCardStatus::Select;
@@ -323,10 +384,21 @@ void ACoreCardGameModeBase::onSyncExhaustCardReplacement(const UKBEventData* eve
 }
 
 void ACoreCardGameModeBase::onSyncHeartBeat(const UKBEventData* eventData)
-{}
+{
+				
+}
 
 void ACoreCardGameModeBase::onSyncLatestBattleState(const UKBEventData* eventData)
-{}
+{
+				// Compare current operation sequence
+				const UKBEventData_onSyncLatestBattleState* latestBattleStateData = Cast<UKBEventData_onSyncLatestBattleState>(eventData);
+				if (receiveActionSequence < latestBattleStateData->curActionSequence)
+				{
+								// which means client got information latency or information loss
+								// we should use sync information for battle recovering
+								
+				}
+}
 
 void ACoreCardGameModeBase::onSyncResumeBattle(const UKBEventData* eventData)
 {}

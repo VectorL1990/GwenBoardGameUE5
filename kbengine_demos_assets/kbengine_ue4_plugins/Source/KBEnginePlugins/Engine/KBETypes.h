@@ -322,12 +322,12 @@ inline bool operator ==(const SYNC_PLAYER_BATTLE_INFO& a, const SYNC_PLAYER_BATT
 class CORE_UPDATE_BATLLE_INFO
 {
 public:
-	int32 curTick;
+	int32 curActionSequence;
 	TArray<BATTLE_GRID_INFO> updateList;
 	SYNC_PLAYER_BATTLE_INFO playerInfo;
 
 	CORE_UPDATE_BATLLE_INFO():
-	curTick(0),
+	curActionSequence(0),
 	updateList(),
 	playerInfo()
 	{
@@ -337,7 +337,7 @@ public:
 
 inline bool operator ==(const CORE_UPDATE_BATLLE_INFO& a, const CORE_UPDATE_BATLLE_INFO& b)
 {
-	return a.curTick == b.curTick && a.updateList == b.updateList && a.playerInfo == b.playerInfo;
+	return a.curActionSequence == b.curActionSequence && a.updateList == b.updateList && a.playerInfo == b.playerInfo;
 };
 
 class SYNC_BATTLE_TIME_INFO

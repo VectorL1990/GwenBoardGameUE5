@@ -137,7 +137,7 @@ namespace KBEngine
     void Avatar::onSyncLatestBattleState(const CORE_UPDATE_BATLLE_INFO& battleInfo)
     {
         UKBEventData_onSyncLatestBattleState* eventData = NewObject<UKBEventData_onSyncLatestBattleState>();
-        eventData->curBattleTick = battleInfo.curTick;
+        eventData->curBattleTick = battleInfo.curActionSequence;
         for (int32 i = 0; i < battleInfo.updateList.Num(); i++)
         {
             FBATTLE_GRID_INFO gridInfo;
