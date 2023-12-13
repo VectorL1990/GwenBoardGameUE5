@@ -87,6 +87,12 @@ public:
 
 				UPROPERTY(EditAnywhere)
 								uint8 agility;
+
+				UPROPERTY(EditAnywhere)
+								TArray<FString> tags;
+
+				UPROPERTY(EditAnywhere)
+				TArray<FString> stateTags;
 };
 
 USTRUCT(BlueprintType)
@@ -150,6 +156,9 @@ public:
 
 				UPROPERTY(EditAnywhere)
 								TArray<FString> tags;
+
+				UPROPERTY(EditAnywhere)
+								TArray<FString> stateTags;
 };
 
 USTRUCT(BlueprintType)
@@ -274,6 +283,15 @@ class KBENGINEPLUGINS_API UKBEventData_onSyncLatestBattleState : public UKBEvent
 
 public:
 				UPROPERTY(EditAnywhere)
+				int32 curSwitchControllerSequence;
+
+				UPROPERTY(EditAnywhere)
+				uint8 curControllerNb;
+
+				UPROPERTY(EditAnywhere)
+				FString curControllerAvatarId;
+
+				UPROPERTY(EditAnywhere)
 				int32 curActionSequence;
 
 				UPROPERTY(EditAnywhere)
@@ -316,7 +334,7 @@ class KBENGINEPLUGINS_API UKBEventData_onSyncSwitchController : public UKBEventD
 
 public:
 				UPROPERTY(EditAnywhere)
-				uint8 controllerNb;
+				int32 controllerNb;
 
 				UPROPERTY(EditAnywhere)
 								FString avatarId;

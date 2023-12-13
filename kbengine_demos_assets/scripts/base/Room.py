@@ -75,11 +75,12 @@ class Room(KBEngine.Entity):
 				cardInfo = allDatas["allCards"][strs[2]]
 				#cardInfo = d_all_cards.datas.get(strs[1])
 				avatarEntityCall.allCardDict[cardKey] = {
-					"CardName": strs[1],
-					"Hp": cardInfo["Hp"],
-					"Defence": cardInfo["Defence"],
-					"Agility": cardInfo["Agility"],
-					"Tags": cardInfo["Tags"]
+					"cardName": strs[1],
+					"hp": cardInfo["hp"],
+					"defence": cardInfo["defence"],
+					"agility": cardInfo["agility"],
+					"tags": cardInfo["tags"],
+					"stateTags": []
 				}
 				self.uniqueCardDict[cardKey] = avatarEntityCall.allCardDict[cardKey]
 
@@ -110,14 +111,19 @@ class Room(KBEngine.Entity):
 					"cardUid": v["cardKey"],
 					"hp": v["curHp"],
 					"defence": v["defence"],
-					"agility": v["agility"]
+					"agility": v["agility"],
+					"tags": v["tags"],
+					"stateTags": v["stateTags"]
 				}
 				allGridInfo.append(battleGridInfo)
 
 			coreUpdateBattleInfo = {
 				"curActionSequence": self.curActionSequence,
 				"updateList": allGridInfo,
-				"playerInfo": {}
+				"playerInfo": {},
+				"curSwitchControllerSequence": self.curSwitchNb,
+				"curControllerNb": self.curControlNb,
+				"curControllerAvatarId": self.inBattleAvatarList[self.curControlNb].id
 			}
 			avatarEntityCall.roomReqUpdateLatestBattleInfo(coreUpdateBattleInfo)
 

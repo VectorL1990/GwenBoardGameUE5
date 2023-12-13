@@ -89,12 +89,7 @@ void AvatarBase::onRemoteMethodCall(MemoryStream& stream)
 
 	switch(pMethod->methodUtype)
 	{
-		case 16:
-		{
-			onStopCardSelection();
-			break;
-		}
-		case 23:
+		case 22:
 		{
 			STRING_LIST onSyncBattleResult_arg1;
 			((DATATYPE_STRING_LIST*)pMethod->args[0])->createFromStreamEx(stream, onSyncBattleResult_arg1);
@@ -114,13 +109,13 @@ void AvatarBase::onRemoteMethodCall(MemoryStream& stream)
 			onSyncExhaustCardReplacement();
 			break;
 		}
-		case 21:
+		case 20:
 		{
 			int32 onSyncHeartBeat_arg1 = stream.readInt32();
 			onSyncHeartBeat(onSyncHeartBeat_arg1);
 			break;
 		}
-		case 22:
+		case 21:
 		{
 			CORE_UPDATE_BATLLE_INFO onSyncLatestBattleState_arg1;
 			((DATATYPE_CORE_UPDATE_BATLLE_INFO*)pMethod->args[0])->createFromStreamEx(stream, onSyncLatestBattleState_arg1);
@@ -134,9 +129,9 @@ void AvatarBase::onRemoteMethodCall(MemoryStream& stream)
 			onSyncPlayerBattleInfo(onSyncPlayerBattleInfo_arg1);
 			break;
 		}
-		case 20:
+		case 19:
 		{
-			uint8 onSyncResumeBattle_arg1 = stream.readUint8();
+			int32 onSyncResumeBattle_arg1 = stream.readInt32();
 			onSyncResumeBattle(onSyncResumeBattle_arg1);
 			break;
 		}
@@ -145,21 +140,21 @@ void AvatarBase::onRemoteMethodCall(MemoryStream& stream)
 			onSyncRoomStartBattle();
 			break;
 		}
-		case 18:
+		case 17:
 		{
 			SYNC_PLAYER_BATTLE_INFO onSyncSelectCardInterlude_arg1;
 			((DATATYPE_SYNC_PLAYER_BATTLE_INFO*)pMethod->args[0])->createFromStreamEx(stream, onSyncSelectCardInterlude_arg1);
 			onSyncSelectCardInterlude(onSyncSelectCardInterlude_arg1);
 			break;
 		}
-		case 19:
+		case 18:
 		{
-			uint8 onSyncSwitchController_arg1 = stream.readUint8();
+			int32 onSyncSwitchController_arg1 = stream.readInt32();
 			uint64 onSyncSwitchController_arg2 = stream.readUint64();
 			onSyncSwitchController(onSyncSwitchController_arg1, onSyncSwitchController_arg2);
 			break;
 		}
-		case 17:
+		case 16:
 		{
 			SYNC_BATTLE_TIME_INFO onSyncTimeInterval_arg1;
 			((DATATYPE_SYNC_BATTLE_TIME_INFO*)pMethod->args[0])->createFromStreamEx(stream, onSyncTimeInterval_arg1);

@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
-datas={"OldManInMountain": {'Hp': 4, 'Defence': 60, 'Agility': 5, 'Tags': []}, 
-  "DustyRanger": {'Hp': 4, 'Defence': 60, 'Agility': 5, 'Tags': []}, 
-  "ThirteenSuicideSquad": {'Hp': 4, 'Defence': 60, 'Agility': 5, 'Tags': []}, 
-  "BlackGuard": {'Hp': 4, 'Defence': 60, 'Agility': 5, 'Tags': []}, 
-  "PhoenixChariot": {'Hp': 4, 'Defence': 60, 'Agility': 5, 'Tags': []}, 
-  "MasonOnCliff": {'Hp': 4, 'Defence': 60, 'Agility': 5, 'Tags': []}}
+datas={"OldManInMountain": {'hp': 4, 'defence': 60, 'agility': 5, 'tags': []}, 
+  "DustyRanger": {'hp': 4, 'defence': 60, 'agility': 5, 'tags': []}, 
+  "ThirteenSuicideSquad": {'hp': 4, 'defence': 60, 'agility': 5, 'tags': []}, 
+  "BlackGuard": {'hp': 4, 'defence': 60, 'agility': 5, 'tags': []}, 
+  "PhoenixChariot": {'hp': 4, 'defence': 60, 'agility': 5, 'tags': []}, 
+  "MasonOnCliff": {'hp': 4, 'defence': 60, 'agility': 5, 'tags': []}}
 
 allDatas = {
 	'allCards':datas,

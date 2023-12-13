@@ -43,4 +43,10 @@ public:
 
     int32 defence;
 
+    UPROPERTY()
+    TArray<FString> tags;
+
+    UPROPERTY()
+    TArray<FString> stateTags;
+
 };

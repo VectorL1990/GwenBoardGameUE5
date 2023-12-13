@@ -15,7 +15,6 @@ void ACoreCardGameModeBase::BeginPlay()
 void ACoreCardGameModeBase::InitEvents()
 {
 				Super::InitEvents();
-				KBENGINE_REGISTER_EVENT("onStopCardSelection", onStopCardSelection);
 				KBENGINE_REGISTER_EVENT("onSyncBattleResult", onSyncBattleResult);
 				KBENGINE_REGISTER_EVENT("onSyncChangeHandCardSuccess", onSyncChangeHandCardSuccess);
 				KBENGINE_REGISTER_EVENT("onSyncExhaustCardReplacement", onSyncExhaustCardReplacement);
@@ -145,47 +144,162 @@ void ACoreCardGameModeBase::CalibrateGridInfos(TArray<FBATTLE_GRID_INFO> gridInf
 				}
 				for (int32 i = 0; i < gridInfos.Num(); i++)
 				{
-								if (boardGrids.Contains(gridInfos[i].gridNb))
+								if (!boardGrids[gridInfos[i].gridNb]->card)
 								{
-												if (!boardGrids[gridInfos[i].gridNb])
+												// which means card is missed in this grid, we should spawn a brand new card corresponding to supplement information from server
+												FVector spawnLoc = boardGrids[gridInfos[i].gridNb]->GetActorLocation();
+												spawnLoc.Z += gridSpawnCardOffset;
+												FRotator spawnRot = FRotator::ZeroRotator;
+												ACard* suplementCard = GetWorld()->SpawnActor<ACard>(cardBPClass, spawnLoc, spawnRot);
+												suplementCard->InitCard(allCardInfoMap[gridInfos[i].cardUid].cardName);
+												suplementCard->hp = gridInfos[i].hp;
+												suplementCard->defence = gridInfos[i].defence;
+												suplementCard->agility = gridInfos[i].agility;
+												suplementCard->tags = gridInfos[i].tags;
+												suplementCard->stateTags = gridInfos[i].stateTags;
+												allCardMap.Add(gridInfos[i].cardUid, suplementCard);
+
+												boardGrids[gridInfos[i].gridNb]->card = suplementCard;
+								}
+								else
+								{
+												if (boardGrids[gridInfos[i].gridNb]->card->cardUid != gridInfos[i].cardUid)
 												{
-																// which means card is missed in this grid, we should spawn a brand new card corresponding to supplement information from server
+																// which means a wrong card is placed in this grid
+																// delete occupied card first
+																FString cardUid = boardGrids[gridInfos[i].gridNb]->card->cardUid;
+																if (boardGrids[gridInfos[i].gridNb]->card->IsValidLowLevel())
+																{
+																				boardGrids[gridInfos[i].gridNb]->card->ConditionalBeginDestroy();
+																}
+																allCardMap.Remove(cardUid);
+
+																// replace or spawn sync card for this grid
+																if (allCardMap.Contains(gridInfos[i].cardUid))
+																{
+																				// which means a existing card which should be placed in this grid is located somewhere else
+																				// in this case we should delete that card, it doesn't matter because that "cavity" will be make up
+																				if (allCardMap[gridInfos[i].cardUid]->IsValidLowLevel())
+																				{
+																								allCardMap[gridInfos[i].cardUid]->Destroy();
+																				}
+																				allCardMap.Remove(gridInfos[i].cardUid);
+																				
+																				for (TMap<int32, ABoardGrid*>::TConstIterator iter = boardGrids.CreateConstIterator(); iter; ++iter)
+																				{
+																								if (iter->Value->card && iter->Value->card->cardUid == gridInfos[i].cardUid)
+																								{
+																												iter->Value->card = NULL;
+																												break;
+																								}
+																				}
+																}
+
+																FVector spawnLoc = boardGrids[gridInfos[i].gridNb]->GetActorLocation();
+																spawnLoc.Z += gridSpawnCardOffset;
+																FRotator spawnRot = FRotator::ZeroRotator;
+																ACard* replacedCard = GetWorld()->SpawnActor<ACard>(cardBPClass, spawnLoc, spawnRot);
+																replacedCard->InitCard(allCardInfoMap[gridInfos[i].cardUid].cardName);
+																replacedCard->hp = gridInfos[i].hp;
+																replacedCard->defence = gridInfos[i].defence;
+																replacedCard->agility = gridInfos[i].agility;
+																replacedCard->tags = gridInfos[i].tags;
+																replacedCard->stateTags = gridInfos[i].stateTags;
+																allCardMap.Add(gridInfos[i].cardUid, replacedCard);
+
+																boardGrids[gridInfos[i].gridNb]->card = replacedCard;
 
 												}
 												else
 												{
-																if (boardGrids[gridInfos[i].gridNb]->card->cardUid != gridInfos[i].cardUid)
+																// which means card id is correct, calibrate card information
+																if (boardGrids[gridInfos[i].gridNb]->card->hp != gridInfos[i].hp)
 																{
-																				// which means a wrong card is placed in this grid
-																				// delete occupied card first
-																				FString cardUid = boardGrids[gridInfos[i].gridNb]->card->cardUid;
-																				if (boardGrids[gridInfos[i].gridNb]->card->IsValidLowLevel())
-																				{
-																								boardGrids[gridInfos[i].gridNb]->card->ConditionalBeginDestroy();
-																				}
-																				allCardMap.Remove(cardUid);
-																				
-																				// replace or spawn sync card for this grid
-																				if (allCardMap.Contains(gridInfos[i].cardUid))
-																				{
-																								// which means a existing card which should be placed in this grid is located somewhere else
-																								// in this case we should delete that card
-																								if (allCardMap[gridInfos[i].cardUid]->IsValidLowLevel())
-																								{
-																												allCardMap[gridInfos[i].cardUid]->Destroy();
-																								}
-																								allCardMap.Remove(gridInfos[i].cardUid);
-																				}
-
-																				ACard* changeHandCard = GetWorld()->SpawnActor<ACard>(cardBPClass, changeHandCardLoc, changeHandCardRot);
+																				boardGrids[gridInfos[i].gridNb]->card->hp = gridInfos[i].hp;
+																}
+																if (boardGrids[gridInfos[i].gridNb]->card->defence != gridInfos[i].defence)
+																{
+																				boardGrids[gridInfos[i].gridNb]->card->defence = gridInfos[i].defence;
+																}
+																if (boardGrids[gridInfos[i].gridNb]->card->agility != gridInfos[i].agility)
+																{
+																				boardGrids[gridInfos[i].gridNb]->card->agility = gridInfos[i].agility;
+																}
+																if (boardGrids[gridInfos[i].gridNb]->card->tags.Num() != gridInfos[i].tags.Num())
+																{
+																				boardGrids[gridInfos[i].gridNb]->card->tags = gridInfos[i].tags;
 																}
 																else
 																{
-																				// which means card id is correct, calibrate card information
-																				boardGrids[gridInfos[i].gridNb]->card->hp
+																				for (int32 j = 0; j < gridInfos[j].tags.Num(); j++)
+																				{
+																								if (!boardGrids[gridInfos[i].gridNb]->card->tags.Contains(gridInfos[i].tags[j]))
+																								{
+																												boardGrids[gridInfos[i].gridNb]->card->tags.Add(gridInfos[i].tags[j]);
+																												// let's replace all tags to board grid
+																												boardGrids[gridInfos[i].gridNb]->card->tags = gridInfos[i].tags;
+																												// update actor demonstration and ui
+																												break;
+
+																								}
+																				}
+																}
+																
+																if (boardGrids[gridInfos[i].gridNb]->card->stateTags.Num() != gridInfos[i].stateTags.Num())
+																{
+																				boardGrids[gridInfos[i].gridNb]->card->stateTags = gridInfos[i].stateTags;
+																}
+																else
+																{
+																				for (int32 j = 0; j < gridInfos[j].stateTags.Num(); j++)
+																				{
+																								if (!boardGrids[gridInfos[i].gridNb]->card->stateTags.Contains(gridInfos[i].stateTags[j]))
+																								{
+																												boardGrids[gridInfos[i].gridNb]->card->stateTags.Add(gridInfos[i].stateTags[j]);
+																												// let's replace all tags to board grid
+																												boardGrids[gridInfos[i].gridNb]->card->stateTags = gridInfos[i].stateTags;
+																												// update actor demonstration and ui
+																												break;
+
+																								}
+																				}
 																}
 												}
 								}
+				}
+}
+
+void ACoreCardGameModeBase::CalibratePlayerCardInfos(TArray<FSYNC_CARD_INFO> allCardInfoList, TArray<FString> handCardUidList)
+{
+				for (int32 i = 0; i < allCardInfoList.Num(); i++)
+				{
+								if (allCardInfoMap.Contains(allCardInfoList[i].cardKey))
+								{
+												if (allCardInfoMap[allCardInfoList[i].cardKey].hp != allCardInfoList[i].hp)
+												{
+																allCardInfoMap[allCardInfoList[i].cardKey].hp = allCardInfoList[i].hp;
+												}
+												if (allCardInfoMap[allCardInfoList[i].cardKey].defence != allCardInfoList[i].defence)
+												{
+																allCardInfoMap[allCardInfoList[i].cardKey].defence = allCardInfoList[i].defence;
+												}
+								}
+				}
+}
+
+void ACoreCardGameModeBase::CalibrateCurrentGlobalInfo(int32 curActionSequence, int32 curSwitchControllerSequence, uint8 curControllerNb)
+{
+				if (curActionSequence != receiveActionSequence)
+				{
+								receiveActionSequence = curActionSequence;
+				}
+				if (curSwitchControllerSequence != receiveSwitchControllerSequence)
+				{
+								receiveSwitchControllerSequence = curSwitchControllerSequence;
+				}
+				if (curControllerNb != receiveControllerNb)
+				{
+								receiveControllerNb = receiveControllerNb;
 				}
 }
 
@@ -299,11 +413,12 @@ void ACoreCardGameModeBase::InitDone_Implementation()
 
 }
 
-void ACoreCardGameModeBase::onStopCardSelection(const UKBEventData* eventData)
-{}
-
 void ACoreCardGameModeBase::onSyncBattleResult(const UKBEventData* eventData)
-{}
+{
+				// which means battle ends
+				UKBEventData_onSyncBattleResult* syncBattleResultData = Cast<UKBEventData_onSyncBattleResult>(eventData);
+				
+}
 
 void ACoreCardGameModeBase::onSyncChangeHandCardSuccess(const UKBEventData* eventData)
 {
@@ -392,16 +507,23 @@ void ACoreCardGameModeBase::onSyncLatestBattleState(const UKBEventData* eventDat
 {
 				// Compare current operation sequence
 				const UKBEventData_onSyncLatestBattleState* latestBattleStateData = Cast<UKBEventData_onSyncLatestBattleState>(eventData);
-				if (receiveActionSequence < latestBattleStateData->curActionSequence)
+				if (receiveActionSequence < latestBattleStateData->curActionSequence ||
+								receiveSwitchControllerSequence != latestBattleStateData->curSwitchControllerSequence ||
+								receiveControllerNb != latestBattleStateData->curControllerNb)
 				{
 								// which means client got information latency or information loss
 								// we should use sync information for battle recovering
-								
+								CalibrateGridInfos(latestBattleStateData->updateGridInfos);
+								CalibratePlayerCardInfos(latestBattleStateData->cardList, latestBattleStateData->handCardList);
+								CalibrateCurrentGlobalInfo(latestBattleStateData->curActionSequence, latestBattleStateData->curSwitchControllerSequence, latestBattleStateData->curControllerNb);
 				}
 }
 
 void ACoreCardGameModeBase::onSyncResumeBattle(const UKBEventData* eventData)
-{}
+{
+				// which means server has finished switch controller interlude
+				// restart counting again
+}
 
 void ACoreCardGameModeBase::onSyncUpdateSelectedCards(const UKBEventData* eventData)
 {
@@ -446,7 +568,8 @@ void ACoreCardGameModeBase::onSyncUpdateSelectedCards(const UKBEventData* eventD
 
 void ACoreCardGameModeBase::onSyncRoomStartBattle(const UKBEventData* eventData)
 {
-
+				// when this message is received, it means server passes card selection interlude
+				// this only means that we could spawn time count down slider on UI menu
 }
 
 void ACoreCardGameModeBase::onSyncSelectCardInterlude(const UKBEventData* eventData)
@@ -458,7 +581,10 @@ void ACoreCardGameModeBase::onSyncSelectCardInterlude(const UKBEventData* eventD
 }
 
 void ACoreCardGameModeBase::onSyncSwitchController(const UKBEventData* eventData)
-{}
+{
+				const UKBEventData_onSyncSwitchController* switchControllerData = Cast<UKBEventData_onSyncSwitchController>(eventData);
+				if (switchControllerData->controllerNb - )
+}
 
 void ACoreCardGameModeBase::onSyncTimeInterval(const UKBEventData* eventData)
 {}

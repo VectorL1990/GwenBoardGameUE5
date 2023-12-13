@@ -58,6 +58,9 @@ public:
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<AActor> boardGridBPClass;
 
+    UPROPERTY(EditDefaultsOnly)
+    float gridSpawnCardOffset = 0.1;
+
     
 
 private:
@@ -69,6 +72,10 @@ private:
     void TriggerBattlePreparation();
 
     void CalibrateGridInfos(TArray<FBATTLE_GRID_INFO> gridInfos);
+
+    void CalibratePlayerCardInfos(TArray<FSYNC_CARD_INFO> allCardInfoList, TArray<FString> handCardUidList);
+
+    void CalibrateCurrentGlobalInfo(int32 curActionSequence, int32 curSwitchControllerSequence, uint8 curControllerNb);
 
     // --- Account req functions
     void ReqEnterRoom();
@@ -91,8 +98,6 @@ private:
     void onReceiveUpdateCoreGame(const UKBEventData* eventData);
 
     void onUpdateGridInfoList(const UKBEventData* eventData);
-
-    void onStopCardSelection(const UKBEventData* eventData);
 
     void onSyncBattleResult(const UKBEventData* eventData);
 
@@ -135,7 +140,9 @@ private:
 
     float curCountingTick = 0.0;
 
-    int32 curReceiveUpdateId = 0;
+    uint8 receiveControllerNb = 0;
+
+    int32 receiveSwitchControllerSequence = 0;
 
     UPROPERTY(EditAnywhere)
         TMap<CameraType, ABattleCamera*> camerasMap;

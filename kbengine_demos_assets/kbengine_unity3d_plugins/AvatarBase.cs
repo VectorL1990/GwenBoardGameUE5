@@ -30,17 +30,16 @@ namespace KBEngine
 		public UInt32 utype = 0;
 		public virtual void onUtypeChanged(UInt32 oldValue) {}
 
-		public abstract void onStopCardSelection(); 
 		public abstract void onSyncBattleResult(STRING_LIST arg1); 
 		public abstract void onSyncChangeHandCardSuccess(Byte arg1, string arg2, string arg3); 
 		public abstract void onSyncExhaustCardReplacement(); 
 		public abstract void onSyncHeartBeat(Int32 arg1); 
 		public abstract void onSyncLatestBattleState(CORE_UPDATE_BATLLE_INFO arg1); 
 		public abstract void onSyncPlayerBattleInfo(SYNC_PLAYER_BATTLE_INFO arg1); 
-		public abstract void onSyncResumeBattle(Byte arg1); 
+		public abstract void onSyncResumeBattle(Int32 arg1); 
 		public abstract void onSyncRoomStartBattle(); 
 		public abstract void onSyncSelectCardInterlude(SYNC_PLAYER_BATTLE_INFO arg1); 
-		public abstract void onSyncSwitchController(Byte arg1, UInt64 arg2); 
+		public abstract void onSyncSwitchController(Int32 arg1, UInt64 arg2); 
 		public abstract void onSyncTimeInterval(SYNC_BATTLE_TIME_INFO arg1); 
 		public abstract void onSyncUpdateSelectedCards(Byte arg1, SYNC_PLAYER_BATTLE_INFO arg2); 
 
@@ -134,10 +133,7 @@ namespace KBEngine
 
 			switch(method.methodUtype)
 			{
-				case 16:
-					onStopCardSelection();
-					break;
-				case 23:
+				case 22:
 					STRING_LIST onSyncBattleResult_arg1 = ((DATATYPE_STRING_LIST)method.args[0]).createFromStreamEx(stream);
 					onSyncBattleResult(onSyncBattleResult_arg1);
 					break;
@@ -150,11 +146,11 @@ namespace KBEngine
 				case 12:
 					onSyncExhaustCardReplacement();
 					break;
-				case 21:
+				case 20:
 					Int32 onSyncHeartBeat_arg1 = stream.readInt32();
 					onSyncHeartBeat(onSyncHeartBeat_arg1);
 					break;
-				case 22:
+				case 21:
 					CORE_UPDATE_BATLLE_INFO onSyncLatestBattleState_arg1 = ((DATATYPE_CORE_UPDATE_BATLLE_INFO)method.args[0]).createFromStreamEx(stream);
 					onSyncLatestBattleState(onSyncLatestBattleState_arg1);
 					break;
@@ -162,23 +158,23 @@ namespace KBEngine
 					SYNC_PLAYER_BATTLE_INFO onSyncPlayerBattleInfo_arg1 = ((DATATYPE_SYNC_PLAYER_BATTLE_INFO)method.args[0]).createFromStreamEx(stream);
 					onSyncPlayerBattleInfo(onSyncPlayerBattleInfo_arg1);
 					break;
-				case 20:
-					Byte onSyncResumeBattle_arg1 = stream.readUint8();
+				case 19:
+					Int32 onSyncResumeBattle_arg1 = stream.readInt32();
 					onSyncResumeBattle(onSyncResumeBattle_arg1);
 					break;
 				case 15:
 					onSyncRoomStartBattle();
 					break;
-				case 18:
+				case 17:
 					SYNC_PLAYER_BATTLE_INFO onSyncSelectCardInterlude_arg1 = ((DATATYPE_SYNC_PLAYER_BATTLE_INFO)method.args[0]).createFromStreamEx(stream);
 					onSyncSelectCardInterlude(onSyncSelectCardInterlude_arg1);
 					break;
-				case 19:
-					Byte onSyncSwitchController_arg1 = stream.readUint8();
+				case 18:
+					Int32 onSyncSwitchController_arg1 = stream.readInt32();
 					UInt64 onSyncSwitchController_arg2 = stream.readUint64();
 					onSyncSwitchController(onSyncSwitchController_arg1, onSyncSwitchController_arg2);
 					break;
-				case 17:
+				case 16:
 					SYNC_BATTLE_TIME_INFO onSyncTimeInterval_arg1 = ((DATATYPE_SYNC_BATTLE_TIME_INFO)method.args[0]).createFromStreamEx(stream);
 					onSyncTimeInterval(onSyncTimeInterval_arg1);
 					break;

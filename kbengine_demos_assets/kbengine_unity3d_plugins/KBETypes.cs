@@ -1615,6 +1615,8 @@ namespace KBEngine
 		public Byte hp = 0;
 		public Byte defence = 0;
 		public Byte agility = 0;
+		public List<string> tags = new List<string>();
+		public List<string> stateTags = new List<string>();
 
 	}
 
@@ -1626,6 +1628,7 @@ namespace KBEngine
 		public Byte defence = 0;
 		public Byte agility = 0;
 		public List<string> tags = new List<string>();
+		public List<string> stateTags = new List<string>();
 
 	}
 
@@ -1638,6 +1641,9 @@ namespace KBEngine
 
 	public class CORE_UPDATE_BATLLE_INFO
 	{
+		public Int32 curSwitchControllerSequence = 0;
+		public Byte curControllerNb = 0;
+		public UInt64 curControllerAvatarId = 0;
 		public Int32 curActionSequence = 0;
 		public List<BATTLE_GRID_INFO> updateList = new List<BATTLE_GRID_INFO>();
 		public SYNC_PLAYER_BATTLE_INFO playerInfo = new SYNC_PLAYER_BATTLE_INFO();

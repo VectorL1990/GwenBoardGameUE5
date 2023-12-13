@@ -25,7 +25,6 @@ namespace KBEngine
 
         virtual void OnTeamData(uint8 arg1, const TArray<uint64>& arg2) {}
     public:
-        virtual void onStopCardSelection() override;
         virtual void onSyncBattleResult(const STRING_LIST& losePlayerList) override;
         virtual void onSyncChangeHandCardSuccess(uint8 changeCardNb, const FString& changeHandCardKey, const FString& pileCardKey) override;
         virtual void onSyncExhaustCardReplacement() override;

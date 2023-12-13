@@ -85,6 +85,7 @@ namespace KBEngine
             syncCardInfo.defence = param.cardList[i].defence;
             syncCardInfo.agility = param.cardList[i].agility;
             syncCardInfo.tags = param.cardList[i].tags;
+            syncCardInfo.stateTags = param.cardList[i].stateTags;
             eventData->cardList.Add(syncCardInfo);
         }
         eventData->handCardList = param.handCardList;
@@ -97,12 +98,6 @@ namespace KBEngine
         UKBEventData_onSyncResumeBattle* eventData = NewObject<UKBEventData_onSyncResumeBattle>();
         eventData->controllerNb = controllerNb;
         KBENGINE_EVENT_FIRE("onSyncResumeBattle", eventData);
-    }
-
-    void Avatar::onStopCardSelection()
-    {
-        UKBEventData* eventData = NewObject<UKBEventData>();
-        KBENGINE_EVENT_FIRE("onStopCardSelection", eventData);
     }
 
     void Avatar::onSyncBattleResult(const STRING_LIST& losePlayerList)
@@ -137,7 +132,10 @@ namespace KBEngine
     void Avatar::onSyncLatestBattleState(const CORE_UPDATE_BATLLE_INFO& battleInfo)
     {
         UKBEventData_onSyncLatestBattleState* eventData = NewObject<UKBEventData_onSyncLatestBattleState>();
-        eventData->curBattleTick = battleInfo.curActionSequence;
+        eventData->curSwitchControllerSequence = battleInfo.curSwitchControllerSequence;
+        eventData->curControllerNb = battleInfo.curControllerNb;
+        eventData->curControllerAvatarId = FString::Printf(TEXT("%lld"), battleInfo.curControllerAvatarId);
+        eventData->curActionSequence = battleInfo.curActionSequence;
         for (int32 i = 0; i < battleInfo.updateList.Num(); i++)
         {
             FBATTLE_GRID_INFO gridInfo;
@@ -146,6 +144,8 @@ namespace KBEngine
             gridInfo.hp = battleInfo.updateList[i].hp;
             gridInfo.defence = battleInfo.updateList[i].defence;
             gridInfo.agility = battleInfo.updateList[i].agility;
+            gridInfo.tags = battleInfo.updateList[i].tags;
+            gridInfo.stateTags = battleInfo.updateList[i].stateTags;
             eventData->updateGridInfos.Add(gridInfo);
         }
         for (int32 i = 0; i < battleInfo.playerInfo.cardList.Num(); i++)
@@ -157,6 +157,7 @@ namespace KBEngine
             cardInfo.defence = battleInfo.playerInfo.cardList[i].defence;
             cardInfo.agility = battleInfo.playerInfo.cardList[i].agility;
             cardInfo.tags = battleInfo.playerInfo.cardList[i].tags;
+            cardInfo.stateTags = battleInfo.playerInfo.cardList[i].stateTags;
             eventData->cardList.Add(cardInfo);
         }
         eventData->handCardList = battleInfo.playerInfo.handCardList;
@@ -176,6 +177,7 @@ namespace KBEngine
             syncCardInfo.defence = allCardInfos.cardList[i].defence;
             syncCardInfo.agility = allCardInfos.cardList[i].agility;
             syncCardInfo.tags = allCardInfos.cardList[i].tags;
+            syncCardInfo.stateTags = allCardInfos.cardList[i].stateTags;
             eventData->cardList.Add(syncCardInfo);
         }
         eventData->handCardList = allCardInfos.handCardList;
@@ -200,6 +202,7 @@ namespace KBEngine
             syncCardInfo.defence = playerInfo.cardList[i].defence;
             syncCardInfo.agility = playerInfo.cardList[i].agility;
             syncCardInfo.tags = playerInfo.cardList[i].tags;
+            syncCardInfo.stateTags = playerInfo.cardList[i].stateTags;
         }
         eventData->handCardList = playerInfo.handCardList;
         KBENGINE_EVENT_FIRE("onSyncSelectCardInterlude", eventData);

@@ -67,11 +67,12 @@ class Avatar(KBEngine.Proxy,
 		for k, v in self.allCardDict.items():
 			cardInfo = {
 				"cardKey": k,
-				"cardName": v["CardName"],
-				"hp": v["Hp"],
-				"defence": v["Defence"],
-				"agility": v["Agility"],
-				"tags": v["Tags"],
+				"cardName": v["cardName"],
+				"hp": v["hp"],
+				"defence": v["defence"],
+				"agility": v["agility"],
+				"tags": v["tags"],
+				"stateTags": v["stateTags"]
 			}
 			allCardList.append(cardInfo)
 
@@ -93,11 +94,12 @@ class Avatar(KBEngine.Proxy,
 		for k, v in self.allCardDict.items():
 			cardInfo = {
 				"cardKey": k,
-				"cardName": v["CardName"],
-				"hp": v["Hp"],
-				"defence": v["Defence"],
-				"agility": v["Agility"],
-				"tags": v["Tags"],
+				"cardName": v["cardName"],
+				"hp": v["hp"],
+				"defence": v["defence"],
+				"agility": v["agility"],
+				"tags": v["tags"],
+				"stateTags": v["stateTags"]
 			}
 			allCardList.append(cardInfo)
 
@@ -133,11 +135,12 @@ class Avatar(KBEngine.Proxy,
 		for k, v in self.allCardDict.items():
 			cardInfo = {
 				"cardKey": k,
-				"cardName": v["CardName"],
-				"hp": v["Hp"],
-				"defence": v["Defence"],
-				"agility": v["Agility"],
-				"tags": v["Tags"],
+				"cardName": v["cardName"],
+				"hp": v["hp"],
+				"defence": v["defence"],
+				"agility": v["agility"],
+				"tags": v["tags"],
+				"stateTags": v["stateTags"]
 			}
 			allCardList.append(cardInfo)
 
@@ -179,11 +182,12 @@ class Avatar(KBEngine.Proxy,
 		for k, v in self.allCardDict.items():
 			cardInfo = {
 				"cardKey": k,
-				"cardName": v["CardName"],
-				"hp": v["Hp"],
-				"defence": v["Defence"],
-				"agility": v["Agility"],
-				"tags": v["Tags"],
+				"cardName": v["cardName"],
+				"hp": v["hp"],
+				"defence": v["defence"],
+				"agility": v["agility"],
+				"tags": v["tags"],
+				"stateTags": v["stateTags"]
 			}
 			allCardList.append(cardInfo)
 

@@ -116,6 +116,12 @@
 			<agility>
 				<Type> UINT8 </Type>
 			</agility>
+			<tags>
+				<Type> ARRAY <of> STRING </of> </Type>
+			</tags>
+			<stateTags>
+				<Type> ARRAY <of> STRING </of> </Type>
+			</stateTags>
 		</Properties>
 	</BATTLE_GRID_INFO>
 
@@ -139,6 +145,9 @@
 			<tags>
 				<Type> ARRAY <of> STRING </of> </Type>
 			</tags>
+			<stateTags>
+				<Type> ARRAY <of> STRING </of> </Type>
+			</stateTags>
 		</Properties>
 	</SYNC_CARD_INFO>
 
@@ -155,6 +164,15 @@
 
 	<CORE_UPDATE_BATLLE_INFO> FIXED_DICT
 		<Properties>
+			<curSwitchControllerSequence>
+				<Type> INT32 </Type>
+			</curSwitchControllerSequence>
+			<curControllerNb>
+				<Type> UINT8 </Type>
+			</curControllerNb>
+			<curControllerAvatarId>
+				<Type> UINT64 </Type>
+			</curControllerAvatarId>
 			<curActionSequence>
 				<Type> INT32 </Type>
 			</curActionSequence>

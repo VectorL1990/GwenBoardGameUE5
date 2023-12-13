@@ -128,6 +128,8 @@ void DATATYPE_BATTLE_GRID_INFO::createFromStreamEx(MemoryStream& stream, BATTLE_
 	datas.hp = stream.readUint8();
 	datas.defence = stream.readUint8();
 	datas.agility = stream.readUint8();
+	tags_DataType.createFromStreamEx(stream, datas.tags);
+	stateTags_DataType.createFromStreamEx(stream, datas.stateTags);
 }
 
 void DATATYPE_BATTLE_GRID_INFO::addToStreamEx(Bundle& stream, const BATTLE_GRID_INFO& v)
@@ -137,6 +139,8 @@ void DATATYPE_BATTLE_GRID_INFO::addToStreamEx(Bundle& stream, const BATTLE_GRID_
 	stream.writeUint8(v.hp);
 	stream.writeUint8(v.defence);
 	stream.writeUint8(v.agility);
+	tags_DataType.addToStreamEx(stream, v.tags);
+	stateTags_DataType.addToStreamEx(stream, v.stateTags);
 }
 
 void DATATYPE_SYNC_CARD_INFO::createFromStreamEx(MemoryStream& stream, SYNC_CARD_INFO& datas)
@@ -147,6 +151,7 @@ void DATATYPE_SYNC_CARD_INFO::createFromStreamEx(MemoryStream& stream, SYNC_CARD
 	datas.defence = stream.readUint8();
 	datas.agility = stream.readUint8();
 	tags_DataType.createFromStreamEx(stream, datas.tags);
+	stateTags_DataType.createFromStreamEx(stream, datas.stateTags);
 }
 
 void DATATYPE_SYNC_CARD_INFO::addToStreamEx(Bundle& stream, const SYNC_CARD_INFO& v)
@@ -157,6 +162,7 @@ void DATATYPE_SYNC_CARD_INFO::addToStreamEx(Bundle& stream, const SYNC_CARD_INFO
 	stream.writeUint8(v.defence);
 	stream.writeUint8(v.agility);
 	tags_DataType.addToStreamEx(stream, v.tags);
+	stateTags_DataType.addToStreamEx(stream, v.stateTags);
 }
 
 void DATATYPE_SYNC_PLAYER_BATTLE_INFO::createFromStreamEx(MemoryStream& stream, SYNC_PLAYER_BATTLE_INFO& datas)
@@ -173,6 +179,9 @@ void DATATYPE_SYNC_PLAYER_BATTLE_INFO::addToStreamEx(Bundle& stream, const SYNC_
 
 void DATATYPE_CORE_UPDATE_BATLLE_INFO::createFromStreamEx(MemoryStream& stream, CORE_UPDATE_BATLLE_INFO& datas)
 {
+	datas.curSwitchControllerSequence = stream.readInt32();
+	datas.curControllerNb = stream.readUint8();
+	datas.curControllerAvatarId = stream.readUint64();
 	datas.curActionSequence = stream.readInt32();
 	updateList_DataType.createFromStreamEx(stream, datas.updateList);
 	playerInfo_DataType.createFromStreamEx(stream, datas.playerInfo);
@@ -180,6 +189,9 @@ void DATATYPE_CORE_UPDATE_BATLLE_INFO::createFromStreamEx(MemoryStream& stream, 
 
 void DATATYPE_CORE_UPDATE_BATLLE_INFO::addToStreamEx(Bundle& stream, const CORE_UPDATE_BATLLE_INFO& v)
 {
+	stream.writeInt32(v.curSwitchControllerSequence);
+	stream.writeUint8(v.curControllerNb);
+	stream.writeUint64(v.curControllerAvatarId);
 	stream.writeInt32(v.curActionSequence);
 	updateList_DataType.addToStreamEx(stream, v.updateList);
 	playerInfo_DataType.addToStreamEx(stream, v.playerInfo);

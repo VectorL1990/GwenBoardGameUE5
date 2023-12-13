@@ -273,6 +273,62 @@ namespace KBEngine
 
 	public class DATATYPE_BATTLE_GRID_INFO : DATATYPE_BASE
 	{
+		private DATATYPE__BATTLE_GRID_INFO_tags_ArrayType_ChildArray tags_DataType = new DATATYPE__BATTLE_GRID_INFO_tags_ArrayType_ChildArray();
+
+		public class DATATYPE__BATTLE_GRID_INFO_tags_ArrayType_ChildArray : DATATYPE_BASE
+		{
+			public List<string> createFromStreamEx(MemoryStream stream)
+			{
+				UInt32 size = stream.readUint32();
+				List<string> datas = new List<string>();
+
+				while(size > 0)
+				{
+					--size;
+					datas.Add(stream.readString());
+				};
+
+				return datas;
+			}
+
+			public void addToStreamEx(Bundle stream, List<string> v)
+			{
+				stream.writeUint32((UInt32)v.Count);
+				for(int i=0; i<v.Count; ++i)
+				{
+					stream.writeString(v[i]);
+				};
+			}
+		}
+
+		private DATATYPE__BATTLE_GRID_INFO_stateTags_ArrayType_ChildArray stateTags_DataType = new DATATYPE__BATTLE_GRID_INFO_stateTags_ArrayType_ChildArray();
+
+		public class DATATYPE__BATTLE_GRID_INFO_stateTags_ArrayType_ChildArray : DATATYPE_BASE
+		{
+			public List<string> createFromStreamEx(MemoryStream stream)
+			{
+				UInt32 size = stream.readUint32();
+				List<string> datas = new List<string>();
+
+				while(size > 0)
+				{
+					--size;
+					datas.Add(stream.readString());
+				};
+
+				return datas;
+			}
+
+			public void addToStreamEx(Bundle stream, List<string> v)
+			{
+				stream.writeUint32((UInt32)v.Count);
+				for(int i=0; i<v.Count; ++i)
+				{
+					stream.writeString(v[i]);
+				};
+			}
+		}
+
 		public BATTLE_GRID_INFO createFromStreamEx(MemoryStream stream)
 		{
 			BATTLE_GRID_INFO datas = new BATTLE_GRID_INFO();
@@ -281,6 +337,8 @@ namespace KBEngine
 			datas.hp = stream.readUint8();
 			datas.defence = stream.readUint8();
 			datas.agility = stream.readUint8();
+			datas.tags = tags_DataType.createFromStreamEx(stream);
+			datas.stateTags = stateTags_DataType.createFromStreamEx(stream);
 			return datas;
 		}
 
@@ -291,6 +349,8 @@ namespace KBEngine
 			stream.writeUint8(v.hp);
 			stream.writeUint8(v.defence);
 			stream.writeUint8(v.agility);
+			tags_DataType.addToStreamEx(stream, v.tags);
+			stateTags_DataType.addToStreamEx(stream, v.stateTags);
 		}
 	}
 
@@ -326,6 +386,34 @@ namespace KBEngine
 			}
 		}
 
+		private DATATYPE__SYNC_CARD_INFO_stateTags_ArrayType_ChildArray stateTags_DataType = new DATATYPE__SYNC_CARD_INFO_stateTags_ArrayType_ChildArray();
+
+		public class DATATYPE__SYNC_CARD_INFO_stateTags_ArrayType_ChildArray : DATATYPE_BASE
+		{
+			public List<string> createFromStreamEx(MemoryStream stream)
+			{
+				UInt32 size = stream.readUint32();
+				List<string> datas = new List<string>();
+
+				while(size > 0)
+				{
+					--size;
+					datas.Add(stream.readString());
+				};
+
+				return datas;
+			}
+
+			public void addToStreamEx(Bundle stream, List<string> v)
+			{
+				stream.writeUint32((UInt32)v.Count);
+				for(int i=0; i<v.Count; ++i)
+				{
+					stream.writeString(v[i]);
+				};
+			}
+		}
+
 		public SYNC_CARD_INFO createFromStreamEx(MemoryStream stream)
 		{
 			SYNC_CARD_INFO datas = new SYNC_CARD_INFO();
@@ -335,6 +423,7 @@ namespace KBEngine
 			datas.defence = stream.readUint8();
 			datas.agility = stream.readUint8();
 			datas.tags = tags_DataType.createFromStreamEx(stream);
+			datas.stateTags = stateTags_DataType.createFromStreamEx(stream);
 			return datas;
 		}
 
@@ -346,6 +435,7 @@ namespace KBEngine
 			stream.writeUint8(v.defence);
 			stream.writeUint8(v.agility);
 			tags_DataType.addToStreamEx(stream, v.tags);
+			stateTags_DataType.addToStreamEx(stream, v.stateTags);
 		}
 	}
 
@@ -464,6 +554,9 @@ namespace KBEngine
 		public CORE_UPDATE_BATLLE_INFO createFromStreamEx(MemoryStream stream)
 		{
 			CORE_UPDATE_BATLLE_INFO datas = new CORE_UPDATE_BATLLE_INFO();
+			datas.curSwitchControllerSequence = stream.readInt32();
+			datas.curControllerNb = stream.readUint8();
+			datas.curControllerAvatarId = stream.readUint64();
 			datas.curActionSequence = stream.readInt32();
 			datas.updateList = updateList_DataType.createFromStreamEx(stream);
 			datas.playerInfo = playerInfo_DataType.createFromStreamEx(stream);
@@ -472,6 +565,9 @@ namespace KBEngine
 
 		public void addToStreamEx(Bundle stream, CORE_UPDATE_BATLLE_INFO v)
 		{
+			stream.writeInt32(v.curSwitchControllerSequence);
+			stream.writeUint8(v.curControllerNb);
+			stream.writeUint64(v.curControllerAvatarId);
 			stream.writeInt32(v.curActionSequence);
 			updateList_DataType.addToStreamEx(stream, v.updateList);
 			playerInfo_DataType.addToStreamEx(stream, v.playerInfo);
