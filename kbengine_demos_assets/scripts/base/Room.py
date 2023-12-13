@@ -127,6 +127,12 @@ class Room(KBEngine.Entity):
 			}
 			avatarEntityCall.roomReqUpdateLatestBattleInfo(coreUpdateBattleInfo)
 
+	def avatarReqPlayCardAction(self, avatarEntityCall, avatarClientActionSequence, cardUid, gridNb):
+		actionSequenceLatency = self.curActionSequence - avatarClientActionSequence
+		if actionSequenceLatency == 1:
+			# which means there's no information lost on client side
+			# find corresponding card info from card dictionary, including effects attached to this card
+
 
 	def leaveRoom(self, entityID):
 		self.onLeave(entityID)

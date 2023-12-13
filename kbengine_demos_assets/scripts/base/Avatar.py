@@ -206,6 +206,9 @@ class Avatar(KBEngine.Proxy,
 	def reqLatestBattleInfo(self):
 		self.roomEntityCall.avatarReqLatestBattleInfo(self)
 
+	def reqPlayCardAction(self, clientActionSequence, cardUid, gridNb):
+		self.roomEntityCall.avatarReqPlayCardAction(self, clientActionSequence, cardUid, gridNb)
+
 
 	#--------------------------------------------------------------------------------------------
 	#                              Callbacks

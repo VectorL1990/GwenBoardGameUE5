@@ -33,6 +33,9 @@
 
 		<reqPlayCardAction>
 			<Exposed/>
+			<Arg> INT32 </Arg>
+			<Arg> STRING </Arg>
+			<Arg> INT32 </Arg>
 		</reqPlayCardAction>
 	</BaseMethods>
 
