@@ -254,6 +254,13 @@ class Room(KBEngine.Entity):
 		# notify hall to record battle result
 
 
+	# effect dictionary should be something shown below
+	'''
+	"effects":{
+    "Burst": {"launchType": "auto", "selfTarget": False, "prereqs":{"beingHurt": [1]}, "effectValues": [1]},
+		"FenceDevour": {"launchType": "assign", "selfTarget": False, "prereqs":{}, "effectValues": [0]}
+	}
+	'''
 	def launchEffect(self, targetGrid, launchGrid, effectInfo):
 		if effectInfo["auto"] == True:
 			if effectInfo["selfTarget"] == False:
