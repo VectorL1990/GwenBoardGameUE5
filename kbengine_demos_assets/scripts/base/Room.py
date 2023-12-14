@@ -83,6 +83,7 @@ class Room(KBEngine.Entity):
 					"stateTags": []
 				}
 				self.uniqueCardDict[cardKey] = avatarEntityCall.allCardDict[cardKey]
+				self.uniqueCardDict[cardKey]["avatarId"] = avatarEntityCall.id
 
 
 	def avatarFinishSelectCards(self, avatarEntityCall):
@@ -254,14 +255,39 @@ class Room(KBEngine.Entity):
 		# notify hall to record battle result
 
 
+	def getGridRowAndCol(self, gridNb):
+		col = gridNb % GlobalConst.g_boardColumn
+		row = gridNb / GlobalConst.g_boardColumn
+		rc = [row, col]
+		return rc
+
+
 	# effect dictionary should be something shown below
 	'''
 	"effects":{
-    "Burst": {"launchType": "auto", "selfTarget": False, "prereqs":{"beingHurt": [1]}, "effectValues": [1]},
-		"FenceDevour": {"launchType": "assign", "selfTarget": False, "prereqs":{}, "effectValues": [0]}
+		"Burst": {"launchType": "auto", "countDown": 3, "once": True, "selfTarget": False, "prereqs":{"beingHurt": [1]}, "effectValues": {"values":[1], "type":"cross"}},
+		"FenceDevour": {"launchType": "assign", "countDown": 1, "once": True, "selfTarget": False, "prereqs":{}, "effectValues": {"values":[0]}}
 	}
 	'''
-	def launchEffect(self, targetGrid, launchGrid, effectInfo):
+	def launchEffect(self, launchAvatarId, targetGrid, launchGrid, effectName, effectInfo):
+		if effectName == "FormationVShoot":
+			# if card occupied target grid is not enermy, action fails
+			cardInfo = self.uniqueCardDict[self.gridInfoDict[targetGrid]["cardUid"]]
+			# effect is only allowed on oppo side cards
+			if cardInfo["avatarId"] != launchAvatarId:
+				launchGridRC = getGridRowAndCol(launchGrid)
+				targetGridRC = getGridRowAndCol(targetGrid)
+				rowOffset = targetGridRC[0] - launchGridRC[0]
+				colOffset = targetGridRC[1] - launchGridRC[1]
+				direction = [rowOffset, colOffset]
+				if direction[0] != 0 and direction[1] != 0:
+					# which means target grid is not the lined up to launch grid, which is not permitted
+					distance = abs(rowOffset) + abs(colOffset)
+					if effectInfo["effectValues"]["distance"] <= distance:
+						# target grid is within attack distance, which allows skill launch
+						# now we should tell whether formation
+
+
 		if effectInfo["auto"] == True:
 			if effectInfo["selfTarget"] == False:
 				for gridNb in self.gridInfoDict:
@@ -284,7 +310,7 @@ class Room(KBEngine.Entity):
 			allPrereqsSatisfied = True
 			if effectInfo.has_key("prereqs"):
 				for prereqKey in effectInfo["prereqs"]:
-					astisfied = checkPrerequisites(targetGrid, launchGrid, effectInfo)
+					satisfied = checkPrerequisites(targetGrid, launchGrid, effectInfo)
 					if satisfied == False:
 						allPrereqsSatisfied = False
 						break

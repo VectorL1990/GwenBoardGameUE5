@@ -120,10 +120,24 @@
 				<Type> ARRAY <of> STRING </of> </Type>
 			</tags>
 			<stateTags>
-				<Type> ARRAY <of> STRING </of> </Type>
+				<Type> ARRAY <of> STATE_INFO </of> </Type>
 			</stateTags>
 		</Properties>
 	</BATTLE_GRID_INFO>
+
+	<STATE_INFO>
+		<Properties>
+			<state>
+				<Type> STRING </Type>
+			</state>
+			<stipulation>
+				<Type> UINT8 </Type>
+			</stipulation>
+			<curCount>
+				<Type> UINT8 </Type>
+			</curCount>
+		</Properties>
+	</STATE_INFO>
 
 	<SYNC_CARD_INFO> FIXED_DICT
 		<Properties>
@@ -146,7 +160,7 @@
 				<Type> ARRAY <of> STRING </of> </Type>
 			</tags>
 			<stateTags>
-				<Type> ARRAY <of> STRING </of> </Type>
+				<Type> ARRAY <of> STATE_INFO </of> </Type>
 			</stateTags>
 		</Properties>
 	</SYNC_CARD_INFO>
