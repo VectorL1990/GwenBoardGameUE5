@@ -260,8 +260,18 @@ class Room(KBEngine.Entity):
 		row = gridNb / GlobalConst.g_boardColumn
 		rc = [row, col]
 		return rc
+	
+	def getGridNbByRowAndCol(self, row, col):
+		if row < 0 or row > 2*GlobalConst.g_boardHalfRow:
+			return -1
+		elif col < 0 or col > GlobalConst.g_boardColumn:
+			return -1
+		else:
+			return row*GlobalConst.g_boardColumn + col
 
-
+	def calculateCardHp(self, cardUid, hurt):
+		sdf
+		
 	# effect dictionary should be something shown below
 	'''
 	"effects":{
@@ -285,7 +295,32 @@ class Room(KBEngine.Entity):
 					distance = abs(rowOffset) + abs(colOffset)
 					if effectInfo["effectValues"]["distance"] <= distance:
 						# target grid is within attack distance, which allows skill launch
-						# now we should tell whether formation
+						# now we should tell whether formation is formed
+						isFormed = True
+						if rowOffset < 0:
+							# which means it goes to negative x direction, we should search negative x
+							checkLDGrid = getGridNbByRowAndCol(launchGridRC[0] - 1, launchGridRC[1] - 1)
+							checkLTGrid = getGridNbByRowAndCol(launchGridRC[0] + 1, launchGridRC[1] - 1)
+							if checkLDGrid == -1 or checkLTGrid == -1:
+								isFormed = False
+						elif rowOffset > 0:
+							checkRDGrid = getGridNbByRowAndCol(launchGridRC[0] - 1, launchGridRC[1] + 1)
+							checkRTGrid = getGridNbByRowAndCol(launchGridRC[0] + 1, launchGridRC[1] + 1)
+							if checkRDGrid == -1 or checkRTGrid == -1:
+								isFormed = False
+						elif colOffset < 0:
+							checkLDGrid = getGridNbByRowAndCol(launchGridRC[0] - 1, launchGridRC[1] - 1)
+							checkRDGrid = getGridNbByRowAndCol(launchGridRC[0] - 1, launchGridRC[1] + 1)
+							if checkLDGrid == -1 or checkRDGrid == -1:
+								isFormed = False
+						elif colOffset > 0:
+							checkLTGrid = getGridNbByRowAndCol(launchGridRC[0] + 1, launchGridRC[1] - 1)
+							checkRTGrid = getGridNbByRowAndCol(launchGridRC[0] + 1, launchGridRC[1] + 1)
+							if checkLTGrid == -1 or checkRTGrid == -1:
+								isFormed = False
+						if isFormed == True:
+							# which means v formation is formed
+							
 
 
 		if effectInfo["auto"] == True:
