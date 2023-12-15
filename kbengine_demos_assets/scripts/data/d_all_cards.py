@@ -18,7 +18,7 @@ datas={"OldManInMountain": {'hp': 4, 'defence': 60, 'agility': 5, 'tags': [],
 	}, 
 	"BlackGuard": {'hp': 4, 'defence': 60, 'agility': 5, 'tags': [],
 		"effects":{
-			"FormationV": {"launchType": "assign", "countDown": 1, "once": True, "selfTarget": False, "prereqs":{}, "effectValues": {"values": 2, "distance": 0}}
+			"FormationV": {"launchType": "assign", "countDown": 1, "once": True, "selfTarget": False, "prereqs":{}, "effectValues": {"value": 2, "distance": 0}}
 		}
 	}, 
 	"PhoenixChariot": {'hp': 4, 'defence': 60, 'agility': 5, 'tags': [],

@@ -6,6 +6,7 @@ import time
 from KBEDebug import *
 import GlobalConst
 from d_all_cards import allDatas
+from d_effects import effect_dict
 
 class Room(KBEngine.Entity):
 	def __init__(self):
@@ -270,7 +271,18 @@ class Room(KBEngine.Entity):
 			return row*GlobalConst.g_boardColumn + col
 
 	def calculateCardHp(self, cardUid, hurt):
-		sdf
+		# return dead or not
+		if hurt <= self.uniqueCardDict[cardUid]["defence"]:
+			self.uniqueCardDict[cardUid]["defence"] -= hurt
+			return False
+		else:
+			overflow = hurt - self.uniqueCardDict[cardUid]["defence"]
+			if overflow < self.uniqueCardDict[cardUid]["hp"]:
+				self.uniqueCardDict[cardUid]["hp"] -= overflow
+				return False
+			else:
+				self.uniqueCardDict[cardUid]["hp"] = 0
+				return True
 		
 	# effect dictionary should be something shown below
 	'''
@@ -320,6 +332,16 @@ class Room(KBEngine.Entity):
 								isFormed = False
 						if isFormed == True:
 							# which means v formation is formed
+							self.calculateCardHp(self.gridInfoDict[targetGrid]["cardUid"], effectInfo["effectValues"]["values"])
+							return True
+						else:
+							return False
+					else:
+						return False
+				else:
+					return False
+			else:
+				return False
 							
 
 
