@@ -122,6 +122,9 @@
 			<stateTags>
 				<Type> ARRAY <of> STATE_INFO </of> </Type>
 			</stateTags>
+			<avatarId>
+				<Type> UINT64 </Type>
+			</avatarId>
 		</Properties>
 	</BATTLE_GRID_INFO>
 

@@ -13,12 +13,13 @@ datas={"OldManInMountain": {'hp': 4, 'defence': 60, 'agility': 5, 'tags': [],
 	}, 
 	"ThirteenSuicideSquad": {'hp': 4, 'defence': 60, 'agility': 5, 'tags': [],
 		"effects":{
-			"Hurt": {"launchType": "assign", "countDown": 1, "once": True, "selfTarget": False, "prereqs":{}, "effectValues": {"values": [1], "stipulation": 0}}
+			"Hurt": {"launchType": "assign", "countDown": 1, "once": True, "selfTarget": False, "prereqs":{}, "effectValues": {"values": [1], "stipulation": 0}},
+            "TagByHurt": {"launchType": "passive", "countDown": 0, "once": False, "selfTarget": False, "prereqs":{"triggerEffectType": "hurt", "triggerValue": 1}, "effectValues": {"tag": "forbear"}}
 		}
 	}, 
 	"BlackGuard": {'hp': 4, 'defence': 60, 'agility': 5, 'tags': [],
 		"effects":{
-			"FormationV": {"launchType": "assign", "countDown": 1, "once": True, "selfTarget": False, "prereqs":{}, "effectValues": {"value": 2, "distance": 0}}
+			"FormationVShoot": {"launchType": "assign", "countDown": 1, "once": True, "selfTarget": False, "prereqs":{}, "effectValues": {"value": 2, "distance": 0}}
 		}
 	}, 
 	"PhoenixChariot": {'hp': 4, 'defence': 60, 'agility': 5, 'tags': [],

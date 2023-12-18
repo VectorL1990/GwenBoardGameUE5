@@ -52,20 +52,6 @@ class Room(KBEngine.Entity):
 		self.battleState = GlobalConst.g_battleState.WAIT_AVATAR_ENTER_ROOM
 		self.addTimer(0.0, 1.0, 1.0)
 
-	def playAction(self, entityCall, actionInfo):
-		if actionInfo["actionType"] == "playCard":
-			if self.gridInfoDict.has_key(actionInfo["targetGridNb"]):
-        # this action is not allowed, grid already occupied
-				return
-			else:
-        # add this card to dictionary
-        # calculate card effect
-				playCardAction()
-				self.avatars[entityCall.id].playCardCallback()
-		elif actionInfo["actionType"] == "assignEffectTarget":
-			# calcualte effect in this place
-			return
-
 	def avatarEnterRoom(self, avatarEntityCall):
 		if avatarEntityCall.id not in self.avatars:
 			self.avatars[avatarEntityCall.id] = avatarEntityCall
@@ -115,7 +101,8 @@ class Room(KBEngine.Entity):
 					"defence": v["defence"],
 					"agility": v["agility"],
 					"tags": v["tags"],
-					"stateTags": v["stateTags"]
+					"stateTags": v["stateTags"],
+					"avatarId": v["avatarId"]
 				}
 				allGridInfo.append(battleGridInfo)
 
@@ -129,11 +116,20 @@ class Room(KBEngine.Entity):
 			}
 			avatarEntityCall.roomReqUpdateLatestBattleInfo(coreUpdateBattleInfo)
 
+	# launchEffect(self, launchAvatarId, targetGrid, launchGrid, effectName, effectInfo)
 	def avatarReqPlayCardAction(self, avatarEntityCall, avatarClientActionSequence, cardUid, gridNb):
 		actionSequenceLatency = self.curActionSequence - avatarClientActionSequence
 		if actionSequenceLatency == 1:
 			# which means there's no information lost on client side
 			# find corresponding card info from card dictionary, including effects attached to this card
+			cardName = self.uniqueCardDict[cardUid]
+			if cardName in allDatas["allCards"]:
+				cardInfo = allDatas["allCards"][cardName]
+
+				for k, v in cardInfo["effects"].items():
+					if v["launchType"] == "auto":
+						# which means this card contains an effect which launches automatically
+						self.launchEffect(avatarEntityCall.id, -1, gridNb, k, v)
 
 
 	def leaveRoom(self, entityID):
@@ -224,20 +220,6 @@ class Room(KBEngine.Entity):
 			del self.avatars[entityID]
 
 
-	def playCardAction(self, targetGrid, playCardInfoDict):
-		if self.gridInfoDict.has_key(targetGrid):
-			# which means this grid is occupied
-			return 0
-		else:
-			if playCardInfoDict.has_key("autoEffects"):
-				for effectKey in playCardInfoDict["autoEffects"]:
-					# launch every auto effect
-					launchEffect(-1, targetGrid, playCardInfoDict[effectKey])
-				return 1
-			elif playCardInfoDict.has_key("assignEffects"):
-				# which means this effect requires play to assign target
-				return 2
-
 	def updateAvatarHeartBeat(self):
 		lostAvatars = []
 		for avatar in self.avatarsHeartBeatCount:
@@ -287,92 +269,27 @@ class Room(KBEngine.Entity):
 	# effect dictionary should be something shown below
 	'''
 	"effects":{
-		"Burst": {"launchType": "auto", "countDown": 3, "once": True, "selfTarget": False, "prereqs":{"beingHurt": [1]}, "effectValues": {"values":[1], "type":"cross"}},
-		"FenceDevour": {"launchType": "assign", "countDown": 1, "once": True, "selfTarget": False, "prereqs":{}, "effectValues": {"values":[0]}}
+		"FormationV": {"launchType": "assign", "countDown": 1, "once": True, "selfTarget": False, "prereqs":{}, "effectValues": {"value": 2, "distance": 0}}
 	}
 	'''
 	def launchEffect(self, launchAvatarId, targetGrid, launchGrid, effectName, effectInfo):
-		if effectName == "FormationVShoot":
-			# if card occupied target grid is not enermy, action fails
-			cardInfo = self.uniqueCardDict[self.gridInfoDict[targetGrid]["cardUid"]]
-			# effect is only allowed on oppo side cards
-			if cardInfo["avatarId"] != launchAvatarId:
-				launchGridRC = getGridRowAndCol(launchGrid)
-				targetGridRC = getGridRowAndCol(targetGrid)
-				rowOffset = targetGridRC[0] - launchGridRC[0]
-				colOffset = targetGridRC[1] - launchGridRC[1]
-				direction = [rowOffset, colOffset]
-				if direction[0] != 0 and direction[1] != 0:
-					# which means target grid is not the lined up to launch grid, which is not permitted
-					distance = abs(rowOffset) + abs(colOffset)
-					if effectInfo["effectValues"]["distance"] <= distance:
-						# target grid is within attack distance, which allows skill launch
-						# now we should tell whether formation is formed
-						isFormed = True
-						if rowOffset < 0:
-							# which means it goes to negative x direction, we should search negative x
-							checkLDGrid = getGridNbByRowAndCol(launchGridRC[0] - 1, launchGridRC[1] - 1)
-							checkLTGrid = getGridNbByRowAndCol(launchGridRC[0] + 1, launchGridRC[1] - 1)
-							if checkLDGrid == -1 or checkLTGrid == -1:
-								isFormed = False
-						elif rowOffset > 0:
-							checkRDGrid = getGridNbByRowAndCol(launchGridRC[0] - 1, launchGridRC[1] + 1)
-							checkRTGrid = getGridNbByRowAndCol(launchGridRC[0] + 1, launchGridRC[1] + 1)
-							if checkRDGrid == -1 or checkRTGrid == -1:
-								isFormed = False
-						elif colOffset < 0:
-							checkLDGrid = getGridNbByRowAndCol(launchGridRC[0] - 1, launchGridRC[1] - 1)
-							checkRDGrid = getGridNbByRowAndCol(launchGridRC[0] - 1, launchGridRC[1] + 1)
-							if checkLDGrid == -1 or checkRDGrid == -1:
-								isFormed = False
-						elif colOffset > 0:
-							checkLTGrid = getGridNbByRowAndCol(launchGridRC[0] + 1, launchGridRC[1] - 1)
-							checkRTGrid = getGridNbByRowAndCol(launchGridRC[0] + 1, launchGridRC[1] + 1)
-							if checkLTGrid == -1 or checkRTGrid == -1:
-								isFormed = False
-						if isFormed == True:
-							# which means v formation is formed
-							self.calculateCardHp(self.gridInfoDict[targetGrid]["cardUid"], effectInfo["effectValues"]["values"])
-							return True
-						else:
-							return False
-					else:
-						return False
-				else:
-					return False
+		if effectName in effect_dict:
+			resultDict = effect_dict[effectName](self.uniqueCardDict, self.gridInfoDict, self.inBattleAvatarList, launchAvatarId, targetGrid, launchGrid, effectInfo)
+			# if launch effect succesfully, settlement has been done
+			# broadcast latest operation result to all clients
+			if resultDict["success"] == True:
+				# traverse all assistant cards to trigger their passive effects
+				for assistCardUid in resultDict["assitCardUidList"]:
+					# traverse all effects attached to assist card
+					for k,v in self.uniqueCardDict[assistCardUid]["effects"]:
+						if v["launchType"] == "assitPassive":
+							# check whether this effect can be triggered
+							if v["prereqs"]["triggerEffectType"] == resultDict["triggerEffectType"]:
+								sdf
 			else:
-				return False
-							
-
-
-		if effectInfo["auto"] == True:
-			if effectInfo["selfTarget"] == False:
-				for gridNb in self.gridInfoDict:
-					if launchGrid == gridNb:
-						continue
-
-					allPrereqsSatisfied = True
-					if effectInfo.has_key("prereqs"):
-						# which means this effect requires prereqs
-						for prereqKey in effectInfo["prereqs"]:
-							satisfied= checkPrerequisites(gridNb, launchGrid, effectInfo)
-							if satisfied == False:
-								allPrereqsSatisfied = False
-								break
-					if allPrereqsSatisfied == True:
-						calculateEffect(gridNb, launchGrid, effectInfo)
-			else:
+				# if effect lauching fails, notify corresponding client
 				sdf
-		else:
-			allPrereqsSatisfied = True
-			if effectInfo.has_key("prereqs"):
-				for prereqKey in effectInfo["prereqs"]:
-					satisfied = checkPrerequisites(targetGrid, launchGrid, effectInfo)
-					if satisfied == False:
-						allPrereqsSatisfied = False
-						break
-			if allPrereqsSatisfied == True:
-				calculateEffect(targetGrid, launchGrid, effectInfo)
+
 
 	def checkPrerequisites(self, targetGrid, launchGrid, effectInfo):
 		if effectInfo["effectName"] == "injury":
@@ -385,10 +302,5 @@ class Room(KBEngine.Entity):
 				return true
 			else:
 				return false
-	
-	def calculateEffect(self, targetGrid, launchGrid, effectInfo):
-		if effectInfo["effectName"] == "fenceDevour":
-			self.gridInfoDict[targetGrid]["dead"] = True
-			self.gridInfoDict[targetGrid] = self.gridInfoDict[launchGrid]
-			del self.gridInfoDict[launchGrid]
+
 

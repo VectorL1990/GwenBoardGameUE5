@@ -1,3 +1,5 @@
+import random
+import GlobalConst
 
 def getGridRowAndCol(gridNb):
 	col = gridNb % GlobalConst.g_boardColumn
@@ -14,27 +16,38 @@ def getGridNbByRowAndCol(row, col):
 		return row*GlobalConst.g_boardColumn + col
 
 def calculateCardHp(uniqueCardDict, cardUid, hurt):
+	hurtDict = {
+		"defenceLoss": 0,
+		"hpLoss": 0
+	}
 	# return dead or not
 	if hurt <= uniqueCardDict[cardUid]["defence"]:
 		uniqueCardDict[cardUid]["defence"] -= hurt
-		return False
+		hurtDict["defenceLoss"] = hurt
+		return hurtDict
 	else:
 		overflow = hurt - uniqueCardDict[cardUid]["defence"]
+		hurtDict["defenceLoss"] = uniqueCardDict[cardUid]["defence"]
 		if overflow < uniqueCardDict[cardUid]["hp"]:
 			uniqueCardDict[cardUid]["hp"] -= overflow
-			return False
+			hurtDict["hpLoss"] = overflow
+			return hurtDict
 		else:
+			hurtDict["hpLoss"] = uniqueCardDict[cardUid]["hp"]
 			uniqueCardDict[cardUid]["hp"] = 0
-			return True
+			return hurtDict
 
 
-def FormationVShoot(uniqueCardDict, gridDictInfo, launchAvatarId, targetGrid, launchGrid, effectInfo):
+def FormationVShoot(uniqueCardDict, gridInfoDict, inBattleAvatarList, launchAvatarId, targetGrid, launchGrid, effectInfo):
 	returnDict = {
 		"success": False,
-		"assitCardUidList": []
+		"assitCardUidList": [],
+		"assistType": "formation",
+		"triggerEffectType": "hurt",
+		"triggerEffectValues": [0]
 	}
 	# if card occupied target grid is not enermy, action fails
-	cardInfo = uniqueCardDict[gridDictInfo[targetGrid]["cardUid"]]
+	cardInfo = uniqueCardDict[gridInfoDict[targetGrid]["cardUid"]]
 	# effect is only allowed on oppo side cards
 	if cardInfo["avatarId"] != launchAvatarId:
 		launchGridRC = getGridRowAndCol(launchGrid)
@@ -57,7 +70,7 @@ def FormationVShoot(uniqueCardDict, gridDictInfo, launchAvatarId, targetGrid, la
 					if checkLDGrid == -1 or checkLTGrid == -1:
 						isFormed = False
 					else:
-						if gridDictInfo[checkLDGrid]["cardUid"] != "" and gridDictInfo[checkLTGrid]["cardUid"] != "":
+						if gridInfoDict[checkLDGrid]["cardUid"] != "" and gridInfoDict[checkLTGrid]["cardUid"] != "":
 							assitCardUidList.append(gridInfoDict[checkLDGrid]["cardUid"])
 							assitCardUidList.append(gridInfoDict[checkLTGrid]["cardUid"])
 						else:
@@ -68,7 +81,7 @@ def FormationVShoot(uniqueCardDict, gridDictInfo, launchAvatarId, targetGrid, la
 					if checkRDGrid == -1 or checkRTGrid == -1:
 						isFormed = False
 					else:
-						if gridDictInfo[checkRDGrid]["cardUid"] != "" and gridDictInfo[checkRTGrid]["cardUid"] != "":
+						if gridInfoDict[checkRDGrid]["cardUid"] != "" and gridInfoDict[checkRTGrid]["cardUid"] != "":
 							assitCardUidList.append(gridInfoDict[checkRDGrid]["cardUid"])
 							assitCardUidList.append(gridInfoDict[checkRTGrid]["cardUid"])
 						else:
@@ -79,7 +92,7 @@ def FormationVShoot(uniqueCardDict, gridDictInfo, launchAvatarId, targetGrid, la
 					if checkLDGrid == -1 or checkRDGrid == -1:
 						isFormed = False
 					else:
-						if gridDictInfo[checkLDGrid]["cardUid"] != "" and gridDictInfo[checkRDGrid]["cardUid"] != "":
+						if gridInfoDict[checkLDGrid]["cardUid"] != "" and gridInfoDict[checkRDGrid]["cardUid"] != "":
 							assitCardUidList.append(gridInfoDict[checkLDGrid]["cardUid"])
 							assitCardUidList.append(gridInfoDict[checkRDGrid]["cardUid"])
 						else:
@@ -90,7 +103,7 @@ def FormationVShoot(uniqueCardDict, gridDictInfo, launchAvatarId, targetGrid, la
 					if checkLTGrid == -1 or checkRTGrid == -1:
 						isFormed = False
 					else:
-						if gridDictInfo[checkLTGrid]["cardUid"] != "" and gridDictInfo[checkRTGrid]["cardUid"] != "":
+						if gridInfoDict[checkLTGrid]["cardUid"] != "" and gridInfoDict[checkRTGrid]["cardUid"] != "":
 							assitCardUidList.append(gridInfoDict[checkLTGrid]["cardUid"])
 							assitCardUidList.append(gridInfoDict[checkRTGrid]["cardUid"])
 						else:
@@ -98,15 +111,19 @@ def FormationVShoot(uniqueCardDict, gridDictInfo, launchAvatarId, targetGrid, la
 				
 				if isFormed == True:
 					# which means v formation is formed
-					self.calculateCardHp(gridDictInfo[targetGrid]["cardUid"], effectInfo["effectValues"]["values"])
+					hurtDict = calculateCardHp(gridInfoDict[targetGrid]["cardUid"], effectInfo["effectValues"]["values"])
 					returnDict["success"] = True
 					returnDict["assitCardUidList"] = assitCardUidList
+					returnDict["triggerEffectValues"][0] = hurtDict["hpLoss"]
 	return returnDict
 
-def LineObstacleSwap(uniqueCardDict, gridInfoDict, launchAvatarId, targetGrid, launchGrid, effectInfo):
+def LineObstacleSwap(uniqueCardDict, gridInfoDict, inBattleAvatarList, launchAvatarId, targetGrid, launchGrid, effectInfo):
 	returnDict = {
 		"success": False,
-		"assitCardUidList": []
+		"assitCardUidList": [],
+		"assistType": "formation",
+		"triggerEffectType": "hurt",
+		"triggerEffectValues": [0]
 	}
 	cardInfo = uniqueCardDict[gridInfoDict[targetGrid]["cardUid"]]
 	launchGridRC = getGridRowAndCol(launchGrid)
@@ -117,7 +134,7 @@ def LineObstacleSwap(uniqueCardDict, gridInfoDict, launchAvatarId, targetGrid, l
 	if direction[0] != 0 and direction[1] != 0:
 		# which means target grid is not lined up to launch grid, which is not permitted
 		distance = abs(rowOffset) + abs(colOffset)
-		if effectInfo["effectValues"]["distance"] == 0 or effectInfo["effectValues"]["distance"] <= distance
+		if effectInfo["effectValues"]["distance"] == 0 or effectInfo["effectValues"]["distance"] <= distance:
 			# which means target grid is within effect distance
 			isFormed = True
 			isObstacle = False
@@ -206,10 +223,49 @@ def LineObstacleSwap(uniqueCardDict, gridInfoDict, launchAvatarId, targetGrid, l
 	return returnDict
 
 
+def HurtRandomOppoFirstRow(uniqueCardDict, gridInfoDict, inBattleAvatarList, launchAvatarId, targetGrid, launchGrid, effectInfo):
+	returnDict = {
+		"success": False,
+		"assitCardUidList": [],
+		"assistType": "",
+		"triggerEffectType": "hurt",
+		"triggerEffectValues": [0]
+	}
+	# find out which player launches this effect, so that we can find the oppo one
+	avatarIndex = inBattleAvatarList.index(launchAvatarId)
+	startGridIndex = 0
+	if avatarIndex == 0:
+		# which means target avatar index is 1
+		startGridIndex = GlobalConst.g_boardHalfRow * GlobalConst.g_boardColumn
+	else:
+		# which means target avatar index is 0
+		startGridIndex = (GlobalConst.g_boardHalfRow - 1) * GlobalConst.g_boardColumn
+
+	candidates = []
+	# traverse this row to find out which grid is occupied by adversary
+	for i in range(0, GlobalConst.g_boardColumn):
+		gridNb = startGridIndex + i
+		if gridInfoDict[gridNb]["avatarId"] != launchAvatarId:
+			# which means this grid belongs to opponent side
+			candidates.append(gridNb)
+
+	if len(candidates) == 0:
+		# which means there are no available targets for launching
+		returnDict["success"] = True
+		return returnDict
+	else:
+		# then choose candidate randomly
+		randomGrid = random.choice(candidates)
+		hurtDict = calculateCardHp(uniqueCardDict, gridInfoDict[randomGrid]["cardUid"], effectInfo["effectValues"]["value"])
+		returnDict["triggerEffectValues"][0] = hurtDict["hpLoss"]
+	returnDict["success"] = True
+	return returnDict
+
 
 effect_dict = {
 	'FormationVShoot': FormationVShoot,
-	'LineObstacleSwap': LineObstacleSwap
+	'LineObstacleSwap': LineObstacleSwap,
+	'HurtRandomOppoFirstRow': HurtRandomOppoFirstRow
 }
 
 #result = test_dict['test']('Alice',1,1)
