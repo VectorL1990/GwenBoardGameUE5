@@ -45,7 +45,7 @@ def TagByHurt(uniqueCardDict, gridInfoDict, inBattleAvatarList, launchAvatarId, 
 		"assistType": "",
 		"triggerEffectType": "",
 		"triggerEffectValues": []
-    }
+	}
 	if triggerEffectInfo["triggerEffectValues"][0] >= effectInfo["prereqs"]["triggerValue"]:
 		passiveReturnDict["success"] = True
 		# which means passive effect is activated
@@ -56,9 +56,7 @@ def TagByHurt(uniqueCardDict, gridInfoDict, inBattleAvatarList, launchAvatarId, 
 		
 
 passive_effect_dict = {
-	'FormationVShoot': FormationVShoot,
-	'LineObstacleSwap': LineObstacleSwap,
-	'HurtRandomOppoFirstRow': HurtRandomOppoFirstRow
+	"TagByHurt": TagByHurt
 }
 
 #result = test_dict['test']('Alice',1,1)
