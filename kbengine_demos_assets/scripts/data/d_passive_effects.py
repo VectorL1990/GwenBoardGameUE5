@@ -44,7 +44,10 @@ def TagByHurt(uniqueCardDict, gridInfoDict, inBattleAvatarList, launchAvatarId, 
 		"assitCardUidList": [],
 		"assistType": "",
 		"triggerEffectType": "",
-		"triggerEffectValues": []
+		"triggerEffectValues": [],
+		"targetUids": [],
+		"modifyGrids": [],
+		"modifyCardUids": []
 	}
 	if triggerEffectInfo["triggerEffectValues"][0] >= effectInfo["prereqs"]["triggerValue"]:
 		passiveReturnDict["success"] = True
@@ -52,6 +55,8 @@ def TagByHurt(uniqueCardDict, gridInfoDict, inBattleAvatarList, launchAvatarId, 
 		if effectInfo["effectValues"]["tag"] not in uniqueCardDict[gridInfoDict[launchGrid]["cardUid"]]:
 			# which means this card doesn't contain tag being added
 			uniqueCardDict[gridInfoDict[launchGrid]["cardUid"]]["stateTags"].append(effectInfo["effectValues"]["tag"])
+			passiveReturnDict["modifyGrids"].append(launchGrid)
+			passiveReturnDict["modifyCardUids"].append(gridInfoDict[launchGrid]["cardUid"])
 	return passiveReturnDict
 		
 

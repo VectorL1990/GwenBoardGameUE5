@@ -7,6 +7,7 @@ from KBEDebug import *
 import GlobalConst
 from d_all_cards import allDatas
 from d_effects import effect_dict
+from d_passive_effects import passive_effect_dict
 
 class Room(KBEngine.Entity):
 	def __init__(self):
@@ -67,7 +68,8 @@ class Room(KBEngine.Entity):
 					"defence": cardInfo["defence"],
 					"agility": cardInfo["agility"],
 					"tags": cardInfo["tags"],
-					"stateTags": []
+					"stateTags": [],
+					"effects": cardInfo["effects"]
 				}
 				self.uniqueCardDict[cardKey] = avatarEntityCall.allCardDict[cardKey]
 				self.uniqueCardDict[cardKey]["avatarId"] = avatarEntityCall.id
@@ -97,11 +99,6 @@ class Room(KBEngine.Entity):
 				battleGridInfo = {
 					"gridNb": k,
 					"cardUid": v["cardKey"],
-					"hp": v["curHp"],
-					"defence": v["defence"],
-					"agility": v["agility"],
-					"tags": v["tags"],
-					"stateTags": v["stateTags"],
 					"avatarId": v["avatarId"]
 				}
 				allGridInfo.append(battleGridInfo)
@@ -122,14 +119,19 @@ class Room(KBEngine.Entity):
 		if actionSequenceLatency == 1:
 			# which means there's no information lost on client side
 			# find corresponding card info from card dictionary, including effects attached to this card
-			cardName = self.uniqueCardDict[cardUid]
-			if cardName in allDatas["allCards"]:
-				cardInfo = allDatas["allCards"][cardName]
+			for k,v in self.uniqueCardDict[cardUid]["effects"].items():
+				if v["launchType"] == "auto":
+					self.launchEffect(avatarEntityCall.id, avatarClientActionSequence, -1, gridNb, k, v)
 
-				for k, v in cardInfo["effects"].items():
-					if v["launchType"] == "auto":
-						# which means this card contains an effect which launches automatically
-						self.launchEffect(avatarEntityCall.id, -1, gridNb, k, v)
+
+	def avatarReqLaunchCardSkillAction(self, avatarEntityCall, clientActionSequence, cardUid, skillName, launchGridNb, targetGridNb):
+		actionSequenceLatency = self.curActionSequence - clientActionSequence
+		if actionSequenceLatency == 1:
+			# which means there's no information lost on client side
+			if skillName in self.uniqueCardDict[cardUid]["effects"]:
+				if self.uniqueCardDict[cardUid]["effects"][skillName]["availableTimes"] >= 1:
+					# which means this skill is still available to launch
+					self.launchEffect(avatarEntityCall.id, clientActionSequence, targetGridNb, launchGridNb, skillName, self.uniqueCardDict[cardUid]["effects"][skillName])
 
 
 	def leaveRoom(self, entityID):
@@ -272,23 +274,101 @@ class Room(KBEngine.Entity):
 		"FormationV": {"launchType": "assign", "countDown": 1, "once": True, "selfTarget": False, "prereqs":{}, "effectValues": {"value": 2, "distance": 0}}
 	}
 	'''
-	def launchEffect(self, launchAvatarId, targetGrid, launchGrid, effectName, effectInfo):
+	def launchEffect(self, clientActionSequence, launchAvatarId, targetGrid, launchGrid, effectName, effectInfo):
 		if effectName in effect_dict:
 			resultDict = effect_dict[effectName](self.uniqueCardDict, self.gridInfoDict, self.inBattleAvatarList, launchAvatarId, targetGrid, launchGrid, effectInfo)
 			# if launch effect succesfully, settlement has been done
 			# broadcast latest operation result to all clients
 			if resultDict["success"] == True:
+				modifyGridIds = resultDict["modifyGrids"]
+				modifyCardUids = resultDict["modifyCardUids"]
+				# traverse all target cards to trigger their passive effects
+				for targetUid in resultDict["targetUids"]:
+					for targetPassiveEffectKey,targetPassiveEffectValue in self.uniqueCardDict[targetUid]["effects"]:
+						if targetPassiveEffectValue["launchType"] == "targetPassive":
+							if targetPassiveEffectValue["prereqs"]["triggerEffectType"] == resultDict["triggerEffectType"]:
+								if targetPassiveEffectKey in passive_effect_dict:
+									passiveEffectResultDict = passive_effect_dict[targetPassiveEffectKey]
+									(
+										self.uniqueCardDict, 
+										self.gridInfoDict, 
+										self.inBattleAvatarList, 
+										self.gridInfoDict[targetGrid]["avatarId"], 
+										launchGrid,
+										effectInfo,
+										targetPassiveEffectValue
+									)
+									if passiveEffectResultDict["success"] == True:
+										targetPassiveEffectValue["effectValues"]["isRoundEnd"] = True
+										for passiveModifyGrid in passiveEffectResultDict["modifyGrids"]:
+											if passiveModifyGrid not in modifyGridIds:
+												modifyGridIds.append(passiveModifyGrid)
+										for passiveModifyCardUid in passiveEffectResultDict["modifyCardUids"]:
+											if passiveModifyCardUid not in modifyCardUids:
+												modifyCardUids.append(passiveModifyCardUid)
 				# traverse all assistant cards to trigger their passive effects
 				for assistCardUid in resultDict["assitCardUidList"]:
 					# traverse all effects attached to assist card
-					for k,v in self.uniqueCardDict[assistCardUid]["effects"]:
-						if v["launchType"] == "assitPassive":
+					for assistPassiveEffectKey,assistPassiveEffectValue in self.uniqueCardDict[assistCardUid]["effects"]:
+						if assistPassiveEffectValue["launchType"] == "assitPassive":
 							# check whether this effect can be triggered
-							if v["prereqs"]["triggerEffectType"] == resultDict["triggerEffectType"]:
-								sdf
+							if assistPassiveEffectValue["prereqs"]["triggerEffectType"] == resultDict["triggerEffectType"]:
+								if assistPassiveEffectKey in passive_effect_dict:
+									if assistPassiveEffectKey in passive_effect_dict:
+										assistEffectResultDict = passive_effect_dict[assistPassiveEffectKey]
+										(
+											self.uniqueCardDict,
+											self.gridInfoDict,
+											self.inBattleAvatarList,
+											self.gridInfoDict[targetGrid]["avatarId"],
+											launchGrid,
+											effectInfo,
+											assistPassiveEffectValue
+										)
+										if assistEffectResultDict["success"] == True:
+											assistEffectResultDict["effectValues"]["isRoundEnd"] = True
+										for assistModifyGrid in assistEffectResultDict["modifyGrids"]:
+											if assistModifyGrid not in modifyGridIds:
+												modifyGridIds.append(assistModifyGrid)
+										for assistModifyCardUid in assistEffectResultDict["modifyCardUids"]:
+											if assistModifyCardUid not in modifyCardUids:
+												modifyCardUids.append(assistModifyCardUid)
+				# assemble all modification and notify all clients
+				syncModifyGridInfos = []
+				syncModifyCardInfos = []
+				for modifyGrid in modifyGridIds:
+					syncModifyGridInfos.append(self.gridInfoDict[modifyGrid])
+				for modifyCardUid in self.uniqueCardDict:
+					syncEffectInfos = []
+					for k,v in self.uniqueCardDict[modifyCardUid]["effects"]:
+						syncEffectInfo = {
+							"effectName": k,
+							"countDown": v["countDonw"],
+							"availableTimes": v["availableTimes"]
+						}
+						syncEffectInfos.append(syncEffectInfo)
+					syncModifyCardInfo = {
+						"cardKey": modifyCardUid,
+						"cardName": self.uniqueCardDict[modifyCardUid]["cardName"],
+						"hp": self.uniqueCardDict[modifyCardUid]["hp"],
+						"defence": self.uniqueCardDict[modifyCardUid]["defence"],
+						"agility": self.uniqueCardDict[modifyCardUid]["agility"],
+						"tags": self.uniqueCardDict[modifyCardUid]["tags"],
+						"stateTags": self.uniqueCardDict[modifyCardUid]["stateTags"],
+						"effectInfos": syncEffectInfos
+					}
+					syncModifyCardInfos.append(syncModifyCardInfo)
+				# notify all clients about latest modification
+				syncModificationInfo = {
+					"actionSequence": self.curActionSequence,
+					"updateGridList": syncModifyGridInfos,
+					"updateCardList": syncModifyCardInfos,
+				}
+				for avatar in self.avatars:
+					self.avatars[avatar].roomReqUpdateActionModification(syncModificationInfo)
 			else:
 				# if effect lauching fails, notify corresponding client
-				sdf
+				self.avatars[launchAvatarId].roomReqNotifyLaunchSkillFailed(self.curActionSequence, clientActionSequence)
 
 
 	def checkPrerequisites(self, targetGrid, launchGrid, effectInfo):

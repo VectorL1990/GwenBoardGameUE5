@@ -150,6 +150,12 @@ class Avatar(KBEngine.Proxy,
 		}
 		self.client.onSyncLatestBattleState(battleInfo)
 
+	def roomReqUpdateActionModification(self, syncModificationInfo):
+		self.client.onSyncUpdateActionInfo(syncModificationInfo)
+
+	def roomReqNotifyLaunchSkillFailed(self, curActionSequence, clientLaunchActionSequence):
+		self.client.onSyncLaunchSkillFailed(curActionSequence, clientLaunchActionSequence)
+
 	#---
 	#
 	#---
@@ -208,6 +214,9 @@ class Avatar(KBEngine.Proxy,
 
 	def reqPlayCardAction(self, clientActionSequence, cardUid, gridNb):
 		self.roomEntityCall.avatarReqPlayCardAction(self, clientActionSequence, cardUid, gridNb)
+
+	def reqLaunchCardSkill(self, clientActionSequence, cardUid, skillName, launchGridNb, targetGridNb):
+		self.roomEntityCall.avatarReqLaunchCardSkillAction(self, clientActionSequence, cardUid, skillName, launchGridNb, targetGridNb)
 
 
 	#--------------------------------------------------------------------------------------------

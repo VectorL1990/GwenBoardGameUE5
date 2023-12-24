@@ -37,12 +37,30 @@
 			<Arg> STRING </Arg>
 			<Arg> INT32 </Arg>
 		</reqPlayCardAction>
+
+		<reqLaunchCardSkill>
+			<Exposed/>
+			<Arg> INT32 </Arg>
+			<Arg> STRING </Arg>
+			<Arg> STRING </Arg>
+			<Arg> INT32 </Arg>
+			<Arg> INT32 </Arg>
+		</reqLaunchCardSkill>
 	</BaseMethods>
 
 	<CellMethods>
 	</CellMethods>
 
 	<ClientMethods>
+		<onSyncUpdateActionInfo>
+			<Arg> SYNC_MODIFICATION_INFO </Arg>
+		</onSyncUpdateActionInfo>
+
+		<onSyncLaunchSkillFailed>
+			<Arg> INT32 </Arg>
+			<Arg> INT32 </Arg>
+		</onSyncLaunchSkillFailed>
+
 		<onSyncPlayerBattleInfo>
 			<Arg> SYNC_PLAYER_BATTLE_INFO </Arg>
 		</onSyncPlayerBattleInfo>

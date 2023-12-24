@@ -107,21 +107,6 @@
 			<cardUid>
 				<Type> STRING </Type>
 			</cardUid>
-			<hp>
-				<Type> UINT8 </Type>
-			</hp>
-			<defence>
-				<Type> UINT8 </Type>
-			</defence>
-			<agility>
-				<Type> UINT8 </Type>
-			</agility>
-			<tags>
-				<Type> ARRAY <of> STRING </of> </Type>
-			</tags>
-			<stateTags>
-				<Type> ARRAY <of> STATE_INFO </of> </Type>
-			</stateTags>
 			<avatarId>
 				<Type> UINT64 </Type>
 			</avatarId>
@@ -141,6 +126,20 @@
 			</curCount>
 		</Properties>
 	</STATE_INFO>
+
+	<SYNC_EFFECT_INFO>
+		<Properties>
+			<effectName>
+				<Type> STRING </Type>
+			</effectName>
+			<countDown>
+				<Type> UINT8 </Type>
+			</countDown>
+			<availableTimes>
+				<Type> UINT8 </Type>
+			</availableTimes>
+		</Properties>
+	</SYNC_EFFECT_INFO>
 
 	<SYNC_CARD_INFO> FIXED_DICT
 		<Properties>
@@ -165,6 +164,9 @@
 			<stateTags>
 				<Type> ARRAY <of> STATE_INFO </of> </Type>
 			</stateTags>
+			<effectInfos>
+				<Type> ARRAY <of> SYNC_EFFECT_INFO </of> </Type>
+			</effectInfos>
 		</Properties>
 	</SYNC_CARD_INFO>
 
@@ -212,6 +214,20 @@
 			</battleState>
 		</Properties>
 	</SYNC_BATTLE_TIME_INFO>
+
+	<SYNC_MODIFICATION_INFO>
+		<Properties>
+			<actionSequence>
+				<Type> INT32 </Type>
+			</actionSequence>
+			<updateGridList>
+				<Type> ARRAY <of> BATTLE_GRID_INFO </of> </Type>
+			</updateGridList>
+			<updateCardList>
+				<Type> ARRAY <of> SYNC_CARD_INFO </of> </Type>
+			</updateCardList>
+		</Properties>
+	</SYNC_MODIFICATION_INFO>
 
 	
 

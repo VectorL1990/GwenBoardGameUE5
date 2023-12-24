@@ -44,7 +44,10 @@ def FormationVShoot(uniqueCardDict, gridInfoDict, inBattleAvatarList, launchAvat
 		"assitCardUidList": [],
 		"assistType": "formation",
 		"triggerEffectType": "hurt",
-		"triggerEffectValues": [0]
+		"triggerEffectValues": [0],
+		"targetUids": [],
+		"modifyGrids": [],
+		"modifyCardUids": []
 	}
 	# if card occupied target grid is not enermy, action fails
 	cardInfo = uniqueCardDict[gridInfoDict[targetGrid]["cardUid"]]
@@ -115,6 +118,11 @@ def FormationVShoot(uniqueCardDict, gridInfoDict, inBattleAvatarList, launchAvat
 					returnDict["success"] = True
 					returnDict["assitCardUidList"] = assitCardUidList
 					returnDict["triggerEffectValues"][0] = hurtDict["hpLoss"]
+					returnDict["targetUids"].append(gridInfoDict[targetGrid]["cardUid"])
+					returnDict["modifyGrids"].append(launchGrid)
+					returnDict["modifyGrids"].append(targetGrid)
+					returnDict["modifyCardUids"].append(gridInfoDict[targetGrid]["cardUid"])
+					returnDict["modifyCardUids"].append(gridInfoDict[launchGrid]["cardUid"])
 	return returnDict
 
 def LineObstacleSwap(uniqueCardDict, gridInfoDict, inBattleAvatarList, launchAvatarId, targetGrid, launchGrid, effectInfo):
@@ -123,103 +131,116 @@ def LineObstacleSwap(uniqueCardDict, gridInfoDict, inBattleAvatarList, launchAva
 		"assitCardUidList": [],
 		"assistType": "formation",
 		"triggerEffectType": "hurt",
-		"triggerEffectValues": [0]
+		"triggerEffectValues": [0],
+		"targetUids": [],
+		"modifyGrids": []
 	}
-	cardInfo = uniqueCardDict[gridInfoDict[targetGrid]["cardUid"]]
-	launchGridRC = getGridRowAndCol(launchGrid)
-	targetGridRC = getGridRowAndCol(targetGrid)
-	rowOffset = targetGridRC[0] - launchGridRC[0]
-	colOffset = targetGridRC[1] - launchGridRC[1]
-	direction = [rowOffset, colOffset]
-	if direction[0] != 0 and direction[1] != 0:
-		# which means target grid is not lined up to launch grid, which is not permitted
-		distance = abs(rowOffset) + abs(colOffset)
-		if effectInfo["effectValues"]["distance"] == 0 or effectInfo["effectValues"]["distance"] <= distance:
-			# which means target grid is within effect distance
-			isFormed = True
-			isObstacle = False
-			assitCardUidList = []
-			if colOffset < 0:
-				# which means it's checking negative x direction
-				# go through all grids between launch and target grids, check whether there's only one occupied grid between them
-				checkLen = launchGridRC[1] - targetGridRC[1]
-				if checkLen < 2:
-					isFormed = False
-				else:
-					assitCardUidList = []
-					for i in range(1, checkLen):
-						checkGridNb = getGridNbByRowAndCol(targetGridRC[0], targetGridRC[1] + i)
-						if gridInfoDict[checkGridNb]["cardUid"] != "":
-							assitCardUidList.append(gridInfoDict[checkGridNb]["cardUid"])
-							# which means this grid is occupied
-							if isObstacle == False:
-								isObstacle = True
-							else:
-								# which means there are over 2 obstacles between target grid and launch grid
-								isFormed = False
-								break
-			elif colOffset > 0:
-				# which means it's checking negative x direction
-				# go through all grids between launch and target grids, check whether there's only one occupied grid between them
-				checkLen = targetGridRC[1] - launchGridRC[1]
-				if checkLen < 2:
-					isFormed = False
-				else:
-					assitCardUidList = []
-					for i in range(1, checkLen):
-						checkGridNb = getGridNbByRowAndCol(launchGridRC[0], launchGridRC[1] + i)
-						if gridInfoDict[checkGridNb]["cardUid"] != "":
-							assitCardUidList.append(gridInfoDict[checkGridNb]["cardUid"])
-							# which means this grid is occupied
-							if isObstacle == False:
-								isObstacle = True
-							else:
-								# which means there are over 2 obstacles between target grid and launch grid
-								isFormed = False
-								break
-			elif rowOffset < 0:
-				# which means it's checking negative y direction
-				# go through all grids between launch and target grids, check whether there's only one occupied grid between them
-				checkLen = launchGridRC[0] - targetGridRC[0]
-				if checkLen < 2:
-					isFormed = False
-				else:
-					assitCardUidList = []
-					for i in range(1, checkLen):
-						checkGridNb = getGridNbByRowAndCol(targetGridRC[0] + 1, targetGridRC[1])
-						if gridInfoDict[checkGridNb]["cardUid"] != "":
-							assitCardUidList.append(gridInfoDict[checkGridNb]["cardUid"])
-							# which means this grid is occupied
-							if isObstacle == False:
-								isObstacle = True
-							else:
-								# which means there are over 2 obstacles between target grid and launch grid
-								isFormed = False
-								break
-			elif rowOffset > 0:
-				# which means it's checking negative y direction
-				# go through all grids between launch and target grids, check whether there's only one occupied grid between them
-				checkLen = targetGridRC[0] - launchGridRC[0]
-				if checkLen < 2:
-					isFormed = False
-				else:
-					assitCardUidList = []
-					for i in range(1, checkLen):
-						checkGridNb = getGridNbByRowAndCol(launchGridRC[0] + 1, launchGridRC[1])
-						if gridInfoDict[checkGridNb]["cardUid"] != "":
-							assitCardUidList.append(gridInfoDict[checkGridNb]["cardUid"])
-							# which means this grid is occupied
-							if isObstacle == False:
-								isObstacle = True
-							else:
-								# which means there are over 2 obstacles between target grid and launch grid
-								isFormed = False
-								break
-			if isFormed == True:
-				# swap location between launch grid and target grid
-				# and then try to trigger passive effects attached on assit cards(well actually checking cards)
-				returnDict["success"] = True
-				returnDict["assitCardUidList"] = assitCardUidList
+	if gridInfoDict[targetGrid]["cardUid"] != "":
+		cardInfo = uniqueCardDict[gridInfoDict[targetGrid]["cardUid"]]
+		launchGridRC = getGridRowAndCol(launchGrid)
+		targetGridRC = getGridRowAndCol(targetGrid)
+		rowOffset = targetGridRC[0] - launchGridRC[0]
+		colOffset = targetGridRC[1] - launchGridRC[1]
+		direction = [rowOffset, colOffset]
+		if direction[0] != 0 and direction[1] != 0:
+			# which means target grid is not lined up to launch grid, which is not permitted
+			distance = abs(rowOffset) + abs(colOffset)
+			if effectInfo["effectValues"]["distance"] == 0 or effectInfo["effectValues"]["distance"] <= distance:
+				# which means target grid is within effect distance
+				isFormed = True
+				isObstacle = False
+				assitCardUidList = []
+				if colOffset < 0:
+					# which means it's checking negative x direction
+					# go through all grids between launch and target grids, check whether there's only one occupied grid between them
+					checkLen = launchGridRC[1] - targetGridRC[1]
+					if checkLen < 2:
+						isFormed = False
+					else:
+						assitCardUidList = []
+						for i in range(1, checkLen):
+							checkGridNb = getGridNbByRowAndCol(targetGridRC[0], targetGridRC[1] + i)
+							if gridInfoDict[checkGridNb]["cardUid"] != "":
+								assitCardUidList.append(gridInfoDict[checkGridNb]["cardUid"])
+								# which means this grid is occupied
+								if isObstacle == False:
+									isObstacle = True
+								else:
+									# which means there are over 2 obstacles between target grid and launch grid
+									isFormed = False
+									break
+				elif colOffset > 0:
+					# which means it's checking negative x direction
+					# go through all grids between launch and target grids, check whether there's only one occupied grid between them
+					checkLen = targetGridRC[1] - launchGridRC[1]
+					if checkLen < 2:
+						isFormed = False
+					else:
+						assitCardUidList = []
+						for i in range(1, checkLen):
+							checkGridNb = getGridNbByRowAndCol(launchGridRC[0], launchGridRC[1] + i)
+							if gridInfoDict[checkGridNb]["cardUid"] != "":
+								assitCardUidList.append(gridInfoDict[checkGridNb]["cardUid"])
+								# which means this grid is occupied
+								if isObstacle == False:
+									isObstacle = True
+								else:
+									# which means there are over 2 obstacles between target grid and launch grid
+									isFormed = False
+									break
+				elif rowOffset < 0:
+					# which means it's checking negative y direction
+					# go through all grids between launch and target grids, check whether there's only one occupied grid between them
+					checkLen = launchGridRC[0] - targetGridRC[0]
+					if checkLen < 2:
+						isFormed = False
+					else:
+						assitCardUidList = []
+						for i in range(1, checkLen):
+							checkGridNb = getGridNbByRowAndCol(targetGridRC[0] + 1, targetGridRC[1])
+							if gridInfoDict[checkGridNb]["cardUid"] != "":
+								assitCardUidList.append(gridInfoDict[checkGridNb]["cardUid"])
+								# which means this grid is occupied
+								if isObstacle == False:
+									isObstacle = True
+								else:
+									# which means there are over 2 obstacles between target grid and launch grid
+									isFormed = False
+									break
+				elif rowOffset > 0:
+					# which means it's checking negative y direction
+					# go through all grids between launch and target grids, check whether there's only one occupied grid between them
+					checkLen = targetGridRC[0] - launchGridRC[0]
+					if checkLen < 2:
+						isFormed = False
+					else:
+						assitCardUidList = []
+						for i in range(1, checkLen):
+							checkGridNb = getGridNbByRowAndCol(launchGridRC[0] + 1, launchGridRC[1])
+							if gridInfoDict[checkGridNb]["cardUid"] != "":
+								assitCardUidList.append(gridInfoDict[checkGridNb]["cardUid"])
+								# which means this grid is occupied
+								if isObstacle == False:
+									isObstacle = True
+								else:
+									# which means there are over 2 obstacles between target grid and launch grid
+									isFormed = False
+									break
+				if isFormed == True:
+					# swap location between launch grid and target grid
+					tempTargetGridCardUid = gridInfoDict[targetGrid]["cardUid"]
+					tempTargetGridAvatarId = gridInfoDict[targetGrid]["avatarId"]
+					gridInfoDict[targetGrid]["cardUid"] = gridInfoDict[launchGrid]["cardUid"]
+					gridInfoDict[launchGrid]["cardUid"] = tempTargetGridCardUid
+					gridInfoDict[targetGrid]["avatarId"] = gridInfoDict[launchGrid]["avatarId"]
+					gridInfoDict[launchGrid]["avatarId"] = tempTargetGridAvatarId
+					returnDict["success"] = True
+					returnDict["assitCardUidList"] = assitCardUidList
+					returnDict["targetUids"].append(gridInfoDict[targetGrid]["cardUid"])
+					returnDict["modifyGrids"].append(launchGrid)
+					returnDict["modifyGrids"].append(targetGrid)
+					returnDict["modifyCardUids"].append(gridInfoDict[targetGrid]["cardUid"])
+					returnDict["modifyCardUids"].append(gridInfoDict[launchGrid]["cardUid"])
 	return returnDict
 
 
@@ -229,7 +250,9 @@ def HurtRandomOppoFirstRow(uniqueCardDict, gridInfoDict, inBattleAvatarList, lau
 		"assitCardUidList": [],
 		"assistType": "",
 		"triggerEffectType": "hurt",
-		"triggerEffectValues": [0]
+		"triggerEffectValues": [0],
+		"targetUids": [],
+		"modifyGrids": []
 	}
 	# find out which player launches this effect, so that we can find the oppo one
 	avatarIndex = inBattleAvatarList.index(launchAvatarId)
@@ -258,6 +281,11 @@ def HurtRandomOppoFirstRow(uniqueCardDict, gridInfoDict, inBattleAvatarList, lau
 		randomGrid = random.choice(candidates)
 		hurtDict = calculateCardHp(uniqueCardDict, gridInfoDict[randomGrid]["cardUid"], effectInfo["effectValues"]["value"])
 		returnDict["triggerEffectValues"][0] = hurtDict["hpLoss"]
+		returnDict["targetUids"].append(gridInfoDict[randomGrid]["cardUid"])
+		returnDict["modifyGrids"].append(launchGrid)
+		returnDict["modifyGrids"].append(randomGrid)
+		returnDict["modifyCardUids"].append(gridInfoDict[randomGrid]["cardUid"])
+		returnDict["modifyCardUids"].append(gridInfoDict[launchGrid]["cardUid"])
 	returnDict["success"] = True
 	return returnDict
 
