@@ -1612,11 +1612,23 @@ namespace KBEngine
 	{
 		public Int32 gridNb = 0;
 		public string cardUid = "";
-		public Byte hp = 0;
-		public Byte defence = 0;
-		public Byte agility = 0;
-		public List<string> tags = new List<string>();
-		public List<string> stateTags = new List<string>();
+		public UInt64 avatarId = 0;
+
+	}
+
+	public class STATE_INFO
+	{
+		public string state = "";
+		public Byte stipulation = 0;
+		public Byte curCount = 0;
+
+	}
+
+	public class SYNC_EFFECT_INFO
+	{
+		public string effectName = "";
+		public Byte countDown = 0;
+		public Byte availableTimes = 0;
 
 	}
 
@@ -1628,7 +1640,8 @@ namespace KBEngine
 		public Byte defence = 0;
 		public Byte agility = 0;
 		public List<string> tags = new List<string>();
-		public List<string> stateTags = new List<string>();
+		public List<STATE_INFO> stateTags = new List<STATE_INFO>();
+		public List<SYNC_EFFECT_INFO> effectInfos = new List<SYNC_EFFECT_INFO>();
 
 	}
 
@@ -1654,6 +1667,14 @@ namespace KBEngine
 	{
 		public Int32 curTime = 0;
 		public Byte battleState = 0;
+
+	}
+
+	public class SYNC_MODIFICATION_INFO
+	{
+		public Int32 actionSequence = 0;
+		public List<BATTLE_GRID_INFO> updateGridList = new List<BATTLE_GRID_INFO>();
+		public List<SYNC_CARD_INFO> updateCardList = new List<SYNC_CARD_INFO>();
 
 	}
 

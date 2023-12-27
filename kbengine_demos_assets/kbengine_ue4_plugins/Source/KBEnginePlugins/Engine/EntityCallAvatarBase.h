@@ -28,6 +28,8 @@ public:
 	void reqChangeSelectCard(const FString& arg1);
 	void reqFinishSelectCards();
 	void reqLatestBattleInfo();
+	void reqLaunchCardSkill(int32 arg1, const FString& arg2, const FString& arg3, int32 arg4, int32 arg5);
+	void reqPlayCardAction(int32 arg1, const FString& arg2, int32 arg3);
 	void reqSyncHeartBeat();
 	void reqUpdateSelectedCard();
 };

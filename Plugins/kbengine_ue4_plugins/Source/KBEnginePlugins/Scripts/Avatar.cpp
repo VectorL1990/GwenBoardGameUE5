@@ -86,6 +86,14 @@ namespace KBEngine
             syncCardInfo.agility = param.cardList[i].agility;
             syncCardInfo.tags = param.cardList[i].tags;
             syncCardInfo.stateTags = param.cardList[i].stateTags;
+            for (int32 j = 0; j < battleInfo.playerInfo.cardList[i].effectInfos.Num(); j++)
+            {
+                FSYNC_EFFECT_INFO syncEffectInfo;
+                syncEffectInfo.effectName = param.cardList[i].effectInfos[j].effectName;
+                syncEffectInfo.availableTimes = param.cardList[i].effectInfos[j].availableTimes;
+                syncEffectInfo.countDown = param.cardList[i].effectInfos[j].countDown;
+                cardInfo.effectInfos.Add(syncEffectInfo);
+            }
             eventData->cardList.Add(syncCardInfo);
         }
         eventData->handCardList = param.handCardList;
@@ -141,11 +149,7 @@ namespace KBEngine
             FBATTLE_GRID_INFO gridInfo;
             gridInfo.gridNb = battleInfo.updateList[i].gridNb;
             gridInfo.cardUid = battleInfo.updateList[i].cardUid;
-            gridInfo.hp = battleInfo.updateList[i].hp;
-            gridInfo.defence = battleInfo.updateList[i].defence;
-            gridInfo.agility = battleInfo.updateList[i].agility;
-            gridInfo.tags = battleInfo.updateList[i].tags;
-            gridInfo.stateTags = battleInfo.updateList[i].stateTags;
+            gridInfo.avatarId = FString::Printf(TEXT("%lld"), battleInfo.updateList[i].avatarId);
             eventData->updateGridInfos.Add(gridInfo);
         }
         for (int32 i = 0; i < battleInfo.playerInfo.cardList.Num(); i++)
@@ -158,10 +162,26 @@ namespace KBEngine
             cardInfo.agility = battleInfo.playerInfo.cardList[i].agility;
             cardInfo.tags = battleInfo.playerInfo.cardList[i].tags;
             cardInfo.stateTags = battleInfo.playerInfo.cardList[i].stateTags;
+            for (int32 j = 0; j < battleInfo.playerInfo.cardList[i].effectInfos.Num(); j++)
+            {
+                FSYNC_EFFECT_INFO syncEffectInfo;
+                syncEffectInfo.effectName = battleInfo.playerInfo.cardList[i].effectInfos[j].effectName;
+                syncEffectInfo.availableTimes = battleInfo.playerInfo.cardList[i].effectInfos[j].availableTimes;
+                syncEffectInfo.countDown = battleInfo.playerInfo.cardList[i].effectInfos[j].countDown;
+                cardInfo.effectInfos.Add(syncEffectInfo);
+            }
             eventData->cardList.Add(cardInfo);
         }
         eventData->handCardList = battleInfo.playerInfo.handCardList;
         KBENGINE_EVENT_FIRE("onSyncLatestBattleState", eventData);
+    }
+
+    void Avatar::onSyncLaunchSkillFailed(int32 curActionSequence, int32 clientActionSequence)
+    {
+        UKBEventData_onSyncLaunchSkillFailed* eventData = NewObject<UKBEventData_onSyncLaunchSkillFailed>();
+        eventData->curActionSequence = curActionSequence;
+        eventData->clientActionSequence = clientActionSequence;
+        KBENGINE_EVENT_FIRE("onSyncLaunchSkillFailed", eventData);
     }
 
     void Avatar::onSyncUpdateSelectedCards(uint8 changeNb, const SYNC_PLAYER_BATTLE_INFO& allCardInfos)
@@ -179,6 +199,14 @@ namespace KBEngine
             syncCardInfo.tags = allCardInfos.cardList[i].tags;
             syncCardInfo.stateTags = allCardInfos.cardList[i].stateTags;
             eventData->cardList.Add(syncCardInfo);
+            for (int32 j = 0; j < allCardInfos.cardList[i].effectInfos.Num(); j++)
+            {
+                FSYNC_EFFECT_INFO syncEffectInfo;
+                syncEffectInfo.effectName = allCardInfos.cardList[i].effectInfos[j].effectName;
+                syncEffectInfo.countDown = allCardInfos.cardList[i].effectInfos[j].countDown;
+                syncEffectInfo.availableTimes = allCardInfos.cardList[i].effectInfos[j].availableTimes;
+                syncCardInfo.effectInfos.Add(syncEffectInfo);
+            }
         }
         eventData->handCardList = allCardInfos.handCardList;
         KBENGINE_EVENT_FIRE("onSyncUpdateSelectedCards", eventData);
@@ -203,6 +231,14 @@ namespace KBEngine
             syncCardInfo.agility = playerInfo.cardList[i].agility;
             syncCardInfo.tags = playerInfo.cardList[i].tags;
             syncCardInfo.stateTags = playerInfo.cardList[i].stateTags;
+            for (int32 j = 0; j < playerInfo.cardList[i].effectInfos.Num(); j++)
+            {
+                FSYNC_EFFECT_INFO syncEffectInfo;
+                syncEffectInfo.effectName = playerInfo.cardList[i].effectInfos[j].effectName;
+                syncEffectInfo.availableTimes = playerInfo.cardList[i].effectInfos[j].availableTimes;
+                syncEffectInfo.countDown = playerInfo.cardList[i].effectInfos[j].countDown;
+                syncCardInfo.effectInfos.Add(syncEffectInfo);
+            }
         }
         eventData->handCardList = playerInfo.handCardList;
         KBENGINE_EVENT_FIRE("onSyncSelectCardInterlude", eventData);
@@ -222,6 +258,42 @@ namespace KBEngine
         eventData->curTime = syncTimeInfo.curTime;
         eventData->battleState = syncTimeInfo.battleState;
         KBENGINE_EVENT_FIRE("onSyncTimeInterval", eventData);
+    }
+
+    void Avatar::onSyncUpdateActionInfo(const SYNC_MODIFICATION_INFO& modificationInfo)
+    {
+        UKBEventData_onSyncUpdateActionInfo* eventData = NewObject<UKBEventData_onSyncUpdateActionInfo>();
+        eventData->actionSequence = modificationInfo.actionSequence;
+        for (int32 i = 0; i < modificationInfo.updateCardList.Num(); i++)
+        {
+            FSYNC_CARD_INFO syncCardInfo;
+            syncCardInfo.cardKey = modificationInfo.updateCardList[i].cardKey;
+            syncCardInfo.cardName = modificationInfo.updateCardList[i].cardName;
+            syncCardInfo.hp = modificationInfo.updateCardList[i].hp;
+            syncCardInfo.defence = modificationInfo.updateCardList[i].defence;
+            syncCardInfo.agility = modificationInfo.updateCardList[i].agility;
+            syncCardInfo.tags = modificationInfo.updateCardList[i].tags;
+            syncCardInfo.stateTags = modificationInfo.updateCardList[i].stateTags;
+            for (int32 j = 0; j < modificationInfo.updateCardList[i].effectInfos.Num(); j++)
+            {
+                FSYNC_EFFECT_INFO syncEffectInfo;
+                syncEffectInfo.effectName = modificationInfo.updateCardList[i].effectInfos[j].effectName;
+                syncEffectInfo.countDown = modificationInfo.updateCardList[i].effectInfos[j].countDown;
+                syncEffectInfo.availableTimes = modificationInfo.updateCardList[i].effectInfos[j].availableTimes;
+                syncCardInfo.effectInfos.Add(syncEffectInfo);
+            }
+            eventData->updateCardInfos.Add(syncCardInfo);
+        }
+
+        for (int32 i = 0; i < modificationInfo.updateGridList.Num(); i++)
+        {
+            FBATTLE_GRID_INFO gridInfo;
+            gridInfo.gridNb = modificationInfo.updateGridList[i].gridNb;
+            gridInfo.cardUid = modificationInfo.updateGridList[i].cardUid;
+            gridInfo.avatarId = FString::Printf(TEXT("%lld"), modificationInfo.updateGridList[i].avatarId);
+            eventData->gridInfos.Add(gridInfo);
+        }
+        KBENGINE_EVENT_FIRE("onSyncUpdateActionInfo", eventData);
     }
 
     void Avatar::ReqChangeSelectCard(FString changeCardKey)

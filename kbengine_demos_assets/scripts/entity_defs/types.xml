@@ -113,7 +113,7 @@
 		</Properties>
 	</BATTLE_GRID_INFO>
 
-	<STATE_INFO>
+	<STATE_INFO> FIXED_DICT
 		<Properties>
 			<state>
 				<Type> STRING </Type>
@@ -127,7 +127,7 @@
 		</Properties>
 	</STATE_INFO>
 
-	<SYNC_EFFECT_INFO>
+	<SYNC_EFFECT_INFO> FIXED_DICT
 		<Properties>
 			<effectName>
 				<Type> STRING </Type>
@@ -215,7 +215,7 @@
 		</Properties>
 	</SYNC_BATTLE_TIME_INFO>
 
-	<SYNC_MODIFICATION_INFO>
+	<SYNC_MODIFICATION_INFO> FIXED_DICT
 		<Properties>
 			<actionSequence>
 				<Type> INT32 </Type>

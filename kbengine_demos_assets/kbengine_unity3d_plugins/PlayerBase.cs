@@ -113,11 +113,11 @@ namespace KBEngine
 
 			switch(method.methodUtype)
 			{
-				case 23:
+				case 27:
 					CORE_UPDATE_BATLLE_INFO onUpdateBattle_arg1 = ((DATATYPE_CORE_UPDATE_BATLLE_INFO)method.args[0]).createFromStreamEx(stream);
 					onUpdateBattle(onUpdateBattle_arg1);
 					break;
-				case 24:
+				case 28:
 					UPDATE_GRID_INFO_LIST onUpdateGridInfoList_arg1 = ((DATATYPE_UPDATE_GRID_INFO_LIST)method.args[0]).createFromStreamEx(stream);
 					onUpdateGridInfoList(onUpdateGridInfoList_arg1);
 					break;
