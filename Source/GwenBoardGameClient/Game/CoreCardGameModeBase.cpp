@@ -2,6 +2,8 @@
 
 
 #include "CoreCardGameModeBase.h"
+#include "Engine/KBEngine.h"
+#include "Engine/Entity.h"
 #include "Scripts/BattleEvents.h"
 
 void ACoreCardGameModeBase::BeginPlay()
@@ -15,6 +17,7 @@ void ACoreCardGameModeBase::BeginPlay()
 void ACoreCardGameModeBase::InitEvents()
 {
 				Super::InitEvents();
+				KBENGINE_REGISTER_EVENT("onEnterWorld", onEnterWorld);
 				KBENGINE_REGISTER_EVENT("onSyncBattleResult", onSyncBattleResult);
 				KBENGINE_REGISTER_EVENT("onSyncChangeHandCardSuccess", onSyncChangeHandCardSuccess);
 				KBENGINE_REGISTER_EVENT("onSyncExhaustCardReplacement", onSyncExhaustCardReplacement);
@@ -110,6 +113,19 @@ void ACoreCardGameModeBase::Tick(float deltaTime)
 				}
 }
 
+void ACoreCardGameModeBase::CheckEntitiesCreated()
+{
+	KBEngine::KBEngineApp::ENTITIES_MAP& entities = KBEngine::KBEngineApp::getSingleton().entities();
+	for (auto& item : entities)
+	{
+		KBEngine::Entity* entity = item.Value;
+		UKBEventData_onEnterWorld* eventData = NewObject<UKBEventData_onEnterWorld>();
+		eventData->entityID = entity->id();
+		eventData->spaceID = KBEngine::KBEngineApp::getSingleton().spaceID();
+		eventData->isPlayer = entity->isPlayer();
+		KBENGINE_EVENT_FIRE(KBEngine::KBEventTypes::onEnterWorld, eventData);
+	}
+}
 
 void ACoreCardGameModeBase::GetAllPresetObjects()
 {
@@ -303,12 +319,6 @@ void ACoreCardGameModeBase::CalibrateCurrentGlobalInfo(int32 curActionSequence, 
 				}
 }
 
-void ACoreCardGameModeBase::ReqEnterRoom()
-{
-				UKBEventData* eventData = NewObject<UKBEventData>();
-				KBENGINE_EVENT_FIRE("ReqEnterRoom", eventData);
-}
-
 void ACoreCardGameModeBase::ReqPlayCard(int32 targetGridNb, int32 playCardUid)
 {
 				UKBEventData_reqSendAction* eventData = NewObject<UKBEventData_reqSendAction>();
@@ -318,6 +328,21 @@ void ACoreCardGameModeBase::ReqPlayCard(int32 targetGridNb, int32 playCardUid)
 				playCardInfo.targetGridNb = targetGridNb;
 				eventData->playCardInfo = playCardInfo;
 				KBENGINE_EVENT_FIRE("ReqSendAction", eventData);
+}
+
+void ACoreCardGameModeBase::onEnterWorld(const UKBEventData* eventData)
+{
+	const UKBEventData_onEnterWorld* onEnterWorldData = Cast<UKBEventData_onEnterWorld>(eventData);
+	if (onEnterWorldData->isPlayer)
+	{
+		// which means account has already entered world
+		// trigger reqEnterRoom so that server gives side gives client to avatar
+		if (!hasReqEnterRoom)
+		{
+			hasReqEnterRoom = true;
+			ReqEnterRoom();
+		}
+	}
 }
 
 void ACoreCardGameModeBase::ReqChangeSelectCard(FString changeCardKey)
@@ -416,7 +441,7 @@ void ACoreCardGameModeBase::InitDone_Implementation()
 void ACoreCardGameModeBase::onSyncBattleResult(const UKBEventData* eventData)
 {
 				// which means battle ends
-				UKBEventData_onSyncBattleResult* syncBattleResultData = Cast<UKBEventData_onSyncBattleResult>(eventData);
+				const UKBEventData_onSyncBattleResult* syncBattleResultData = Cast<UKBEventData_onSyncBattleResult>(eventData);
 				
 }
 
@@ -477,6 +502,7 @@ void ACoreCardGameModeBase::onSyncChangeHandCardSuccess(const UKBEventData* even
 
 void ACoreCardGameModeBase::onSyncPlayerBattleInfo(const UKBEventData* eventData)
 {
+	// when client receive this message, it means avatar is ready both on server and client sides
 				const UKBEventData_onSyncPlayerBattleInfo* onSyncPlayerBattleInfoData = Cast<UKBEventData_onSyncPlayerBattleInfo>(eventData);
 
 				for (int32 i = 0; i < onSyncPlayerBattleInfoData->cardList.Num(); i++)
@@ -570,6 +596,9 @@ void ACoreCardGameModeBase::onSyncRoomStartBattle(const UKBEventData* eventData)
 {
 				// when this message is received, it means server passes card selection interlude
 				// this only means that we could spawn time count down slider on UI menu
+	interludeState = InterludeState::Default;
+	clientBattleState = ClientBattleState::InBattle;
+	curCountingTick = 0.0;
 }
 
 void ACoreCardGameModeBase::onSyncSelectCardInterlude(const UKBEventData* eventData)
@@ -587,7 +616,8 @@ void ACoreCardGameModeBase::onSyncSwitchController(const UKBEventData* eventData
 }
 
 void ACoreCardGameModeBase::onSyncTimeInterval(const UKBEventData* eventData)
-{}
+{
+}
 
 void ACoreCardGameModeBase::InitPlayerBattleInfoDone(TArray<FString> cardList)
 {

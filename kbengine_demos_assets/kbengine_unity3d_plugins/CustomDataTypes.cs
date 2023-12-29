@@ -271,27 +271,6 @@ namespace KBEngine
 
 
 
-	public class DATATYPE_BATTLE_GRID_INFO : DATATYPE_BASE
-	{
-		public BATTLE_GRID_INFO createFromStreamEx(MemoryStream stream)
-		{
-			BATTLE_GRID_INFO datas = new BATTLE_GRID_INFO();
-			datas.gridNb = stream.readInt32();
-			datas.cardUid = stream.readString();
-			datas.avatarId = stream.readUint64();
-			return datas;
-		}
-
-		public void addToStreamEx(Bundle stream, BATTLE_GRID_INFO v)
-		{
-			stream.writeInt32(v.gridNb);
-			stream.writeString(v.cardUid);
-			stream.writeUint64(v.avatarId);
-		}
-	}
-
-
-
 	public class DATATYPE_STATE_INFO : DATATYPE_BASE
 	{
 		public STATE_INFO createFromStreamEx(MemoryStream stream)
@@ -329,6 +308,129 @@ namespace KBEngine
 			stream.writeString(v.effectName);
 			stream.writeUint8(v.countDown);
 			stream.writeUint8(v.availableTimes);
+		}
+	}
+
+
+
+	public class DATATYPE_BATTLE_GRID_INFO : DATATYPE_BASE
+	{
+		private DATATYPE__BATTLE_GRID_INFO_tags_ArrayType_ChildArray tags_DataType = new DATATYPE__BATTLE_GRID_INFO_tags_ArrayType_ChildArray();
+
+		public class DATATYPE__BATTLE_GRID_INFO_tags_ArrayType_ChildArray : DATATYPE_BASE
+		{
+			public List<string> createFromStreamEx(MemoryStream stream)
+			{
+				UInt32 size = stream.readUint32();
+				List<string> datas = new List<string>();
+
+				while(size > 0)
+				{
+					--size;
+					datas.Add(stream.readString());
+				};
+
+				return datas;
+			}
+
+			public void addToStreamEx(Bundle stream, List<string> v)
+			{
+				stream.writeUint32((UInt32)v.Count);
+				for(int i=0; i<v.Count; ++i)
+				{
+					stream.writeString(v[i]);
+				};
+			}
+		}
+
+		private DATATYPE__BATTLE_GRID_INFO_stateTags_ArrayType_ChildArray stateTags_DataType = new DATATYPE__BATTLE_GRID_INFO_stateTags_ArrayType_ChildArray();
+
+		public class DATATYPE__BATTLE_GRID_INFO_stateTags_ArrayType_ChildArray : DATATYPE_BASE
+		{
+			private DATATYPE_STATE_INFO itemType = new DATATYPE_STATE_INFO();
+
+			public List<STATE_INFO> createFromStreamEx(MemoryStream stream)
+			{
+				UInt32 size = stream.readUint32();
+				List<STATE_INFO> datas = new List<STATE_INFO>();
+
+				while(size > 0)
+				{
+					--size;
+					datas.Add(itemType.createFromStreamEx(stream));
+				};
+
+				return datas;
+			}
+
+			public void addToStreamEx(Bundle stream, List<STATE_INFO> v)
+			{
+				stream.writeUint32((UInt32)v.Count);
+				for(int i=0; i<v.Count; ++i)
+				{
+					itemType.addToStreamEx(stream, v[i]);
+				};
+			}
+		}
+
+		private DATATYPE__BATTLE_GRID_INFO_effectInfos_ArrayType_ChildArray effectInfos_DataType = new DATATYPE__BATTLE_GRID_INFO_effectInfos_ArrayType_ChildArray();
+
+		public class DATATYPE__BATTLE_GRID_INFO_effectInfos_ArrayType_ChildArray : DATATYPE_BASE
+		{
+			private DATATYPE_SYNC_EFFECT_INFO itemType = new DATATYPE_SYNC_EFFECT_INFO();
+
+			public List<SYNC_EFFECT_INFO> createFromStreamEx(MemoryStream stream)
+			{
+				UInt32 size = stream.readUint32();
+				List<SYNC_EFFECT_INFO> datas = new List<SYNC_EFFECT_INFO>();
+
+				while(size > 0)
+				{
+					--size;
+					datas.Add(itemType.createFromStreamEx(stream));
+				};
+
+				return datas;
+			}
+
+			public void addToStreamEx(Bundle stream, List<SYNC_EFFECT_INFO> v)
+			{
+				stream.writeUint32((UInt32)v.Count);
+				for(int i=0; i<v.Count; ++i)
+				{
+					itemType.addToStreamEx(stream, v[i]);
+				};
+			}
+		}
+
+		public BATTLE_GRID_INFO createFromStreamEx(MemoryStream stream)
+		{
+			BATTLE_GRID_INFO datas = new BATTLE_GRID_INFO();
+			datas.gridNb = stream.readInt32();
+			datas.cardUid = stream.readString();
+			datas.cardName = stream.readString();
+			datas.hp = stream.readUint8();
+			datas.defence = stream.readUint8();
+			datas.agility = stream.readUint8();
+			datas.tags = tags_DataType.createFromStreamEx(stream);
+			datas.stateTags = stateTags_DataType.createFromStreamEx(stream);
+			datas.effectInfos = effectInfos_DataType.createFromStreamEx(stream);
+			datas.avatarId = stream.readUint64();
+			return datas;
+		}
+
+		public void addToStreamEx(Bundle stream, BATTLE_GRID_INFO v)
+		{
+			stream.writeInt32(v.gridNb);
+			stream.writeString(v.cardUid);
+			stream.writeString(v.cardName);
+			stream.writeUint8(v.hp);
+			stream.writeUint8(v.defence);
+			stream.writeUint8(v.agility);
+			tags_DataType.addToStreamEx(stream, v.tags);
+			stateTags_DataType.addToStreamEx(stream, v.stateTags);
+			effectInfos_DataType.addToStreamEx(stream, v.effectInfos);
+			stream.writeUint64(v.avatarId);
 		}
 	}
 

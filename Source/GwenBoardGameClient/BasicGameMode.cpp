@@ -2,6 +2,7 @@
 
 
 #include "BasicGameMode.h"
+#include "Kismet/GameplayStatics.h"
 #include "Engine/KBEngine.h"
 #include "Engine/KBEMain.h"
 #include "Scripts/BattleEvents.h"
@@ -86,7 +87,12 @@ void ABasicGameMode::onSyncRoomCreated(const UKBEventData* eventData)
 				const UKBEventData_onSyncRoomCreated* onSyncRoomCreatedData = Cast<UKBEventData_onSyncRoomCreated>(eventData);
 				sRoomKey = onSyncRoomCreatedData->sRoomKey;
 				GEngine->AddOnScreenDebugMessage(-1, 10.0, FColor::Red, "onSyncRoomCreated room key is: " + sRoomKey);
-				ReqEnterRoom();
+				UGameInstance* gameInstance = UGameplayStatics::GetGameInstance(this);
+				UGwenBoardGameInstance* gwenGameInstance = Cast<UGwenBoardGameInstance>(gameInstance);
+				gwenGameInstance->curRoomKey = sRoomKey;
+				// at this point we should switch to battle level
+				// and then we send message to server about entering room
+				UGameplayStatics::OpenLevel(this, "DesertBoardMap");
 }
 
 void ABasicGameMode::onSyncPlayerBattleInfo(const UKBEventData* eventData)

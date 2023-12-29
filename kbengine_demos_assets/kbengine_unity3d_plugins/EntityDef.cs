@@ -320,7 +320,7 @@ namespace KBEngine
 			//Dbg.DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), property(utype / 41005).");
 
 			List<DATATYPE_BASE> pAvatar_onSyncBattleResult_args = new List<DATATYPE_BASE>();
-			pAvatar_onSyncBattleResult_args.Add(EntityDef.id2datatypes[51]);
+			pAvatar_onSyncBattleResult_args.Add(EntityDef.id2datatypes[54]);
 
 			Method pAvatar_onSyncBattleResult = new Method();
 			pAvatar_onSyncBattleResult.name = "onSyncBattleResult";
@@ -381,7 +381,7 @@ namespace KBEngine
 			//Dbg.DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(onSyncHeartBeat / 24).");
 
 			List<DATATYPE_BASE> pAvatar_onSyncLatestBattleState_args = new List<DATATYPE_BASE>();
-			pAvatar_onSyncLatestBattleState_args.Add(EntityDef.id2datatypes[43]);
+			pAvatar_onSyncLatestBattleState_args.Add(EntityDef.id2datatypes[46]);
 
 			Method pAvatar_onSyncLatestBattleState = new Method();
 			pAvatar_onSyncLatestBattleState.name = "onSyncLatestBattleState";
@@ -412,7 +412,7 @@ namespace KBEngine
 			//Dbg.DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(onSyncLaunchSkillFailed / 14).");
 
 			List<DATATYPE_BASE> pAvatar_onSyncPlayerBattleInfo_args = new List<DATATYPE_BASE>();
-			pAvatar_onSyncPlayerBattleInfo_args.Add(EntityDef.id2datatypes[40]);
+			pAvatar_onSyncPlayerBattleInfo_args.Add(EntityDef.id2datatypes[43]);
 
 			Method pAvatar_onSyncPlayerBattleInfo = new Method();
 			pAvatar_onSyncPlayerBattleInfo.name = "onSyncPlayerBattleInfo";
@@ -456,7 +456,7 @@ namespace KBEngine
 			//Dbg.DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(onSyncRoomStartBattle / 19).");
 
 			List<DATATYPE_BASE> pAvatar_onSyncSelectCardInterlude_args = new List<DATATYPE_BASE>();
-			pAvatar_onSyncSelectCardInterlude_args.Add(EntityDef.id2datatypes[40]);
+			pAvatar_onSyncSelectCardInterlude_args.Add(EntityDef.id2datatypes[43]);
 
 			Method pAvatar_onSyncSelectCardInterlude = new Method();
 			pAvatar_onSyncSelectCardInterlude.name = "onSyncSelectCardInterlude";
@@ -487,7 +487,7 @@ namespace KBEngine
 			//Dbg.DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(onSyncSwitchController / 22).");
 
 			List<DATATYPE_BASE> pAvatar_onSyncTimeInterval_args = new List<DATATYPE_BASE>();
-			pAvatar_onSyncTimeInterval_args.Add(EntityDef.id2datatypes[45]);
+			pAvatar_onSyncTimeInterval_args.Add(EntityDef.id2datatypes[48]);
 
 			Method pAvatar_onSyncTimeInterval = new Method();
 			pAvatar_onSyncTimeInterval.name = "onSyncTimeInterval";
@@ -502,7 +502,7 @@ namespace KBEngine
 			//Dbg.DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(onSyncTimeInterval / 20).");
 
 			List<DATATYPE_BASE> pAvatar_onSyncUpdateActionInfo_args = new List<DATATYPE_BASE>();
-			pAvatar_onSyncUpdateActionInfo_args.Add(EntityDef.id2datatypes[46]);
+			pAvatar_onSyncUpdateActionInfo_args.Add(EntityDef.id2datatypes[49]);
 
 			Method pAvatar_onSyncUpdateActionInfo = new Method();
 			pAvatar_onSyncUpdateActionInfo.name = "onSyncUpdateActionInfo";
@@ -518,7 +518,7 @@ namespace KBEngine
 
 			List<DATATYPE_BASE> pAvatar_onSyncUpdateSelectedCards_args = new List<DATATYPE_BASE>();
 			pAvatar_onSyncUpdateSelectedCards_args.Add(EntityDef.id2datatypes[2]);
-			pAvatar_onSyncUpdateSelectedCards_args.Add(EntityDef.id2datatypes[40]);
+			pAvatar_onSyncUpdateSelectedCards_args.Add(EntityDef.id2datatypes[43]);
 
 			Method pAvatar_onSyncUpdateSelectedCards = new Method();
 			pAvatar_onSyncUpdateSelectedCards.name = "onSyncUpdateSelectedCards";
@@ -893,7 +893,7 @@ namespace KBEngine
 			//Dbg.DEBUG_MSG("EntityDef::initScriptModules: add(Player), property(spaceID / 40002).");
 
 			List<DATATYPE_BASE> pPlayer_onUpdateBattle_args = new List<DATATYPE_BASE>();
-			pPlayer_onUpdateBattle_args.Add(EntityDef.id2datatypes[43]);
+			pPlayer_onUpdateBattle_args.Add(EntityDef.id2datatypes[46]);
 
 			Method pPlayer_onUpdateBattle = new Method();
 			pPlayer_onUpdateBattle.name = "onUpdateBattle";
@@ -1231,15 +1231,6 @@ namespace KBEngine
 
 			{
 				UInt16 utype = 33;
-				string typeName = "BATTLE_GRID_INFO";
-				DATATYPE_BATTLE_GRID_INFO datatype = new DATATYPE_BATTLE_GRID_INFO();
-				EntityDef.datatypes[typeName] = datatype;
-				EntityDef.id2datatypes[utype] = EntityDef.datatypes[typeName];
-				EntityDef.datatype2id[typeName] = utype;
-			}
-
-			{
-				UInt16 utype = 34;
 				string typeName = "STATE_INFO";
 				DATATYPE_STATE_INFO datatype = new DATATYPE_STATE_INFO();
 				EntityDef.datatypes[typeName] = datatype;
@@ -1248,7 +1239,7 @@ namespace KBEngine
 			}
 
 			{
-				UInt16 utype = 35;
+				UInt16 utype = 34;
 				string typeName = "SYNC_EFFECT_INFO";
 				DATATYPE_SYNC_EFFECT_INFO datatype = new DATATYPE_SYNC_EFFECT_INFO();
 				EntityDef.datatypes[typeName] = datatype;
@@ -1257,7 +1248,16 @@ namespace KBEngine
 			}
 
 			{
-				UInt16 utype = 36;
+				UInt16 utype = 35;
+				string typeName = "BATTLE_GRID_INFO";
+				DATATYPE_BATTLE_GRID_INFO datatype = new DATATYPE_BATTLE_GRID_INFO();
+				EntityDef.datatypes[typeName] = datatype;
+				EntityDef.id2datatypes[utype] = EntityDef.datatypes[typeName];
+				EntityDef.datatype2id[typeName] = utype;
+			}
+
+			{
+				UInt16 utype = 39;
 				string typeName = "SYNC_CARD_INFO";
 				DATATYPE_SYNC_CARD_INFO datatype = new DATATYPE_SYNC_CARD_INFO();
 				EntityDef.datatypes[typeName] = datatype;
@@ -1266,7 +1266,7 @@ namespace KBEngine
 			}
 
 			{
-				UInt16 utype = 40;
+				UInt16 utype = 43;
 				string typeName = "SYNC_PLAYER_BATTLE_INFO";
 				DATATYPE_SYNC_PLAYER_BATTLE_INFO datatype = new DATATYPE_SYNC_PLAYER_BATTLE_INFO();
 				EntityDef.datatypes[typeName] = datatype;
@@ -1275,7 +1275,7 @@ namespace KBEngine
 			}
 
 			{
-				UInt16 utype = 43;
+				UInt16 utype = 46;
 				string typeName = "CORE_UPDATE_BATLLE_INFO";
 				DATATYPE_CORE_UPDATE_BATLLE_INFO datatype = new DATATYPE_CORE_UPDATE_BATLLE_INFO();
 				EntityDef.datatypes[typeName] = datatype;
@@ -1284,7 +1284,7 @@ namespace KBEngine
 			}
 
 			{
-				UInt16 utype = 45;
+				UInt16 utype = 48;
 				string typeName = "SYNC_BATTLE_TIME_INFO";
 				DATATYPE_SYNC_BATTLE_TIME_INFO datatype = new DATATYPE_SYNC_BATTLE_TIME_INFO();
 				EntityDef.datatypes[typeName] = datatype;
@@ -1293,7 +1293,7 @@ namespace KBEngine
 			}
 
 			{
-				UInt16 utype = 46;
+				UInt16 utype = 49;
 				string typeName = "SYNC_MODIFICATION_INFO";
 				DATATYPE_SYNC_MODIFICATION_INFO datatype = new DATATYPE_SYNC_MODIFICATION_INFO();
 				EntityDef.datatypes[typeName] = datatype;
@@ -1302,7 +1302,7 @@ namespace KBEngine
 			}
 
 			{
-				UInt16 utype = 49;
+				UInt16 utype = 52;
 				string typeName = "PLAYER_PERSIST_INFO";
 				DATATYPE_PLAYER_PERSIST_INFO datatype = new DATATYPE_PLAYER_PERSIST_INFO();
 				EntityDef.datatypes[typeName] = datatype;
@@ -1311,7 +1311,7 @@ namespace KBEngine
 			}
 
 			{
-				UInt16 utype = 51;
+				UInt16 utype = 54;
 				string typeName = "STRING_LIST";
 				DATATYPE_STRING_LIST datatype = new DATATYPE_STRING_LIST();
 				EntityDef.datatypes[typeName] = datatype;

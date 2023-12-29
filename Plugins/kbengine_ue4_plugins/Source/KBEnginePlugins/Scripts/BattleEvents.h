@@ -80,6 +80,27 @@ public:
 								FString cardUid;
 
 				UPROPERTY(EditAnywhere)
+				FString cardName;
+
+				UPROPERTY(EditAnywhere)
+				uint8 hp;
+
+				UPROPERTY(EditAnywhere)
+				uint8 defence;
+
+				UPROPERTY(EditAnywhere)
+				uint8 agility;
+
+				UPROPERTY(EditAnywhere)
+				TArray<FString> tags;
+
+				UPROPERTY(EditAnywhere)
+				TArray<FSTATE_TAG_INFO> stateTags;
+
+				UPROPERTY(EditAnywhere)
+				TArray<FSYNC_EFFECT_INFO> effectInfos;
+
+				UPROPERTY(EditAnywhere)
 								FString avatarId;
 };
 
@@ -90,6 +111,21 @@ struct FCORE_UPDATE_BATLLE_INFO
 public:
 				UPROPERTY(EditAnywhere)
 								TArray<FBATTLE_GRID_INFO> updateInfos;
+};
+
+USTRUCT(BlueprintType)
+struct FSTATE_TAG_INFO
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(EditAnywhere)
+		FString stateName;
+
+	UPROPERTY(EditAnywhere)
+	uint8 stipulation;
+
+	UPROPERTY(EditAnywhere)
+	uint8 curCount;
 };
 
 UCLASS(Blueprintable, BlueprintType)
@@ -161,7 +197,7 @@ public:
 								TArray<FString> tags;
 
 				UPROPERTY(EditAnywhere)
-								TArray<FString> stateTags;
+								TArray<FSTATE_TAG_INFO> stateTags;
 
 				UPROPERTY(EditAnywhere)
 								TArray<FSYNC_EFFECT_INFO> effectInfos;

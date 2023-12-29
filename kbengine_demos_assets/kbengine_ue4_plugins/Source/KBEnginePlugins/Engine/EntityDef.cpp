@@ -360,7 +360,7 @@ void EntityDef::initScriptModules()
 	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), property(utype / 41005).");
 
 	TArray<DATATYPE_BASE*> Avatar_onSyncBattleResult_args;
-	Avatar_onSyncBattleResult_args.Add(EntityDef::id2datatypes[51]);
+	Avatar_onSyncBattleResult_args.Add(EntityDef::id2datatypes[54]);
 
 	Method* pAvatar_onSyncBattleResult = new Method();
 	pAvatar_onSyncBattleResult->name = TEXT("onSyncBattleResult");
@@ -421,7 +421,7 @@ void EntityDef::initScriptModules()
 	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(onSyncHeartBeat / 24).");
 
 	TArray<DATATYPE_BASE*> Avatar_onSyncLatestBattleState_args;
-	Avatar_onSyncLatestBattleState_args.Add(EntityDef::id2datatypes[43]);
+	Avatar_onSyncLatestBattleState_args.Add(EntityDef::id2datatypes[46]);
 
 	Method* pAvatar_onSyncLatestBattleState = new Method();
 	pAvatar_onSyncLatestBattleState->name = TEXT("onSyncLatestBattleState");
@@ -452,7 +452,7 @@ void EntityDef::initScriptModules()
 	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(onSyncLaunchSkillFailed / 14).");
 
 	TArray<DATATYPE_BASE*> Avatar_onSyncPlayerBattleInfo_args;
-	Avatar_onSyncPlayerBattleInfo_args.Add(EntityDef::id2datatypes[40]);
+	Avatar_onSyncPlayerBattleInfo_args.Add(EntityDef::id2datatypes[43]);
 
 	Method* pAvatar_onSyncPlayerBattleInfo = new Method();
 	pAvatar_onSyncPlayerBattleInfo->name = TEXT("onSyncPlayerBattleInfo");
@@ -496,7 +496,7 @@ void EntityDef::initScriptModules()
 	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(onSyncRoomStartBattle / 19).");
 
 	TArray<DATATYPE_BASE*> Avatar_onSyncSelectCardInterlude_args;
-	Avatar_onSyncSelectCardInterlude_args.Add(EntityDef::id2datatypes[40]);
+	Avatar_onSyncSelectCardInterlude_args.Add(EntityDef::id2datatypes[43]);
 
 	Method* pAvatar_onSyncSelectCardInterlude = new Method();
 	pAvatar_onSyncSelectCardInterlude->name = TEXT("onSyncSelectCardInterlude");
@@ -527,7 +527,7 @@ void EntityDef::initScriptModules()
 	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(onSyncSwitchController / 22).");
 
 	TArray<DATATYPE_BASE*> Avatar_onSyncTimeInterval_args;
-	Avatar_onSyncTimeInterval_args.Add(EntityDef::id2datatypes[45]);
+	Avatar_onSyncTimeInterval_args.Add(EntityDef::id2datatypes[48]);
 
 	Method* pAvatar_onSyncTimeInterval = new Method();
 	pAvatar_onSyncTimeInterval->name = TEXT("onSyncTimeInterval");
@@ -542,7 +542,7 @@ void EntityDef::initScriptModules()
 	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(onSyncTimeInterval / 20).");
 
 	TArray<DATATYPE_BASE*> Avatar_onSyncUpdateActionInfo_args;
-	Avatar_onSyncUpdateActionInfo_args.Add(EntityDef::id2datatypes[46]);
+	Avatar_onSyncUpdateActionInfo_args.Add(EntityDef::id2datatypes[49]);
 
 	Method* pAvatar_onSyncUpdateActionInfo = new Method();
 	pAvatar_onSyncUpdateActionInfo->name = TEXT("onSyncUpdateActionInfo");
@@ -558,7 +558,7 @@ void EntityDef::initScriptModules()
 
 	TArray<DATATYPE_BASE*> Avatar_onSyncUpdateSelectedCards_args;
 	Avatar_onSyncUpdateSelectedCards_args.Add(EntityDef::id2datatypes[2]);
-	Avatar_onSyncUpdateSelectedCards_args.Add(EntityDef::id2datatypes[40]);
+	Avatar_onSyncUpdateSelectedCards_args.Add(EntityDef::id2datatypes[43]);
 
 	Method* pAvatar_onSyncUpdateSelectedCards = new Method();
 	pAvatar_onSyncUpdateSelectedCards->name = TEXT("onSyncUpdateSelectedCards");
@@ -926,7 +926,7 @@ void EntityDef::initScriptModules()
 	//DEBUG_MSG("EntityDef::initScriptModules: add(Player), property(spaceID / 40002).");
 
 	TArray<DATATYPE_BASE*> Player_onUpdateBattle_args;
-	Player_onUpdateBattle_args.Add(EntityDef::id2datatypes[43]);
+	Player_onUpdateBattle_args.Add(EntityDef::id2datatypes[46]);
 
 	Method* pPlayer_onUpdateBattle = new Method();
 	pPlayer_onUpdateBattle->name = TEXT("onUpdateBattle");
@@ -1264,15 +1264,6 @@ void EntityDef::initDefTypes()
 
 	{
 		uint16 utype = 33;
-		FString typeName = TEXT("BATTLE_GRID_INFO");
-		DATATYPE_BATTLE_GRID_INFO* pDatatype = new DATATYPE_BATTLE_GRID_INFO();
-		EntityDef::datatypes.Add(typeName, (DATATYPE_BASE*)pDatatype);
-		EntityDef::id2datatypes.Add(utype, EntityDef::datatypes[typeName]);
-		EntityDef::datatype2id.Add(typeName, utype);
-	}
-
-	{
-		uint16 utype = 34;
 		FString typeName = TEXT("STATE_INFO");
 		DATATYPE_STATE_INFO* pDatatype = new DATATYPE_STATE_INFO();
 		EntityDef::datatypes.Add(typeName, (DATATYPE_BASE*)pDatatype);
@@ -1281,7 +1272,7 @@ void EntityDef::initDefTypes()
 	}
 
 	{
-		uint16 utype = 35;
+		uint16 utype = 34;
 		FString typeName = TEXT("SYNC_EFFECT_INFO");
 		DATATYPE_SYNC_EFFECT_INFO* pDatatype = new DATATYPE_SYNC_EFFECT_INFO();
 		EntityDef::datatypes.Add(typeName, (DATATYPE_BASE*)pDatatype);
@@ -1290,7 +1281,16 @@ void EntityDef::initDefTypes()
 	}
 
 	{
-		uint16 utype = 36;
+		uint16 utype = 35;
+		FString typeName = TEXT("BATTLE_GRID_INFO");
+		DATATYPE_BATTLE_GRID_INFO* pDatatype = new DATATYPE_BATTLE_GRID_INFO();
+		EntityDef::datatypes.Add(typeName, (DATATYPE_BASE*)pDatatype);
+		EntityDef::id2datatypes.Add(utype, EntityDef::datatypes[typeName]);
+		EntityDef::datatype2id.Add(typeName, utype);
+	}
+
+	{
+		uint16 utype = 39;
 		FString typeName = TEXT("SYNC_CARD_INFO");
 		DATATYPE_SYNC_CARD_INFO* pDatatype = new DATATYPE_SYNC_CARD_INFO();
 		EntityDef::datatypes.Add(typeName, (DATATYPE_BASE*)pDatatype);
@@ -1299,7 +1299,7 @@ void EntityDef::initDefTypes()
 	}
 
 	{
-		uint16 utype = 40;
+		uint16 utype = 43;
 		FString typeName = TEXT("SYNC_PLAYER_BATTLE_INFO");
 		DATATYPE_SYNC_PLAYER_BATTLE_INFO* pDatatype = new DATATYPE_SYNC_PLAYER_BATTLE_INFO();
 		EntityDef::datatypes.Add(typeName, (DATATYPE_BASE*)pDatatype);
@@ -1308,7 +1308,7 @@ void EntityDef::initDefTypes()
 	}
 
 	{
-		uint16 utype = 43;
+		uint16 utype = 46;
 		FString typeName = TEXT("CORE_UPDATE_BATLLE_INFO");
 		DATATYPE_CORE_UPDATE_BATLLE_INFO* pDatatype = new DATATYPE_CORE_UPDATE_BATLLE_INFO();
 		EntityDef::datatypes.Add(typeName, (DATATYPE_BASE*)pDatatype);
@@ -1317,7 +1317,7 @@ void EntityDef::initDefTypes()
 	}
 
 	{
-		uint16 utype = 45;
+		uint16 utype = 48;
 		FString typeName = TEXT("SYNC_BATTLE_TIME_INFO");
 		DATATYPE_SYNC_BATTLE_TIME_INFO* pDatatype = new DATATYPE_SYNC_BATTLE_TIME_INFO();
 		EntityDef::datatypes.Add(typeName, (DATATYPE_BASE*)pDatatype);
@@ -1326,7 +1326,7 @@ void EntityDef::initDefTypes()
 	}
 
 	{
-		uint16 utype = 46;
+		uint16 utype = 49;
 		FString typeName = TEXT("SYNC_MODIFICATION_INFO");
 		DATATYPE_SYNC_MODIFICATION_INFO* pDatatype = new DATATYPE_SYNC_MODIFICATION_INFO();
 		EntityDef::datatypes.Add(typeName, (DATATYPE_BASE*)pDatatype);
@@ -1335,7 +1335,7 @@ void EntityDef::initDefTypes()
 	}
 
 	{
-		uint16 utype = 49;
+		uint16 utype = 52;
 		FString typeName = TEXT("PLAYER_PERSIST_INFO");
 		DATATYPE_PLAYER_PERSIST_INFO* pDatatype = new DATATYPE_PLAYER_PERSIST_INFO();
 		EntityDef::datatypes.Add(typeName, (DATATYPE_BASE*)pDatatype);
@@ -1344,7 +1344,7 @@ void EntityDef::initDefTypes()
 	}
 
 	{
-		uint16 utype = 51;
+		uint16 utype = 54;
 		FString typeName = TEXT("STRING_LIST");
 		DATATYPE_STRING_LIST* pDatatype = new DATATYPE_STRING_LIST();
 		EntityDef::datatypes.Add(typeName, (DATATYPE_BASE*)pDatatype);

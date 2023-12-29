@@ -99,6 +99,13 @@ class Room(KBEngine.Entity):
 				battleGridInfo = {
 					"gridNb": k,
 					"cardUid": v["cardKey"],
+					"cardName": v["cardName"],
+					"hp": v["hp"],
+					"defence": v["defence"],
+					"agility": v["agility"],
+					"tags": v["tags"],
+					"stateTags": v["stateTags"],
+					"effectInfos": v["effectInfos"],
 					"avatarId": v["avatarId"]
 				}
 				allGridInfo.append(battleGridInfo)
@@ -369,18 +376,5 @@ class Room(KBEngine.Entity):
 			else:
 				# if effect lauching fails, notify corresponding client
 				self.avatars[launchAvatarId].roomReqNotifyLaunchSkillFailed(self.curActionSequence, clientActionSequence)
-
-
-	def checkPrerequisites(self, targetGrid, launchGrid, effectInfo):
-		if effectInfo["effectName"] == "injury":
-			if self.gridInfoDict[targetGrid]["curHp"] < self.gridInfoDict[targetGrid]["originHp"]:
-				return true
-			else:
-				return false
-		elif effectInfo["effectName"] == "beingHurt":
-			if effectInfo["hurtValues"][0] > self.gridInfoDict[targetGrid]["prereqs"]["beingHurt"]["triggerValue"]:
-				return true
-			else:
-				return false
 
 

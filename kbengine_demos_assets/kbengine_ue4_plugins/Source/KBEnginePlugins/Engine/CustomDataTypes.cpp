@@ -121,20 +121,6 @@ void DATATYPE_UPDATE_GRID_INFO_LIST::addToStreamEx(Bundle& stream, const UPDATE_
 	updateGridList_DataType.addToStreamEx(stream, v.updateGridList);
 }
 
-void DATATYPE_BATTLE_GRID_INFO::createFromStreamEx(MemoryStream& stream, BATTLE_GRID_INFO& datas)
-{
-	datas.gridNb = stream.readInt32();
-	datas.cardUid = stream.readString();
-	datas.avatarId = stream.readUint64();
-}
-
-void DATATYPE_BATTLE_GRID_INFO::addToStreamEx(Bundle& stream, const BATTLE_GRID_INFO& v)
-{
-	stream.writeInt32(v.gridNb);
-	stream.writeString(v.cardUid);
-	stream.writeUint64(v.avatarId);
-}
-
 void DATATYPE_STATE_INFO::createFromStreamEx(MemoryStream& stream, STATE_INFO& datas)
 {
 	datas.state = stream.readString();
@@ -161,6 +147,34 @@ void DATATYPE_SYNC_EFFECT_INFO::addToStreamEx(Bundle& stream, const SYNC_EFFECT_
 	stream.writeString(v.effectName);
 	stream.writeUint8(v.countDown);
 	stream.writeUint8(v.availableTimes);
+}
+
+void DATATYPE_BATTLE_GRID_INFO::createFromStreamEx(MemoryStream& stream, BATTLE_GRID_INFO& datas)
+{
+	datas.gridNb = stream.readInt32();
+	datas.cardUid = stream.readString();
+	datas.cardName = stream.readString();
+	datas.hp = stream.readUint8();
+	datas.defence = stream.readUint8();
+	datas.agility = stream.readUint8();
+	tags_DataType.createFromStreamEx(stream, datas.tags);
+	stateTags_DataType.createFromStreamEx(stream, datas.stateTags);
+	effectInfos_DataType.createFromStreamEx(stream, datas.effectInfos);
+	datas.avatarId = stream.readUint64();
+}
+
+void DATATYPE_BATTLE_GRID_INFO::addToStreamEx(Bundle& stream, const BATTLE_GRID_INFO& v)
+{
+	stream.writeInt32(v.gridNb);
+	stream.writeString(v.cardUid);
+	stream.writeString(v.cardName);
+	stream.writeUint8(v.hp);
+	stream.writeUint8(v.defence);
+	stream.writeUint8(v.agility);
+	tags_DataType.addToStreamEx(stream, v.tags);
+	stateTags_DataType.addToStreamEx(stream, v.stateTags);
+	effectInfos_DataType.addToStreamEx(stream, v.effectInfos);
+	stream.writeUint64(v.avatarId);
 }
 
 void DATATYPE_SYNC_CARD_INFO::createFromStreamEx(MemoryStream& stream, SYNC_CARD_INFO& datas)

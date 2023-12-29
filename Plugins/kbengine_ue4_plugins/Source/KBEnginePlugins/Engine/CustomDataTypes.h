@@ -158,14 +158,6 @@ public:
 };
 
 
-class KBENGINEPLUGINS_API DATATYPE_BATTLE_GRID_INFO : DATATYPE_BASE
-{
-public:
-	void createFromStreamEx(MemoryStream& stream, BATTLE_GRID_INFO& datas);
-	void addToStreamEx(Bundle& stream, const BATTLE_GRID_INFO& v);
-};
-
-
 class KBENGINEPLUGINS_API DATATYPE_STATE_INFO : DATATYPE_BASE
 {
 public:
@@ -179,6 +171,96 @@ class KBENGINEPLUGINS_API DATATYPE_SYNC_EFFECT_INFO : DATATYPE_BASE
 public:
 	void createFromStreamEx(MemoryStream& stream, SYNC_EFFECT_INFO& datas);
 	void addToStreamEx(Bundle& stream, const SYNC_EFFECT_INFO& v);
+};
+
+
+class KBENGINEPLUGINS_API DATATYPE_BATTLE_GRID_INFO : DATATYPE_BASE
+{
+public:
+	class KBENGINEPLUGINS_API DATATYPE__BATTLE_GRID_INFO_tags_ArrayType_ChildArray : public DATATYPE_BASE
+	{
+	public:
+		void createFromStreamEx(MemoryStream& stream, TArray<FString>& datas)
+		{
+			uint32 size = stream.readUint32();
+			while(size > 0)
+			{
+				--size;
+				datas.Add(stream.readString());
+			};
+
+		}
+
+		void addToStreamEx(Bundle& stream, const TArray<FString>& v)
+		{
+			stream.writeUint32((uint32)v.Num());
+			for(int i=0; i<v.Num(); ++i)
+			{
+				stream.writeString(v[i]);
+			};
+		}
+	};
+
+	DATATYPE__BATTLE_GRID_INFO_tags_ArrayType_ChildArray tags_DataType;
+
+	class KBENGINEPLUGINS_API DATATYPE__BATTLE_GRID_INFO_stateTags_ArrayType_ChildArray : public DATATYPE_BASE
+	{
+	public:
+		DATATYPE_STATE_INFO itemType;
+
+		void createFromStreamEx(MemoryStream& stream, TArray<STATE_INFO>& datas)
+		{
+			uint32 size = stream.readUint32();
+			while(size > 0)
+			{
+				--size;
+				itemType.createFromStreamEx(stream, datas.EmplaceAt_GetRef(datas.Num()));
+			};
+
+		}
+
+		void addToStreamEx(Bundle& stream, const TArray<STATE_INFO>& v)
+		{
+			stream.writeUint32((uint32)v.Num());
+			for(int i=0; i<v.Num(); ++i)
+			{
+				itemType.addToStreamEx(stream, v[i]);
+			};
+		}
+	};
+
+	DATATYPE__BATTLE_GRID_INFO_stateTags_ArrayType_ChildArray stateTags_DataType;
+
+	class KBENGINEPLUGINS_API DATATYPE__BATTLE_GRID_INFO_effectInfos_ArrayType_ChildArray : public DATATYPE_BASE
+	{
+	public:
+		DATATYPE_SYNC_EFFECT_INFO itemType;
+
+		void createFromStreamEx(MemoryStream& stream, TArray<SYNC_EFFECT_INFO>& datas)
+		{
+			uint32 size = stream.readUint32();
+			while(size > 0)
+			{
+				--size;
+				itemType.createFromStreamEx(stream, datas.EmplaceAt_GetRef(datas.Num()));
+			};
+
+		}
+
+		void addToStreamEx(Bundle& stream, const TArray<SYNC_EFFECT_INFO>& v)
+		{
+			stream.writeUint32((uint32)v.Num());
+			for(int i=0; i<v.Num(); ++i)
+			{
+				itemType.addToStreamEx(stream, v[i]);
+			};
+		}
+	};
+
+	DATATYPE__BATTLE_GRID_INFO_effectInfos_ArrayType_ChildArray effectInfos_DataType;
+
+	void createFromStreamEx(MemoryStream& stream, BATTLE_GRID_INFO& datas);
+	void addToStreamEx(Bundle& stream, const BATTLE_GRID_INFO& v);
 };
 
 

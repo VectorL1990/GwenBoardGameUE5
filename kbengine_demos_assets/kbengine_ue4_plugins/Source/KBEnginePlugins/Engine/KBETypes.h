@@ -248,27 +248,6 @@ inline bool operator ==(const UPDATE_GRID_INFO_LIST& a, const UPDATE_GRID_INFO_L
 	return a.updateId == b.updateId && a.updateGridList == b.updateGridList;
 };
 
-class BATTLE_GRID_INFO
-{
-public:
-	int32 gridNb;
-	FString cardUid;
-	uint64 avatarId;
-
-	BATTLE_GRID_INFO():
-	gridNb(0),
-	cardUid(),
-	avatarId(0)
-	{
-	}
-
-};
-
-inline bool operator ==(const BATTLE_GRID_INFO& a, const BATTLE_GRID_INFO& b)
-{
-	return a.gridNb == b.gridNb && a.cardUid == b.cardUid && a.avatarId == b.avatarId;
-};
-
 class STATE_INFO
 {
 public:
@@ -309,6 +288,41 @@ public:
 inline bool operator ==(const SYNC_EFFECT_INFO& a, const SYNC_EFFECT_INFO& b)
 {
 	return a.effectName == b.effectName && a.countDown == b.countDown && a.availableTimes == b.availableTimes;
+};
+
+class BATTLE_GRID_INFO
+{
+public:
+	int32 gridNb;
+	FString cardUid;
+	FString cardName;
+	uint8 hp;
+	uint8 defence;
+	uint8 agility;
+	TArray<FString> tags;
+	TArray<STATE_INFO> stateTags;
+	TArray<SYNC_EFFECT_INFO> effectInfos;
+	uint64 avatarId;
+
+	BATTLE_GRID_INFO():
+	gridNb(0),
+	cardUid(),
+	cardName(),
+	hp(0),
+	defence(0),
+	agility(0),
+	tags(),
+	stateTags(),
+	effectInfos(),
+	avatarId(0)
+	{
+	}
+
+};
+
+inline bool operator ==(const BATTLE_GRID_INFO& a, const BATTLE_GRID_INFO& b)
+{
+	return a.gridNb == b.gridNb && a.cardUid == b.cardUid && a.cardName == b.cardName && a.hp == b.hp && a.defence == b.defence && a.agility == b.agility && a.tags == b.tags && a.stateTags == b.stateTags && a.effectInfos == b.effectInfos && a.avatarId == b.avatarId;
 };
 
 class SYNC_CARD_INFO

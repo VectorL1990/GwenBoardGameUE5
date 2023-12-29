@@ -51,4 +51,6 @@ class GWENBOARDGAMECLIENT_API UGwenBoardGameInstance : public UGameInstance
 
 				/* Time between ticks. Please account for the fact that it takes 1ms to wake up on a modern PC, so 0.01f would effectively be 0.011f */
 				float timeBetweenTicks = 0.008f;
+
+				FString curRoomKey;
 };

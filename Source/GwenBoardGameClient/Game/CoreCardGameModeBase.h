@@ -65,6 +65,8 @@ public:
 
 private:
     // --- Local logic functions
+ void CheckEntitiesCreated();
+
     void GetAllPresetObjects();
 
     void SetupBattleBoardAndCards();
@@ -78,9 +80,11 @@ private:
     void CalibrateCurrentGlobalInfo(int32 curActionSequence, int32 curSwitchControllerSequence, uint8 curControllerNb);
 
     // --- Account req functions
-    void ReqEnterRoom();
 
     void ReqPlayCard(int32 targetGridNb, int32 playCardUid);
+
+    // --- Account sync functions
+    void onEnterWorld(const UKBEventData* eventData);
 
     // --- Avatar req functions
     void ReqChangeSelectCard(FString changeCardKey);
@@ -125,6 +129,8 @@ private:
 
 
     virtual void InitPlayerBattleInfoDone(TArray<FString> cardList) override;
+
+    bool hasReqEnterRoom = false;
 
     InterludeState interludeState = InterludeState::Default;
 

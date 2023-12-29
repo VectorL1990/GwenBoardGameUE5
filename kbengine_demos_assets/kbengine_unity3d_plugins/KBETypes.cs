@@ -1608,14 +1608,6 @@ namespace KBEngine
 
 	}
 
-	public class BATTLE_GRID_INFO
-	{
-		public Int32 gridNb = 0;
-		public string cardUid = "";
-		public UInt64 avatarId = 0;
-
-	}
-
 	public class STATE_INFO
 	{
 		public string state = "";
@@ -1629,6 +1621,21 @@ namespace KBEngine
 		public string effectName = "";
 		public Byte countDown = 0;
 		public Byte availableTimes = 0;
+
+	}
+
+	public class BATTLE_GRID_INFO
+	{
+		public Int32 gridNb = 0;
+		public string cardUid = "";
+		public string cardName = "";
+		public Byte hp = 0;
+		public Byte defence = 0;
+		public Byte agility = 0;
+		public List<string> tags = new List<string>();
+		public List<STATE_INFO> stateTags = new List<STATE_INFO>();
+		public List<SYNC_EFFECT_INFO> effectInfos = new List<SYNC_EFFECT_INFO>();
+		public UInt64 avatarId = 0;
 
 	}
 

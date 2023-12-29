@@ -99,20 +99,6 @@
 		</Properties>
 	</UPDATE_GRID_INFO_LIST>
 
-	<BATTLE_GRID_INFO> FIXED_DICT
-		<Properties>
-			<gridNb>
-				<Type> INT32 </Type>
-			</gridNb>
-			<cardUid>
-				<Type> STRING </Type>
-			</cardUid>
-			<avatarId>
-				<Type> UINT64 </Type>
-			</avatarId>
-		</Properties>
-	</BATTLE_GRID_INFO>
-
 	<STATE_INFO> FIXED_DICT
 		<Properties>
 			<state>
@@ -140,6 +126,41 @@
 			</availableTimes>
 		</Properties>
 	</SYNC_EFFECT_INFO>
+
+	<BATTLE_GRID_INFO> FIXED_DICT
+		<Properties>
+			<gridNb>
+				<Type> INT32 </Type>
+			</gridNb>
+			<cardUid>
+				<Type> STRING </Type>
+			</cardUid>
+			<cardName>
+				<Type> STRING </Type>
+			</cardName>
+			<hp>
+				<Type> UINT8 </Type>
+			</hp>
+			<defence>
+				<Type> UINT8 </Type>
+			</defence>
+			<agility>
+				<Type> UINT8 </Type>
+			</agility>
+			<tags>
+				<Type> ARRAY <of> STRING </of> </Type>
+			</tags>
+			<stateTags>
+				<Type> ARRAY <of> STATE_INFO </of> </Type>
+			</stateTags>
+			<effectInfos>
+				<Type> ARRAY <of> SYNC_EFFECT_INFO </of> </Type>
+			</effectInfos>
+			<avatarId>
+				<Type> UINT64 </Type>
+			</avatarId>
+		</Properties>
+	</BATTLE_GRID_INFO>
 
 	<SYNC_CARD_INFO> FIXED_DICT
 		<Properties>

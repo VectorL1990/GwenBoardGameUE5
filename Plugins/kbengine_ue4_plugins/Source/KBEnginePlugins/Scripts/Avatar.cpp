@@ -85,14 +85,21 @@ namespace KBEngine
             syncCardInfo.defence = param.cardList[i].defence;
             syncCardInfo.agility = param.cardList[i].agility;
             syncCardInfo.tags = param.cardList[i].tags;
-            syncCardInfo.stateTags = param.cardList[i].stateTags;
-            for (int32 j = 0; j < battleInfo.playerInfo.cardList[i].effectInfos.Num(); j++)
+            for (int32 j = 0; j < param.cardList[i].stateTags.Num(); j++)
+            {
+             FSTATE_TAG_INFO stateTagInfo;
+             stateTagInfo.stateName = param.cardList[i].stateTags[j].state;
+             stateTagInfo.stipulation = param.cardList[i].stateTags[j].stipulation;
+             stateTagInfo.curCount = param.cardList[i].stateTags[j].curCount;
+             syncCardInfo.stateTags.Add(stateTagInfo);
+            }
+            for (int32 j = 0; j < param.cardList[i].effectInfos.Num(); j++)
             {
                 FSYNC_EFFECT_INFO syncEffectInfo;
                 syncEffectInfo.effectName = param.cardList[i].effectInfos[j].effectName;
                 syncEffectInfo.availableTimes = param.cardList[i].effectInfos[j].availableTimes;
                 syncEffectInfo.countDown = param.cardList[i].effectInfos[j].countDown;
-                cardInfo.effectInfos.Add(syncEffectInfo);
+                syncCardInfo.effectInfos.Add(syncEffectInfo);
             }
             eventData->cardList.Add(syncCardInfo);
         }
@@ -161,7 +168,14 @@ namespace KBEngine
             cardInfo.defence = battleInfo.playerInfo.cardList[i].defence;
             cardInfo.agility = battleInfo.playerInfo.cardList[i].agility;
             cardInfo.tags = battleInfo.playerInfo.cardList[i].tags;
-            cardInfo.stateTags = battleInfo.playerInfo.cardList[i].stateTags;
+            for (int32 j = 0; j < battleInfo.playerInfo.cardList[i].stateTags.Num(); j++)
+            {
+             FSTATE_TAG_INFO stateTagInfo;
+             stateTagInfo.stateName = battleInfo.playerInfo.cardList[i].stateTags[j].state;
+             stateTagInfo.curCount = battleInfo.playerInfo.cardList[i].stateTags[j].curCount;
+             stateTagInfo.stipulation = battleInfo.playerInfo.cardList[i].stateTags[j].stipulation;
+             cardInfo.stateTags.Add(stateTagInfo);
+            }
             for (int32 j = 0; j < battleInfo.playerInfo.cardList[i].effectInfos.Num(); j++)
             {
                 FSYNC_EFFECT_INFO syncEffectInfo;
@@ -197,8 +211,14 @@ namespace KBEngine
             syncCardInfo.defence = allCardInfos.cardList[i].defence;
             syncCardInfo.agility = allCardInfos.cardList[i].agility;
             syncCardInfo.tags = allCardInfos.cardList[i].tags;
-            syncCardInfo.stateTags = allCardInfos.cardList[i].stateTags;
-            eventData->cardList.Add(syncCardInfo);
+            for (int32 j = 0; j < allCardInfos.cardList[i].stateTags.Num(); j++)
+            {
+             FSTATE_TAG_INFO stateTagInfo;
+             stateTagInfo.stateName = allCardInfos.cardList[i].stateTags[j].state;
+             stateTagInfo.curCount = allCardInfos.cardList[i].stateTags[j].curCount;
+             stateTagInfo.stipulation = allCardInfos.cardList[i].stateTags[j].stipulation;
+             syncCardInfo.stateTags.Add(stateTagInfo);
+            }
             for (int32 j = 0; j < allCardInfos.cardList[i].effectInfos.Num(); j++)
             {
                 FSYNC_EFFECT_INFO syncEffectInfo;
@@ -207,6 +227,7 @@ namespace KBEngine
                 syncEffectInfo.availableTimes = allCardInfos.cardList[i].effectInfos[j].availableTimes;
                 syncCardInfo.effectInfos.Add(syncEffectInfo);
             }
+            eventData->cardList.Add(syncCardInfo);
         }
         eventData->handCardList = allCardInfos.handCardList;
         KBENGINE_EVENT_FIRE("onSyncUpdateSelectedCards", eventData);
@@ -230,7 +251,14 @@ namespace KBEngine
             syncCardInfo.defence = playerInfo.cardList[i].defence;
             syncCardInfo.agility = playerInfo.cardList[i].agility;
             syncCardInfo.tags = playerInfo.cardList[i].tags;
-            syncCardInfo.stateTags = playerInfo.cardList[i].stateTags;
+            for (int32 j = 0; j < playerInfo.cardList[i].stateTags.Num(); j++)
+            {
+             FSTATE_TAG_INFO stateTagInfo;
+             stateTagInfo.stateName = playerInfo.cardList[i].stateTags[j].state;
+             stateTagInfo.curCount = playerInfo.cardList[i].stateTags[j].curCount;
+             stateTagInfo.stipulation = playerInfo.cardList[i].stateTags[j].stipulation;
+             syncCardInfo.stateTags.Add(stateTagInfo);
+            }
             for (int32 j = 0; j < playerInfo.cardList[i].effectInfos.Num(); j++)
             {
                 FSYNC_EFFECT_INFO syncEffectInfo;
@@ -273,7 +301,14 @@ namespace KBEngine
             syncCardInfo.defence = modificationInfo.updateCardList[i].defence;
             syncCardInfo.agility = modificationInfo.updateCardList[i].agility;
             syncCardInfo.tags = modificationInfo.updateCardList[i].tags;
-            syncCardInfo.stateTags = modificationInfo.updateCardList[i].stateTags;
+            for (int32 j = 0; j < modificationInfo.updateCardList[i].stateTags.Num(); j++)
+            {
+             FSTATE_TAG_INFO stateTagInfo;
+             stateTagInfo.stateName = modificationInfo.updateCardList[i].stateTags[j].state;
+             stateTagInfo.curCount = modificationInfo.updateCardList[i].stateTags[j].curCount;
+             stateTagInfo.stipulation = modificationInfo.updateCardList[i].stateTags[j].stipulation;
+             syncCardInfo.stateTags.Add(stateTagInfo);
+            }
             for (int32 j = 0; j < modificationInfo.updateCardList[i].effectInfos.Num(); j++)
             {
                 FSYNC_EFFECT_INFO syncEffectInfo;
@@ -290,6 +325,27 @@ namespace KBEngine
             FBATTLE_GRID_INFO gridInfo;
             gridInfo.gridNb = modificationInfo.updateGridList[i].gridNb;
             gridInfo.cardUid = modificationInfo.updateGridList[i].cardUid;
+            gridInfo.cardName = modificationInfo.updateGridList[i].cardName;
+            gridInfo.hp = modificationInfo.updateGridList[i].hp;
+            gridInfo.defence = modificationInfo.updateGridList[i].defence;
+            gridInfo.agility = modificationInfo.updateGridList[i].agility;
+            gridInfo.tags = modificationInfo.updateGridList[i].tags;
+            for (int32 j = 0; j < modificationInfo.updateGridList[i].stateTags.Num(); j++)
+            {
+             FSTATE_TAG_INFO stateTagInfo;
+             stateTagInfo.stateName = modificationInfo.updateGridList[i].stateTags[j].state;
+             stateTagInfo.curCount = modificationInfo.updateGridList[i].stateTags[j].curCount;
+             stateTagInfo.stipulation = modificationInfo.updateGridList[i].stateTags[j].stipulation;
+             gridInfo.stateTags.Add(stateTagInfo);
+            }
+            for (int32 j = 0; j < modificationInfo.updateGridList[i].effectInfos.Num(); j++)
+            {
+             FSYNC_EFFECT_INFO syncEffectInfo;
+             syncEffectInfo.effectName = modificationInfo.updateGridList[i].effectInfos[j].effectName;
+             syncEffectInfo.availableTimes = modificationInfo.updateGridList[i].effectInfos[j].availableTimes;
+             syncEffectInfo.countDown = modificationInfo.updateGridList[i].effectInfos[j].countDown;
+             gridInfo.effectInfos.Add(syncEffectInfo);
+            }
             gridInfo.avatarId = FString::Printf(TEXT("%lld"), modificationInfo.updateGridList[i].avatarId);
             eventData->gridInfos.Add(gridInfo);
         }
