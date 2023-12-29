@@ -97,6 +97,10 @@ private:
 
     void ReqLatestBattleInfo();
 
+    void ReqPlayCardAction(int32 actionSequence, FString cardUid, int32 gridNb);
+
+    void ReqLaunchCardSkill(int32 actionSequence, FString cardUid, FString skillName, int32 launchGridNb, int32 targetGridNb);
+
     // --- Avatar sync functions
 
     void onReceiveUpdateCoreGame(const UKBEventData* eventData);
@@ -112,6 +116,8 @@ private:
     void onSyncHeartBeat(const UKBEventData* eventData);
 
     void onSyncLatestBattleState(const UKBEventData* eventData);
+
+    void onSyncLaunchSkillFailed(const UKBEventData* eventData);
 
     virtual void onSyncPlayerBattleInfo(const UKBEventData* eventData) override;
 

@@ -376,6 +376,26 @@ void ACoreCardGameModeBase::ReqLatestBattleInfo()
 				KBENGINE_EVENT_FIRE("ReqLatestBattleInfo", eventData);
 }
 
+void ACoreCardGameModeBase::ReqPlayCardAction(int32 actionSequence, FString cardUid, int32 gridNb)
+{
+				UKBEventData_reqPlayCardAction* eventData = NewObject<UKBEventData_reqPlayCardAction>();
+				eventData->actionSequence = actionSequence;
+				eventData->cardUid = cardUid;
+				eventData->gridNb = gridNb;
+				KBENGINE_EVENT_FIRE("ReqPlayCardAction", eventData);
+}
+
+void ACoreCardGameModeBase::ReqLaunchCardSkill(int32 actionSequence, FString cardUid, FString skillName, int32 launchGridNb, int32 targetGridNb)
+{
+				UKBEventData_reqLaunchCardSkill* eventData = NewObject<UKBEventData_reqLaunchCardSkill>();
+				eventData->actionSequence = actionSequence;
+				eventData->cardUid = cardUid;
+				eventData->skillName = skillName;
+				eventData->launchGridNb = launchGridNb;
+				eventData->targetGridNb = targetGridNb;
+				KBENGINE_EVENT_FIRE("ReqLaunchCardSkill", eventData);
+}
+
 void ACoreCardGameModeBase::onUpdateGridInfoList(const UKBEventData* eventData)
 {
 				/*auto updateGridInfoListData = Cast<UKBEventData_onUpdateGridInfoList>(eventData);

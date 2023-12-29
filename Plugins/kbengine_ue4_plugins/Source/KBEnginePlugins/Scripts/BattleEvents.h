@@ -424,3 +424,43 @@ public:
 				TArray<FSYNC_CARD_INFO> updateCardInfos;
 				
 };
+
+UCLASS(Blueprintable, BlueprintType)
+class KBENGINEPLUGINS_API UKBEventData_reqPlayCardAction : public UKBEventData
+{
+				GENERATED_BODY()
+
+public:
+				UPROPERTY(EditAnywhere)
+								int32 actionSequence;
+
+				UPROPERTY(EditAnywhere)
+								FString cardUid;
+
+				UPROPERTY(EditAnywhere)
+								int32 gridNb;
+
+};
+
+UCLASS(Blueprintable, BlueprintType)
+class KBENGINEPLUGINS_API UKBEventData_reqLaunchCardSkill : public UKBEventData
+{
+				GENERATED_BODY()
+
+public:
+				UPROPERTY(EditAnywhere)
+								int32 actionSequence;
+
+				UPROPERTY(EditAnywhere)
+								FString cardUid;
+
+				UPROPERTY(EditAnywhere)
+								FString skillName;
+
+				UPROPERTY(EditAnywhere)
+								int32 launchGridNb;
+
+				UPROPERTY(EditAnywhere)
+								int32 targetGridNb;
+
+};
