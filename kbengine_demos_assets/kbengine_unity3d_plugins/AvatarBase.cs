@@ -37,6 +37,7 @@ namespace KBEngine
 		public abstract void onSyncLatestBattleState(CORE_UPDATE_BATLLE_INFO arg1); 
 		public abstract void onSyncLaunchSkillFailed(Int32 arg1, Int32 arg2); 
 		public abstract void onSyncPlayerBattleInfo(SYNC_PLAYER_BATTLE_INFO arg1); 
+		public abstract void onSyncReceiveFinishCardSelection(); 
 		public abstract void onSyncResumeBattle(Int32 arg1); 
 		public abstract void onSyncRoomStartBattle(); 
 		public abstract void onSyncSelectCardInterlude(SYNC_PLAYER_BATTLE_INFO arg1); 
@@ -164,6 +165,9 @@ namespace KBEngine
 				case 15:
 					SYNC_PLAYER_BATTLE_INFO onSyncPlayerBattleInfo_arg1 = ((DATATYPE_SYNC_PLAYER_BATTLE_INFO)method.args[0]).createFromStreamEx(stream);
 					onSyncPlayerBattleInfo(onSyncPlayerBattleInfo_arg1);
+					break;
+				case 27:
+					onSyncReceiveFinishCardSelection();
 					break;
 				case 23:
 					Int32 onSyncResumeBattle_arg1 = stream.readInt32();

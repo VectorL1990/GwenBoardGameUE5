@@ -61,13 +61,15 @@ public:
     UPROPERTY(EditDefaultsOnly)
     float gridSpawnCardOffset = 0.1;
 
-    
+    TMap<CameraType, ABattleCamera*> camerasMap;
 
-private:
+public:
     // --- Local logic functions
- void CheckEntitiesCreated();
+    void CheckEntitiesCreated();
 
     void GetAllPresetObjects();
+
+    void InitPreBattle();
 
     void SetupBattleBoardAndCards();
 
@@ -121,6 +123,8 @@ private:
 
     virtual void onSyncPlayerBattleInfo(const UKBEventData* eventData) override;
 
+    void onSyncReceiveFinishCardSelection(const UKBEventData* eventData);
+
     void onSyncResumeBattle(const UKBEventData* eventData);
 
     void onSyncRoomStartBattle(const UKBEventData* eventData);
@@ -155,9 +159,6 @@ private:
     uint8 receiveControllerNb = 0;
 
     int32 receiveSwitchControllerSequence = 0;
-
-    UPROPERTY(EditAnywhere)
-        TMap<CameraType, ABattleCamera*> camerasMap;
 
     UPROPERTY()
         TMap<int32, ABoardGrid*> boardGrids;

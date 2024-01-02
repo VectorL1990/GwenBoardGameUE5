@@ -69,6 +69,36 @@ public:
 };
 
 USTRUCT(BlueprintType)
+struct FSTATE_TAG_INFO
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(EditAnywhere)
+		FString stateName;
+
+	UPROPERTY(EditAnywhere)
+		uint8 stipulation;
+
+	UPROPERTY(EditAnywhere)
+		uint8 curCount;
+};
+
+USTRUCT(BlueprintType)
+struct FSYNC_EFFECT_INFO
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(EditAnywhere)
+		FString effectName;
+
+	UPROPERTY(EditAnywhere)
+		uint8 availableTimes;
+
+	UPROPERTY(EditAnywhere)
+		uint8 countDown;
+};
+
+USTRUCT(BlueprintType)
 struct FBATTLE_GRID_INFO
 {
 				GENERATED_BODY()
@@ -113,20 +143,7 @@ public:
 								TArray<FBATTLE_GRID_INFO> updateInfos;
 };
 
-USTRUCT(BlueprintType)
-struct FSTATE_TAG_INFO
-{
-	GENERATED_BODY()
-public:
-	UPROPERTY(EditAnywhere)
-		FString stateName;
 
-	UPROPERTY(EditAnywhere)
-	uint8 stipulation;
-
-	UPROPERTY(EditAnywhere)
-	uint8 curCount;
-};
 
 UCLASS(Blueprintable, BlueprintType)
 class KBENGINEPLUGINS_API UKBEventData_onUpdateBattle : public UKBEventData
@@ -158,20 +175,7 @@ public:
 								int32 testParam;
 };
 
-USTRUCT(BlueprintType)
-struct FSYNC_EFFECT_INFO
-{
-				GENERATED_BODY()
-public:
-				UPROPERTY(EditAnywhere)
-				FString effectName;
 
-				UPROPERTY(EditAnywhere)
-				uint8 availableTimes;
-
-				UPROPERTY(EditAnywhere)
-				uint8 countDown;
-};
 
 USTRUCT(BlueprintType)
 struct FSYNC_CARD_INFO
@@ -366,7 +370,7 @@ class KBENGINEPLUGINS_API UKBEventData_onSyncResumeBattle : public UKBEventData
 
 public:
 				UPROPERTY(EditAnywhere)
-				uint8 controllerNb;
+				int32 controllerNb;
 };
 
 UCLASS(Blueprintable, BlueprintType)

@@ -208,6 +208,7 @@ class Avatar(KBEngine.Proxy,
 		self.client.onSyncUpdateSelectedCards(self.changeSelectCardNb, syncPlayerBattleInfo)
 	
 	def reqFinishSelectCards(self):
+		self.client.onSyncReceiveFinishCardSelection()
 		self.roomEntityCall.avatarFinishSelectCards(self)
 
 	def reqSyncHeartBeat(self):

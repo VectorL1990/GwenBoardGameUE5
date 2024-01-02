@@ -44,9 +44,9 @@ public:
     int32 defence;
 
     UPROPERTY()
-    TArray<FString> tags;
+    TArray<FString> inherentTags;
 
     UPROPERTY()
-    TArray<FString> stateTags;
+    TArray<FSTATE_TAG_INFO> stateTags;
 
 };

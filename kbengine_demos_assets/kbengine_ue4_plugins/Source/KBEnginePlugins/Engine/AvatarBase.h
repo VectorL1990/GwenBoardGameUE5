@@ -44,6 +44,7 @@ public:
 	virtual void onSyncLatestBattleState(const CORE_UPDATE_BATLLE_INFO& arg1) = 0; 
 	virtual void onSyncLaunchSkillFailed(int32 arg1, int32 arg2) = 0; 
 	virtual void onSyncPlayerBattleInfo(const SYNC_PLAYER_BATTLE_INFO& arg1) = 0; 
+	virtual void onSyncReceiveFinishCardSelection() = 0; 
 	virtual void onSyncResumeBattle(int32 arg1) = 0; 
 	virtual void onSyncRoomStartBattle() = 0; 
 	virtual void onSyncSelectCardInterlude(const SYNC_PLAYER_BATTLE_INFO& arg1) = 0; 

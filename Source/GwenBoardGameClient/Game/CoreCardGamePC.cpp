@@ -13,7 +13,7 @@
 void ACoreCardGamePC::BeginPlay()
 {
     SetShowMouseCursor(true);
-
+    ShowBattleWidget();
 }
 
 void ACoreCardGamePC::Tick(float DeltaTime)
@@ -68,5 +68,25 @@ void ACoreCardGamePC::DealLeftClick()
             // send message to server to update battle
         }
     }
+}
+
+void ACoreCardGamePC::InitSelectCardCamera()
+{
+    AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
+    ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
+    ABattleCamera* selectCardCamera = coreCardGameMode->camerasMap[CameraType::SelectCardCamera];
+    SetViewTarget(selectCardCamera);
+}
+
+void ACoreCardGamePC::ShowBattleWidget()
+{
+    UUserWidget* widget = CreateWidget(this, battleWidgetBPClass);
+    widget->AddToPlayerScreen(-1);
+    battleWidget = Cast<UBattleWidget>(widget);
+}
+
+void ACoreCardGamePC::ReceiveFinishCardSelection()
+{
+    battleWidget->SetFinishCardSelectionText();
 }
 

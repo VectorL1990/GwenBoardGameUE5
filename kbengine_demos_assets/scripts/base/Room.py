@@ -51,10 +51,11 @@ class Room(KBEngine.Entity):
 		
 		# at this point we could countdown for avatar entering room
 		self.battleState = GlobalConst.g_battleState.WAIT_AVATAR_ENTER_ROOM
-		self.addTimer(0.0, 1.0, 1.0)
+		self.addTimer(1.0, 1.0, 2)
 
 	def avatarEnterRoom(self, avatarEntityCall):
 		if avatarEntityCall.id not in self.avatars:
+			DEBUG_MSG("Room::avatarEnterRoom: avatar enter room and entityID=%i" % (avatarEntityCall.id))
 			self.avatars[avatarEntityCall.id] = avatarEntityCall
 			self.avatarsHeartBeatCount[avatarEntityCall.id] = 0
 			# get corresponding card info from data list

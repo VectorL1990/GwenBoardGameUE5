@@ -112,6 +112,9 @@
 		<onSyncBattleResult>
 			<Arg> STRING_LIST </Arg>
 		</onSyncBattleResult>
+
+		<onSyncReceiveFinishCardSelection>
+		</onSyncReceiveFinishCardSelection>
 	</ClientMethods>
 </root>
 

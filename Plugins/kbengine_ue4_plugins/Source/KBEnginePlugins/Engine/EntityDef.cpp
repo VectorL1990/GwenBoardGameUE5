@@ -466,13 +466,27 @@ void EntityDef::initScriptModules()
 
 	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(onSyncPlayerBattleInfo / 15).");
 
+	TArray<DATATYPE_BASE*> Avatar_onSyncReceiveFinishCardSelection_args;
+
+	Method* pAvatar_onSyncReceiveFinishCardSelection = new Method();
+	pAvatar_onSyncReceiveFinishCardSelection->name = TEXT("onSyncReceiveFinishCardSelection");
+	pAvatar_onSyncReceiveFinishCardSelection->methodUtype = 27;
+	pAvatar_onSyncReceiveFinishCardSelection->aliasID = 8;
+	pAvatar_onSyncReceiveFinishCardSelection->args = Avatar_onSyncReceiveFinishCardSelection_args;
+
+	pAvatarModule->methods.Add(TEXT("onSyncReceiveFinishCardSelection"), pAvatar_onSyncReceiveFinishCardSelection); 
+	pAvatarModule->useMethodDescrAlias = true;
+	pAvatarModule->idmethods.Add((uint16)pAvatar_onSyncReceiveFinishCardSelection->aliasID, pAvatar_onSyncReceiveFinishCardSelection);
+
+	//DEBUG_MSG("EntityDef::initScriptModules: add(Avatar), method(onSyncReceiveFinishCardSelection / 27).");
+
 	TArray<DATATYPE_BASE*> Avatar_onSyncResumeBattle_args;
 	Avatar_onSyncResumeBattle_args.Add(EntityDef::id2datatypes[8]);
 
 	Method* pAvatar_onSyncResumeBattle = new Method();
 	pAvatar_onSyncResumeBattle->name = TEXT("onSyncResumeBattle");
 	pAvatar_onSyncResumeBattle->methodUtype = 23;
-	pAvatar_onSyncResumeBattle->aliasID = 8;
+	pAvatar_onSyncResumeBattle->aliasID = 9;
 	pAvatar_onSyncResumeBattle->args = Avatar_onSyncResumeBattle_args;
 
 	pAvatarModule->methods.Add(TEXT("onSyncResumeBattle"), pAvatar_onSyncResumeBattle); 
@@ -486,7 +500,7 @@ void EntityDef::initScriptModules()
 	Method* pAvatar_onSyncRoomStartBattle = new Method();
 	pAvatar_onSyncRoomStartBattle->name = TEXT("onSyncRoomStartBattle");
 	pAvatar_onSyncRoomStartBattle->methodUtype = 19;
-	pAvatar_onSyncRoomStartBattle->aliasID = 9;
+	pAvatar_onSyncRoomStartBattle->aliasID = 10;
 	pAvatar_onSyncRoomStartBattle->args = Avatar_onSyncRoomStartBattle_args;
 
 	pAvatarModule->methods.Add(TEXT("onSyncRoomStartBattle"), pAvatar_onSyncRoomStartBattle); 
@@ -501,7 +515,7 @@ void EntityDef::initScriptModules()
 	Method* pAvatar_onSyncSelectCardInterlude = new Method();
 	pAvatar_onSyncSelectCardInterlude->name = TEXT("onSyncSelectCardInterlude");
 	pAvatar_onSyncSelectCardInterlude->methodUtype = 21;
-	pAvatar_onSyncSelectCardInterlude->aliasID = 10;
+	pAvatar_onSyncSelectCardInterlude->aliasID = 11;
 	pAvatar_onSyncSelectCardInterlude->args = Avatar_onSyncSelectCardInterlude_args;
 
 	pAvatarModule->methods.Add(TEXT("onSyncSelectCardInterlude"), pAvatar_onSyncSelectCardInterlude); 
@@ -517,7 +531,7 @@ void EntityDef::initScriptModules()
 	Method* pAvatar_onSyncSwitchController = new Method();
 	pAvatar_onSyncSwitchController->name = TEXT("onSyncSwitchController");
 	pAvatar_onSyncSwitchController->methodUtype = 22;
-	pAvatar_onSyncSwitchController->aliasID = 11;
+	pAvatar_onSyncSwitchController->aliasID = 12;
 	pAvatar_onSyncSwitchController->args = Avatar_onSyncSwitchController_args;
 
 	pAvatarModule->methods.Add(TEXT("onSyncSwitchController"), pAvatar_onSyncSwitchController); 
@@ -532,7 +546,7 @@ void EntityDef::initScriptModules()
 	Method* pAvatar_onSyncTimeInterval = new Method();
 	pAvatar_onSyncTimeInterval->name = TEXT("onSyncTimeInterval");
 	pAvatar_onSyncTimeInterval->methodUtype = 20;
-	pAvatar_onSyncTimeInterval->aliasID = 12;
+	pAvatar_onSyncTimeInterval->aliasID = 13;
 	pAvatar_onSyncTimeInterval->args = Avatar_onSyncTimeInterval_args;
 
 	pAvatarModule->methods.Add(TEXT("onSyncTimeInterval"), pAvatar_onSyncTimeInterval); 
@@ -547,7 +561,7 @@ void EntityDef::initScriptModules()
 	Method* pAvatar_onSyncUpdateActionInfo = new Method();
 	pAvatar_onSyncUpdateActionInfo->name = TEXT("onSyncUpdateActionInfo");
 	pAvatar_onSyncUpdateActionInfo->methodUtype = 13;
-	pAvatar_onSyncUpdateActionInfo->aliasID = 13;
+	pAvatar_onSyncUpdateActionInfo->aliasID = 14;
 	pAvatar_onSyncUpdateActionInfo->args = Avatar_onSyncUpdateActionInfo_args;
 
 	pAvatarModule->methods.Add(TEXT("onSyncUpdateActionInfo"), pAvatar_onSyncUpdateActionInfo); 
@@ -563,7 +577,7 @@ void EntityDef::initScriptModules()
 	Method* pAvatar_onSyncUpdateSelectedCards = new Method();
 	pAvatar_onSyncUpdateSelectedCards->name = TEXT("onSyncUpdateSelectedCards");
 	pAvatar_onSyncUpdateSelectedCards->methodUtype = 18;
-	pAvatar_onSyncUpdateSelectedCards->aliasID = 14;
+	pAvatar_onSyncUpdateSelectedCards->aliasID = 15;
 	pAvatar_onSyncUpdateSelectedCards->args = Avatar_onSyncUpdateSelectedCards_args;
 
 	pAvatarModule->methods.Add(TEXT("onSyncUpdateSelectedCards"), pAvatar_onSyncUpdateSelectedCards); 
@@ -930,7 +944,7 @@ void EntityDef::initScriptModules()
 
 	Method* pPlayer_onUpdateBattle = new Method();
 	pPlayer_onUpdateBattle->name = TEXT("onUpdateBattle");
-	pPlayer_onUpdateBattle->methodUtype = 27;
+	pPlayer_onUpdateBattle->methodUtype = 28;
 	pPlayer_onUpdateBattle->aliasID = 1;
 	pPlayer_onUpdateBattle->args = Player_onUpdateBattle_args;
 
@@ -938,14 +952,14 @@ void EntityDef::initScriptModules()
 	pPlayerModule->useMethodDescrAlias = true;
 	pPlayerModule->idmethods.Add((uint16)pPlayer_onUpdateBattle->aliasID, pPlayer_onUpdateBattle);
 
-	//DEBUG_MSG("EntityDef::initScriptModules: add(Player), method(onUpdateBattle / 27).");
+	//DEBUG_MSG("EntityDef::initScriptModules: add(Player), method(onUpdateBattle / 28).");
 
 	TArray<DATATYPE_BASE*> Player_onUpdateGridInfoList_args;
 	Player_onUpdateGridInfoList_args.Add(EntityDef::id2datatypes[31]);
 
 	Method* pPlayer_onUpdateGridInfoList = new Method();
 	pPlayer_onUpdateGridInfoList->name = TEXT("onUpdateGridInfoList");
-	pPlayer_onUpdateGridInfoList->methodUtype = 28;
+	pPlayer_onUpdateGridInfoList->methodUtype = 29;
 	pPlayer_onUpdateGridInfoList->aliasID = 2;
 	pPlayer_onUpdateGridInfoList->args = Player_onUpdateGridInfoList_args;
 
@@ -953,7 +967,7 @@ void EntityDef::initScriptModules()
 	pPlayerModule->useMethodDescrAlias = true;
 	pPlayerModule->idmethods.Add((uint16)pPlayer_onUpdateGridInfoList->aliasID, pPlayer_onUpdateGridInfoList);
 
-	//DEBUG_MSG("EntityDef::initScriptModules: add(Player), method(onUpdateGridInfoList / 28).");
+	//DEBUG_MSG("EntityDef::initScriptModules: add(Player), method(onUpdateGridInfoList / 29).");
 
 }
 

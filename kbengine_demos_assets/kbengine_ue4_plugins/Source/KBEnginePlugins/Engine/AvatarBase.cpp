@@ -136,6 +136,11 @@ void AvatarBase::onRemoteMethodCall(MemoryStream& stream)
 			onSyncPlayerBattleInfo(onSyncPlayerBattleInfo_arg1);
 			break;
 		}
+		case 27:
+		{
+			onSyncReceiveFinishCardSelection();
+			break;
+		}
 		case 23:
 		{
 			int32 onSyncResumeBattle_arg1 = stream.readInt32();
