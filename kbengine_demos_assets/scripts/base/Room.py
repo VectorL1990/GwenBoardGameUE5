@@ -70,8 +70,15 @@ class Room(KBEngine.Entity):
 					"agility": cardInfo["agility"],
 					"tags": cardInfo["tags"],
 					"stateTags": [],
-					"effects": cardInfo["effects"]
+					"effects": []
 				}
+				for effectKey, effectValue in cardInfo["effects"].items():
+					effectInfoDict = {
+						"effectName": effectKey,
+						"countDown": effectValue["countDown"],
+						"availableTimes": effectValue["availableTimes"]
+					}
+					avatarEntityCall.allCardDict[cardKey]["effects"].append(effectInfoDict)
 				self.uniqueCardDict[cardKey] = avatarEntityCall.allCardDict[cardKey]
 				self.uniqueCardDict[cardKey]["avatarId"] = avatarEntityCall.id
 
@@ -86,7 +93,7 @@ class Room(KBEngine.Entity):
 					self.avatars[avatar].roomReqSelectCardInterlude()
 				self.battleState = GlobalConst.g_battleState.SELECT_CARD_INTERLUDE
 				random.shuffle(self.inBattleAvatarList)
-				self.curTimeClockInterval = 0.0
+				self.curTimeClockInterval = 0
 
 	def avatarReqHeartBeat(self, avatarEntityCall):
 		# avatar should send heart beat to room to keep alive
@@ -164,7 +171,7 @@ class Room(KBEngine.Entity):
 						self.avatars[avatar].roomReqDispatchCardInfos()
 					# switch battle state to select card
 					self.battleState = GlobalConst.g_battleState.SELECT_CARD
-					self.curTimeClockInterval = 0.0
+					self.curTimeClockInterval = 0
 				else:
 					self.curTimeClockInterval += 1
 		elif self.battleState == GlobalConst.g_battleState.SELECT_CARD:
@@ -174,7 +181,7 @@ class Room(KBEngine.Entity):
 					self.avatars[avatar].roomReqSelectCardInterlude()
 				self.battleState = GlobalConst.g_battleState.SELECT_CARD_INTERLUDE
 				random.shuffle(self.inBattleAvatarList)
-				self.curTimeClockInterval = 0.0
+				self.curTimeClockInterval = 0
 			else:
 				for avatar in self.avatars:
 					self.avatars[avatar].roomReqSyncTimeInfo(self.curTimeClockInterval, self.battleState.value)
@@ -185,7 +192,7 @@ class Room(KBEngine.Entity):
 				for avatar in self.avatars:
 					self.avatars[avatar].roomReqStartBattle()
 				self.battleState = GlobalConst.g_battleState.BATTLE
-				self.curTimeClockInterval = 0.0
+				self.curTimeClockInterval = 0
 			else:
 				self.curTimeClockInterval += 1
 		elif self.battleState == GlobalConst.g_battleState.BATTLE:
@@ -200,7 +207,7 @@ class Room(KBEngine.Entity):
 				# send messages to all proxys to switch controller
 				for avatar in self.avatars:
 					self.avatars[avatar].roomReqSwitchController(self.curSwitchNb, self.inBattleAvatarList[self.curControlNb].id)
-				self.curTimeClockInterval = 0.0
+				self.curTimeClockInterval = 0
 				self.battleState = GlobalConst.g_battleState.BATTLE_INTERLUDE
 			else:
 				self.curTimeClockInterval += 1

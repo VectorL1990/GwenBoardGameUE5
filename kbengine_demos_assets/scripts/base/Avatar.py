@@ -73,7 +73,7 @@ class Avatar(KBEngine.Proxy,
 				"agility": v["agility"],
 				"tags": v["tags"],
 				"stateTags": v["stateTags"],
-				"effects": v["effects"]
+				"effectInfos": v["effects"]
 			}
 			allCardList.append(cardInfo)
 
@@ -101,7 +101,7 @@ class Avatar(KBEngine.Proxy,
 				"agility": v["agility"],
 				"tags": v["tags"],
 				"stateTags": v["stateTags"],
-				"effects": v["effects"]
+				"effectInfos": v["effects"]
 			}
 			allCardList.append(cardInfo)
 
@@ -143,7 +143,7 @@ class Avatar(KBEngine.Proxy,
 				"agility": v["agility"],
 				"tags": v["tags"],
 				"stateTags": v["stateTags"],
-				"effects": v["effects"]
+				"effectInfos": v["effects"]
 			}
 			allCardList.append(cardInfo)
 
@@ -197,7 +197,7 @@ class Avatar(KBEngine.Proxy,
 				"agility": v["agility"],
 				"tags": v["tags"],
 				"stateTags": v["stateTags"],
-				"effects": v["effects"]
+				"effectInfos": v["effects"]
 			}
 			allCardList.append(cardInfo)
 
