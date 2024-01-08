@@ -105,7 +105,7 @@ void ABasicGameMode::onSyncPlayerBattleInfo(const UKBEventData* eventData)
 				//InitPlayerBattleInfoDone(onSyncPlayerBattleInfoData->cardList);
 }
 
-void ABasicGameMode::InitPlayerBattleInfoDone(TArray<FString> cardList)
+void ABasicGameMode::SpawnSelectCard(TArray<FString> cardList)
 {
 
 }

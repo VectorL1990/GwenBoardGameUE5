@@ -20,7 +20,10 @@ namespace KBEngine
 								// 注册事件
 								if (isPlayer())
 								{
-
+												KBENGINE_REGISTER_EVENT_OVERRIDE_FUNC("ReqEnterRoom", "ReqEnterRoom", [this](const UKBEventData* pEventData)
+																{
+																				ReqEnterRoom();
+																});
 												KBENGINE_REGISTER_EVENT_OVERRIDE_FUNC("ReqChangeSelectCard", "ReqChangeSelectCard", [this](const UKBEventData* pEventData)
 																{
 																				const UKBEventData_reqChangeSelectCard* reqChangeSelectCardData = Cast<UKBEventData_reqChangeSelectCard>(pEventData);
@@ -106,6 +109,13 @@ namespace KBEngine
 								eventData->handCardList = param.handCardList;
 
 								KBENGINE_EVENT_FIRE("onSyncPlayerBattleInfo", eventData);
+				}
+
+				void Avatar::onSyncReceiveEnterRoom(uint8 result)
+				{
+								UKBEventData_onSyncReceiveEnterRoom* eventData = NewObject<UKBEventData_onSyncReceiveEnterRoom>();
+								eventData->result = result;
+								KBENGINE_EVENT_FIRE("onSyncReceiveEnterRoom", eventData);
 				}
 
 				void Avatar::onSyncReceiveFinishCardSelection()
@@ -381,5 +391,10 @@ namespace KBEngine
 				void Avatar::ReqLatestBattleInfo()
 				{
 								pBaseEntityCall->reqLatestBattleInfo();
+				}
+
+				void Avatar::ReqEnterRoom()
+				{
+								pBaseEntityCall->reqEnterRoom();
 				}
 }

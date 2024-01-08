@@ -28,6 +28,7 @@ void ACoreCardGameModeBase::InitEvents()
 				KBENGINE_REGISTER_EVENT("onSyncHeartBeat", onSyncHeartBeat);
 				KBENGINE_REGISTER_EVENT("onSyncLatestBattleState", onSyncLatestBattleState);
 				KBENGINE_REGISTER_EVENT("onSyncPlayerBattleInfo", onSyncPlayerBattleInfo);
+				KBENGINE_REGISTER_EVENT("onSyncReceiveEnterRoom", onSyncReceiveEnterRoom);
 				KBENGINE_REGISTER_EVENT("onSyncReceiveFinishCardSelection", onSyncReceiveFinishCardSelection);
 				KBENGINE_REGISTER_EVENT("onSyncResumeBattle", onSyncResumeBattle);
 				KBENGINE_REGISTER_EVENT("onSyncRoomStartBattle", onSyncRoomStartBattle);
@@ -103,15 +104,37 @@ void ACoreCardGameModeBase::Tick(float deltaTime)
 								}
 				}
 
-				if (clientBattleState == ClientBattleState::InBattle)
+				if (clientBattleState == ClientBattleState::ReqEnterRoom)
+				{
+								if (curReqEnterRoomTick >= battleStateTicksMap["ReqEnterRoom"])
+								{
+												// which means account has already entered world
+												// trigger reqEnterRoom so that server gives side gives client to avatar
+												ReqEnterRoom();
+												curReqEnterRoomTick = 0.0;
+								}
+								else
+								{
+												curReqEnterRoomTick += deltaTime;
+								}
+				}
+				else if (clientBattleState == ClientBattleState::SelectCard)
+				{
+								if (handCardKeyList.Num() > 0)
+								{
+												// which means client has already received all card infos including hand cards
+												SpawnSelectCard(handCardKeyList);
+								}
+				}
+				else if (clientBattleState == ClientBattleState::InBattle)
 				{
 								// we should always keep sending sync information to server
-								if (curCountingTick >= battleStateTicksMap["SyncHeartBeatInterval"])
+								if (curBattleStateTick >= battleStateTicksMap["SyncHeartBeatInterval"])
 								{
 												ReqSyncHeartBeat();
 								}
 
-								if (curCountingTick >= battleStateTicksMap["SyncBattleInterval"])
+								if (curBattleStateTick >= battleStateTicksMap["SyncBattleInterval"])
 								{
 												ReqLatestBattleInfo();
 								}
@@ -358,14 +381,7 @@ void ACoreCardGameModeBase::onEnterWorld(const UKBEventData* eventData)
 				const UKBEventData_onEnterWorld* onEnterWorldData = Cast<UKBEventData_onEnterWorld>(eventData);
 				if (onEnterWorldData->isPlayer)
 				{
-								// which means account has already entered world
-								// trigger reqEnterRoom so that server gives side gives client to avatar
-								if (!hasReqEnterRoom)
-								{
-												GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, "ssssssssssss");
-												hasReqEnterRoom = true;
-												ReqEnterRoom();
-								}
+								clientBattleState = ClientBattleState::ReqEnterRoom;
 				}
 }
 
@@ -560,6 +576,23 @@ void ACoreCardGameModeBase::onSyncPlayerBattleInfo(const UKBEventData* eventData
 				handCardKeyList = onSyncPlayerBattleInfoData->handCardList;
 }
 
+void ACoreCardGameModeBase::onSyncReceiveEnterRoom(const UKBEventData* eventData)
+{
+				const UKBEventData_onSyncReceiveEnterRoom* onSyncEnterRoomData = Cast<UKBEventData_onSyncReceiveEnterRoom>(eventData);
+				if (onSyncEnterRoomData->result == 1)
+				{
+								// which means server has received enter room message
+								// no need to keep checking again
+								clientBattleState = ClientBattleState::SelectCard;
+				}
+				else
+				{
+								// which means server has already received room entering message more than once
+								// which implies that client maybe lose some messages
+								clientBattleState = ClientBattleState::SelectCard;
+				}
+}
+
 void ACoreCardGameModeBase::onSyncReceiveFinishCardSelection(const UKBEventData* eventData)
 {
 				// nofity battle widget
@@ -671,7 +704,7 @@ void ACoreCardGameModeBase::onSyncTimeInterval(const UKBEventData* eventData)
 {
 }
 
-void ACoreCardGameModeBase::InitPlayerBattleInfoDone(TArray<FString> cardList)
+void ACoreCardGameModeBase::SpawnSelectCard()
 {
 				FRotator spawnRot = FRotator::ZeroRotator;
 				for (int32 i = 0; i < handCardKeyList.Num(); i++)

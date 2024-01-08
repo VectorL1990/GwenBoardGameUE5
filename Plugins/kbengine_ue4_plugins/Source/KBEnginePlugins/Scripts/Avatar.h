@@ -32,6 +32,7 @@ namespace KBEngine
         virtual void onSyncLatestBattleState(const CORE_UPDATE_BATLLE_INFO& battleInfo) override;
         virtual void onSyncLaunchSkillFailed(int32 curActionSequence, int32 clientActionSequence) override;
         virtual void onSyncPlayerBattleInfo(const SYNC_PLAYER_BATTLE_INFO& playerInfo) override;
+        virtual void onSyncReceiveEnterRoom(uint8 result) override;
         virtual void onSyncReceiveFinishCardSelection() override;
         virtual void onSyncResumeBattle(int32 controllerNb) override;
         virtual void onSyncRoomStartBattle() override;
@@ -46,6 +47,7 @@ namespace KBEngine
         void ReqUpdateSelectedCard();
         void ReqSyncHeartBeat();
         void ReqLatestBattleInfo();
+        void ReqEnterRoom();
     };
 
 }

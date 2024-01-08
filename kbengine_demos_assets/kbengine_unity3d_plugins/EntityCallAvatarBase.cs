@@ -31,6 +31,15 @@ namespace KBEngine
 			sendCall(null);
 		}
 
+		public void reqEnterRoom()
+		{
+			Bundle pBundle = newCall("reqEnterRoom", 0);
+			if(pBundle == null)
+				return;
+
+			sendCall(null);
+		}
+
 		public void reqFinishSelectCards()
 		{
 			Bundle pBundle = newCall("reqFinishSelectCards", 0);

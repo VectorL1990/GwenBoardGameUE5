@@ -10,6 +10,10 @@
 	</Properties>
 
 	<BaseMethods>
+		<reqEnterRoom>
+			<Exposed/>
+		</reqEnterRoom>
+
 		<reqChangeSelectCard>
 			<Exposed/>
 			<Arg> STRING </Arg>
@@ -52,6 +56,10 @@
 	</CellMethods>
 
 	<ClientMethods>
+		<onSyncReceiveEnterRoom>
+			<Arg> BOOL </Arg>
+		</onSyncReceiveEnterRoom>
+
 		<onSyncUpdateActionInfo>
 			<Arg> SYNC_MODIFICATION_INFO </Arg>
 		</onSyncUpdateActionInfo>

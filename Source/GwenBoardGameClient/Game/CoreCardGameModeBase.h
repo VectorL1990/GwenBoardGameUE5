@@ -123,6 +123,8 @@ public:
 
     virtual void onSyncPlayerBattleInfo(const UKBEventData* eventData) override;
 
+    void onSyncReceiveEnterRoom(const UKBEventData* eventData);
+
     void onSyncReceiveFinishCardSelection(const UKBEventData* eventData);
 
     void onSyncResumeBattle(const UKBEventData* eventData);
@@ -138,7 +140,7 @@ public:
     void onSyncUpdateSelectedCards(const UKBEventData* eventData);
 
 
-    virtual void InitPlayerBattleInfoDone(TArray<FString> cardList) override;
+    virtual void SpawnSelectCard(TArray<FString> cardList) override;
 
     bool hasReqEnterRoom = false;
 
@@ -146,7 +148,7 @@ public:
 
     NetworkStatus networkStatus = NetworkStatus::Default;
 
-    ClientBattleState clientBattleState = ClientBattleState::BeforeBattle;
+    ClientBattleState clientBattleState = ClientBattleState::Default;
 
     TMap<FString, float> interludeStateTicksMap;
 
@@ -155,6 +157,8 @@ public:
     int32 receiveActionSequence = 0;
 
     float curCountingTick = 0.0;
+
+    float curReqEnterRoomTick = 0.0;
 
     uint8 receiveControllerNb = 0;
 

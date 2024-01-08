@@ -15,6 +15,7 @@ class Avatar(KBEngine.Proxy,
 		GameObject.__init__(self)
 		
 		self.accountEntity = None
+		self.hasEnterRoom = False
 		self.persistPlayerInfo = None
 		self.allCardDict = {}
 		self.handCardList = []
@@ -162,6 +163,21 @@ class Avatar(KBEngine.Proxy,
 	#---
 	#
 	#---
+	def reqEnterRoom(self):
+		if self.hasEnterRoom == False:
+			self.hasEnterRoom = True
+			cardList = self.persistPlayerInfo["persistCardList"]
+			playerBattleInfo = {
+				"cardList" : cardList,
+			}
+			# shuffle and encode all cards
+			self.shuffleCardList(playerBattleInfo["cardList"])
+			self.client.onSyncReceiveEnterRoom(True)
+			# tell room avatar is ready
+			self.roomEntityCall.avatarEnterRoom(self)
+		else:
+			self.client.onSyncReceiveEnterRoom(False)
+
 	def reqChangeSelectCard(self, cardKey):
 		leftChangeCardNb = GlobalConst.g_maxChangeCardNb - self.changeSelectCardNb
 		if leftChangeCardNb <= 1:
@@ -228,15 +244,7 @@ class Avatar(KBEngine.Proxy,
 	#                              Callbacks
 	#--------------------------------------------------------------------------------------------
 	def onClientEnabled(self):
-		cardList = self.persistPlayerInfo["persistCardList"]
-		playerBattleInfo = {
-			"cardList" : cardList,
-		}
-		# shuffle and encode all cards
-		self.shuffleCardList(playerBattleInfo["cardList"])
-
-		# tell room avatar is ready
-		self.roomEntityCall.avatarEnterRoom(self)
+		return
 
 		
 		

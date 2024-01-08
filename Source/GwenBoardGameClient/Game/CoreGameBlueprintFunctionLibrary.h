@@ -29,8 +29,10 @@ enum class InterludeState : uint8
 UENUM(BlueprintType)
 enum class ClientBattleState : uint8
 {
-    BeforeBattle = 0,
-    InBattle = 1,
+    Default = 0,
+    ReqEnterRoom = 1,
+    SelectCard = 2,
+    InBattle = 3,
 };
 
 UENUM(BLueprintType)

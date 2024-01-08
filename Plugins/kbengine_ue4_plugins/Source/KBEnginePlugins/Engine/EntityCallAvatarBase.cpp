@@ -23,6 +23,15 @@ void EntityBaseEntityCall_AvatarBase::reqChangeSelectCard(const FString& arg1)
 	sendCall(NULL);
 }
 
+void EntityBaseEntityCall_AvatarBase::reqEnterRoom()
+{
+	Bundle* pBundleRet = newCall("reqEnterRoom", 0);
+	if(!pBundleRet)
+		return;
+
+	sendCall(NULL);
+}
+
 void EntityBaseEntityCall_AvatarBase::reqFinishSelectCards()
 {
 	Bundle* pBundleRet = newCall("reqFinishSelectCards", 0);

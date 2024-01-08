@@ -42,7 +42,7 @@ void ALoginGameModeBase::BasicInitDone_Implementation()
 
 }
 
-void ALoginGameModeBase::InitPlayerBattleInfoDone(TArray<FString> cardList)
+void ALoginGameModeBase::SpawnSelectCard(TArray<FString> cardList)
 {
 
 }
