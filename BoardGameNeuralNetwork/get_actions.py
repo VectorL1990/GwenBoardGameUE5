@@ -1,12 +1,15 @@
 import random
 import GlobalConst
-from geo_rule import rule_dict
+from check_geo_rule import rule_dict
 
 
 def GetLaunchSkillActionId(state_list, x, y, targetX, targetY):
 	gridId = 8 * y + x
 	actionId = 64 + 64*gridId + 8*targetY + targetX
 	return actionId
+
+def SpawnBulletForward(state_list, x, y, effectInfo):
+	sdf
 
 def DevourNextSpawnFar(state_list, x, y, effectInfo):
 	actionIds = []
