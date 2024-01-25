@@ -12,6 +12,14 @@ from d_passive_effects import passive_effect_dict
 class Room(KBEngine.Entity):
 	def __init__(self):
 		KBEngine.Entity.__init__(self)
+		self.state_list = [['--', '--', '--', '--', '--', '--', '--', '--'],
+							['--', '--', '--', '--', '--', '--', '--', '--'],
+							['--', '--', '--', '--', '--', '--', '--', '--'],
+							['--', '--', '--', '--', '--', '--', '--', '--'],
+							['--', '--', '--', '--', '--', '--', '--', '--'],
+							['--', '--', '--', '--', '--', '--', '--', '--'],
+							['--', '--', '--', '--', '--', '--', '--', '--'],
+							['--', '--', '--', '--', '--', '--', '--', '--']]
 		self.curBattleTick = 0
 		self.accountEntityDict = {}
 		self.gridInfoDict = {}
@@ -102,25 +110,9 @@ class Room(KBEngine.Entity):
 
 	def avatarReqLatestBattleInfo(self, avatarEntityCall):
 		if avatarEntityCall.id in self.avatars:
-			allGridInfo = []
-			for k,v in self.gridInfoDict.items():
-				battleGridInfo = {
-					"gridNb": k,
-					"cardUid": v["cardKey"],
-					"cardName": v["cardName"],
-					"hp": v["hp"],
-					"defence": v["defence"],
-					"agility": v["agility"],
-					"tags": v["tags"],
-					"stateTags": v["stateTags"],
-					"effectInfos": v["effectInfos"],
-					"avatarId": v["avatarId"]
-				}
-				allGridInfo.append(battleGridInfo)
-
 			coreUpdateBattleInfo = {
 				"curActionSequence": self.curActionSequence,
-				"updateList": allGridInfo,
+				"updateList": self.state_list,
 				"playerInfo": {},
 				"curSwitchControllerSequence": self.curSwitchNb,
 				"curControllerNb": self.curControlNb,

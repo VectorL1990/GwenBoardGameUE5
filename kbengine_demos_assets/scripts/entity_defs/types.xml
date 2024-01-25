@@ -162,6 +162,33 @@
 		</Properties>
 	</BATTLE_GRID_INFO>
 
+	<BATTLE_GRID_ROW_INFO>
+		<Properties>
+			<cols>
+				<Type> ARRAY <of> STRING </of> </Type>
+			</cols>
+		</Properties>
+	</BATTLE_GRID_ROW_INFO>
+
+	<BATTLE_BOARD_INFO>
+		<Properties>
+			<rows>
+				<Type> ARRAY <of> BATTLE_GRID_ROW_INFO </of> </Type>
+			</rows>
+		</Properties>
+	</BATTLE_BOARD_INFO>
+
+	<BATTLE_GRID_STRING_STATE>
+		<Properties>
+			<gridNb>
+				<Type> INT32 </Type>
+			</gridNb>
+			<gridState>
+				<Type> STRING </Type>
+			<gridState>
+		</Properties>
+	</BATTLE_GRID_STRING_STATE>
+
 	<SYNC_CARD_INFO> FIXED_DICT
 		<Properties>
 			<cardKey>
@@ -217,7 +244,7 @@
 				<Type> INT32 </Type>
 			</curActionSequence>
 			<updateList>
-				<Type>	ARRAY <of> BATTLE_GRID_INFO </of>	</Type>
+				<Type> BATTLE_BOARD_INFO	</Type>
 			</updateList>
 			<playerInfo>
 				<Type> SYNC_PLAYER_BATTLE_INFO </Type>
@@ -242,7 +269,7 @@
 				<Type> INT32 </Type>
 			</actionSequence>
 			<updateGridList>
-				<Type> ARRAY <of> BATTLE_GRID_INFO </of> </Type>
+				<Type> ARRAY <of> BATTLE_GRID_STRING_STATE </of> </Type>
 			</updateGridList>
 			<updateCardList>
 				<Type> ARRAY <of> SYNC_CARD_INFO </of> </Type>
