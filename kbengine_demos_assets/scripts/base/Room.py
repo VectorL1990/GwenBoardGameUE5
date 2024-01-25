@@ -313,33 +313,6 @@ class Room(KBEngine.Entity):
 										for passiveModifyCardUid in passiveEffectResultDict["modifyCardUids"]:
 											if passiveModifyCardUid not in modifyCardUids:
 												modifyCardUids.append(passiveModifyCardUid)
-				# traverse all assistant cards to trigger their passive effects
-				for assistCardUid in resultDict["assitCardUidList"]:
-					# traverse all effects attached to assist card
-					for assistPassiveEffectKey,assistPassiveEffectValue in self.uniqueCardDict[assistCardUid]["effects"]:
-						if assistPassiveEffectValue["launchType"] == "assitPassive":
-							# check whether this effect can be triggered
-							if assistPassiveEffectValue["prereqs"]["triggerEffectType"] == resultDict["triggerEffectType"]:
-								if assistPassiveEffectKey in passive_effect_dict:
-									if assistPassiveEffectKey in passive_effect_dict:
-										assistEffectResultDict = passive_effect_dict[assistPassiveEffectKey]
-										(
-											self.uniqueCardDict,
-											self.gridInfoDict,
-											self.inBattleAvatarList,
-											self.gridInfoDict[targetGrid]["avatarId"],
-											launchGrid,
-											effectInfo,
-											assistPassiveEffectValue
-										)
-										if assistEffectResultDict["success"] == True:
-											assistEffectResultDict["effectValues"]["isRoundEnd"] = True
-										for assistModifyGrid in assistEffectResultDict["modifyGrids"]:
-											if assistModifyGrid not in modifyGridIds:
-												modifyGridIds.append(assistModifyGrid)
-										for assistModifyCardUid in assistEffectResultDict["modifyCardUids"]:
-											if assistModifyCardUid not in modifyCardUids:
-												modifyCardUids.append(assistModifyCardUid)
 				# assemble all modification and notify all clients
 				syncModifyGridInfos = []
 				syncModifyCardInfos = []

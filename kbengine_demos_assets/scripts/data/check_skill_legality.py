@@ -32,12 +32,9 @@ def FormationVShoot(state_list, x, y, targetX, targetY, effectInfo):
 
 	returnDict = {
 		"success": False,
-		"assistType": "formation",
 		"triggerEffectType": "hurt",
 		"triggerEffectValues": [0],
-		"targetUids": [],
-		"modifyGrids": [],
-		"modifyCardUids": []
+		"modifyGrids": []
 	}
 	# if card occupied target grid is not enermy, action fails
 	launchState = state_list[y][x]
@@ -50,10 +47,6 @@ def FormationVShoot(state_list, x, y, targetX, targetY, effectInfo):
 			hurtDict = calculateCardHp(gridInfoDict[targetGrid]["cardUid"], effectInfo["effectValues"]["values"])
 			returnDict["success"] = True
 			returnDict["triggerEffectValues"][0] = hurtDict["hpLoss"]
-			returnDict["targetUids"].append(gridInfoDict[targetGrid]["cardUid"])
-			returnDict["modifyGrids"].append(launchGrid)
-			returnDict["modifyGrids"].append(targetGrid)
-			returnDict["modifyCardUids"].append(gridInfoDict[targetGrid]["cardUid"])
-			returnDict["modifyCardUids"].append(gridInfoDict[launchGrid]["cardUid"])
+			returnDict["modifyGrids"].append([targetX, targetY])
 	return returnDict
 
