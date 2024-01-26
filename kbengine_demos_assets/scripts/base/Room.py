@@ -281,7 +281,7 @@ class Room(KBEngine.Entity):
 		"FormationV": {"launchType": "assign", "countDown": 1, "once": True, "selfTarget": False, "prereqs":{}, "effectValues": {"value": 2, "distance": 0}}
 	}
 	'''
-	def launchEffect(self, clientActionSequence, launchAvatarId, targetGrid, launchGrid, effectName, effectInfo):
+	def launchEffect(self, clientActionSequence, launchAvatarId, targetX, targetY, launchX, launchY, effectName, effectInfo):
 		if effectName in effect_dict:
 			resultDict = effect_dict[effectName](self.uniqueCardDict, self.gridInfoDict, self.inBattleAvatarList, launchAvatarId, targetGrid, launchGrid, effectInfo)
 			# if launch effect succesfully, settlement has been done
@@ -290,19 +290,20 @@ class Room(KBEngine.Entity):
 				modifyGridIds = resultDict["modifyGrids"]
 				modifyCardUids = resultDict["modifyCardUids"]
 				# traverse all target cards to trigger their passive effects
-				for targetUid in resultDict["targetUids"]:
-					for targetPassiveEffectKey,targetPassiveEffectValue in self.uniqueCardDict[targetUid]["effects"]:
+				for targetGridXY in resultDict["modifyGrids"]:
+					targetGridState = self.state_list[targetGridXY[0], targetGridXY[1]]
+					targetGridStateStrs = targetGridState.split('/')
+					for targetPassiveEffectKey,targetPassiveEffectValue in self.uniqueCardDict[targetGridStateStrs[0]]["effects"]:
 						if targetPassiveEffectValue["launchType"] == "targetPassive":
 							if targetPassiveEffectValue["prereqs"]["triggerEffectType"] == resultDict["triggerEffectType"]:
 								if targetPassiveEffectKey in passive_effect_dict:
 									passiveEffectResultDict = passive_effect_dict[targetPassiveEffectKey]
 									(
-										self.uniqueCardDict, 
-										self.gridInfoDict, 
-										self.inBattleAvatarList, 
-										self.gridInfoDict[targetGrid]["avatarId"], 
-										launchGrid,
-										effectInfo,
+										self.state_list,
+										targetGridXY[0],
+										targetGridXY[1],
+										launchX,
+										launchY,
 										targetPassiveEffectValue
 									)
 									if passiveEffectResultDict["success"] == True:
