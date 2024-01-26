@@ -5,18 +5,29 @@ from config import CONFIG
 from collections import deque
 import random
 
-state_list_init = [['--', '--', '--', '--', '--', '--', '--', '--'],
-					['--', '--', '--', '--', '--', '--', '--', '--'],
-					['--', '--', '--', '--', '--', '--', '--', '--'],
-					['--', '--', '--', '--', '--', '--', '--', '--'],
-					['--', '--', '--', '--', '--', '--', '--', '--'],
-					['--', '--', '--', '--', '--', '--', '--', '--'],
-					['--', '--', '--', '--', '--', '--', '--', '--'],
-					['--', '--', '--', '--', '--', '--', '--', '--']]
 
-state_deque_init = deque()
+class Game(object):
+	def __init__(self):
+		self.state_list = [['--', '--', '--', '--', '--', '--', '--', '--'],
+							['--', '--', '--', '--', '--', '--', '--', '--'],
+							['--', '--', '--', '--', '--', '--', '--', '--'],
+							['--', '--', '--', '--', '--', '--', '--', '--'],
+							['--', '--', '--', '--', '--', '--', '--', '--'],
+							['--', '--', '--', '--', '--', '--', '--', '--'],
+							['--', '--', '--', '--', '--', '--', '--', '--'],
+							['--', '--', '--', '--', '--', '--', '--', '--']]
 
-def avatarReqPlayCardAction(self, avatarEntityCall, avatarClientActionSequence, cardUid, gridNb):
+	def selfPlay(self):
+		actionCount = 0
+		while True:
+			actionCount += 1
+
+
+
+
+
+
+def machineReqPlayCardAction(self, avatarEntityCall, avatarClientActionSequence, cardUid, gridNb):
 	actionSequenceLatency = self.curActionSequence - avatarClientActionSequence
 	if actionSequenceLatency == 1:
 		# which means there's no information lost on client side
@@ -26,7 +37,7 @@ def avatarReqPlayCardAction(self, avatarEntityCall, avatarClientActionSequence, 
 				self.launchEffect(avatarEntityCall.id, avatarClientActionSequence, -1, gridNb, k, v)
 
 
-def avatarReqLaunchCardSkillAction(self, avatarEntityCall, clientActionSequence, cardUid, skillName, launchGridNb, targetGridNb):
+def machineReqLaunchCardSkillAction(self, avatarEntityCall, clientActionSequence, cardUid, skillName, launchGridNb, targetGridNb):
 	actionSequenceLatency = self.curActionSequence - clientActionSequence
 	if actionSequenceLatency == 1:
 		# which means there's no information lost on client side

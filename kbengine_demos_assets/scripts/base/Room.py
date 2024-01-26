@@ -128,7 +128,7 @@ class Room(KBEngine.Entity):
 			# find corresponding card info from card dictionary, including effects attached to this card
 			for k,v in self.uniqueCardDict[cardUid]["effects"].items():
 				if v["launchType"] == "auto":
-					self.launchEffect(avatarEntityCall.id, avatarClientActionSequence, -1, gridNb, k, v)
+					self.launchEffect(avatarClientActionSequence, -1, gridNb, k, v)
 
 
 	def avatarReqLaunchCardSkillAction(self, avatarEntityCall, clientActionSequence, cardUid, skillName, launchGridNb, targetGridNb):
@@ -138,7 +138,7 @@ class Room(KBEngine.Entity):
 			if skillName in self.uniqueCardDict[cardUid]["effects"]:
 				if self.uniqueCardDict[cardUid]["effects"][skillName]["availableTimes"] >= 1:
 					# which means this skill is still available to launch
-					self.launchEffect(avatarEntityCall.id, clientActionSequence, targetGridNb, launchGridNb, skillName, self.uniqueCardDict[cardUid]["effects"][skillName])
+					self.launchEffect(clientActionSequence, targetGridNb, launchGridNb, skillName, self.uniqueCardDict[cardUid]["effects"][skillName])
 
 
 	def leaveRoom(self, entityID):
@@ -246,12 +246,6 @@ class Room(KBEngine.Entity):
 
 		# notify hall to record battle result
 
-
-	def getGridRowAndCol(self, gridNb):
-		col = gridNb % GlobalConst.g_boardColumn
-		row = gridNb / GlobalConst.g_boardColumn
-		rc = [row, col]
-		return rc
 	
 	def getGridNbByRowAndCol(self, row, col):
 		if row < 0 or row > 2*GlobalConst.g_boardHalfRow:
@@ -281,14 +275,13 @@ class Room(KBEngine.Entity):
 		"FormationV": {"launchType": "assign", "countDown": 1, "once": True, "selfTarget": False, "prereqs":{}, "effectValues": {"value": 2, "distance": 0}}
 	}
 	'''
-	def launchEffect(self, clientActionSequence, launchAvatarId, targetX, targetY, launchX, launchY, effectName, effectInfo):
+	def launchEffect(self, clientActionSequence, targetX, targetY, launchX, launchY, effectName, effectInfo):
 		if effectName in effect_dict:
 			resultDict = effect_dict[effectName](self.uniqueCardDict, self.gridInfoDict, self.inBattleAvatarList, launchAvatarId, targetGrid, launchGrid, effectInfo)
 			# if launch effect succesfully, settlement has been done
 			# broadcast latest operation result to all clients
 			if resultDict["success"] == True:
 				modifyGridIds = resultDict["modifyGrids"]
-				modifyCardUids = resultDict["modifyCardUids"]
 				# traverse all target cards to trigger their passive effects
 				for targetGridXY in resultDict["modifyGrids"]:
 					targetGridState = self.state_list[targetGridXY[0], targetGridXY[1]]
@@ -311,40 +304,12 @@ class Room(KBEngine.Entity):
 										for passiveModifyGrid in passiveEffectResultDict["modifyGrids"]:
 											if passiveModifyGrid not in modifyGridIds:
 												modifyGridIds.append(passiveModifyGrid)
-										for passiveModifyCardUid in passiveEffectResultDict["modifyCardUids"]:
-											if passiveModifyCardUid not in modifyCardUids:
-												modifyCardUids.append(passiveModifyCardUid)
 				# assemble all modification and notify all clients
 				syncModifyGridInfos = []
-				syncModifyCardInfos = []
 				for modifyGrid in modifyGridIds:
 					syncModifyGridInfos.append(self.gridInfoDict[modifyGrid])
-				for modifyCardUid in self.uniqueCardDict:
-					syncEffectInfos = []
-					for k,v in self.uniqueCardDict[modifyCardUid]["effects"]:
-						syncEffectInfo = {
-							"effectName": k,
-							"countDown": v["countDonw"],
-							"availableTimes": v["availableTimes"]
-						}
-						syncEffectInfos.append(syncEffectInfo)
-					syncModifyCardInfo = {
-						"cardKey": modifyCardUid,
-						"cardName": self.uniqueCardDict[modifyCardUid]["cardName"],
-						"hp": self.uniqueCardDict[modifyCardUid]["hp"],
-						"defence": self.uniqueCardDict[modifyCardUid]["defence"],
-						"agility": self.uniqueCardDict[modifyCardUid]["agility"],
-						"tags": self.uniqueCardDict[modifyCardUid]["tags"],
-						"stateTags": self.uniqueCardDict[modifyCardUid]["stateTags"],
-						"effectInfos": syncEffectInfos
-					}
-					syncModifyCardInfos.append(syncModifyCardInfo)
-				# notify all clients about latest modification
-				syncModificationInfo = {
-					"actionSequence": self.curActionSequence,
-					"updateGridList": syncModifyGridInfos,
-					"updateCardList": syncModifyCardInfos,
-				}
+				
+				# only necessary when it's pvp battle
 				for avatar in self.avatars:
 					self.avatars[avatar].roomReqUpdateActionModification(syncModificationInfo)
 			else:
