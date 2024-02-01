@@ -1,6 +1,59 @@
 import random
 import GlobalConst
 
+def LineObstacleSwap(stateList, x, y, targetX, targetY, effectInfo):
+	if stateList[y][x] == "--" or (x == targetX and y == targetY):
+		return False
+	else:
+		offsetX = targetX - x
+		offsetY = targetY - y
+		# check whether target is outside boundary or is too closed to launching grid
+		if offsetX < 2 or offsetY < 2 or targetX < 0 or targetY < 0 or targetX > 7 or targetY > 7:
+			return False
+		
+		# target grid must be at the same line with launching grid
+		if offsetX != 0 and offsetY != 0:
+			return False
+		
+		obstacle = -1
+		if offsetX > 0:
+			for i in range(x + 1, targetX, 1):
+				if stateList[y][i] != "--":
+					if obstacle == -1:
+						# which means obstacle is not found
+						obstacle = i
+					else:
+						# which means obstacle is found already
+						# only one obstacle between launching and target grid is allowed
+						return False
+		elif offsetX < 0:
+			for i in range(x - 1, targetX, -1):
+				if stateList[y][i] != "--":
+					if obstacle == -1:
+						obstacle = i
+					else:
+						return False
+		elif offsetY > 0:
+			for i in range(y + 1, targetY, 1):
+				if stateList[i][x] != "--":
+					if obstacle == -1:
+						obstacle = i
+					else:
+						return False
+		else:
+			for i in range(y - 1, targetY, -1):
+				if stateList[i][x] != "--":
+					if obstacle == -1:
+						obstacle = i
+					else:
+						return False
+		if obstacle == -1:
+			# which means there's no obstacle between launching and target grids
+			return False
+		else:
+			return True
+
+
 
 def FormationVShoot(state_list, x, y, targetX, targetY, effectInfo):
 	if state_list[y][x] == "--" or (x == targetX and y == targetY):
@@ -157,18 +210,18 @@ def ThreeGridCenterVerticalLine(state_list, x, y, targetX, targetY, effectInfo):
 				return False
 			else:
 				if offsetX != 0:
-						return False
+					return False
+				else:
+					# check whether there are obstacles on the line
+					if offsetY > 0:
+						for i in range(y + 1, targetY, 1):
+							if state_list[i][x] != "--":
+								return False
 					else:
-						# check whether there are obstacles on the line
-						if offsetY > 0:
-							for i in range(y + 1, targetY, 1):
-								if state_list[i][x] != "--":
-									return False
-						else:
-							for i in range(y - 1, targetY,  -1):
-								if state_list[i][x] != "--":
-									return False
-						return True
+						for i in range(y - 1, targetY,  -1):
+							if state_list[i][x] != "--":
+								return False
+					return True
 		else:
 			if state_list[y][x - 1] != "--" and state_list[y][x + 1] != "--":
 				# check vertical
@@ -494,6 +547,93 @@ def DevourNextSpawnFar(state_list, x, y, targetX, targetY, effectInfo):
 				return False
 
 		return True
+	
+def checkConnect(stateList, x, y, targetX, targetY, launchCamp, searchOppo, searchedList):
+	targetYStr = str(targetY)
+	targetXStr = str(targetX)
+	targetGridCombineStr = targetYStr + "_" + targetXStr
+	if y < 7 and stateList[y + 1][x] != "--":
+		stateStrs = stateList[y + 1][x].split("_")
+		if (searchOppo == True and stateStrs[0] != launchCamp) or (searchOppo == False and stateStrs[0] == launchCamp):
+			rowStr = str(y + 1)
+			colStr = str(x)
+			combineStr = rowStr + "_" + colStr
+			if combineStr == targetGridCombineStr:
+				# which means we have found target Grid
+				return True
+			else:
+				# keep searching
+				if combineStr not in searchedList:
+					searchedList.append(combineStr)
+					searchResult = checkConnect(stateList, x, y + 1, targetX, targetY, launchCamp, searchOppo, searchedList)
+					if searchResult == True:
+						return True
+	if y > 0 and state_list[y - 1][x] != "--":
+		stateStrs = state_list[y - 1][x].split("_")
+		if (search_oppo == True and stateStrs[0] != launchCamp) or (search_oppo == False and stateStrs[0] == launchCamp):
+			rowStr = str(y - 1)
+			colStr = str(x)
+			combineStr = rowStr + "_" + colStr
+			if combineStr not in searched_list:
+				searched_list.append(combineStr)
+				SearchLink(state_list, x, y - 1, searched_list)
+	if x < 7 and state_list[y][x + 1] != "--":
+		stateStrs = state_list[y][x + 1].split("_")
+		if (search_oppo == True and stateStrs[0] != launchCamp) or (search_oppo == False and stateStrs[0] == launchCamp):
+			rowStr = str(y)
+			colStr = str(x + 1)
+			combineStr = rowStr + "_" + colStr
+			if combineStr not in searched_list:
+				searched_list.append(combineStr)
+				SearchLink(state_list, x + 1, y, searched_list)
+	if x > 0 and state_list[y][x - 1] != "--":
+		stateStrs = state_list[y][x - 1].split("_")
+		if (search_oppo == True and stateStrs[0] != launchCamp) or (search_oppo == False and stateStrs[0] == launchCamp):
+			rowStr = str(y)
+			colStr = str(x - 1)
+			combineStr = rowStr + "_" + colStr
+			if combineStr not in searched_list:
+				searched_list.append(combineStr)
+				SearchLink(state_list, x - 1, y, searched_list)
+	
+
+def SearchLink(state_list, x, y, launchCamp, search_oppo, searched_list):
+	if y < 7 and state_list[y + 1][x] != "--":
+		stateStrs = state_list[y + 1][x].split("_")
+		if (search_oppo == True and stateStrs[0] != launchCamp) or (search_oppo == False and stateStrs[0] == launchCamp):
+			rowStr = str(y + 1)
+			colStr = str(x)
+			combineStr = rowStr + "_" + colStr
+			if combineStr not in searched_list:
+				searched_list.append(combineStr)
+				SearchLink(state_list, x, y + 1, searched_list)
+	if y > 0 and state_list[y - 1][x] != "--":
+		stateStrs = state_list[y - 1][x].split("_")
+		if (search_oppo == True and stateStrs[0] != launchCamp) or (search_oppo == False and stateStrs[0] == launchCamp):
+			rowStr = str(y - 1)
+			colStr = str(x)
+			combineStr = rowStr + "_" + colStr
+			if combineStr not in searched_list:
+				searched_list.append(combineStr)
+				SearchLink(state_list, x, y - 1, searched_list)
+	if x < 7 and state_list[y][x + 1] != "--":
+		stateStrs = state_list[y][x + 1].split("_")
+		if (search_oppo == True and stateStrs[0] != launchCamp) or (search_oppo == False and stateStrs[0] == launchCamp):
+			rowStr = str(y)
+			colStr = str(x + 1)
+			combineStr = rowStr + "_" + colStr
+			if combineStr not in searched_list:
+				searched_list.append(combineStr)
+				SearchLink(state_list, x + 1, y, searched_list)
+	if x > 0 and state_list[y][x - 1] != "--":
+		stateStrs = state_list[y][x - 1].split("_")
+		if (search_oppo == True and stateStrs[0] != launchCamp) or (search_oppo == False and stateStrs[0] == launchCamp):
+			rowStr = str(y)
+			colStr = str(x - 1)
+			combineStr = rowStr + "_" + colStr
+			if combineStr not in searched_list:
+				searched_list.append(combineStr)
+				SearchLink(state_list, x - 1, y, searched_list)
 
 
 
