@@ -11,6 +11,66 @@ def GetLaunchSkillActionId(state_list, x, y, targetX, targetY):
 	actionId = 64 + 64*gridId + 8*targetY + targetX
 	return actionId
 
+def Move(stateList, x, y, targetX, targetY):
+	returnDict = {
+		"success": False,
+		"modifyGrids": []
+	}
+	returnDict["success"] = True
+	originGridInfo = {
+		"grid": [x, y],
+		"modifyType": "MoveLaunch",
+		"modifyValues": []
+	}
+	targetGridInfo = {
+		"grid": [targetX, targetY],
+		"modifyType": "MoveTarget",
+		"modifyValues": []
+	}
+	returnDict["modifyGrids"].append(originGridInfo)
+	returnDict["modifyGrids"].append(targetGridInfo)
+	stateList[targetY][targetX] = stateList[y][x]
+	stateList[y][x] = "--"
+	return returnDict
+
+def Teleport(stateList, x, y, targetX, targetY):
+	returnDict = {
+		"success": False,
+		"modifyGrids": []
+	}
+	targetStateStr = stateList[targetY][targetX]
+	targetStateStrs = targetStateStr.split('/')
+	linkPairNb = targetStateStrs[9]
+	# find teleport grid
+	for i in range(0, GlobalConst.maxRow, 1):
+		for j in range(0, GlobalConst.maxCol, 1):
+			if stateList[i][j] != "--" and (i != targetY or j != targetX):
+				stateStrs = stateList[i][j].split('/')
+				if stateStrs[9] == linkPairNb:
+					
+					originGridInfo = {
+						"grid": [x, y],
+						"modifyType": "TeleportLaunch",
+						"modifyValues": []
+					}
+					targetGridInfo = {
+						"grid": [targetX, targetY],
+						"modifyType": "TeleportTarget",
+						"modifyValues": []
+					}
+					returnDict["success"] = True
+					returnDict["modifyGrids"].append(originGridInfo)
+					returnDict["modifyGrids"].append(targetGridInfo)
+					offsetX = targetX - x
+					offsetY = targetY - y
+					teleportX = j - offsetX
+					teleportY = i - offsetY
+					stateList[teleportY][teleportX] = stateList[y][x]
+					stateList[y][x] = "--"
+					break
+	return returnDict
+
+
 def SpawnBulletForward(state_list, x, y, effectInfo):
 	sdf
 
@@ -110,30 +170,18 @@ def LinkGrid(stateList, launchX, launchY, targetX, targetY, effectInfo, lastGene
 	launchCamp = launchStateStrs[0]
 	searchOppoFlag = effectInfo["effectValues"]["values"][1]
 	searchedList = []
+	legality = False
 	if searchOppoFlag == 1:
-		geo_rule_dict["SearchLink"](stateList, x, y, launchCamp, True, searched_list)
+		legality = geo_rule_dict["checkConnect"](stateList, launchX, launchY, launchCamp, True, searchedList)
 	else:
-			geo_rule_dict["SearchLink"](state_list, x, y, launchCamp, False, searched_list)
-	legality = geo_rule_dict["SearchLink"]()
-	actionIds = []
-	if state_list[y][x] == "--":
-		return False, actionIds
-	else:
-		launchStateStrs = state_list[y][x].split('_')
-		launchCamp = launchStateStrs[0]
-		search_oppo_flag = effectInfo["effectValues"]["values"][1]
-		searched_list = []
-		if search_oppo_flag == 1:
-			SearchLink(state_list=state_list, x=x, y=y, launchCamp, True, searched_list=searched_list)
+		legality = geo_rule_dict["checkConnect"](stateList, launchX, launchY, launchCamp, False, searchedList)
+	if legality == True:
+		# which means target grid is linked with grid launching
+		if effectInfo["effectValues"]["values"][0] == "0":
+			# which means launched grid hurts target grid
+			Hurt(stateList, targetX, targetY, effectInfo["effectValues"]["values"][2])
 		else:
-			SearchLink(state_list=state_list, x=x, y=y, launchCamp, False, searched_list=searched_list)
-		for grid in searched_list:
-			splitStrs = grid.split('_')
-			targetY = int(splitStrs[0])
-			targetX = int(splitStrs[1])
-			actionId = GetLaunchSkillActionId(state_list, x, y, targetX, targetY)
-			actionIds.append(actionId)
-		return True, actionIds
+			sdf
 
 
 def HurtRandomOppoFirstRow(state_list, x, y, effectInfo):

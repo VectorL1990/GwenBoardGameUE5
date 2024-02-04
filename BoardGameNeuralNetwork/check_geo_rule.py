@@ -1,6 +1,93 @@
 import random
 import GlobalConst
 
+def Move(stateList, x, y, targetX, targetY):
+	if stateList[y][x] == "--" or (x == targetX and y == targetY):
+		return False
+	else:
+		offsetX = targetX - x
+		offsetY = targetY - y
+		if targetX < 0 or targetY < 0 or targetX > 7 or targetY > 7:
+			return False
+		obstacle = False
+		if offsetX > 0:
+			for i in range(1, offsetX, 1):
+				if stateList[y][x + i] != "--":
+					obstacle = True
+					break
+		elif offsetX < 0:
+			for i in range(-1, offsetX, -1):
+				if stateList[y][x + i] != "--":
+					obstacle = True
+					break
+		elif offsetY > 0:
+			for i in range(1, offsetY, 1):
+				if stateList[y + i][x] != "--":
+					obstacle = True
+					break
+		elif offsetY < 0:
+			for i in range(-1, offsetY, -1):
+				if stateList[y + i][x] != "--":
+					obstacle = True
+					break
+		
+		if obstacle == True:
+			return False
+		return True
+
+def Teleport(stateList, x, y, targetX, targetY):
+	if stateList[y][x] == "--" or (x == targetX and y == targetY):
+		return False
+	else:
+		offsetX = targetX - x
+		offsetY = targetY - y
+		if targetX < 0 or targetY < 0 or targetX > 7 or targetY > 7:
+			return False
+		obstacle = False
+		if offsetX > 0:
+			for i in range(1, offsetX, 1):
+				if stateList[y][x + i] != "--":
+					obstacle = True
+					break
+		elif offsetX < 0:
+			for i in range(-1, offsetX, -1):
+				if stateList[y][x + i] != "--":
+					obstacle = True
+					break
+		elif offsetY > 0:
+			for i in range(1, offsetY, 1):
+				if stateList[y + i][x] != "--":
+					obstacle = True
+					break
+		elif offsetY < 0:
+			for i in range(-1, offsetY, -1):
+				if stateList[y + i][x] != "--":
+					obstacle = True
+					break
+		
+		if obstacle == True:
+			return False
+
+		targetStateStr = stateList[targetY][targetX]
+		targetStateStrs = targetStateStr.split('/')
+		linkPairNb = targetStateStrs[9]
+		# find teleport grid
+		for i in range(0, GlobalConst.maxRow, 1):
+			for j in range(0, GlobalConst.maxCol, 1):
+				if stateList[i][j] != "--" and (i != targetY or j != targetX):
+					stateStrs = stateList[i][j].split('/')
+					if stateStrs[9] == linkPairNb:
+						# calculate grid offset
+						offsetX = targetX - x
+						offsetY = targetY - y
+						teleportX = j - offsetX
+						teleportY = i - offsetY
+						if teleportX < 0 or teleportX > 7 or teleportY < 0 or teleportY > 7 or stateList[teleportY][teleportX] != "--":
+							return False
+						else:
+							return True
+		return False
+
 def LineObstacleSwap(stateList, x, y, targetX, targetY, effectInfo):
 	if stateList[y][x] == "--" or (x == targetX and y == targetY):
 		return False
@@ -8,7 +95,7 @@ def LineObstacleSwap(stateList, x, y, targetX, targetY, effectInfo):
 		offsetX = targetX - x
 		offsetY = targetY - y
 		# check whether target is outside boundary or is too closed to launching grid
-		if offsetX < 2 or offsetY < 2 or targetX < 0 or targetY < 0 or targetX > 7 or targetY > 7:
+		if (offsetX < 2 and offsetY < 2) or targetX < 0 or targetY < 0 or targetX > 7 or targetY > 7:
 			return False
 		
 		# target grid must be at the same line with launching grid
@@ -568,33 +655,50 @@ def checkConnect(stateList, x, y, targetX, targetY, launchCamp, searchOppo, sear
 					searchResult = checkConnect(stateList, x, y + 1, targetX, targetY, launchCamp, searchOppo, searchedList)
 					if searchResult == True:
 						return True
-	if y > 0 and state_list[y - 1][x] != "--":
-		stateStrs = state_list[y - 1][x].split("_")
-		if (search_oppo == True and stateStrs[0] != launchCamp) or (search_oppo == False and stateStrs[0] == launchCamp):
+	if y > 0 and stateList[y - 1][x] != "--":
+		stateStrs = stateList[y - 1][x].split("_")
+		if (searchOppo == True and stateStrs[0] != launchCamp) or (searchOppo == False and stateStrs[0] == launchCamp):
 			rowStr = str(y - 1)
 			colStr = str(x)
 			combineStr = rowStr + "_" + colStr
-			if combineStr not in searched_list:
-				searched_list.append(combineStr)
-				SearchLink(state_list, x, y - 1, searched_list)
-	if x < 7 and state_list[y][x + 1] != "--":
-		stateStrs = state_list[y][x + 1].split("_")
-		if (search_oppo == True and stateStrs[0] != launchCamp) or (search_oppo == False and stateStrs[0] == launchCamp):
+			if combineStr == targetGridCombineStr:
+				return True
+			else:
+				if combineStr not in searchedList:
+					searchedList.append(combineStr)
+					searchResult = checkConnect(stateList, x, y - 1, targetX, targetY, launchCamp, searchOppo, searchedList)
+					if searchResult == True:
+						return True
+	if x < 7 and stateList[y][x + 1] != "--":
+		stateStrs = stateList[y][x + 1].split("_")
+		if (searchOppo == True and stateStrs[0] != launchCamp) or (searchOppo == False and stateStrs[0] == launchCamp):
 			rowStr = str(y)
 			colStr = str(x + 1)
 			combineStr = rowStr + "_" + colStr
-			if combineStr not in searched_list:
-				searched_list.append(combineStr)
-				SearchLink(state_list, x + 1, y, searched_list)
-	if x > 0 and state_list[y][x - 1] != "--":
-		stateStrs = state_list[y][x - 1].split("_")
-		if (search_oppo == True and stateStrs[0] != launchCamp) or (search_oppo == False and stateStrs[0] == launchCamp):
+			if combineStr == targetGridCombineStr:
+				return True
+			else:
+				if combineStr not in searchedList:
+					searchedList.append(combineStr)
+					searchResult = checkConnect(stateList, x + 1, y, targetX, targetY, launchCamp, searchOppo, searchedList)
+					if searchResult == True:
+						return True
+	if x > 0 and stateList[y][x - 1] != "--":
+		stateStrs = stateList[y][x - 1].split("_")
+		if (searchOppo == True and stateStrs[0] != launchCamp) or (searchOppo == False and stateStrs[0] == launchCamp):
 			rowStr = str(y)
 			colStr = str(x - 1)
 			combineStr = rowStr + "_" + colStr
-			if combineStr not in searched_list:
-				searched_list.append(combineStr)
-				SearchLink(state_list, x - 1, y, searched_list)
+			if combineStr == targetGridCombineStr:
+				return True
+			else:
+				if combineStr not in searchedList:
+					searchedList.append(combineStr)
+					searchResult = checkConnect(stateList, x - 1, y, targetX, targetY, launchCamp, searchOppo, searchedList)
+					if searchResult == True:
+						return True
+	return False
+	
 	
 
 def SearchLink(state_list, x, y, launchCamp, search_oppo, searched_list):

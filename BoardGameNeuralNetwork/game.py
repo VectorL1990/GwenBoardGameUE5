@@ -71,36 +71,54 @@ def playerReqLaunchCardSkillAction(boardState, uniqueCardDict, launchX, launchY,
 			launchEffect()
 			break
 
+def playerReqMove(boardState, launchX, launchY, targetX, targetY):
+	legality = geo_rule_dict["Teleport"](launchX, launchY, targetX, targetY)
+	if legality == True:
+		launchMove(boardState, launchX, launchY, targetX, targetY)
+
+def launchMove(stateList, launchX, launchY, targetX, targetY):
+	targetGridStr = stateList[targetY][targetX]
+	targetGridStrs = targetGridStr.split('/')
+	tags = targetGridStrs[6]
+	resultDict = {}
+	if "Teleport" in tags:
+		# which means target grid is a teleport
+		resultDict = effect_dict["Teleport"](stateList, launchX, launchY, targetX, targetY)
+	else:
+		resultDict = effect_dict["Move"](stateList, launchX, launchY, targetX, targetY)
+
+def TriggerPassiveEffect(stateList, launchResultDict, modifyGrids):
+	for modifyGrid in launchResultDict["modifyGrids"]:
+		# traverse all passive effects attached to compare
+		modifyGridX = modifyGrid["grid"][0]
+		modifyGridY = modifyGrid["grid"][1]
+		modifyGridState = stateList[modifyGridY, modifyGridX]
+		modifyGridStateStrs = modifyGridState.split('/')
+		modifyGridUid = modifyGridStateStrs[0]
+		for modifyGridEffectKey, modifyGridEffectVal in uniqueCardDict[modifyGridUid]["effects"]:
+			if modifyGridEffectVal["launchType"] == "targetPassive":
+				if modifyGridEffectVal["prereqs"]["triggerEffectType"] == modifyGrid["modifyType"]:
+					if modifyGridEffectKey in passive_effect_dict:
+						passiveEffectResult = passive_effect_dict[modifyGridEffectKey](stateList, modifyGridX, modifyGridY, launchX, launchY, modifyGridEffectVal)
+						if passiveEffectResult["success"] == True:
+							for passiveModifyGrid in passiveEffectResult["modifyGrids"]:
+								passiveModifyGridX = passiveModifyGrid["grid"][0]
+								passiveModifyGridY = passiveModifyGrid["grid"][1]
+								passiveModifyGridStr = stateList[passiveModifyGridY][passiveModifyGridX]
+								passiveModifyGridStrs = passiveModifyGridStr.split('/')
+								if passiveModifyGridStrs[0] not in modifyGrids:
+									modifyGrids.append(passiveModifyGridStrs[0])
+							TriggerPassiveEffect(stateList, passiveEffectResult, modifyGrids)
 
 def launchEffect(stateList, launchX, launchY, targetX, targetY, effectInfo, lastGenerateId):
 	if effectName in effect_dict:
 			resultDict = effect_dict[effectName](self.uniqueCardDict, self.gridInfoDict, self.inBattleAvatarList, launchAvatarId, targetGrid, launchGrid, effectInfo)
 			# if launch effect succesfully, settlement has been done
 			# broadcast latest operation result to all clients
+			modifyGrids = []
 			if resultDict["success"] == True:
-				modifyGridIds = resultDict["modifyGrids"]
-				# traverse all target cards to trigger their passive effects
-				for targetGridXY in resultDict["modifyGrids"]:
-					targetGridState = self.state_list[targetGridXY[0], targetGridXY[1]]
-					targetGridStateStrs = targetGridState.split('/')
-					for targetPassiveEffectKey,targetPassiveEffectValue in self.uniqueCardDict[targetGridStateStrs[0]]["effects"]:
-						if targetPassiveEffectValue["launchType"] == "targetPassive":
-							if targetPassiveEffectValue["prereqs"]["triggerEffectType"] == resultDict["triggerEffectType"]:
-								if targetPassiveEffectKey in passive_effect_dict:
-									passiveEffectResultDict = passive_effect_dict[targetPassiveEffectKey]
-									(
-										self.state_list,
-										targetGridXY[0],
-										targetGridXY[1],
-										launchX,
-										launchY,
-										targetPassiveEffectValue
-									)
-									if passiveEffectResultDict["success"] == True:
-										targetPassiveEffectValue["effectValues"]["isRoundEnd"] = True
-										for passiveModifyGrid in passiveEffectResultDict["modifyGrids"]:
-											if passiveModifyGrid not in modifyGridIds:
-												modifyGridIds.append(passiveModifyGrid)
+				TriggerPassiveEffect(stateList, resultDict, modifyGrids)
+
 				# assemble all modification and notify all clients
 				syncModifyGridInfos = []
 				for modifyGrid in modifyGridIds:
@@ -141,10 +159,10 @@ def get_legal_moves(state_deque, cur_play_camp):
 			else:
 				# split string by _ which seperates camp and card type
 				split_str = state_list[y][x].split('_')
-				# [0]camp_[1]skillState_[2]moveType_
-				# [3]skillPrereqGeoType_[4]skillApplyGeoType_[5]skillType_
-				# [6]hp_[7]defence_[8]agility_[9]tag_[10]stateTag_[11]stateTagRound
-				# [12]cardName
+				# [0]uid/ [1]cardName/ [2]camp/ [3]moveType/ [4]skillType(hurt or heal)/
+				# [5]skillGeoType/ [6]tagType(may be combination)/ [7]linkStateType/
+				# [8]linkStateLeftRound/ [9]linkPairNb/ [10]addTagType/ [11]addTagLeftRound/
+				# [12]hp/ [13]defence/ [14]agility
 				if split_str[0] == cur_play_camp:
 					# which means this card belongs to player in turn
 					if split_str[1] == 1 or split_str[1] == 2:
