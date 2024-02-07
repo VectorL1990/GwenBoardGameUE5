@@ -26,6 +26,7 @@ class Game(object):
 
 class Board(object):
 	def __init__(self):
+		self.uniqueCardDict = {}
 		self.boardState = [['--', '--', '--', '--', '--', '--', '--', '--'],
 							['--', '--', '--', '--', '--', '--', '--', '--'],
 							['--', '--', '--', '--', '--', '--', '--', '--'],
@@ -35,18 +36,21 @@ class Board(object):
 							['--', '--', '--', '--', '--', '--', '--', '--'],
 							['--', '--', '--', '--', '--', '--', '--', '--']]
 		
-	def get_action_type(self, actionNb):
+	def GetActionInfoById(self, actionId):
 		sdf
 
 
-	def do_move(self, actionNb):
-		actionType = self.get_action_type(actionNb)
-		if actionType == 0:
+	def do_move(self, actionId):
+		actionInfo = self.GetActionInfoById(actionId)
+		if actionInfo["actionType"] == 0:
 			# which means it's card playing action
-			playerReqPlayCardAction()
-		elif actionType == 1:
+			playerReqPlayCardAction(self.boardState, self.uniqueCardDict, actionInfo["playCardUid"], actionInfo["targetX"], actionInfo["targetY"])
+		elif actionInfo["actionType"] == 1:
 			# which means it's skill launching action
-			playerReqLaunchCardSkillAction()
+			playerReqLaunchCardSkillAction(self.boardState, self.uniqueCardDict, actionInfo["launchX"])
+		elif actionInfo["actionType"] == 2:
+			# which means it's card movement action
+			playerReqMove()
 
 
 

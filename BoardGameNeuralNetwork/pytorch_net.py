@@ -25,22 +25,16 @@ class ResBlock(nn.Module):
 		return self.conv2_act(y)
 
 class Net(nn.Module):
-
 	# features contain:
-	# 1. play state, whether card is put on board already
-	# 2. movable state, whether card can be moved
-	# 3. skill trigger state, whether skill can be triggered,
-	# 4. card motion type
-	# 5. skill trigger geometry type
-	# 6. skill effect geometry type
-	# 7. skill type
-	# 8. hp
-	# 9. defence
-	# 10. agility
-	# 11. tags
-	# 12. state tags
-	# 13. state tags count down
-	# 14. camp
+	# 1. skill prerequisite geo type
+	# 2. skill launch geo type
+	# 3. link pair nb
+	# 4. linke skill type
+	# 5. tags
+	# 6. add tags
+	# 7. hp
+	# 8. defence
+	# 9. agility
 	def __init__(self, in_features_num = 14, num_channels=256, num_res_blocks=7):
 		super().__init__()
 		self.conv_block = nn.Conv2d(in_channels=in_features_num, out_channels=num_channels, kernel_size=(3,3), stride=(1,1), padding=1)
