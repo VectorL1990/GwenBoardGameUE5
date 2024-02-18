@@ -1,28 +1,14 @@
 import numpy as np
 import copy
 import time
+import GlobalConst
 from config import CONFIG
 from d_all_cards import allCards
 from d_effects import effect_dict
 from collections import deque
+from Mcts import MCTSPlayer
 import random
-
-
-class Game(object):
-	def __init__(self):
-		self.state_list = [['--', '--', '--', '--', '--', '--', '--', '--'],
-							['--', '--', '--', '--', '--', '--', '--', '--'],
-							['--', '--', '--', '--', '--', '--', '--', '--'],
-							['--', '--', '--', '--', '--', '--', '--', '--'],
-							['--', '--', '--', '--', '--', '--', '--', '--'],
-							['--', '--', '--', '--', '--', '--', '--', '--'],
-							['--', '--', '--', '--', '--', '--', '--', '--'],
-							['--', '--', '--', '--', '--', '--', '--', '--']]
-
-	def selfPlay(self):
-		actionCount = 0
-		while True:
-			actionCount += 1
+			
 
 class Board(object):
 	def __init__(self):
@@ -40,7 +26,7 @@ class Board(object):
 		sdf
 
 
-	def do_move(self, actionId):
+	def DoMove(self, actionId):
 		actionInfo = self.GetActionInfoById(actionId)
 		if actionInfo["actionType"] == 0:
 			# which means it's card playing action
@@ -52,11 +38,27 @@ class Board(object):
 			# which means it's card movement action
 			playerReqMove()
 
+	def GameEnd(self):
+		sdf
+
+	def AISelfPlay(self, mctsPlayer):
+		mctProbs = []
+		actionCount = 0
+		while True:
+			actionCount += 1
+			moveId, moveProb = mctsPlayer.GetAction(self)
+			mctProbs.append(moveProb)
+			self.DoMove(moveId)
+			isEnd, winner = self.GameEnd()
+			if isEnd == True:
+				return winner, moveProb
 
 
 
 
 
+########## Global functions for both pvp and ai battle
+			
 def playerReqPlayCardAction(boardState, uniqueCardDict, cardId, targetX, targetY):
 	# legality check has been done at this stage, only update board state
 	cardState = uniqueCardDict[cardId]

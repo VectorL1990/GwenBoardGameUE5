@@ -1,46 +1,26 @@
-# -*- coding: utf-8 -*-
-import KBEngine
-import random
-import math
-import time
-from KBEDebug import *
-import GlobalConst
-from d_all_cards import allDatas
-from d_effects import effect_dict
-from d_passive_effects import passive_effect_dict
+import pickle
+import os
+from Board import Board
+from Mcts import MCTSPlayer
 
-class Room(KBEngine.Entity):
+
+class AISelfPlayRoom(KBEngine.Entity):
 	def __init__(self):
-		KBEngine.Entity.__init__(self)
-		self.state_list = [['--', '--', '--', '--', '--', '--', '--', '--'],
-							['--', '--', '--', '--', '--', '--', '--', '--'],
-							['--', '--', '--', '--', '--', '--', '--', '--'],
-							['--', '--', '--', '--', '--', '--', '--', '--'],
-							['--', '--', '--', '--', '--', '--', '--', '--'],
-							['--', '--', '--', '--', '--', '--', '--', '--'],
-							['--', '--', '--', '--', '--', '--', '--', '--'],
-							['--', '--', '--', '--', '--', '--', '--', '--']]
-		self.curBattleTick = 0
-		self.accountEntityDict = {}
-		self.gridInfoDict = {}
-		self.curSwitchNb = 0
-		self.curActionSequence = 0
-		self.curControlNb = 0
+		self.board = Board()
+		self.mctsPlayer = MCTSPlayer()
+		self.accountEntity = None
+		self.avatarEntity = None
+		self.mctsPlayer = None
+		self.avatarHeartBeatCount = 0
 
-		# --- time counting variables
-		self.curTimeClockInterval = 0
-		self.maxWaitAvatarsEnterRoom = 30
-		self.maxSelectCardTimeInterval = 30
-		self.maxSelectCardInterludeTime = 5
-		self.maxLaunchActionTimeInterval = 20
-		self.maxSwitchControllerInterludeTime = 4
+	def LoadModel(self):
+		model_path = CONFIG['pytorch_model_path']
+		self.policyValueNet = PolicyValueNet(model_file=model_path)
+		self.mctsPlayer = MCTSPlayer(self.policyValueNet.PolicyValueEvaluation,
+									c_puct=self.c_puct,
+									n_playout=self.n_playout,
+									is_selfplay=1)
 
-		self.avatars = {}
-		self.inBattleAvatarList = []
-		self.avatarsHeartBeatCount = {}
-
-		self.uniqueCardDict = {}
-		self.battleState = GlobalConst.g_battleState.DEFAULT
 
 	def roomDestroySelf(self):
 		KBEngine.globalData["Hall"].roomReqDelete(self.roomKey)
@@ -53,42 +33,40 @@ class Room(KBEngine.Entity):
 		return
 
 	def hallReqAccountsRoomCreated(self):
-		for k,v in self.accountEntityDict.items():
-			DEBUG_MSG("Room::hallReqAccountsRoomCreated: tell account room created and entityID=%i" % (k))
-			v.syncRoomCreated(self.roomKey)
+		DEBUG_MSG("PvAIRoom::hallReqAccountPvAIRoomCreated")
+		self.accountEntity.syncRoomCreated(self.roomKey)
 		
 		# at this point we could countdown for avatar entering room
 		self.battleState = GlobalConst.g_battleState.WAIT_AVATAR_ENTER_ROOM
 		self.addTimer(1.0, 1.0, 2)
 
 	def avatarEnterRoom(self, avatarEntityCall):
-		if avatarEntityCall.id not in self.avatars:
-			DEBUG_MSG("Room::avatarEnterRoom: avatar enter room and entityID=%i" % (avatarEntityCall.id))
-			self.avatars[avatarEntityCall.id] = avatarEntityCall
-			self.avatarsHeartBeatCount[avatarEntityCall.id] = 0
-			# get corresponding card info from data list
-			for cardKey in avatarEntityCall.allCardDict.keys():
-				strs = cardKey.split("_")
-				cardInfo = allDatas["allCards"][strs[2]]
-				#cardInfo = d_all_cards.datas.get(strs[1])
-				avatarEntityCall.allCardDict[cardKey] = {
-					"cardName": strs[1],
-					"hp": cardInfo["hp"],
-					"defence": cardInfo["defence"],
-					"agility": cardInfo["agility"],
-					"tags": cardInfo["tags"],
-					"stateTags": [],
-					"effects": []
+		DEBUG_MSG("PvAIRoom::avatarEnterRoom avatar enter PvAIRoom")
+		self.avatarEntity = avatarEntityCall
+		self.avatarHeartBeatCount = 0
+		for cardKey in avatarEntityCall.allCardDict.keys():
+			strs = cardKey.split("_")
+			cardInfo = allDatas["allCards"][strs[2]]
+			#cardInfo = d_all_cards.datas.get(strs[1])
+			avatarEntityCall.allCardDict[cardKey] = {
+				"cardName": strs[1],
+				"hp": cardInfo["hp"],
+				"defence": cardInfo["defence"],
+				"agility": cardInfo["agility"],
+				"tags": cardInfo["tags"],
+				"stateTags": [],
+				"effects": []
+			}
+			for effectKey, effectValue in cardInfo["effects"].items():
+				effectInfoDict = {
+					"effectName": effectKey,
+					"countDown": effectValue["countDown"],
+					"availableTimes": effectValue["availableTimes"]
 				}
-				for effectKey, effectValue in cardInfo["effects"].items():
-					effectInfoDict = {
-						"effectName": effectKey,
-						"countDown": effectValue["countDown"],
-						"availableTimes": effectValue["availableTimes"]
-					}
-					avatarEntityCall.allCardDict[cardKey]["effects"].append(effectInfoDict)
-				self.uniqueCardDict[cardKey] = avatarEntityCall.allCardDict[cardKey]
-				self.uniqueCardDict[cardKey]["avatarId"] = avatarEntityCall.id
+				avatarEntityCall.allCardDict[cardKey]["effects"].append(effectInfoDict)
+			self.uniqueCardDict[cardKey] = avatarEntityCall.allCardDict[cardKey]
+			self.uniqueCardDict[cardKey]["avatarId"] = avatarEntityCall.id
+
 
 
 	def avatarFinishSelectCards(self, avatarEntityCall):
@@ -124,21 +102,25 @@ class Room(KBEngine.Entity):
 	def avatarReqPlayCardAction(self, avatarEntityCall, avatarClientActionSequence, cardUid, gridNb):
 		actionSequenceLatency = self.curActionSequence - avatarClientActionSequence
 		if actionSequenceLatency == 1:
+			actionId = actionIdConverterDict["GetPlayCardActionId"]()
+			self.board.DoMove(actionId)
 			# which means there's no information lost on client side
 			# find corresponding card info from card dictionary, including effects attached to this card
-			for k,v in self.uniqueCardDict[cardUid]["effects"].items():
-				if v["launchType"] == "auto":
-					self.launchEffect(avatarClientActionSequence, -1, gridNb, k, v)
+			#for k,v in self.uniqueCardDict[cardUid]["effects"].items():
+			#	if v["launchType"] == "auto":
+			#		self.launchEffect(avatarClientActionSequence, -1, gridNb, k, v)
 
 
 	def avatarReqLaunchCardSkillAction(self, avatarEntityCall, clientActionSequence, cardUid, skillName, launchGridNb, targetGridNb):
 		actionSequenceLatency = self.curActionSequence - clientActionSequence
 		if actionSequenceLatency == 1:
+			actionId = actionIdConverterDict["GetLaunchSkillActionId"]
+			self.board.DoMove(actionId)
 			# which means there's no information lost on client side
-			if skillName in self.uniqueCardDict[cardUid]["effects"]:
-				if self.uniqueCardDict[cardUid]["effects"][skillName]["availableTimes"] >= 1:
+			#if skillName in self.uniqueCardDict[cardUid]["effects"]:
+			#	if self.uniqueCardDict[cardUid]["effects"][skillName]["availableTimes"] >= 1:
 					# which means this skill is still available to launch
-					self.launchEffect(clientActionSequence, targetGridNb, launchGridNb, skillName, self.uniqueCardDict[cardUid]["effects"][skillName])
+			#		self.launchEffect(clientActionSequence, targetGridNb, launchGridNb, skillName, self.uniqueCardDict[cardUid]["effects"][skillName])
 
 
 	def leaveRoom(self, entityID):
@@ -156,33 +138,25 @@ class Room(KBEngine.Entity):
 				# room dismissed
 				self.roomDestroySelf()
 			else:
-				if len(self.avatars) == len(self.accountEntityDict):
-					# which means all avatars have entered room
-					# dispatch informations to all players
-					for avatar in self.avatars:
-						self.avatars[avatar].roomReqDispatchCardInfos()
-					# switch battle state to select card
-					self.battleState = GlobalConst.g_battleState.SELECT_CARD
-					self.curTimeClockInterval = 0
-				else:
+				if self.avatarEntity == None:
+					# which means avatar has not entered room yet
 					self.curTimeClockInterval += 1
+				else:
+					self.avatarEntity.roomReqDispatchCardInfos()
+					self.battleState = GlobalConst.g_battleState.SELECT_CARD
 		elif self.battleState == GlobalConst.g_battleState.SELECT_CARD:
 			if self.curTimeClockInterval >= self.maxSelectCardTimeInterval:
-				# force all players stopping card selection
-				for avatar in self.avatars:
-					self.avatars[avatar].roomReqSelectCardInterlude()
+				# force player finishing card selection
+				self.avatarEntity.roomReqSelectCardInterlude()
 				self.battleState = GlobalConst.g_battleState.SELECT_CARD_INTERLUDE
-				random.shuffle(self.inBattleAvatarList)
 				self.curTimeClockInterval = 0
 			else:
-				for avatar in self.avatars:
-					self.avatars[avatar].roomReqSyncTimeInfo(self.curTimeClockInterval, self.battleState.value)
+				self.avatarEntity.roomReqSyncTimeInfo(self.curTimeClockInterval, self.battleState.value)
 				self.curTimeClockInterval += 1
 		elif self.battleState == GlobalConst.g_battleState.SELECT_CARD_INTERLUDE:
 			if self.curTimeClockInterval >= self.maxSelectCardInterludeTime:
 				# start battle
-				for avatar in self.avatars:
-					self.avatars[avatar].roomReqStartBattle()
+				self.avatarEntity.roomReqStartBattle()
 				self.battleState = GlobalConst.g_battleState.BATTLE
 				self.curTimeClockInterval = 0
 			else:
@@ -197,20 +171,24 @@ class Room(KBEngine.Entity):
 				if self.curControlNb >= len(self.inBattleAvatarList):
 					self.curControlNb = 0
 				# send messages to all proxys to switch controller
-				for avatar in self.avatars:
-					self.avatars[avatar].roomReqSwitchController(self.curSwitchNb, self.inBattleAvatarList[self.curControlNb].id)
+				self.avatarEntity.roomReqSwitchController(self.curSwitchNb, self.avatarEntity.id)
+				if self.humanTurn == False:
+					moveId, moveProb = self.mctsPlayer.GetAction()
+					self.board.DoMove(moveId)
+					# at the same time we should syncronize board state to human player
+				else:
+					moveId, moveProb = self.mctsPlayer.GetAction(self)
+					self.DoMove(moveId)
 				self.curTimeClockInterval = 0
 				self.battleState = GlobalConst.g_battleState.BATTLE_INTERLUDE
 			else:
 				self.curTimeClockInterval += 1
-				for avatar in self.avatars:
-					self.avatars[avatar].roomReqSyncTimeInfo(self.curTimeClockInterval, self.battleState.value)
+				self.avatarEntity.roomReqSyncTimeInfo(self.curTimeClockInterval, self.battleState.value)
 		elif self.battleState == GlobalConst.g_battleState.BATTLE_INTERLUDE:
 			self.curBattleTick += 1
 			self.updateAvatarHeartBeat()
 			if self.curTimeClockInterval >= self.maxSwitchControllerInterludeTime:
-				for avatar in self.avatars:
-					self.avatars[avatar].roomReqResumeBattle(self.curSwitchNb)
+				self.avatarEntity.roomReqResumeBattle(self.curSwitchNb)
 				self.curTimeClockInterval = 0.0
 				self.battleState = GlobalConst.g_battleState.BATTLE
 			else:
@@ -315,5 +293,6 @@ class Room(KBEngine.Entity):
 			else:
 				# if effect lauching fails, notify corresponding client
 				self.avatars[launchAvatarId].roomReqNotifyLaunchSkillFailed(self.curActionSequence, clientActionSequence)
+
 
 

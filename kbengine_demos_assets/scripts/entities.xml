@@ -12,6 +12,6 @@
 	<TestEntity hasClient="true"></TestEntity>
 	<Player hasClient="true"></Player>
 	<Hall></Hall>
-	<Room></Room>
+	<PvPRoom></PvPRoom>
 	<Matcher></Matcher>
 </root>

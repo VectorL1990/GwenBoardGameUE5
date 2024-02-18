@@ -95,21 +95,31 @@ class PolicyValueNet:
 		self.use_gpu = use_gpu
 		self.l2_const = 2e-3
 		self.device = device
-		self.policy_value_net = Net().to(self.device)
-		self.optimizer = torch.optim.Adam(params=self.policy_value_net.parameters(), lr=1e-3, betas=(0.9, 0.999), eps=1e-8, weight_decay=self.l2_const)
+		self.policyValueNet = Net().to(self.device)
+		self.optimizer = torch.optim.Adam(params=self.policyValueNet.parameters(), lr=1e-3, betas=(0.9, 0.999), eps=1e-8, weight_decay=self.l2_const)
 		if model_file:
-			self.policy_value_net.load_state_dict(torch.load(model_file))
+			self.policyValueNet.load_state_dict(torch.load(model_file))
 
-	def policy_value(self, state_batch):
-		self.policy_value_net.eval()
-		state_batch = torch.tensor(state_batch).to(self.device)
-		log_act_probs, value = self.policy_value_net(state_batch)
-		log_act_probs, value = log_act_probs.cpu(), value.cpu()
-		act_probs = np.exp(log_act_probs.detach().numpy())
-		return act_probs, value.detach().numpy()
+	def PolicyValueBatchEvaluation(self, stateBatch):
+		self.policyValueNet.eval()
+		stateBatch = torch.tensor(stateBatch).to(self.device)
+		logActProbs, value = self.policyValueNet(stateBatch)
+		logActProbs, value = logActProbs.cpu(), value.cpu()
+		actProbs = np.exp(logActProbs.detach().numpy())
+		return actProbs, value.detach().numpy()
 
-	def policy_value_fn(self, board):
-		self.policy_value_net.eval()
+	def PolicyValueEvaluation(self, board):
+		self.policyValueNet.eval()
+
+		legal_positions = board.availables
+		currentState = np.ascontiguousarray(board.CurrentState().reshape(-1, 9, 10, 9)).astype('float16')
+		currentState = torch.as_tensor(currentState).to(self.device)
+
+		with autocast():
+			logActProbs, value = self.policyValueNet(currentState)
+
+	def SaveModel(self, modelFile):
+		torch.save(self.policyValueNet.state_dict(), modelFile)
 
 
     

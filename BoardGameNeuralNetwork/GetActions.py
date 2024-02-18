@@ -1,6 +1,9 @@
 import random
 import GlobalConst
-from check_geo_rule import geo_rule_dict
+from CheckGeoRule import geo_rule_dict
+
+def GetPlayCardActionId(stateList, targetX, targetY):
+	sdf
 
 def GetMoveActionId(stateList, x, y, targetX, targetY):
 	sdf
