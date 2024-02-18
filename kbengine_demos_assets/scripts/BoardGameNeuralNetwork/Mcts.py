@@ -47,19 +47,24 @@ class TreeNode(object):
 
 
 class MCTS(object):
-	def __init__(self, policy_value_eval_func, c_puct = 5, n_playout = 2000):
+	def __init__(self, policyValueEvalFunc, c_puct = 5, n_playout = 2000):
 		self.root = TreeNode(None, 1.0)
-		self.policy_eval_func = policy_value_eval_func
+		self.policyEvalFunc = policyValueEvalFunc
 		self.c_puct = c_puct
 		self.n_playout = n_playout
 
-	def playout(self, game):
+	def PlayOut(self, board):
 		node = self.root
 		while True:
 			if node.is_leaf():
 				break
 			action, node = node.select(self.c_puct)
-			sdf
+			board.DoMove(action)
+
+		actionProbs, leafVal = self.policyEvalFunc()
+
+	def GetMoveProbs(self, boardState, temp = 1e-3):
+
 
 class MCTSPlayer(object):
 	def __init__(self):

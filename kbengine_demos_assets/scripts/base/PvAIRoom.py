@@ -1,5 +1,6 @@
 import pickle
 import os
+from AllCards import allCards
 from Board import Board
 from Mcts import MCTSPlayer
 
@@ -46,8 +47,7 @@ class AISelfPlayRoom(KBEngine.Entity):
 		self.avatarHeartBeatCount = 0
 		for cardKey in avatarEntityCall.allCardDict.keys():
 			strs = cardKey.split("_")
-			cardInfo = allDatas["allCards"][strs[2]]
-			#cardInfo = d_all_cards.datas.get(strs[1])
+			cardInfo = allCards["allCards"][strs[2]]
 			avatarEntityCall.allCardDict[cardKey] = {
 				"cardName": strs[1],
 				"hp": cardInfo["hp"],

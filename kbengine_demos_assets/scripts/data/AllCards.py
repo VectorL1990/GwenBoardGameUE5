@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-datas={"OldManInMountain": {'hp': 4, 'defence': 60, 'agility': 5, 'tags': [],
+allCards={"OldManInMountain": {'hp': 4, 'defence': 60, 'agility': 5, 'tags': [],
 		"effects":{
 			"Burst": {"launchType": "auto", "countDown": 3, "availableTimes": 1, "selfTarget": False, "prereqs":{"beingHurt": [1]}, "effectValues": {"values":[1], "type":"cross"}},
 			"FenceDevour": {"launchType": "assign", "countDown": 1, "availableTimes": 1, "selfTarget": False, "prereqs":{}, "effectValues": {"values":[0]}}
@@ -32,7 +32,3 @@ datas={"OldManInMountain": {'hp': 4, 'defence': 60, 'agility': 5, 'tags': [],
 			"AssignTag": {"launchType": "assign", "countDown": 1, "availableTimes": 1, "selfTarget": False, "prereqs":{}, "effectValues": {"values": [], "state": "spy", "last": 3}}
 		}
 	}}
-
-allDatas = {
-	'allCards':datas,
-}

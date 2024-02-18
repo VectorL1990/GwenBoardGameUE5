@@ -6,7 +6,7 @@ import time
 from KBEDebug import *
 import GlobalConst
 from GetActions import actionIdConverterDict
-from d_all_cards import allDatas
+from AllCards import allCards
 from d_effects import effect_dict
 from d_passive_effects import passive_effect_dict
 
@@ -70,8 +70,7 @@ class PvPRoom(KBEngine.Entity):
 			# get corresponding card info from data list
 			for cardKey in avatarEntityCall.allCardDict.keys():
 				strs = cardKey.split("_")
-				cardInfo = allDatas["allCards"][strs[2]]
-				#cardInfo = d_all_cards.datas.get(strs[1])
+				cardInfo = allCards["allCards"][strs[2]]
 				avatarEntityCall.allCardDict[cardKey] = {
 					"cardName": strs[1],
 					"hp": cardInfo["hp"],

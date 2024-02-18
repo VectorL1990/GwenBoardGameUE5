@@ -255,7 +255,7 @@ def HornHurtDiagonal(state_list, x, y, effectInfo):
 
 		
 
-action_collection_dict = {
+legalSkillActionsDict = {
 	'FormationVShoot': FormationVShoot,
 	'LineObstacleSwap': LineObstacleSwap,
 	'HurtRandomOppoFirstRow': HurtRandomOppoFirstRow

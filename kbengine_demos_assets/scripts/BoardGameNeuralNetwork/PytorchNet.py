@@ -49,11 +49,11 @@ class Net(nn.Module):
 		self.policy_bn = nn.BatchNorm2d(16)
 		self.policy_act = nn.ReLU()
 		# output nodes should contain actions including
-		# 1. playing card in specific grid = 32 possible actions
-		# 2. move card to specific grid = 64 possible actions
-		# 3. trigger card skill = 1 possible action
+		# 1. playing card in specific grid = 20x64 = 1280 possible actions
+		# 2. move card to specific grid = 64x14 = 896 possible actions
+		# 3. trigger card skill = 64x64 = 4096 possible actions
 		# which means there are possible 97 actions per card
-		self.policy_fc = nn.Linear(16*8*8, 970)
+		self.policy_fc = nn.Linear(16*8*8, 6272)
 
 		# value head
 		self.value_conv = nn.Conv2d(in_channels=num_channels, out_channels=8, kernel_size=(1,1), stride=(1,1))
@@ -111,12 +111,16 @@ class PolicyValueNet:
 	def PolicyValueEvaluation(self, board):
 		self.policyValueNet.eval()
 
-		legal_positions = board.availables
+		legalMoves = board.availables
 		currentState = np.ascontiguousarray(board.CurrentState().reshape(-1, 9, 10, 9)).astype('float16')
 		currentState = torch.as_tensor(currentState).to(self.device)
 
 		with autocast():
 			logActProbs, value = self.policyValueNet(currentState)
+		logActProbs, value = logActProbs.cpu(), value.cpu()
+		actProbs = np.exp(logActProbs.detach().numpy().astype('float16').flatten())
+		actProbs = zip(legalMoves, actProbs[legalMoves])
+		return actProbs, value.detach().numpy()
 
 	def SaveModel(self, modelFile):
 		torch.save(self.policyValueNet.state_dict(), modelFile)

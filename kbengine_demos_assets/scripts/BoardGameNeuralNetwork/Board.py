@@ -3,12 +3,28 @@ import copy
 import time
 import GlobalConst
 from config import CONFIG
-from d_all_cards import allCards
+from AllCards import allCards
 from d_effects import effect_dict
 from collections import deque
 from Mcts import MCTSPlayer
+from GetActions import 
 import random
-			
+
+# [0]uid
+# [1]cardName
+# [2]camp
+# [3]moveType
+# [4]skillType(hurt or heal)
+# [5]skillGeoType
+# [6]tagType(may be combination)
+# [7]linkStateType
+# [8]linkStateLeftRound
+# [9]linkPairNb
+# [10]addTagType
+# [11]addTagLeftRound
+# [12]hp
+# [13]defence
+# [14]agility
 
 class Board(object):
 	def __init__(self):
@@ -21,9 +37,48 @@ class Board(object):
 							['--', '--', '--', '--', '--', '--', '--', '--'],
 							['--', '--', '--', '--', '--', '--', '--', '--'],
 							['--', '--', '--', '--', '--', '--', '--', '--']]
+
+		self.downSectionHandCards = ['--', '--', '--', '--', '--', '--', '--', '--', '--', '--']
+		self.upSectionHandCards = ['--', '--', '--', '--', '--', '--', '--', '--', '--', '--']
+
+	def GetLegalMoves(self, curPlayer):
+		moves = []
+		# check move card actions
+		# check left dir legal moves
+		for y in range(0, GlobalConst.maxRow):
+			for x in range(0, GlobalConst.maxCol):
+				# check legal moves for every grid
+				if self.boardState[y][x] == "--":
+					# check play card actions
+					if curPlayer == 0:
+						# which means it's down section player turn, player can not put cards in up section
+						if y < GlobalConst.maxRow / 2:
+							# traverse all hand cards of down section player
+							for cardNb in range(0, len(self.downSectionHandCards)):
+								if self.downSectionHandCards[cardNb] != '--':
+									action = "playCard_" + str(cardNb) + "_" + str(y) + "_" + str(x)
+									moves.append(action)
+					else:
+						# which means it's up section player turn
+						if y >= GlobalConst.maxRow / 2:
+							for cardNb in range(0, len(self.upSectionHandCards)):
+								if self.upSectionHandCards[cardNb] != '--':
+									action = "playCard_" + str(cardNb + GlobalConst.handCardNb) + "_" + str(y) + "_" + str(x)
+									moves.append(action)
+				else:
+					# it could be launch skill move or card movement
+					stateStrs = self.boardState[y][x].split('/')
+					cardName = stateStrs[1]
+					for effectK, effectV in allCards[cardName]["effects"]:
+						if effectV["launchType"] == "assign":
+							# which means this effect is triggered manually
+
 		
 	def GetActionInfoById(self, actionId):
-		sdf
+		# actions should be arranged in following orders:
+		# play cards in corresponding grids 0 ~ 64, there are 20 cards in total, which is 1280 actions in total
+		# launch skills of cards in corresponding grids 0 ~ 64, target could be 0 ~ 64, so 64x64 = 4096 in total
+		# move a card to specific location which is 64x14 = 896
 
 
 	def DoMove(self, actionId):
