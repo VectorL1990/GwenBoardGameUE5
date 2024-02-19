@@ -118,9 +118,9 @@ class PolicyValueNet:
 		with autocast():
 			logActProbs, value = self.policyValueNet(currentState)
 		logActProbs, value = logActProbs.cpu(), value.cpu()
-		actProbs = np.exp(logActProbs.detach().numpy().astype('float16').flatten())
-		actProbs = zip(legalMoves, actProbs[legalMoves])
-		return actProbs, value.detach().numpy()
+		actProbTuples = np.exp(logActProbs.detach().numpy().astype('float16').flatten())
+		actProbTuples = zip(legalMoves, actProbTuples[legalMoves])
+		return actProbTuples, value.detach().numpy()
 
 	def SaveModel(self, modelFile):
 		torch.save(self.policyValueNet.state_dict(), modelFile)

@@ -41,6 +41,9 @@ class Board(object):
 		self.downSectionHandCards = ['--', '--', '--', '--', '--', '--', '--', '--', '--', '--']
 		self.upSectionHandCards = ['--', '--', '--', '--', '--', '--', '--', '--', '--', '--']
 
+	def GetCurrentPlayer(self):
+		return self.curPlayerId
+
 	def GetLegalMoves(self, curPlayer):
 		moves = []
 		# check move card actions

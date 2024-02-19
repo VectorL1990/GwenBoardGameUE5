@@ -8,6 +8,7 @@ g_maxHeartBeatCount = 60
 maxCol = 8
 maxRow = 8
 handCardNb = 10
+totalMoveNb = 6272
 g_boardColumn = 10
 g_boardHalfRow = 3
 
