@@ -1,4 +1,5 @@
 import torch
+import GlobalConst
 import torch.nn as nn
 import numpy as np
 import torch.nn.functional as F
@@ -29,7 +30,7 @@ class Net(nn.Module):
 	# 1. skill prerequisite geo type
 	# 2. skill launch geo type
 	# 3. link pair nb
-	# 4. linke skill type
+	# 4. link skill type
 	# 5. tags
 	# 6. add tags
 	# 7. hp
@@ -49,11 +50,11 @@ class Net(nn.Module):
 		self.policy_bn = nn.BatchNorm2d(16)
 		self.policy_act = nn.ReLU()
 		# output nodes should contain actions including
-		# 1. playing card in specific grid = 20x64 = 1280 possible actions
+		# 1. playing card in specific grid = 20x32 = 640 possible actions
 		# 2. move card to specific grid = 64x14 = 896 possible actions
 		# 3. trigger card skill = 64x64 = 4096 possible actions
 		# which means there are possible 97 actions per card
-		self.policy_fc = nn.Linear(16*8*8, 6272)
+		self.policy_fc = nn.Linear(16*8*8, GlobalConst.totalMoveNb)
 
 		# value head
 		self.value_conv = nn.Conv2d(in_channels=num_channels, out_channels=8, kernel_size=(1,1), stride=(1,1))
@@ -124,6 +125,33 @@ class PolicyValueNet:
 
 	def SaveModel(self, modelFile):
 		torch.save(self.policyValueNet.state_dict(), modelFile)
+
+	def TrainStep(self, stateBatch, mctsProbBatch, winnerBatch, lr=0.002):
+		self.policyValueNet.train()
+
+		stateBatch = torch.tensor(stateBatch).to(self.device)
+		mctsProbBatch = torch.tensor(mctsProbBatch).to(self.device)
+		winnerBatch = torch.tensor(winnerBatch).to(self.device)
+
+		self.optimizer.zero_grad()
+		for params in self.optimizer.param_groups:
+			params['lr'] = lr
+
+		logActProbs, value = self.plicyValueNet(stateBatch)
+		value = torch.reshape(value, shape=[-1])
+
+		valueLoss = F.mse_loss(input=value, target=winnerBatch)
+		policyLoss = -torch.mean(torch.sum(mctsProbBatch*logActProbs, dim=1))
+		loss = valueLoss + policyLoss
+
+		loss.backward()
+		self.optimizer.step()
+		
+		with torch.no_grad():
+			entropy = -torch.mean(torch.sum(torch.exp(logActProbs)*logActProbs, dim=1))
+
+		return loss.detach().cpu().numpy(), entropy.detach().cpu().numpy()
+
 
 
     

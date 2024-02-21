@@ -13,6 +13,7 @@ from d_passive_effects import passive_effect_dict
 class PvPRoom(KBEngine.Entity):
 	def __init__(self):
 		KBEngine.Entity.__init__(self)
+		self.board = Board()
 		self.state_list = [['--', '--', '--', '--', '--', '--', '--', '--'],
 							['--', '--', '--', '--', '--', '--', '--', '--'],
 							['--', '--', '--', '--', '--', '--', '--', '--'],

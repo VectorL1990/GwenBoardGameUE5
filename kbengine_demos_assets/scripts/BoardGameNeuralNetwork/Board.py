@@ -14,9 +14,9 @@ import random
 # [1]cardName
 # [2]camp
 # [3]moveType
-# [4]skillType(hurt or heal)
+# [4]skillType(hurt, heal, link, lock)
 # [5]skillGeoType
-# [6]tagType(may be combination)
+# [6]tagType
 # [7]linkStateType
 # [8]linkStateLeftRound
 # [9]linkPairNb
@@ -40,6 +40,7 @@ class Board(object):
 
 		self.downSectionHandCards = ['--', '--', '--', '--', '--', '--', '--', '--', '--', '--']
 		self.upSectionHandCards = ['--', '--', '--', '--', '--', '--', '--', '--', '--', '--']
+		self.curPlayerId = 0
 
 	def GetCurrentPlayer(self):
 		return self.curPlayerId
@@ -79,9 +80,62 @@ class Board(object):
 		
 	def GetActionInfoById(self, actionId):
 		# actions should be arranged in following orders:
-		# play cards in corresponding grids 0 ~ 64, there are 20 cards in total, which is 1280 actions in total
+		# play cards in corresponding grids 0 ~ 32, there are 20 cards in total, which is 640 actions in total
 		# launch skills of cards in corresponding grids 0 ~ 64, target could be 0 ~ 64, so 64x64 = 4096 in total
 		# move a card to specific location which is 64x14 = 896
+		actionInfo = {}
+		totalGridNb = GlobalConst.maxCol * GlobalConst.maxRow
+		halfBoardGridNb = GlobalConst.maxCol * GlobalConst.maxRow / 2
+
+		if actionId < GlobalConst.totalPlayCardActionId:
+			# which means this action belongs to play card type
+			if actionId < GlobalConst.totalPlayCardActionId / 2:
+				# which means card is put in down section of board
+				handCardNb = actionId // halfBoardGridNb
+				targetGridNb = actionId % halfBoardGridNb
+				targetGridY = targetGridNb // GlobalConst.maxCol
+				targetGridX = targetGridNb % GlobalConst.maxCol
+				actionInfo = {
+					"actionType": "playCard",
+					"launchSection": "down",
+					"handCardNb": handCardNb,
+					"targetGridY": targetGridY,
+					"targetGridX": targetGridX
+				}
+			else:
+				# which means card is put in up section
+				halfActionId = actionId - GlobalConst.totalPlayCardActionId/2
+				handCardNb = halfActionId // halfBoardGridNb
+				targetGridNb = halfActionId % halfBoardGridNb
+				targetGridY = targetGridNb // GlobalConst.maxCol + 4
+				targetGridX = targetGridNb % GlobalConst.maxCol
+				actionInfo = {
+					"actionType": "playCard",
+					"launchSection": "up",
+					"handCardNb": handCardNb,
+					"targetGridY": targetGridY,
+					"targetGridX": targetGridX
+				}
+		elif actionId < GlobalConst.totalPlayCardActionId + GlobalConst.totalLaunchSkillActionId:
+			# which means this action belongs to launching skill type
+			launchSkillActionId = actionId - GlobalConst.totalPlayCardActionId
+			launchGridNb = launchSkillActionId // totalGridNb
+			targetGridNb = launchSkillActionId % totalGridNb
+			launchGridY = launchGridNb // GlobalConst.maxCol
+			launchGridX = launchGridNb % GlobalConst.maxCol
+			targetGridY = targetGridNb // GlobalConst.maxCol
+			targetGridX = targetGridNb % GlobalConst.maxCol
+			actionInfo = {
+				"actionType": "launchSkill",
+				"launchGridY": launchGridY,
+				"launchGridX": launchGridX,
+				"targetGridY": targetGridY,
+				"targetGridX": targetGridX
+			}
+		else:
+			# which means this action belongs to move card type
+			moveCardActionId = actionId - GlobalConst.totalPlayCardActionId - GlobalConst.totalLaunchSkillActionId
+			launchGridNb = moveCardActionId // 
 
 
 	def DoMove(self, actionId):

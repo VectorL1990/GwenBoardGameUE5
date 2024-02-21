@@ -1,5 +1,6 @@
 import pickle
 import os
+#import zip_array
 from Board import Board
 from Mcts import MCTSPlayer
 from PytorchNet import PolicyValueNet
@@ -18,16 +19,19 @@ class AISelfPlayRoom(object):
 									n_playout=self.n_playout,
 									is_selfplay=1)
 
-	def GetEquiData(self, playData):
+	'''def GetEquiData(self, playData):
 		extendData = []
+		for state, mctsProb, winner in playData:
+			extendData.append(zip_array.zip_state)
 		return extendData
+	'''
 
 	def StartSelfPlay(self, nGames = 1):
 		self.LoadModel()
 		for i in range(nGames):
 			winner, playData = self.board.AISelfPlay(self.mctsPlayer)
 			playData = list(playData)[:]
-			playData = self.GetEquiData(playData)
+			#playData = self.GetEquiData(playData)
 			if os.path.exists():
 				while True:
 					try:
