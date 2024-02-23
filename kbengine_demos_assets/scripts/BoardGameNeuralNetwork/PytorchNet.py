@@ -26,16 +26,6 @@ class ResBlock(nn.Module):
 		return self.conv2_act(y)
 
 class Net(nn.Module):
-	# features contain:
-	# 1. skill prerequisite geo type
-	# 2. skill launch geo type
-	# 3. link pair nb
-	# 4. link skill type
-	# 5. tags
-	# 6. add tags
-	# 7. hp
-	# 8. defence
-	# 9. agility
 	def __init__(self, in_features_num = 14, num_channels=256, num_res_blocks=7):
 		super().__init__()
 		self.conv_block = nn.Conv2d(in_channels=in_features_num, out_channels=num_channels, kernel_size=(3,3), stride=(1,1), padding=1)
@@ -49,12 +39,12 @@ class Net(nn.Module):
 		self.policy_conv = nn.Conv2d(in_channels=num_channels, out_channels=16, kernel_size=(1,1), stride=(1,1))
 		self.policy_bn = nn.BatchNorm2d(16)
 		self.policy_act = nn.ReLU()
-		# output nodes should contain actions including
-		# 1. playing card in specific grid = 20x32 = 640 possible actions
-		# 2. move card to specific grid = 64x14 = 896 possible actions
-		# 3. trigger card skill = 64x64 = 4096 possible actions
-		# which means there are possible 97 actions per card
 		self.policy_fc = nn.Linear(16*8*8, GlobalConst.totalMoveNb)
+
+		self.play_card_type_policy_conv = nn.Conv2d(in_channels=num_channels, out_channels=16, kernel_size=(1,1), stride=(1,1))
+		self.play_card_type_policy_bn = nn.BatchNorm2d(16)
+		self.play_card_type_policy_act = nn.ReLU()
+		self.play_card_type_policy_fc = nn.Linear(16*8*8, GlobalConst.totalPlayCardTypeNb)
 
 		# value head
 		self.value_conv = nn.Conv2d(in_channels=num_channels, out_channels=8, kernel_size=(1,1), stride=(1,1))

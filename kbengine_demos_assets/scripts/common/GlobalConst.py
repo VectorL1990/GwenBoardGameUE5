@@ -8,10 +8,11 @@ g_maxHeartBeatCount = 60
 maxCol = 8
 maxRow = 8
 handCardNb = 10
-totalPlayCardActionId = 640
+totalPlayCardActionId = 64
 totalLaunchSkillActionId = 4096
 totalMoveCardActionId = 896
-totalMoveNb = 5632
+totalMoveNb = 5056
+totalPlayCardTypeNb = 20250
 g_boardColumn = 10
 g_boardHalfRow = 3
 

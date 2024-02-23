@@ -28,7 +28,7 @@ class Trainer:
 
 		for i in range(self.epochs):
 			loss, entropy = self.policyValueNet.TrainStep(stateBatch, mctsProbsBatch, winnerBatch, self.learnRate*self.lrMultiplier)
-			newProbs, newValue = self.policyValueNet.PolicyValueBatchEvalution(stateBatch)
+			newProbs, newValue = self.policyValueNet.PolicyValueBatchEvaluation(stateBatch)
 			kl = np.mean(np.sum(oldProbs*(np.log(oldProbs + 1e-10) - np.log(newProbs + 1e-10)), axis=1))
 			if kl > self.klTarg*4:
 				break

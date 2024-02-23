@@ -178,7 +178,7 @@ class AISelfPlayRoom(KBEngine.Entity):
 					# at the same time we should syncronize board state to human player
 				else:
 					moveId, moveProb = self.mctsPlayer.GetAction(self)
-					self.DoMove(moveId)
+					self.board.DoMove(moveId)
 				self.curTimeClockInterval = 0
 				self.battleState = GlobalConst.g_battleState.BATTLE_INTERLUDE
 			else:

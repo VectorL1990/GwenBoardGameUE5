@@ -13,18 +13,118 @@ import random
 # [0]uid
 # [1]cardName
 # [2]camp
-# [3]moveType
+# [3]skillLaunchType
 # [4]skillType(hurt, heal, link, lock)
 # [5]skillGeoType
-# [6]tagType
-# [7]linkStateType
-# [8]linkStateLeftRound
-# [9]linkPairNb
-# [10]addTagType
-# [11]addTagLeftRound
-# [12]hp
-# [13]defence
-# [14]agility
+# [6]skillTagConditionType
+# [7]tagType
+# [8]linkStateType
+# [9]linkStateLeftRound
+# [10]linkPairNb
+# [11]addTagType
+# [12]addTagLeftRound
+# [13]hp
+# [14]defence
+# [15]agility
+# [16]attackRange
+# [17]cardHirachy
+
+# range 3
+defaultSkillLaunchCode = np.array([0,0,0])
+skillLaunchCoding = dict(
+	auto = np.array([1,0,0]),
+	manual = np.array([0,1,0]),
+	passive = np.array([0,0,1])
+)
+
+# range 15
+defaultSkillGeoCode = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+skillGeoCoding = dict(
+	line = np.array([1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+	seperated = np.array([0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+	diagonal = np.array([0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+	diagonalSeperated = np.array([0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+	adjacent = np.array([0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+	hornDiagonal = np.array([0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+	hornSeperated = np.array([0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0]),
+	normalCrossSeperated = np.array([0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0]),
+	obliqueCrossLineUp = np.array([0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0]),
+	triangleSeperated = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0]),
+	triangleLine = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0]),
+	threeGridsPerpendicular = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0]),
+	connect = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0]),
+	teleport = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0]),
+	arbitrary = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]),
+)
+
+# range 15
+defaultSkillEffectCode = np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+skillEffectCoding = dict(
+	hurt = np.array([1,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
+	heal = np.array([0,1,0,0,0,0,0,0,0,0,0,0,0,0,0]),
+	devour = np.array([0,0,1,0,0,0,0,0,0,0,0,0,0,0,0]),
+	spawn = np.array([0,0,0,1,0,0,0,0,0,0,0,0,0,0,0]),
+	lock = np.array([0,0,0,0,1,0,0,0,0,0,0,0,0,0,0]),
+	absort = np.array([0,0,0,0,0,1,0,0,0,0,0,0,0,0,0]),
+	infect = np.array([0,0,0,0,0,0,1,0,0,0,0,0,0,0,0]),
+	convert = np.array([0,0,0,0,0,0,0,1,0,0,0,0,0,0,0]),
+	explode = np.array([0,0,0,0,0,0,0,0,1,0,0,0,0,0,0]),
+	link = np.array([0,0,0,0,0,0,0,0,0,1,0,0,0,0,0]),
+	assimilate = np.array([0,0,0,0,0,0,0,0,0,0,1,0,0,0,0]),
+	addTag = np.array([0,0,0,0,0,0,0,0,0,0,0,1,0,0,0]),
+	# which includes add defence or reinforce agility
+	reinforce = np.array([0,0,0,0,0,0,0,0,0,0,0,0,1,0,0]),
+	# which includes elminate cards progressively(like poison tag) or immediately
+	eliminate = np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,1,0]),
+	# which includes eliminate tags and unlock movement restriction
+	purify = np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,1])
+)
+
+# range 3
+defaultSkillTagConditionCode = np.array([0,0,0])
+skillTagConditionCoding = dict(
+	tagOnBoard = np.array([1,0,0]),
+	tagOnTarget = np.array([0,1,0]),
+	tagOnSelf = np.array([0,0,1])
+)
+
+# range 10
+defaultCardTypeCode = np.array([0,0,0,0,0,0,0,0,0,0])
+cardTypeCoding = dict(
+	tag1 = np.array([1,0,0,0,0,0,0,0,0,0]),
+	tag2 = np.array([0,1,0,0,0,0,0,0,0,0]),
+	tag3 = np.array([0,0,1,0,0,0,0,0,0,0]),
+	tag4 = np.array([0,0,0,1,0,0,0,0,0,0]),
+	tag5 = np.array([0,0,0,0,1,0,0,0,0,0]),
+	tag6 = np.array([0,0,0,0,0,1,0,0,0,0]),
+	tag7 = np.array([0,0,0,0,0,0,1,0,0,0]),
+	tag8 = np.array([0,0,0,0,0,0,0,1,0,0]),
+	tag9 = np.array([0,0,0,0,0,0,0,0,1,0]),
+	tag10 = np.array([0,0,0,0,0,0,0,0,0,1])
+)
+
+# range 3
+defaultCardHirachyCode = np.array([0,0,0])
+cardHirachyCoding = dict(
+	low = np.array([1,0,0]),
+	mid = np.array([0,1,0]),
+	high = np.array([0,0,1])
+)
+
+# range 10
+defaultLinkCode = np.array([0,0,0,0,0,0,0,0,0,0])
+linkCoding = dict(
+	link1 = np.array([1,0,0,0,0,0,0,0,0,0])
+	link2 = np.array([0,1,0,0,0,0,0,0,0,0])
+	link3 = np.array([0,0,1,0,0,0,0,0,0,0])
+	link4 = np.array([0,0,0,1,0,0,0,0,0,0])
+	link5 = np.array([0,0,0,0,1,0,0,0,0,0])
+	link6 = np.array([0,0,0,0,0,1,0,0,0,0])
+	link7 = np.array([0,0,0,0,0,0,1,0,0,0])
+	link8 = np.array([0,0,0,0,0,0,0,1,0,0])
+	link9 = np.array([0,0,0,0,0,0,0,0,1,0])
+	link10 = np.array([0,0,0,0,0,0,0,0,0,1])
+)
 
 class Board(object):
 	def __init__(self):
@@ -41,6 +141,71 @@ class Board(object):
 		self.downSectionHandCards = ['--', '--', '--', '--', '--', '--', '--', '--', '--', '--']
 		self.upSectionHandCards = ['--', '--', '--', '--', '--', '--', '--', '--', '--', '--']
 		self.curPlayerId = 0
+
+	def CardCoding(self, cardStateStr):
+		# 3 + 15 + 15 + 3 + 10 + 3 + 10 + hp + defence + agil + attackRange = 63
+		# total 63 channels
+		if cardStateStr == "--":
+			return np.zeros(63)
+		else:
+			cardStateStrs = cardStateStr.split("/")
+			skillLaunchTypeStr = cardStateStrs[3]
+			skillEffectTypeStr = cardStateStrs[4]
+			skillGeoTypeStr = cardStateStrs[5]
+			skillTagConditionTypeStr = cardStateStrs[6]
+			cardTypeStr = cardStateStrs[7]
+			linkNbStr = cardStateStrs[10]
+			hpStr = cardStateStrs[13]
+			defenceStr = cardStateStrs[14]
+			agilityStr = cardStateStrs[15]
+			attackRangeStr = cardStateStrs[16]
+			cardHirachyStr = cardStateStrs[17]
+
+
+			skillLaunchTypeCode = defaultSkillLaunchCode
+			if skillLaunchTypeStr in skillLaunchCoding:
+				skillLaunchTypeCode = skillLaunchCoding[skillLaunchTypeStr]
+
+			skillEffectCode = defaultSkillEffectCode
+			if skillEffectTypeStr in skillEffectCoding:
+				skillEffectCode = skillEffectCoding[skillEffectTypeStr]
+
+			skillGeoCode = defaultSkillGeoCode
+			if skillGeoTypeStr in skillGeoCoding:
+				skillGeoCode = skillGeoCoding[skillGeoTypeStr]
+
+			skillTagConditionTypeCode = defaultSkillTagConditionCode
+			if skillTagConditionTypeStr in skillTagConditionCoding:
+				skillTagConditionTypeCode = skillTagConditionCoding[skillTagConditionTypeStr]
+
+			cardTypeCode = defaultCardTypeCode
+			if cardTypeStr in cardTypeCoding:
+				cardTypeCode = cardTypeCoding[cardTypeStr]
+
+			cardHirachyCode = defaultCardHirachyCode
+			if cardHirachyStr in cardHirachyCoding:
+				cardHirachyCode = cardHirachyCoding[cardHirachyStr]
+
+			linkCode = defaultLinkCode
+			if linkNbStr in linkCoding:
+				linkCode = linkCoding[linkNbStr]
+
+			cardCode = skillLaunchTypeCode.extend(skillEffectCode)
+			cardCode = cardCode.extend(skillGeoCode)
+			cardCode = cardCode.extend(skillTagConditionTypeCode)
+			cardCode = cardCode.extend(cardTypeCode)
+			cardCode = cardCode.extend(linkCode)
+			cardCode = cardCode.extend(int(hpStr))
+			cardCode = cardCode.extend(int(defenceStr))
+			cardCode = cardCode.extend(int(agilityStr))
+			cardCode = cardCode.extend(int(attackRangeStr))
+			cardCode = cardCode.extend(cardHirachyCode)
+
+			return cardCode
+
+	def CardDecoding(self, cardCoding):
+		sdf
+		
 
 	def GetCurrentPlayer(self):
 		return self.curPlayerId
@@ -80,7 +245,7 @@ class Board(object):
 		
 	def GetActionInfoById(self, actionId):
 		# actions should be arranged in following orders:
-		# play cards in corresponding grids 0 ~ 32, there are 20 cards in total, which is 640 actions in total
+		# play cards in corresponding grids 0 ~ 32, which is 64 actions in total
 		# launch skills of cards in corresponding grids 0 ~ 64, target could be 0 ~ 64, so 64x64 = 4096 in total
 		# move a card to specific location which is 64x14 = 896
 		actionInfo = {}
