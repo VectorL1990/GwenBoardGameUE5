@@ -13,6 +13,13 @@ totalLaunchSkillActionId = 4096
 totalMoveCardActionId = 896
 totalMoveNb = 5056
 totalPlayCardTypeNb = 20250
+cardCodeLen = 63
+skillLaunchTypdeCodeLen = 3
+skillGeoCodeLen = 15
+skillEffectCodeLen = 15
+skillTagConditionCodeLen = 3
+cardTypeCodeLen = 10
+cardLinkPairLen = 10
 g_boardColumn = 10
 g_boardHalfRow = 3
 
