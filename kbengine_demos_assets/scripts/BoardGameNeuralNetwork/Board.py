@@ -7,6 +7,7 @@ from AllCards import allCards
 from d_effects import effect_dict
 from collections import deque
 from Mcts import MCTSPlayer
+from Utils import UtilFuncDict
 from GetActions import 
 import random
 
@@ -27,7 +28,6 @@ import random
 # [14]defence
 # [15]agility
 # [16]attackRange
-# [17]cardHirachy
 
 # range 3
 defaultSkillLaunchCode = np.array([0,0,0])
@@ -111,26 +111,19 @@ cardTypeCoding = dict(
 	tag10 = np.array([0,0,0,0,0,0,0,0,0,1])
 )
 
-# range 3
-defaultCardHirachyCode = np.array([0,0,0])
-cardHirachyCoding = dict(
-	low = np.array([1,0,0]),
-	mid = np.array([0,1,0]),
-	high = np.array([0,0,1])
-)
 
 # range 10
 defaultLinkCode = np.array([0,0,0,0,0,0,0,0,0,0])
 linkCoding = dict(
-	link1 = np.array([1,0,0,0,0,0,0,0,0,0])
-	link2 = np.array([0,1,0,0,0,0,0,0,0,0])
-	link3 = np.array([0,0,1,0,0,0,0,0,0,0])
-	link4 = np.array([0,0,0,1,0,0,0,0,0,0])
-	link5 = np.array([0,0,0,0,1,0,0,0,0,0])
-	link6 = np.array([0,0,0,0,0,1,0,0,0,0])
-	link7 = np.array([0,0,0,0,0,0,1,0,0,0])
-	link8 = np.array([0,0,0,0,0,0,0,1,0,0])
-	link9 = np.array([0,0,0,0,0,0,0,0,1,0])
+	link1 = np.array([1,0,0,0,0,0,0,0,0,0]),
+	link2 = np.array([0,1,0,0,0,0,0,0,0,0]),
+	link3 = np.array([0,0,1,0,0,0,0,0,0,0]),
+	link4 = np.array([0,0,0,1,0,0,0,0,0,0]),
+	link5 = np.array([0,0,0,0,1,0,0,0,0,0]),
+	link6 = np.array([0,0,0,0,0,1,0,0,0,0]),
+	link7 = np.array([0,0,0,0,0,0,1,0,0,0]),
+	link8 = np.array([0,0,0,0,0,0,0,1,0,0]),
+	link9 = np.array([0,0,0,0,0,0,0,0,1,0]),
 	link10 = np.array([0,0,0,0,0,0,0,0,0,1])
 )
 
@@ -167,7 +160,6 @@ class Board(object):
 			defenceStr = cardStateStrs[14]
 			agilityStr = cardStateStrs[15]
 			attackRangeStr = cardStateStrs[16]
-			cardHirachyStr = cardStateStrs[17]
 
 
 			skillLaunchTypeCode = defaultSkillLaunchCode
@@ -190,10 +182,6 @@ class Board(object):
 			if cardTypeStr in cardTypeCoding:
 				cardTypeCode = cardTypeCoding[cardTypeStr]
 
-			cardHirachyCode = defaultCardHirachyCode
-			if cardHirachyStr in cardHirachyCoding:
-				cardHirachyCode = cardHirachyCoding[cardHirachyStr]
-
 			linkCode = defaultLinkCode
 			if linkNbStr in linkCoding:
 				linkCode = linkCoding[linkNbStr]
@@ -207,12 +195,103 @@ class Board(object):
 			cardCode = cardCode.extend(int(defenceStr))
 			cardCode = cardCode.extend(int(agilityStr))
 			cardCode = cardCode.extend(int(attackRangeStr))
-			cardCode = cardCode.extend(cardHirachyCode)
 
 			return cardCode
 
+	# this function is only being called by action interpretation
+	# which means nn outputs a specific action, which should be interpreted as a string type action
+	# which indicates how to select specific card to put on board
 	def CardDecoding(self, cardCoding):
-		sdf
+		# range 3 skillLaunchType
+		# range 15 skillGeoType
+		# range 15 skillEffectType
+		# range 3 skillTagConditionType
+		# range 10 cardType
+		curCodeLen = 0
+		nextCodeLen = GlobalConst.skillLaunchTypeCodeLen
+		rSkillLaunchTypeCode = cardCoding[curCodeLen : nextCodeLen]
+		skillLaunchTypeDefaultCode = np.zeros(GlobalConst.skillLaunchTypdeCodeLen)
+		maxSkillLaunchTypeSimilarity = 0
+		maxSkillLaunchType = -1
+		for i in range(0, GlobalConst.skillLaunchTypdeCodeLen):
+			skillLaunchTypeCoding = copy.deepcopy(skillLaunchTypeDefaultCode)
+			skillLaunchTypeCoding[i] = 1
+			curSkillLaunchTypeSimilarity = UtilFuncDict["GetCosSimilarity"](skillLaunchTypeCoding, rSkillLaunchTypeCode)
+			if curSkillLaunchTypeSimilarity > maxSkillLaunchTypeSimilarity:
+				maxSkillLaunchTypeSimilarity = curSkillLaunchTypeSimilarity
+				maxSkillLaunchType = i
+		if maxSkillLaunchType != -1:
+			sdf
+
+
+		curCodeLen = GlobalConst.skillLaunchTypeCodeLen
+		nextCodeLen = GlobalConst.skillLaunchTypeCodeLen + GlobalConst.skillGeoCodeLen
+		rSkillGeoTypeCode = cardCoding[curCodeLen : nextCodeLen]
+		skillGeoTypeDefaultCode = np.zeros(GlobalConst.skillGeoCodeLen)
+		maxSkillGeoTypeSimilarity = 0
+		maxSkillGeoType = -1
+		for i in range(0, GlobalConst.skillGeoCodeLen):
+			skillGeoTypeCoding = copy.deepcopy(skillGeoTypeDefaultCode)
+			skillGeoTypeCoding[i] = 1
+			curSkillGeoTypeSimilarity = UtilFuncDict["GetCosSimilarity"](skillGeoTypeCoding, rSkillGeoTypeCode)
+			if curSkillGeoTypeSimilarity > maxSkillGeoTypeSimilarity:
+				maxSkillGeoTypeSimilarity = curSkillGeoTypeSimilarity
+				maxSkillGeoType = i
+		if maxSkillGeoType != -1:
+			sdf
+
+		
+		curCodeLen = GlobalConst.skillLaunchTypeCodeLen + GlobalConst.skillGeoCodeLen
+		nextCodeLen = GlobalConst.skillLaunchTypeCodeLen + GlobalConst.skillGeoCodeLen + GlobalConst.skillEffectCodeLen
+		rSkillEffectTypeCode = cardCoding[curCodeLen : nextCodeLen]
+		skillEffectTypeDefaultCode = np.zeros(GlobalConst.skillEffectCodeLen)
+		maxSkillEffectTypeSimilarity = 0
+		maxSkillEffectType = -1
+		for i in range(0, GlobalConst.skillEffectCodeLen):
+			skillEffectTypeCoding = copy.deepcopy(skillEffectTypeDefaultCode)
+			skillEffectTypeCoding[i] = 1
+			curSkillEffectTypeSimilarity = UtilFuncDict["GetCosSimilarity"](skillEffectTypeCoding, rSkillEffectTypeCode)
+			if curSkillEffectTypeSimilarity > maxSkillEffectTypeSimilarity:
+				maxSkillEffectTypeSimilarity = curSkillEffectTypeSimilarity
+				maxSkillEffectType = i
+		if maxSkillEffectType != -1:
+			sdf
+
+
+		curCodeLen = GlobalConst.skillLaunchTypeCodeLen + GlobalConst.skillGeoCodeLen + GlobalConst.skillEffectCodeLen
+		nextCodeLen = GlobalConst.skillLaunchTypeCodeLen + GlobalConst.skillGeoCodeLen + GlobalConst.skillEffectCodeLen + GlobalConst.skillTagConditionCodeLen
+		rSkillTagConditionTypeCode = cardCoding[curCodeLen : nextCodeLen]
+		skillTagConditionDefaultCode = np.zeros(GlobalConst.skillTagConditionCodeLen)
+		maxSkillTagConditionSimilarity = 0
+		maxSkillTagCondition = -1
+		for i in range(0, GlobalConst.skillTagConditionCodeLen):
+			skillTagConditionCoding = copy.deepcopy(skillTagConditionDefaultCode)
+			skillTagConditionCoding[i] = 1
+			curSkillTagConditionSimilarity = UtilFuncDict["GetCosSimilarity"](skillTagConditionCoding, rSkillTagConditionTypeCode)
+			if curSkillTagConditionSimilarity > maxSkillTagConditionSimilarity:
+				maxSkillTagConditionSimilarity = curSkillTagConditionSimilarity
+				maxSkillTagCondition = i
+		if maxSkillTagCondition != -1:
+			sdf
+
+
+		curCodeLen = GlobalConst.skillLaunchTypeCodeLen + GlobalConst.skillGeoCodeLen + GlobalConst.skillEffectCodeLen + GlobalConst.skillTagConditionCodeLen
+		nextCodeLen = GlobalConst.skillLaunchTypeCodeLen + GlobalConst.skillGeoCodeLen + GlobalConst.skillEffectCodeLen + GlobalConst.skillTagConditionCodeLen + GlobalConst.cardTypeCodeLen
+		rCardTypeCode = cardCoding[curCodeLen : nextCodeLen]
+		cardTypeDefaultCode = np.zeros(GlobalConst.cardTypeCodeLen)
+		maxCardTypeSimilarity = 0
+		maxCardType = -1
+		for i in range(0, GlobalConst.cardTypeCodeLen):
+			cardTypeCoding = copy.deepcopy(cardTypeDefaultCode)
+			cardTypeCoding[i] = 1
+			curCardTypeSimilarity = UtilFuncDict["GetCosSimilarity"](cardTypeCoding, rCardTypeCode)
+			if curCardTypeSimilarity > maxCardTypeSimilarity:
+				maxCardTypeSimilarity = curCardTypeSimilarity
+				maxCardType = i
+		if maxCardType != -1:
+			sdf
+
+
 		
 
 	def GetCurrentPlayer(self):
