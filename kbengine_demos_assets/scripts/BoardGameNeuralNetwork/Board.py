@@ -37,47 +37,55 @@ skillLaunchCoding = dict(
 	passive = np.array([0,0,1])
 )
 
-# range 15
-defaultSkillGeoCode = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+# range 21
+defaultSkillGeoCode = np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
 skillGeoCoding = dict(
-	line = np.array([1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-	seperated = np.array([0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-	diagonal = np.array([0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-	diagonalSeperated = np.array([0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-	adjacent = np.array([0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-	hornDiagonal = np.array([0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-	hornSeperated = np.array([0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0]),
-	normalCrossSeperated = np.array([0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0]),
-	obliqueCrossLineUp = np.array([0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0]),
-	triangleSeperated = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0]),
-	triangleLine = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0]),
-	threeGridsPerpendicular = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0]),
-	connect = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0]),
-	teleport = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0]),
-	arbitrary = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]),
+	pointOnLine = 						np.array([1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
+	lineSweep = 						np.array([0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
+	aoe = 								np.array([0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
+	seperated = 						np.array([0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
+	pointOnDiagonal = 					np.array([0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
+	diagonalSweep = 					np.array([0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
+	diagonalSeperated = 				np.array([0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
+	hornDiagonal = 						np.array([0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0]),
+	hornDiagonalSweep = 				np.array([0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0]),
+	obliqueCrossLineUp = 				np.array([0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0]),
+	obliqueCrossLineSweep = 			np.array([0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0]),
+	triangleSeperated = 				np.array([0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0]),
+	triangleSeperatedLineSweep = 		np.array([0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0]),
+	triangleSeperatedAOE = 				np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0]),
+	triangleLine = 						np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0]),
+	threeGridsPerpendicular = 			np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0]),
+	threeGridsPerpendicularLineSweep = 	np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0]),
+	threeGridsPerpendicularLineAOE = 	np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0]),
+	connect = 							np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0]),
+	teleport = 							np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0]),
+	arbitrary = 						np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]),
 )
 
-# range 15
-defaultSkillEffectCode = np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+# range 17
+defaultSkillEffectCode = np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
 skillEffectCoding = dict(
-	hurt = np.array([1,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
-	heal = np.array([0,1,0,0,0,0,0,0,0,0,0,0,0,0,0]),
-	devour = np.array([0,0,1,0,0,0,0,0,0,0,0,0,0,0,0]),
-	spawn = np.array([0,0,0,1,0,0,0,0,0,0,0,0,0,0,0]),
-	lock = np.array([0,0,0,0,1,0,0,0,0,0,0,0,0,0,0]),
-	absort = np.array([0,0,0,0,0,1,0,0,0,0,0,0,0,0,0]),
-	infect = np.array([0,0,0,0,0,0,1,0,0,0,0,0,0,0,0]),
-	convert = np.array([0,0,0,0,0,0,0,1,0,0,0,0,0,0,0]),
-	explode = np.array([0,0,0,0,0,0,0,0,1,0,0,0,0,0,0]),
-	link = np.array([0,0,0,0,0,0,0,0,0,1,0,0,0,0,0]),
-	assimilate = np.array([0,0,0,0,0,0,0,0,0,0,1,0,0,0,0]),
-	addTag = np.array([0,0,0,0,0,0,0,0,0,0,0,1,0,0,0]),
+	hurt = 			np.array([1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
+	heal = 			np.array([0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
+	devour = 		np.array([0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
+	spawn = 		np.array([0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0]),
+	lock = 			np.array([0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0]),
+	absort = 		np.array([0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0]),
+	infect = 		np.array([0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0]),
+	convert = 		np.array([0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0]),
+	exchange = 		np.array([0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0]),
+	suborn = 		np.array([0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0]),
+	explode = 		np.array([0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0]),
+	link = 			np.array([0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0]),
+	assimilate = 	np.array([0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0]),
+	addTag = 		np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0]),
 	# which includes add defence or reinforce agility
-	reinforce = np.array([0,0,0,0,0,0,0,0,0,0,0,0,1,0,0]),
+	reinforce = 	np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0]),
 	# which includes elminate cards progressively(like poison tag) or immediately
-	eliminate = np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,1,0]),
+	eliminate = 	np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0]),
 	# which includes eliminate tags and unlock movement restriction
-	purify = np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,1])
+	purify = 		np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1])
 )
 
 # range 3
