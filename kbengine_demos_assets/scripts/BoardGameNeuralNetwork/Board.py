@@ -96,19 +96,34 @@ skillTagConditionCoding = dict(
 	tagOnSelf = np.array([0,0,1])
 )
 
-# range 10
-defaultCardTypeCode = np.array([0,0,0,0,0,0,0,0,0,0])
-cardTypeCoding = dict(
-	tag1 = np.array([1,0,0,0,0,0,0,0,0,0]),
-	tag2 = np.array([0,1,0,0,0,0,0,0,0,0]),
-	tag3 = np.array([0,0,1,0,0,0,0,0,0,0]),
-	tag4 = np.array([0,0,0,1,0,0,0,0,0,0]),
-	tag5 = np.array([0,0,0,0,1,0,0,0,0,0]),
-	tag6 = np.array([0,0,0,0,0,1,0,0,0,0]),
-	tag7 = np.array([0,0,0,0,0,0,1,0,0,0]),
-	tag8 = np.array([0,0,0,0,0,0,0,1,0,0]),
-	tag9 = np.array([0,0,0,0,0,0,0,0,1,0]),
-	tag10 = np.array([0,0,0,0,0,0,0,0,0,1])
+
+defaultCardTypeCode = np.zeros(GlobalConst.cardTypeCodeLen)
+cardTypeCoding = dict()
+def InitCardTagDict(cardTagDict):
+	for i in range(GlobalConst.cardTypeCodeLen):
+		key = "tag" + str(i)
+		val = defaultCardTypeCode
+		val[i] = 1
+		cardTagDict[key] = val
+
+
+defaultSkillPrereqTagCode = np.zeros(GlobalConst.cardTypeCodeLen)
+skillPrereqTagCoding = dict()
+def InitSkillPrereqTagDict(skillPrereqTagDict):
+	for i in range(GlobalConst.cardTypeCodeLen):
+		key = "tag" + str(i)
+		val = defaultSkillPrereqTagCode
+		val[i] = 1
+		skillPrereqTagDict[key] = val
+
+defaultSkillPrereqCode = np.array([0,0,0,0,0,0])
+skillPrereqCoding = dict(
+	beHeal = 			np.array([0,0,0,0,0,0]),
+	beHurt = 			np.array([0,0,0,0,0,0]),
+	armorPenetrate = 	np.array([0,0,0,0,0,0]),
+	hpSum = 			np.array([0,0,0,0,0,0]),
+	hpLessThan = 		np.array([0,0,0,0,0,0]),
+	hpGreaterThan = 	np.array([0,0,0,0,0,0])
 )
 
 
@@ -144,8 +159,15 @@ class Board(object):
 		self.curPlayerId = 0
 
 	def CardCoding(self, cardStateStr):
-		# 3 + 15 + 15 + 3 + 10 + 3 + 10 + hp + defence + agil + attackRange = 63
-		# total 63 channels
+		# skillLaunchType = 3
+		# skillGeoType = 21
+		# skillType = 17
+		# skillTagConditionType = 3
+		# skillPrereqTagType = 50
+		# cardTagType = 50
+		# skillPrereqType = 6
+		# 3 + 21 + 17 + 3 + 50 + 50 + 6 + hp + defence + agil + attackRange = 153
+		# total 153 channels
 		if cardStateStr == "--":
 			return np.zeros(63)
 		else:
