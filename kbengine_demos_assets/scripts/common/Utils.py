@@ -50,90 +50,93 @@ def GetCosSimilarity(a1, a2):
 		return 0
 	else:
 		return num/denom
+	
+def GetSkillLaunchStrByCoding(code):
+	if code == 0:
+		return "auto"
+	elif code == 1:
+		return "manual"
+	elif code == 2:
+		return "manualImmediate"
+	elif code == 3:
+		return "passive"
+	else:
+		return "null"
+	
+def GetSkillGeoStrByCoding(code):
+	if code == 0:
+		return "pointOnLine"
+	elif code == 1:
+		return "lineSweep"
+	elif code == 2:
+		return "aoe"
+	elif code == 3:
+		return "seperated"
+	elif code == 4:
+		return "pointOnDiagonal"
+	elif code == 5:
+		return "diagonalSweep"
+	elif code == 6:
+		return "diagonalSeperated"
+	elif code == 7:
+		return "hornDiagonal"
+	elif code == 8:
+		return "hornDiagonalSweep"
+	elif code == 9:
+		return "obliqueCrossLineUp"
+	elif code == 10:
+		return "obliqueCrossLineSweep"
+	elif code == 11:
+		return "triangleSeperated"
+	elif code == 12:
+		return "triangleSeperatedLineSweep"
+	elif code == 13:
+		return "triangleSeperatedAOE"
+	elif code == 14:
+		return "triangleLine"
+	elif code == 15:
+		return "threeGridsPerpendicular"
+	elif code == 16:
+		return "threeGridsPerpendicularLineSweep"
+	elif code == 17:
+		return "threeGridsPerpendicularLineAOE"
+	elif code == 18:
+		return "connects"
+	elif code == 19:
+		return "teleport"
+	elif code == 20:
+		return "arbitrary"
+	
+def GetSkillEffectTypeByCoding(code):
+	if code == 0:
+		return "hurt"
+	
 
-def DecodeSkillLaunchType(code):
-	skillLaunchTypeDefaultCode = np.zeros(GlobalConst.skillLaunchTypdeCodeLen)
-	maxSkillLaunchTypeSimilarity = 0
-	maxSkillLaunchType = -1
-	for i in range(0, GlobalConst.skillLaunchTypdeCodeLen):
-		skillLaunchTypeCoding = copy.deepcopy(skillLaunchTypeDefaultCode)
-		skillLaunchTypeCoding[i] = 1
-		curSkillLaunchTypeSimilarity = UtilFuncDict["GetCosSimilarity"](skillLaunchTypeCoding, code)
-		if curSkillLaunchTypeSimilarity > maxSkillLaunchTypeSimilarity:
-			maxSkillLaunchTypeSimilarity = curSkillLaunchTypeSimilarity
-			maxSkillLaunchType = i
-	if maxSkillLaunchType != -1:
-		if maxSkillLaunchType == 0:
-			return "auto"
-		elif maxSkillLaunchType == 1:
-			return "manual"
-		else:
-			return "passive"
-	else:
-		return "null"
+def GetSkillTagConditionTypeByCoding(code):
+	if code == 0:
+		return "tagOnBoard"
 	
-def DecodeSkillGeoType(code):
-	skillGeoTypeDefaultCode = np.zeros(GlobalConst.skillGeoCodeLen)
-	maxSkillGeoTypeSimilarity = 0
-	maxSkillGeoType = -1
-	for i in range(0, GlobalConst.skillGeoCodeLen):
-		skillGeoTypeCoding = copy.deepcopy(skillGeoTypeDefaultCode)
-		skillGeoTypeCoding[i] = 1
-		curSkillGeoTypeSimilarity = UtilFuncDict["GetCosSimilarity"](skillGeoTypeCoding, code)
-		if curSkillGeoTypeSimilarity > maxSkillGeoTypeSimilarity:
-			maxSkillGeoTypeSimilarity = curSkillGeoTypeSimilarity
-			maxSkillGeoType = i
-	if maxSkillGeoType != -1:
-		if maxSkillGeoType == 0:
-			return "line"
-		elif maxSkillGeoType == 1:
-			return "seperated"
-		elif maxSkillGeoType == 2:
-			return "diagonal"
-		elif maxSkillGeoType == 3:
-			return "diagonalSeperated"
-		elif maxSkillGeoType == 4:
-			return "adjacent"
-		elif maxSkillGeoType == 5:
-			return "hornDiagonal"
-		elif maxSkillGeoType == 6:
-			return "hornSeperated"
-		elif maxSkillGeoType == 7:
-			return "normalCrossSeperated"
-		elif maxSkillGeoType == 8:
-			return "obliqueCrossLineUp"
-		elif maxSkillGeoType == 9:
-			return "triangleSeperated"
-		elif maxSkillGeoType == 10:
-			return "triangleLine"
-		elif maxSkillGeoType == 11:
-			return "threeGridsPerpendicular"
-		elif maxSkillGeoType == 12:
-			return "connect"
-		elif maxSkillGeoType == 13:
-			return "teleport"
-		else:
-			return "arbitrary"
-	else:
-		return "null"
+def GetCardTypeByCoding(code):
+	if code == 0:
+		return "soldier"
+
+def GetSkillPrereqTypeByCoding(code):
+	if code == 0:
+		return "beHeal"
 	
-def DecodeSkillEffectType(code):
-	skillEffectTypeDefaultCode = np.zeros(GlobalConst.skillEffectCodeLen)
-	maxSkillEffectTypeSimilarity = 0
-	maxSkillEffectType = -1
-	for i in range(0, GlobalConst.skillEffectCodeLen):
-		skillEffectTypeCoding = copy.deepcopy(skillEffectTypeDefaultCode)
-		skillEffectTypeCoding[i] = 1
-		curSkillEffectTypeSimilarity = UtilFuncDict["GetCosSimilarity"](skillEffectTypeCoding, code)
-		if curSkillEffectTypeSimilarity > maxSkillEffectTypeSimilarity:
-			maxSkillEffectTypeSimilarity = curSkillEffectTypeSimilarity
-			maxSkillEffectType = i
-	if maxSkillEffectType != -1:
-		if maxSkillEffectType == 0:
-			return "hurt"
-		elif maxSkillEffectType == 1:
-			return "heal"
+def GetSkillLinkTypeByCoding(code):
+	if code == 0:
+		return "healTogether"
+	
+
     
 UtilFuncDict = {
-	'GetCosSimilarity': GetCosSimilarity
+	'GetCosSimilarity': GetCosSimilarity,
+	"GetSkillLaunchStrByCoding": GetSkillLaunchStrByCoding,
+	"GetSkillGeoStrByCoding": GetSkillGeoStrByCoding,
+	"GetSkillEffectTypeByCoding": GetSkillEffectTypeByCoding,
+	"GetSkillTagConditionTypeByCoding": GetSkillTagConditionTypeByCoding,
+	"GetCardTypeByCoding": GetCardTypeByCoding,
+	"GetSkillPrereqTypeByCoding": GetSkillPrereqTypeByCoding,
+	"GetSkillLinkTypeByCoding": GetSkillLinkTypeByCoding
 }

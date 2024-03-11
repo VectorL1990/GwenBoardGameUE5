@@ -250,7 +250,7 @@ class AISelfPlayRoom(KBEngine.Entity):
 	# effect dictionary should be something shown below
 	'''
 	"effects":{
-		"FormationV": {"launchType": "assign", "countDown": 1, "once": True, "selfTarget": False, "prereqs":{}, "effectValues": {"value": 2, "distance": 0}}
+		"FormationV": {"launchType": "manual", "countDown": 1, "once": True, "selfTarget": False, "prereqs":{}, "effectValues": {"value": 2, "distance": 0}}
 	}
 	'''
 	def launchEffect(self, clientActionSequence, targetX, targetY, launchX, launchY, effectName, effectInfo):
