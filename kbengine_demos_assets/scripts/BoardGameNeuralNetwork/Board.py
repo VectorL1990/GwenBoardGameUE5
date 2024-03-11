@@ -21,14 +21,14 @@ import random
 # [7]skillPrereqTagType
 # [8]tagType
 # [9]skillPrereqType
-# [8]linkPairNb
-# [9]linkStateLeftRound
-# [11]addTagType
-# [12]addTagLeftRound
-# [13]hp
-# [14]defence
-# [15]agility
-# [16]attackRange
+# [10]skillLinkType
+# [11]linkPairNb
+# [12]linkStateLeftRound
+# [13]skillCountDown:0 & skillAvailableTime:1 & selfTarget:0 & prereqTriggerValue:1 & value:3 & assignTag:spy
+# [14]hp
+# [15]defence
+# [16]agility
+# [17]attackRange
 
 # range 3
 defaultSkillLaunchCode = np.array([0,0,0,0])
@@ -179,10 +179,10 @@ class Board(object):
 			skillPrereqTagTypeStr = cardStateStrs[8]
 			skillPrereqTypeStr = cardStateStrs[9]
 			skillLinkTypeStr = cardStateStrs[10]
-			hpStr = cardStateStrs[13]
-			defenceStr = cardStateStrs[14]
-			agilityStr = cardStateStrs[15]
-			attackRangeStr = cardStateStrs[16]
+			hpStr = cardStateStrs[14]
+			defenceStr = cardStateStrs[15]
+			agilityStr = cardStateStrs[16]
+			attackRangeStr = cardStateStrs[17]
 
 
 			skillLaunchTypeCode = defaultSkillLaunchCode
@@ -413,11 +413,35 @@ class Board(object):
 				else:
 					# it could be launch skill move or card movement
 					stateStrs = self.boardState[y][x].split('/')
-					cardName = stateStrs[1]
-					for effectK, effectV in allCards[cardName]["effects"]:
-						if effectV["launchType"] == "manual" or effectV["launchType"] == "manualImmediate":
-							if effectV["availableTimes"] 
-							# which means 
+					skillOveralInfo = stateStrs[13]
+					skillInfoStrs = skillOveralInfo.split('&')
+					skillCountDown = 0
+					skillAvailableTime = 0
+					skillSelfTarget = 0
+					prereqTriggerValue = 0
+					skillValue = 0
+					assignTag = ""
+					for skillInfo in skillInfoStrs:
+						skillInfoKV = skillInfo.split(':')
+						if skillInfoKV[0] == "skillCountDown":
+							skillCountDown = int(skillInfoKV[1])
+						elif skillInfoKV[0] == "skillAvailableTimes":
+							skillAvailableTime = int(skillInfoKV[1])
+						elif skillInfoKV[0] == "selfTarget":
+							skillSelfTarget = int(skillInfoKV[1])
+						elif skillInfoKV[0] == "prereqTriggerValue":
+							prereqTriggerValue = int(skillInfoKV[1])
+						elif skillInfoKV[0] == "skillValue":
+							skillValue = int(skillInfoKV[1])
+						elif skillInfoKV[0] == "assignTag":
+							assignTag = skillInfoKV[1]
+					
+					skillLaunchType = stateStrs[3]
+					if skillLaunchType == "manual" or skillLaunchType == "manualImmediate":
+						if (skillCountDown == 0 or skillCountDown == -1) and (skillAvailableTime > 0 or skillAvailableTime == -1):
+							for targetY in range()
+							action = "playSkill_" 
+							moves.append() 
 
 		
 	def GetActionInfoById(self, actionId):
