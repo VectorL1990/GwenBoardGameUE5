@@ -18,12 +18,13 @@ import random
 # [4]skillType(hurt, heal, link, lock)
 # [5]skillGeoType
 # [6]skillTagConditionType
-# [7]cardTagType
-# [8]skillPrereqTagType
+# [7]skillPrereqTagType
+# [8]tagType
 # [9]skillPrereqType
-# [10]skillLinkType
-# [11]linkPairNb
-# [12]linkStateLeftRound
+# [8]linkPairNb
+# [9]linkStateLeftRound
+# [11]addTagType
+# [12]addTagLeftRound
 # [13]hp
 # [14]defence
 # [15]agility
@@ -119,12 +120,12 @@ def InitSkillPrereqTagDict(skillPrereqTagDict):
 
 defaultSkillPrereqCode = np.array([0,0,0,0,0,0])
 skillPrereqCoding = dict(
-	beHeal = 			np.array([0,0,0,0,0,0]),
-	beHurt = 			np.array([0,0,0,0,0,0]),
-	armorPenetrate = 	np.array([0,0,0,0,0,0]),
-	hpSum = 			np.array([0,0,0,0,0,0]),
-	hpLessThan = 		np.array([0,0,0,0,0,0]),
-	hpGreaterThan = 	np.array([0,0,0,0,0,0])
+	beHeal = 			np.array([1,0,0,0,0,0]),
+	beHurt = 			np.array([0,1,0,0,0,0]),
+	armorPenetrate = 	np.array([0,0,1,0,0,0]),
+	hpSum = 			np.array([0,0,0,1,0,0]),
+	hpLessThan = 		np.array([0,0,0,0,1,0]),
+	hpGreaterThan = 	np.array([0,0,0,0,0,1])
 )
 
 
@@ -154,10 +155,11 @@ class Board(object):
 		self.upSectionHandCards = ['--', '--', '--', '--', '--', '--', '--', '--', '--', '--']
 		self.curPlayerId = 0
 
+
 	def CardCoding(self, cardStateStr):
 		# skillLaunchType = 3
 		# skillGeoType = 21
-		# skillType = 17
+		# skillEffectType = 17
 		# skillTagConditionType = 3
 		# skillPrereqTagType = 50
 		# cardTagType = 50
@@ -199,9 +201,17 @@ class Board(object):
 			if skillTagConditionTypeStr in skillTagConditionCoding:
 				skillTagConditionTypeCode = skillTagConditionCoding[skillTagConditionTypeStr]
 
+			skillPrereqTagTypeCode = defaultSkillPrereqTagCode
+			if skillPrereqTagTypeStr in skillPrereqTagCoding:
+				skillPrereqTagTypeCode = skillPrereqTagCoding[skillPrereqTagTypeStr]
+
 			cardTypeCode = defaultCardTypeCode
-			if cardTypeStr in cardTypeCoding:
-				cardTypeCode = cardTypeCoding[cardTypeStr]
+			if cardTagTypeStr in cardTypeCoding:
+				cardTypeCode = cardTypeCoding[cardTagTypeStr]
+
+			skillPrereqTypeCode = defaultSkillPrereqCode
+			if skillPrereqTypeStr in skillPrereqCoding:
+				skillPrereqTypeCode = skillPrereqCoding[skillPrereqTypeStr]
 
 			skillPrereqTagTypeCode = defaultSkillPrereqTagCode
 			if skillPrereqTagTypeStr in skillPrereqTagCoding:
@@ -218,6 +228,7 @@ class Board(object):
 			cardCode = skillLaunchTypeCode.extend(skillEffectCode)
 			cardCode = cardCode.extend(skillGeoCode)
 			cardCode = cardCode.extend(skillTagConditionTypeCode)
+			cardCode = cardCode.extend(skillPrereqTagTypeCode)
 			cardCode = cardCode.extend(cardTypeCode)
 			cardCode = cardCode.extend(skillPrereqTagTypeCode)
 			cardCode = cardCode.extend(skillPrereqTypeCode)
