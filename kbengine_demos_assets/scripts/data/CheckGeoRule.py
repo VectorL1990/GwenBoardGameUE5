@@ -140,9 +140,54 @@ def LineObstacleSwap(stateList, x, y, targetX, targetY, effectInfo):
 		else:
 			return True
 
+def TriangleSeperatedLineSweep(stateList, x, y, targetX, targetY, distance):
+	if stateList[y][x] == "--" or (x == targetX and y == targetY):
+		return False
+	else:
+		offsetX = targetX - x
+		offsetY = targetY - y
 
+		if offsetX < 2 or offsetY < 2 or targetX < 0 or targetY < 0 or targetX > 7 or targetY > 7:
+			return False
+		
+		if offsetX != 0 and offsetY != 0:
+			return False
+		
+		if offsetX > 0:
+			# target is located on right
+			if y == 0 or y == 7 or x >= 6:
+				return False
+			if stateList[y + 1][x] == "--" or stateList[y - 1][x] == "--" or stateList[y][x + 1] == "--":
+				return False
+			else:
+				return True
+		elif offsetX < 0:
+			# target is located on left
+			if y == 0 or y == 7 or x <= 1:
+				return False
+			if stateList[y + 1][x] == "--" or stateList[y - 1][x] == "--" or stateList[y][x - 1] == "--":
+				return False
+			else:
+				return True
+		elif offsetY > 0:
+			# target is located on up
+			if x == 0 or x == 7 or y >= 6:
+				return False
+			if stateList[y][x + 1] == "--" or stateList[y][x - 1] == "--" or stateList[y + 1][x] == "--":
+				return False
+			else:
+				return True
+		else:
+			# target is located on down
+			if x == 0 or x == 7 or y <= 1:
+				return False
+			if stateList[y][x + 1] == "--" or stateList[y][x - 1] == "--" or stateList[y - 1][x] == "--":
+				return False
+			else:
+				return True
+		
 
-def FormationVShoot(state_list, x, y, targetX, targetY, effectInfo):
+def TriangleSeperated(state_list, x, y, targetX, targetY, effectInfo):
 	if state_list[y][x] == "--" or (x == targetX and y == targetY):
 		return False
 	else:

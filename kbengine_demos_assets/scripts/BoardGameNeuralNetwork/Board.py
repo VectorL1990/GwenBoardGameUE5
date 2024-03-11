@@ -8,7 +8,7 @@ from d_effects import effect_dict
 from collections import deque
 from Mcts import MCTSPlayer
 from Utils import UtilFuncDict
-from GetActions import 
+from GetPossibleActions import legalSkillActionsDict
 import random
 
 # [0]uid
@@ -24,7 +24,7 @@ import random
 # [10]skillLinkType
 # [11]linkPairNb
 # [12]linkStateLeftRound
-# [13]skillCountDown:0 & skillAvailableTime:1 & selfTarget:0 & prereqTriggerValue:1 & value:3 & assignTag:spy
+# [13]skillName:LineObstacleSwap & skillCountDown:0 & skillAvailableTime:1 & selfTarget:0 & prereqTriggerValue:1 & value:3 & assignTag:spy
 # [14]hp
 # [15]defence
 # [16]agility
@@ -206,8 +206,8 @@ class Board(object):
 				skillPrereqTagTypeCode = skillPrereqTagCoding[skillPrereqTagTypeStr]
 
 			cardTypeCode = defaultCardTypeCode
-			if cardTagTypeStr in cardTypeCoding:
-				cardTypeCode = cardTypeCoding[cardTagTypeStr]
+			if cardTypeStr in cardTypeCoding:
+				cardTypeCode = cardTypeCoding[cardTypeStr]
 
 			skillPrereqTypeCode = defaultSkillPrereqCode
 			if skillPrereqTypeStr in skillPrereqCoding:
@@ -415,6 +415,7 @@ class Board(object):
 					stateStrs = self.boardState[y][x].split('/')
 					skillOveralInfo = stateStrs[13]
 					skillInfoStrs = skillOveralInfo.split('&')
+					skillName = ""
 					skillCountDown = 0
 					skillAvailableTime = 0
 					skillSelfTarget = 0
@@ -423,7 +424,9 @@ class Board(object):
 					assignTag = ""
 					for skillInfo in skillInfoStrs:
 						skillInfoKV = skillInfo.split(':')
-						if skillInfoKV[0] == "skillCountDown":
+						if skillInfoKV[0] == "":
+							skillName = skillInfoKV[1]
+						elif skillInfoKV[0] == "skillCountDown":
 							skillCountDown = int(skillInfoKV[1])
 						elif skillInfoKV[0] == "skillAvailableTimes":
 							skillAvailableTime = int(skillInfoKV[1])
@@ -439,6 +442,7 @@ class Board(object):
 					skillLaunchType = stateStrs[3]
 					if skillLaunchType == "manual" or skillLaunchType == "manualImmediate":
 						if (skillCountDown == 0 or skillCountDown == -1) and (skillAvailableTime > 0 or skillAvailableTime == -1):
+							legalSkillActionsDict[skillName]()
 							for targetY in range()
 							action = "playSkill_" 
 							moves.append() 

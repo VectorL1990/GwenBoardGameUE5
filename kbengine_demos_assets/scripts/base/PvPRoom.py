@@ -5,7 +5,7 @@ import math
 import time
 from KBEDebug import *
 import GlobalConst
-from GetActions import actionIdConverterDict
+from GetPossibleActions import actionIdConverterDict
 from AllCards import allCards
 from d_effects import effect_dict
 from d_passive_effects import passive_effect_dict

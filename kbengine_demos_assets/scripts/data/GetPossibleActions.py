@@ -101,20 +101,20 @@ def DevourNextSpawnFar(state_list, x, y, effectInfo):
 			actionIds.append(actionId)
 		return True, actionIds
 
-def FormationVShoot(state_list, x, y, effectInfo):
+def TriangleSeperated(state_list, x, y, effectInfo):
 	actionIds = []
 	if state_list[y][x] == '--':
 		return False
 	else:
 		for i in range(2, effectInfo["effectValues"]["distance"] + 1, 1):
 			# top left direction
-			leftLegality = geo_rule_dict["FormationVShoot"](state_list, x, y, x - i, y, effectInfo)
+			leftLegality = geo_rule_dict["TriangleSeperated"](state_list, x, y, x - i, y, effectInfo)
 			# bottom left direciton
-			rightLegality = geo_rule_dict["FormationVShoot"](state_list, x, y, x + i, y, effectInfo)
+			rightLegality = geo_rule_dict["TriangleSeperated"](state_list, x, y, x + i, y, effectInfo)
 			# top right direciton
-			downLegality = geo_rule_dict["FormationVShoot"](state_list, x, y, x, y - i, effectInfo)
+			downLegality = geo_rule_dict["TriangleSeperated"](state_list, x, y, x, y - i, effectInfo)
 			# bottom right direciton
-			upLegality = geo_rule_dict["FormationVShoot"](state_list, x, y, x, y + i, effectInfo)
+			upLegality = geo_rule_dict["TriangleSeperated"](state_list, x, y, x, y + i, effectInfo)
 
 			if leftLegality == True:
 				actionId = GetLaunchSkillActionId(state_list, x, y, x - i, y)
