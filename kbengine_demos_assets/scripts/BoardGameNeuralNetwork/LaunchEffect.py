@@ -1,6 +1,6 @@
 import random
 import GlobalConst
-from CheckGeoRule import geo_rule_dict
+from CheckGeoRule import geoRuleDict
 
 
 def Hurt(stateList, targetX, targetY, hurtVal):
@@ -70,21 +70,17 @@ def Teleport(stateList, x, y, targetX, targetY):
 					break
 	return returnDict
 
-
-def SpawnBulletForward(state_list, x, y, effectInfo):
-	sdf
-
-def DevourNextSpawnFar(state_list, launchX, launchY, targetX, targetY, effectInfo, latestGenerateId):
+def DevourNextSpawnFar(stateList, launchX, launchY, targetX, targetY, effectInfo):
 	returnDict = {
 		"success": False,
 		"modifyGrids": []
 	}
-	legality = geo_rule_dict["DevourNextSpawnFar"](state_list, launchX, launchY, targetX, targetY, effectInfo)
+	legality = geoRuleDict["DevourNextSpawnFar"](stateList, launchX, launchY, targetX, targetY, effectInfo["selfOrOppoCamp"], effectInfo["distance"])
 	if legality == True:
-		launchStateStr = state_list[launchY][launchX]
+		launchStateStr = stateList[launchY][launchX]
 		launchStateStrs = launchStateStr.split("/")
 		# devour target card
-		state_list[targetY][targetX] = "--"
+		stateList[targetY][targetX] = "--"
 		devourGridInfo = {
 			"grid": [targetX, targetY],
 			"modifyType": "devour",
@@ -94,7 +90,7 @@ def DevourNextSpawnFar(state_list, launchX, launchY, targetX, targetY, effectInf
 		
 		spawnDistance = effectInfo["effectValues"]["distance"]
 		spawnX = launchX
-		if launchStateStrs[0] == 0:
+		if launchStateStrs[2] == 0:
 			# which means spawn upward
 			spawnY = launchY + spawnDistance
 		else:
@@ -110,6 +106,12 @@ def DevourNextSpawnFar(state_list, launchX, launchY, targetX, targetY, effectInf
 		returnDict["success"] = True
 	
 	return returnDict
+
+
+def SpawnBulletForward(state_list, x, y, effectInfo):
+	sdf
+
+
 		
 
 
@@ -118,7 +120,7 @@ def FormationVShoot(stateList, launchX, launchY, targetX, targetY, effectInfo, l
 		"success": False,
 		"modifyGrids": []
 	}
-	legality = geo_rule_dict["FormationVShoot"](stateList, launchX, launchY, targetX, targetY, effectInfo)
+	legality = geoRuleDict["FormationVShoot"](stateList, launchX, launchY, targetX, targetY, effectInfo)
 	if legality == True:
 		hurtVal = effectInfo["effectValues"]["values"][0]
 		# modify hp of this grid 
@@ -139,7 +141,7 @@ def LineObstacleSwap(stateList, launchX, launchY, targetX, targetY, effectInfo, 
 		"success": False,
 		"modifyGrids": []
 	}
-	legality = geo_rule_dict["LineObstacleSwap"](stateList, launchX, launchY, targetX, targetY, effectInfo, lastGenerateId)
+	legality = geoRuleDict["LineObstacleSwap"](stateList, launchX, launchY, targetX, targetY, effectInfo, lastGenerateId)
 	if legality == True:
 		tempTargetState = stateList[targetY][targetX]
 		stateList[targetY][targetX] = stateList[launchY][launchX]
@@ -172,9 +174,9 @@ def LinkGrid(stateList, launchX, launchY, targetX, targetY, effectInfo, lastGene
 	searchedList = []
 	legality = False
 	if searchOppoFlag == 1:
-		legality = geo_rule_dict["checkConnect"](stateList, launchX, launchY, launchCamp, True, searchedList)
+		legality = geoRuleDict["CheckConnect"](stateList, launchX, launchY, launchCamp, True, searchedList)
 	else:
-		legality = geo_rule_dict["checkConnect"](stateList, launchX, launchY, launchCamp, False, searchedList)
+		legality = geoRuleDict["CheckConnect"](stateList, launchX, launchY, launchCamp, False, searchedList)
 	if legality == True:
 		# which means target grid is linked with grid launching
 		if effectInfo["effectValues"]["values"][0] == "0":
@@ -206,13 +208,13 @@ def HornHurtDiagonal(state_list, x, y, effectInfo):
 	else:
 		for i in range(1, effectInfo["effectValues"]["distance"] + 1, 1):
 			# top left direction
-			TLLegality = geo_rule_dict["HornHurtDiagonal"](state_list, x, y, x - i, y + i, effectInfo)
+			TLLegality = geoRuleDict["HornHurtDiagonal"](state_list, x, y, x - i, y + i, effectInfo)
 			# bottom left direciton
-			BLLegality = geo_rule_dict["HornHurtDiagonal"](state_list, x, y, x - i, y - i, effectInfo)
+			BLLegality = geoRuleDict["HornHurtDiagonal"](state_list, x, y, x - i, y - i, effectInfo)
 			# top right direciton
-			TRLegality = geo_rule_dict["HornHurtDiagonal"](state_list, x, y, x + i, y + i, effectInfo)
+			TRLegality = geoRuleDict["HornHurtDiagonal"](state_list, x, y, x + i, y + i, effectInfo)
 			# bottom right direciton
-			BRLegality = geo_rule_dict["HornHurtDiagonal"](state_list, x, y, x + i, y - i, effectInfo)
+			BRLegality = geoRuleDict["HornHurtDiagonal"](state_list, x, y, x + i, y - i, effectInfo)
 
 			if TLLegality == True:
 				actionId = GetLaunchSkillActionId(state_list, x, y, x - i, y + i)

@@ -24,7 +24,7 @@ import random
 # [10]skillLinkType
 # [11]linkPairNb
 # [12]linkStateLeftRound
-# [13]skillName:LineObstacleSwap & skillCountDown:0 & skillAvailableTime:1 & selfTarget:0 & prereqTriggerValue:1 & value:3 & assignTag:spy
+# [13]skillName:SeperatedSwap & skillCountDown:0 & skillAvailableTime:1 & selfTarget:0 & prereqTriggerValue:1 & value:3 & assignTag:spy
 # [14]hp
 # [15]defence
 # [16]agility
@@ -39,30 +39,31 @@ skillLaunchCoding = dict(
 	passive = 			np.array([0,0,0,1])
 )
 
-# range 21
-defaultSkillGeoCode = np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+# range 22
+defaultSkillGeoCode = np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
 skillGeoCoding = dict(
-	pointOnLine = 						np.array([1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
-	lineSweep = 						np.array([0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
-	aoe = 								np.array([0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
-	seperated = 						np.array([0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
-	pointOnDiagonal = 					np.array([0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
-	diagonalSweep = 					np.array([0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
-	diagonalSeperated = 				np.array([0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
-	hornDiagonal = 						np.array([0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0]),
-	hornDiagonalSweep = 				np.array([0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0]),
-	obliqueCrossLineUp = 				np.array([0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0]),
-	obliqueCrossLineSweep = 			np.array([0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0]),
-	triangleSeperated = 				np.array([0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0]),
-	triangleSeperatedLineSweep = 		np.array([0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0]),
-	triangleSeperatedAOE = 				np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0]),
-	triangleLine = 						np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0]),
-	threeGridsPerpendicular = 			np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0]),
-	threeGridsPerpendicularLineSweep = 	np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0]),
-	threeGridsPerpendicularLineAOE = 	np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0]),
-	connect = 							np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0]),
-	teleport = 							np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0]),
-	arbitrary = 						np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]),
+	pointOnLine = 						np.array([1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
+	lineSweep = 						np.array([0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
+	aoe = 								np.array([0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
+	seperated = 						np.array([0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
+	pointOnDiagonal = 					np.array([0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
+	diagonalSweep = 					np.array([0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
+	diagonalSeperated = 				np.array([0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
+	hornDiagonal = 						np.array([0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
+	hornDiagonalSweep = 				np.array([0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0]),
+	hornLocal = 						np.array([0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0]),
+	normalCrossLocal = 					np.array([0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0]),
+	obliqueCrossPointOnLine = 			np.array([0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0]),
+	obliqueCrossLineSweep = 			np.array([0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0]),
+	triangleSeperated = 				np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0]),
+	triangleSeperatedLineSweep = 		np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0]),
+	triangleSeperatedAOE = 				np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0]),
+	threeGridsPerpendicular = 			np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0]),
+	threeGridsPerpendicularLineSweep = 	np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0]),
+	threeGridsPerpendicularLineAOE = 	np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0]),
+	connect = 							np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0]),
+	teleport = 							np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0]),
+	arbitrary = 						np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]),
 )
 
 # range 17
@@ -158,14 +159,14 @@ class Board(object):
 
 	def CardCoding(self, cardStateStr):
 		# skillLaunchType = 3
-		# skillGeoType = 21
+		# skillGeoType = 22
 		# skillEffectType = 17
 		# skillTagConditionType = 3
 		# skillPrereqTagType = 50
 		# cardTagType = 50
 		# skillPrereqType = 6
 		# skillLinkType = 5
-		# 3 + 21 + 17 + 3 + 50 + 50 + 6 + 5 + hp + defence + agil + attackRange = 158
+		# 3 + 22 + 17 + 3 + 50 + 50 + 6 + 5 + hp + defence + agil + attackRange = 159
 		# total 158 channels
 		if cardStateStr == "--":
 			return np.zeros(158)
