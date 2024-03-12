@@ -234,7 +234,7 @@ def HornDiagonalArbitrary(stateList, x, y, targetX, targetY, distance):
 
 
 def HornLocal(stateList, x, y, targetX, targetY, distance):
-	if stateList[y][x] == '--' or x != targetX or y != targetY):
+	if stateList[y][x] == '--' or x != targetX or y != targetY:
 		return False
 	else:
 		if targetX < 0 or targetY < 0 or targetX > GlobalConst.maxCol - 1 or targetY > GlobalConst.maxRow - 1:
@@ -244,7 +244,7 @@ def HornLocal(stateList, x, y, targetX, targetY, distance):
 
 
 def NormalCrossLocal(stateList, x, y, targetX, targetY, distance):
-	if stateList[y][x] == '--' or x != targetX or y != targetY):
+	if stateList[y][x] == '--' or x != targetX or y != targetY:
 		return False
 	else:
 		if targetX < 0 or targetY < 0 or targetX > GlobalConst.maxCol - 1 or targetY > GlobalConst.maxRow - 1:
