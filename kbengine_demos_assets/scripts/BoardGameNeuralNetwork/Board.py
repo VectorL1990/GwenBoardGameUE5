@@ -88,14 +88,20 @@ skillTargetGeoCoding = dict(
 	threeGridsPerpendicular = 			np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0]),
 	threeGridsPerpendicularLineSweep = 	np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0]),
 	threeGridsPerpendicularLineAOE = 	np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0]),
-	ownSectionBackTwoCols = np.array(),
-	ownSectionFrontTwoCols = np.array(),
+	selfBackCols = np.array(),
+	selfFrontCols = np.array(),
 	ownSectionFronLine = np.array(),
-	upAreaRows = np.array(),
+	upRows = np.array(),
+	midRows,
+	downRows,
 	connect = 							np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0]),
 	teleport = 							np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0]),
 	arbitrary = 						np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]),
 )
+
+# self camp? oppo camp? arbitrary camp?
+
+# self section? oppo section?
 
 # range 17
 defaultSkillEffectCode = np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
