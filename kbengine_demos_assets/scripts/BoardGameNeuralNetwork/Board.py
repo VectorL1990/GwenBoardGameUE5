@@ -103,6 +103,8 @@ skillTargetGeoCoding = dict(
 
 # self section? oppo section?
 
+# point? sweep? aoe?
+
 # range 17
 defaultSkillEffectCode = np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
 skillEffectCoding = dict(
@@ -163,7 +165,9 @@ skillPrereqCoding = dict(
 	armorPenetrate = 	np.array([0,0,1,0,0,0]),
 	hpSum = 			np.array([0,0,0,1,0,0]),
 	hpLessThan = 		np.array([0,0,0,0,1,0]),
-	hpGreaterThan = 	np.array([0,0,0,0,0,1])
+	hpGreaterThan = 	np.array([0,0,0,0,0,1]),
+	minHpOnBoard,
+	maxHpOnBoard,
 )
 
 
