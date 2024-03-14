@@ -135,7 +135,9 @@ defaultSkillTagConditionCode = np.array([0,0,0])
 skillTagConditionCoding = dict(
 	tagOnBoard = np.array([1,0,0]),
 	tagOnTarget = np.array([0,1,0]),
-	tagOnSelf = np.array([0,0,1])
+	tagOnSelf = np.array([0,0,1]),
+	tagOnNext,
+	tagOnPlayCard,
 )
 
 
@@ -168,6 +170,10 @@ skillPrereqCoding = dict(
 	hpGreaterThan = 	np.array([0,0,0,0,0,1]),
 	minHpOnBoard,
 	maxHpOnBoard,
+	hpExceed,
+	defenceLess,
+	nextTo,
+	playCard,
 )
 
 
