@@ -30,80 +30,76 @@ import random
 # [16]agility
 # [17]attackRange
 
-# range 3
-defaultSkillLaunchCode = np.array([0,0,0,0])
+# range 5
+defaultSkillLaunchCode = np.array([0,0,0,0,0])
 skillLaunchCoding = dict(
-	auto = 				np.array([1,0,0,0]),
-	autoRoundEnd = np.array(),
-	manual = 			np.array([0,1,0,0]),
-	manualImmediate = 	np.array([0,0,1,0]),
-	passive = 			np.array([0,0,0,1])
+	auto = 				np.array([1,0,0,0,0]),
+	autoRoundEnd = 		np.array([0,1,0,0,0]),
+	manual = 			np.array([0,0,1,0,0]),
+	manualImmediate = 	np.array([0,0,0,1,0]),
+	passive = 			np.array([0,0,0,0,1])
 )
 
-# range 22
-defaultSkillGeoCode = np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
-skillGeoCoding = dict(
-	pointOnLine = 						np.array([1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
-	lineSweep = 						np.array([0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
-	aoe = 								np.array([0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
-	seperated = 						np.array([0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
-	pointOnDiagonal = 					np.array([0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
-	diagonalSweep = 					np.array([0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
-	diagonalSeperated = 				np.array([0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
-	hornDiagonal = 						np.array([0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
-	hornDiagonalSweep = 				np.array([0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0]),
-	hornCenter = 						np.array([0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0]),
-	normalCrossLocal = 					np.array([0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0]),
-	obliqueCrossPointOnLine = 			np.array([0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0]),
-	obliqueCrossLineSweep = 			np.array([0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0]),
-	triangleSeperated = 				np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0]),
-	triangleSeperatedLineSweep = 		np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0]),
-	triangleSeperatedAOE = 				np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0]),
-	threeGridsPerpendicular = 			np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0]),
-	threeGridsPerpendicularLineSweep = 	np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0]),
-	threeGridsPerpendicularLineAOE = 	np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0]),
-	connect = 							np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0]),
-	teleport = 							np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0]),
-	arbitrary = 						np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]),
+# range 14
+defaultSkillLauchGeoCode = np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+skillLaunchGeoCoding = dict(
+	point = 					np.array([1,0,0,0,0,0,0,0,0,0,0,0,0,0]),
+	three = 					np.array([0,1,0,0,0,0,0,0,0,0,0,0,0,0]),
+	horn = 						np.array([0,0,1,0,0,0,0,0,0,0,0,0,0,0]),
+	triangle = 					np.array([0,0,0,1,0,0,0,0,0,0,0,0,0,0]),
+	obliqueCross = 				np.array([0,0,0,0,1,0,0,0,0,0,0,0,0,0]),
+	normalCross = 				np.array([0,0,0,0,0,1,0,0,0,0,0,0,0,0]),
+	selfSection = 				np.array([0,0,0,0,0,0,1,0,0,0,0,0,0,0]),
+	selfFrontCol = 				np.array([0,0,0,0,0,0,0,1,0,0,0,0,0,0]),
+	selfBackCol = 				np.array([0,0,0,0,0,0,0,0,1,0,0,0,0,0]),
+	selfFrontLine = 			np.array([0,0,0,0,0,0,0,0,0,1,0,0,0,0]),
+	oppoSection = 				np.array([0,0,0,0,0,0,0,0,0,0,1,0,0,0]),
+	oppoFrontCol = 				np.array([0,0,0,0,0,0,0,0,0,0,0,1,0,0]),
+	oppoBackCol = 				np.array([0,0,0,0,0,0,0,0,0,0,0,0,1,0]),
+	oppoFrontLine = 			np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,1])
 )
 
-defaultSkillTargetGeoCode = np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+defaultSkillTargetGeoCode = np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
 skillTargetGeoCoding = dict(
-	pointOnLine = 						np.array([1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
-	lineSweep = 						np.array([0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
-	aoe = 								np.array([0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
-	seperated = 						np.array([0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
-	pointOnDiagonal = 					np.array([0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
-	diagonalSweep = 					np.array([0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
-	diagonalSeperated = 				np.array([0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
-	hornDiagonal = 						np.array([0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
-	hornDiagonalSweep = 				np.array([0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0]),
-	hornCenter = 						np.array([0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0]),
-	normalCrossLocal = 					np.array([0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0]),
-	obliqueCrossPointOnLine = 			np.array([0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0]),
-	obliqueCrossLineSweep = 			np.array([0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0]),
-	triangleSeperated = 				np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0]),
-	triangleSeperatedLineSweep = 		np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0]),
-	triangleSeperatedAOE = 				np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0]),
-	threeGridsPerpendicular = 			np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0]),
-	threeGridsPerpendicularLineSweep = 	np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0]),
-	threeGridsPerpendicularLineAOE = 	np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0]),
-	selfBackCols = np.array(),
-	selfFrontCols = np.array(),
-	ownSectionFronLine = np.array(),
-	upRows = np.array(),
-	midRows,
-	downRows,
-	connect = 							np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0]),
-	teleport = 							np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0]),
-	arbitrary = 						np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]),
+	line = 						np.array([1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
+	seperated = 				np.array([0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
+	diagonal = 					np.array([0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
+	diagonalSeperated = 		np.array([0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
+	three = 					np.array([0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
+	horn = 						np.array([0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
+	triangle = 					np.array([0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0]),
+	obliqueCross = 				np.array([0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0]),
+	normalCross = 				np.array([0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0]),
+	selfSection = 				np.array([0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0]),
+	selfFrontCol = 				np.array([0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0]),
+	selfBackCol = 				np.array([0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0]),
+	selfFrontLine = 			np.array([0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0]),
+	oppoSection = 				np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0]),
+	oppoFrontCol = 				np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0]),
+	oppoBackCol = 				np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0]),
+	oppoFrontLine = 			np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0]),
+	connect = 					np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0]),
+	teleport = 					np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0]),
+	arbitrary = 				np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1])
 )
 
-# self camp? oppo camp? arbitrary camp?
+defaultSkillAoeCode = np.array([0,0,0,0,0,0])
+skillAoeCoding = dict(
+	point = 				np.array([1,0,0,0,0,0]),
+	sweep = 				np.array([0,1,0,0,0,0]),
+	H3 = 					np.array([0,0,1,0,0,0]),
+	V3 = 					np.array([0,0,0,1,0,0]),
+	normalCross = 			np.array([0,0,0,0,1,0]),
+	obliqueCross = 			np.array([0,0,0,0,0,1])
+)
 
-# self section? oppo section?
+defaultSkillTargetCampCode = np.array([0,0,0])
+skillTargetCampCoding = dict(
+	selfCamp = 				np.array([1,0,0]),
+	oppoCamp = 				np.array([0,1,0]),
+	arbitraryCamp = 		np.array([0,0,1])
+)
 
-# point? sweep? aoe?
 
 # range 17
 defaultSkillEffectCode = np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])

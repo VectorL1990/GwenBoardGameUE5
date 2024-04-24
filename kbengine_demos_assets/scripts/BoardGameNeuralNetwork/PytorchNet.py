@@ -27,6 +27,7 @@ class ResBlock(nn.Module):
 
 class Net(nn.Module):
 	def __init__(self, in_features_num = 14, num_channels=256, num_res_blocks=7):
+		# in_features_num represents feature descriptions of the board, which is 
 		super().__init__()
 		self.conv_block = nn.Conv2d(in_channels=in_features_num, out_channels=num_channels, kernel_size=(3,3), stride=(1,1), padding=1)
 		self.conv_block_bn = nn.BatchNorm2d(256)
