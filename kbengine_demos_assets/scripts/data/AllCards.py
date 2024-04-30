@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 
-allCards={"OldManInMountain": {'hp': 4, 'defence': 60, 'agility': 5, 'tags': [],
+allCards={"Ardio": {'hp': 4, 'defence': 60, 'agility': 5, 'tags': [],
 		"effects":{
-			"Burst": {"launchType": "auto", "countDown": 3, "availableTimes": 1, "selfTarget": False, "prereqs":{"beingHurt": [1]}, "effectValues": {"values":[1], "type":"cross"}},
-			"FenceDevour": {"launchType": "manual", "countDown": 1, "availableTimes": 1, "selfTarget": False, "prereqs":{}, "effectValues": {"values":[0]}}
+			"IncreaseDefenceByHurtNbTLine": {"launchType": "manual", "coolDown": 3, "availableTimes": 1, "launchGeoType": "point", "targetGeoType":"line", "aoeType":"point", "targetCamp":"oppo", "effectType":"increaseDefence", "effectAffix":"hurtNb", "effectAffixCamp":"self", "prereqTagCondition":"none", "prereqTag":"none", "prereqCampType":"none", "prereqType":"none", "values":"0"}
 		}
 	}, 
-	"DustyRanger": {'hp': 4, 'defence': 60, 'agility': 5, 'tags': [],
+	"Tabora": {'hp': 4, 'defence': 60, 'agility': 5, 'tags': [],
 		"effects":{
-			"Hurt": {"launchType": "manual", "countDown": 1, "availableTimes": 3, "selfTarget": False, "prereqs":{}, "effectValues": {"values": [1], "stipulation": 3}}
+			"IncreaseDefenceTSeperateHandCardMore2": {"launchType": "manual", "coolDown": 3, "availableTimes": 1, "launchGeoType": "point", "targetGeoType":"line", "aoeType":"point", "targetCamp":"oppo", "effectType":"increaseDefence", "effectAffix":"hurtNb", "effectAffixCamp":"self", "prereqTagCondition":"none", "prereqTag":"none", "prereqCampType":"none", "prereqType":"none", "values":"0"}
 		}
 	}, 
 	"ThirteenSuicideSquad": {'hp': 4, 'defence': 60, 'agility': 5, 'tags': [],
