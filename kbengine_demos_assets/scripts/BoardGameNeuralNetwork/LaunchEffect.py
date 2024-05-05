@@ -1,6 +1,7 @@
 import random
 import GlobalConst
 from CheckGeoRule import geoRuleDict
+from GetAffix import getAffixDict
 
 
 def Hurt(stateList, targetX, targetY, hurtVal):
@@ -33,48 +34,22 @@ def Move(stateList, x, y, targetX, targetY):
 	stateList[y][x] = "--"
 	return returnDict
 
-def Teleport(stateList, x, y, targetX, targetY):
+def IncreaseDefence(stateList, x, y, targetX, targetY, effectInfo):
 	returnDict = {
 		"success": False,
+		"modifyType": "increaseDefence",
 		"modifyGrids": []
 	}
-	targetStateStr = stateList[targetY][targetX]
-	targetStateStrs = targetStateStr.split('/')
-	linkPairNb = targetStateStrs[9]
-	# find teleport grid
-	for i in range(0, GlobalConst.maxRow, 1):
-		for j in range(0, GlobalConst.maxCol, 1):
-			if stateList[i][j] != "--" and (i != targetY or j != targetX):
-				stateStrs = stateList[i][j].split('/')
-				if stateStrs[9] == linkPairNb:
-					
-					originGridInfo = {
-						"grid": [x, y],
-						"modifyType": "TeleportLaunch",
-						"modifyValues": []
-					}
-					targetGridInfo = {
-						"grid": [targetX, targetY],
-						"modifyType": "TeleportTarget",
-						"modifyValues": []
-					}
-					returnDict["success"] = True
-					returnDict["modifyGrids"].append(originGridInfo)
-					returnDict["modifyGrids"].append(targetGridInfo)
-					offsetX = targetX - x
-					offsetY = targetY - y
-					teleportX = j - offsetX
-					teleportY = i - offsetY
-					stateList[teleportY][teleportX] = stateList[y][x]
-					stateList[y][x] = "--"
-					break
-	return returnDict
+	affix = effectInfo["affix"]
+	affixNb = getAffixDict[affix](stateList)
 
-def DevourNextSpawnFar(stateList, launchX, launchY, targetX, targetY, effectInfo):
+def Devour(stateList, x, y, targetX, targetY, effectInfo):
 	returnDict = {
 		"success": False,
+		"modifyType": "devour",
 		"modifyGrids": []
 	}
+	
 	legality = geoRuleDict["DevourNextSpawnFar"](stateList, launchX, launchY, targetX, targetY, effectInfo["selfOrOppoCamp"], effectInfo["distance"])
 	if legality == True:
 		launchStateStr = stateList[launchY][launchX]

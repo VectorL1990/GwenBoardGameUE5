@@ -75,6 +75,9 @@ def GetPossibleMove(stateList, x, y):
 	return actionIds
 
 
+def GetLegalSkillAction(stateList, x, y, targetGeoRule, selfOppoCampFlag, distance):
+	sdf
+
 def DevourNextSpawnFar(stateList, x, y, selfOrOppoCamp, distance):
 	actionIds = []
 	if stateList[y][x] == "--":

@@ -8,7 +8,11 @@ from d_effects import effect_dict
 from collections import deque
 from Mcts import MCTSPlayer
 from Utils import UtilFuncDict
-from GetPossibleActions import legalSkillActionsDict
+from CheckPossibleTargetGeoRule import checkPossibleTargetGeoRuleDict
+from CheckPossibleTargetLocateGeoRule import checkPossibleTargetLocationGeoRuleDict
+from CheckPrereqRule import checkPrereqRuleDict
+from CheckPrereqTagRule import checkPrereqTagRuleDict
+from CheckPossibleMove import checkPossibleMove
 import random
 
 # [0]uid
@@ -29,12 +33,14 @@ import random
 # [15]skillLinkType
 # [16]linkPairNb
 # [17]hp
-# [18]defence
-# [19]agility
-# [20]moveType
-# [21]attackRange
-# [22]tagType
-# [23]skillName:SeperatedSwap & skillCountDown:0 & skillAvailableTime:1 & selfTarget:0 & prereqTriggerValue:1 & value:3 & assignTag:spy
+# [18]originHp
+# [19]defence
+# [20]originDefence
+# [21]agility
+# [22]moveType
+# [23]attackRange
+# [24]tagType
+# [25]skillName:SeperatedSwap & skillCountDown:0 & skillAvailableTime:1 & selfTarget:0 & prereqTriggerValue:1 & value:3 & assignTag:spy
 
 # range 5
 defaultSkillLaunchCode = np.array([0,0,0,0,0])
@@ -550,32 +556,35 @@ class Board(object):
 	def CardCoding(self, cardStateStr):
 		# [0]uid
 		# [1]cardName
-		# [2]camp = 1
-		# [3]skillLaunchType = 5
-		# [4]skillLaunchGeoType = 14
-		# [5]skillTargetGeoType = 20
-		# [6]skillAoeType = 6
-		# [7]skillTargetCampType = 3
-		# [8]skillEffectType = 17
-		# [9]skillEffectAffixCampType = 3
-		# [9]skillEffectAffixType = 84
-		# [10]skillTagConditionType = 5
-		# [11]]skillPrereqCampType = 3
-		# [12]skillPrereqType = 86
-		# [13]skillPrereqTagType = 42
-		# [14]linkPairNb = 10
-		# [15]hp = 1
-		# [16]defence = 1
-		# [17]agility = 1
-		# [18]moveType = 1
-		# [19]attackRange = 1
-		# [20]tagType = 42
-		# [21]skillName:SeperatedSwap & skillCountDown:0 & skillAvailableTime:1 & selfTarget:0 & prereqTriggerValue:1 & value:3 & assignTag:spy
+		# [2]camp
+		# [3]skillLaunchType
+		# [4]skillLaunchGeoType
+		# [5]skillTargetGeoType
+		# [6]skillAoeType
+		# [7]skillTargetCampType
+		# [8]skillEffectType
+		# [9]skillEffectAffixCampType
+		# [10]skillEffectAffixType
+		# [11]skillTagConditionType
+		# [12]]skillPrereqCampType
+		# [13]skillPrereqType
+		# [14]skillPrereqTagType
+		# [15]skillLinkType
+		# [16]linkPairNb
+		# [17]hp
+		# [18]originHp
+		# [19]defence
+		# [20]originDefence
+		# [21]agility
+		# [22]moveType
+		# [23]attackRange
+		# [24]tagType
+		# [25]skillName:SeperatedSwap & skillCountDown:0 & skillAvailableTime:1 & selfTarget:0 & prereqTriggerValue:1 & value:3 & assignTag:spy
 
 		# 1 + 5 + 14 + 20 + 6 + 3 + 17 + 3 + 84 + 5 + 3 + 86 + 42 + 10 + hp + defence + agil + moveType + attackRange + 42 = 346
 		# total 346 channels
 		if cardStateStr == "--":
-			return np.zeros(346)
+			return np.zeros(348)
 		else:
 			cardStateStrs = cardStateStr.split("/")
 			skillLaunchTypeStr = 			cardStateStrs[3]
@@ -800,14 +809,14 @@ class Board(object):
 	def GetCurrentPlayer(self):
 		return self.curPlayerId
 
-	def GetLegalMoves(self, curPlayer):
+	def GetLegalMoves(self):
 		moves = []
 		for y in range(0, GlobalConst.maxRow):
 			for x in range(0, GlobalConst.maxCol):
 				# check legal moves for every grid
 				if self.boardState[y][x] == "--":
 					# check play card actions
-					if curPlayer == 0:
+					if self.curPlayerId == 0:
 						# which means it's down section player turn, player can not put cards in up section
 						if y < GlobalConst.maxRow / 2:
 							# traverse all hand cards of down section player
@@ -825,103 +834,116 @@ class Board(object):
 				else:
 					# it could be launch skill move or card movement
 					stateStrs = self.boardState[y][x].split('/')
-					skillOveralInfo = stateStrs[13]
-					skillInfoStrs = skillOveralInfo.split('&')
-					skillName = ""
-					skillCountDown = 0
-					skillAvailableTime = 0
-					skillSelfTarget = 0
-					prereqTriggerValue = 0
-					skillValue = 0
-					assignTag = ""
+					# check move action
+					possibleMoveGrids = []
+					moveType = stateStrs[22]
+					if moveType == "line":
+						possibleMoveGrids = checkPossibleMove["MoveLine"](self.boardState, x, y, stateStrs[21])
+					elif moveType == "Diagonal":
+						possibleMoveGrids = checkPossibleMove["MoveDiagonal"](self.boardState, x, y, stateStrs[21])
+					for i in range(len(possibleMoveGrids)):
+						action = "move/"
+						moves.append(action)
+
+					# check skill action
+					skillDistance = int(stateStrs[21])
+					skillOveralInfo = stateStrs[23]
+					skillInfoStrs = skillOveralInfo.split(',')
+					skillLaunchType = "manual"
+					skillCoolDown = 0
+					skillAvailableTimes = 0
+					launchGeoType = "point"
+					targetGeoType = "line"
+					aoeType = "point"
+					targetCamp = "oppo"
+					effectType = "increaseDefence"
+					effectAffix = "hurtNb"
+					effectAffixCamp = "self"
+					prereqTagCondition = "tagOnBoard"
+					prereqTag = "human"
+					prereqCampType = "self"
+					prereqType = "hpSumMore"
 					for skillInfo in skillInfoStrs:
 						skillInfoKV = skillInfo.split(':')
-						if skillInfoKV[0] == "":
-							skillName = skillInfoKV[1]
-						elif skillInfoKV[0] == "skillCountDown":
-							skillCountDown = int(skillInfoKV[1])
-						elif skillInfoKV[0] == "skillAvailableTimes":
-							skillAvailableTime = int(skillInfoKV[1])
-						elif skillInfoKV[0] == "selfTarget":
-							skillSelfTarget = int(skillInfoKV[1])
-						elif skillInfoKV[0] == "prereqTriggerValue":
-							prereqTriggerValue = int(skillInfoKV[1])
-						elif skillInfoKV[0] == "skillValue":
-							skillValue = int(skillInfoKV[1])
-						elif skillInfoKV[0] == "assignTag":
-							assignTag = skillInfoKV[1]
+						if skillInfoKV[0] == "launchType":
+							skillLaunchType = skillInfoKV[1]
+						elif skillInfoKV[0] == "coolDown":
+							skillCoolDown = int(skillInfoKV[1])
+						elif skillInfoKV[0] == "availableTimes":
+							skillAvailableTimes = int(skillInfoKV[1])
+						elif skillInfoKV[0] == "launchGeoType":
+							launchGeoType = skillInfoKV[1]
+							# check geo legality
+						elif skillInfoKV[0] == "targetGeoType":
+							targetGeoType = skillInfoKV[1]
+							# target geometry rule could be composite
+						elif skillInfoKV[0] == "aoeType":
+							aoeType = skillInfoKV[1]
+						elif skillInfoKV[0] == "targetCamp":
+							targetCamp = skillInfoKV[1]
+						elif skillInfoKV[0] == "effectType":
+							effectType = skillInfoKV[1]
+						elif skillInfoKV[0] == "effectAffix":
+							effectAffix = skillInfoKV[1]
+						elif skillInfoKV[0] == "effectAffixCamp":
+							effectAffixCamp = skillInfoKV[1]
+						elif skillInfoKV[0] == "prereqTagCondition":
+							prereqTagCondition = skillInfoKV[1]
+						elif skillInfoKV[0] == "prereqTag":
+							prereqTag = skillInfoKV[1]
+						elif skillInfoKV[0] == "prereqCampType":
+							prereqCampType = skillInfoKV[1]
+						elif skillInfoKV[0] == "prereqType":
+							prereqType = skillInfoKV[1]
+							# we should check prerequisites for
+						elif skillInfoKV[0] == "values":
+							values = skillInfoKV[1].split('&')
 					
-					skillLaunchType = stateStrs[3]
 					if skillLaunchType == "manual" or skillLaunchType == "manualImmediate":
-						if (skillCountDown == 0 or skillCountDown == -1) and (skillAvailableTime > 0 or skillAvailableTime == -1):
-							legalSkillActionsDict[skillName]()
-							for targetY in range()
-							action = "playSkill_" 
-							moves.append() 
+						if (skillCoolDown == 0 or skillCoolDown == -1) and (skillAvailableTimes > 0 or skillAvailableTimes == -1):
+							targetGeoCheckGrids = []
+							if '&' in targetGeoType:
+								targetGeoTypes = targetGeoType.split('&')
+								if targetCamp == "oppo":
+									firstCheckGrids = checkPossibleTargetGeoRuleDict[targetGeoTypes[0]](self.boardState, x, y, False, skillDistance)
+									targetGeoCheckGrids = checkPossibleTargetLocationGeoRuleDict[targetGeoTypes[1]](self.boardState, firstCheckGrids)
+								elif targetCamp == "self":
+									firstCheckGrids = checkPossibleTargetGeoRuleDict[targetGeoTypes[0]](self.boardState, x, y, True, skillDistance)
+									targetGeoCheckGrids = checkPossibleTargetLocationGeoRuleDict[targetGeoTypes[1]](self.boardState, firstCheckGrids)
+							else:
+								if targetCamp == "oppo":
+									targetGeoCheckGrids = checkPossibleTargetGeoRuleDict[targetGeoType](self.boardState, x, y, False, skillDistance)
+								elif targetCamp == "self":
+									targetGeoCheckGrids = checkPossibleTargetGeoRuleDict[targetGeoType](self.boardState, x, y, True, skillDistance)
+							
+							checkGridNb = 0
+							while checkGridNb < len(targetGeoCheckGrids):
+								if prereqType != "none":
+									if checkPrereqRuleDict[prereqType](self.boardState, x, y, targetGeoCheckGrids[checkGridNb][0], targetGeoCheckGrids[checkGridNb][1], prereqCampType) == False:
+										targetGeoCheckGrids.remove(targetGeoCheckGrids[checkGridNb])
+										continue
+
+								if prereqTagCondition != "none":
+									if checkPrereqTagRuleDict[prereqTagCondition](self.boardState, x, y, targetGeoCheckGrids[checkGridNb][0], targetGeoCheckGrids[checkGridNb][1], prereqTag) == False:
+										targetGeoCheckGrids.remove(targetGeoCheckGrids[checkGridNb])
+										continue
+										
+								checkGridNb += 1
+
+							for grid in range(len(targetGeoCheckGrids)):
+								action = "launchSkill/"
+								moves.append(action)
 
 		
-	def GetActionInfoById(self, actionId):
-		# actions should be arranged in following orders:
-		# play cards in corresponding grids 0 ~ 32, which is 64 actions in total
-		# launch skills of cards in corresponding grids 0 ~ 64, target could be 0 ~ 64, so 64x64 = 4096 in total
-		# move a card to specific location which is 64x14 = 896
+	def GetActionInfoByKey(self, actionKey):
 		actionInfo = {}
-		totalGridNb = GlobalConst.maxCol * GlobalConst.maxRow
-		halfBoardGridNb = GlobalConst.maxCol * GlobalConst.maxRow / 2
-
-		if actionId < GlobalConst.totalPlayCardActionId:
-			# which means this action belongs to play card type
-			if actionId < GlobalConst.totalPlayCardActionId / 2:
-				# which means card is put in down section of board
-				handCardNb = actionId // halfBoardGridNb
-				targetGridNb = actionId % halfBoardGridNb
-				targetGridY = targetGridNb // GlobalConst.maxCol
-				targetGridX = targetGridNb % GlobalConst.maxCol
-				actionInfo = {
-					"actionType": "playCard",
-					"launchSection": "down",
-					"handCardNb": handCardNb,
-					"targetGridY": targetGridY,
-					"targetGridX": targetGridX
-				}
-			else:
-				# which means card is put in up section
-				halfActionId = actionId - GlobalConst.totalPlayCardActionId/2
-				handCardNb = halfActionId // halfBoardGridNb
-				targetGridNb = halfActionId % halfBoardGridNb
-				targetGridY = targetGridNb // GlobalConst.maxCol + 4
-				targetGridX = targetGridNb % GlobalConst.maxCol
-				actionInfo = {
-					"actionType": "playCard",
-					"launchSection": "up",
-					"handCardNb": handCardNb,
-					"targetGridY": targetGridY,
-					"targetGridX": targetGridX
-				}
-		elif actionId < GlobalConst.totalPlayCardActionId + GlobalConst.totalLaunchSkillActionId:
-			# which means this action belongs to launching skill type
-			launchSkillActionId = actionId - GlobalConst.totalPlayCardActionId
-			launchGridNb = launchSkillActionId // totalGridNb
-			targetGridNb = launchSkillActionId % totalGridNb
-			launchGridY = launchGridNb // GlobalConst.maxCol
-			launchGridX = launchGridNb % GlobalConst.maxCol
-			targetGridY = targetGridNb // GlobalConst.maxCol
-			targetGridX = targetGridNb % GlobalConst.maxCol
-			actionInfo = {
-				"actionType": "launchSkill",
-				"launchGridY": launchGridY,
-				"launchGridX": launchGridX,
-				"targetGridY": targetGridY,
-				"targetGridX": targetGridX
-			}
-		else:
-			# which means this action belongs to move card type
-			moveCardActionId = actionId - GlobalConst.totalPlayCardActionId - GlobalConst.totalLaunchSkillActionId
-			launchGridNb = moveCardActionId // 
+		actionKeyStrs = actionKey.split('/')
+		if actionKeyStrs[0] == "launchSkill":
+			actionInfo["actionType"] = "launchSkill"
 
 
-	def DoMove(self, actionId):
-		actionInfo = self.GetActionInfoById(actionId)
+	def DoMove(self, actionKey):
+		actionInfo = self.GetActionInfoByKey(actionKey)
 		if actionInfo["actionType"] == 0:
 			# which means it's card playing action
 			playerReqPlayCardAction(self.boardState, self.uniqueCardDict, actionInfo["playCardUid"], actionInfo["targetX"], actionInfo["targetY"])
@@ -935,17 +957,7 @@ class Board(object):
 	def GameEnd(self):
 		sdf
 
-	def AISelfPlay(self, mctsPlayer):
-		mctProbs = []
-		actionCount = 0
-		while True:
-			actionCount += 1
-			moveId, moveProb = mctsPlayer.GetAction(self)
-			mctProbs.append(moveProb)
-			self.DoMove(moveId)
-			isEnd, winner = self.GameEnd()
-			if isEnd == True:
-				return winner, moveProb
+	
 
 
 
@@ -1031,55 +1043,5 @@ def launchEffect(stateList, launchX, launchY, targetX, targetY, effectInfo, last
 				# if effect lauching fails, notify corresponding client
 				self.avatars[launchAvatarId].roomReqNotifyLaunchSkillFailed(self.curActionSequence, clientActionSequence)
 
-# skillInfo should look like
-# skillTypeName/auto=0/countdown=1/availableTimes=3/prereqTriggerEffect=hurt/prereqTriggerVal=1/skillRecount=3/skillValues=1,2,3/skillDis=3/skillTag=spy
-def getSkillLegality(state_list, y, x):
-	if state_list[y][x] == '--':
-		return False
-	else:
-		split_str = state_list[y][x].split('_')
-		skillInfoStr = split_str[4]
-		skillInfos = skillInfoStr.split('/')
-					
-
-def get_legal_moves(state_deque, cur_play_camp):
-	state_list = state_deque[-1]
-
-	moves = []
-
-	# traverse all skill moves
-
-
-	# traverse all motion moves
-	for y in range(8):
-		for x in range(8):
-			if state_list[y][x] == '--':
-				# which means this grid is empty, we can put a hand card in this grid
-				pass
-			else:
-				# split string by _ which seperates camp and card type
-				split_str = state_list[y][x].split('_')
-				# [0]uid/ [1]cardName/ [2]camp/ [3]moveType/ [4]skillType(hurt or heal)/
-				# [5]skillGeoType/ [6]tagType(may be combination)/ [7]linkStateType/
-				# [8]linkStateLeftRound/ [9]linkPairNb/ [10]addTagType/ [11]addTagLeftRound/
-				# [12]hp/ [13]defence/ [14]agility
-				if split_str[0] == cur_play_camp:
-					# which means this card belongs to player in turn
-					if split_str[1] == 1 or split_str[1] == 2:
-						# which means card skill is available or repeatable
-						if split_str[4] == 1:
-							# which means this skill requires launch card is located at triangle wind
-							# c1 -- --
-							# c2 c3 --
-							if state_list[y][x - 1] != '--':
-								if state_list[y-1][x] != '--':
-									# which means this card is located at triangle center
-									
-
-					move_way = get_move_way(split_str[12])
-					if move_way == 0:
-						pass
-					elif move_way == 1:
-						# jump across a obstable card
 
 

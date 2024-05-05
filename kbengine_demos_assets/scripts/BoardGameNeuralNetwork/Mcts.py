@@ -24,20 +24,36 @@ class TreeNode(object):
 				self.children[action] = TreeNode(self, prob)
 
 	def Select(self, c_puct):
-		return max(self.children.items(), key = lambda action_node:action_node[1].GetValue(c_puct))
+		maxQU = 0
+		maxQUAction = ""
+		maxQUNode = self
+		for nodeKey, treeNode in self.children:
+			QU = treeNode.GetValue(c_puct)
+			if (QU >= maxQU):
+				maxQU = QU
+				maxQUAction = nodeKey
+				maxQUNode = treeNode
+		return maxQUAction, maxQUNode
+		#return max(self.children.items(), key = lambda action_node:action_node[1].GetValue(c_puct))
 	
 	def GetValue(self, c_puct):
 		self.U = (c_puct*self.P*np.sqrt(self.parent.nVisits)/(1 + self.nVisits))
 		return self.Q + self.U
 	
-	def Update(self, leafValue):
-		self.nVisits += 1
-		self.Q += 1.0*(leafValue - self.Q) / self.nVisits
-
-	def UpdateRecursive(self, leafValue):
+	def Update(self, QValue):
+		self.nVisits = 1
+		self.Q = QValue
 		if self.parent:
-			self.parent.UpdateRecursive(-leafValue)
-		self.Update(leafValue)
+			self.UpdateParentQValueRecursive(QValue)
+
+	def UpdateLeafQValue(self, leafValue):
+		self.nVisits += 1
+		self.Q = (self.Q - leafValue) / self.nVisits
+
+	def UpdateParentQValueRecursive(self, leafValue):
+		if self.parent:
+			self.parent.UpdateParentQValueRecursive(leafValue)
+		self.UpdateLeafQValue(leafValue)
 
 	def IsLeaf(self):
 		return self.children == {}
@@ -54,32 +70,33 @@ class MCTS(object):
 		self.c_puct = c_puct
 		self.nPlayout = nPlayout
 
-	def PlayOut(self, board):
+	def DoSimulationMove(self, copyBoard):
 		node = self.root
 		while True:
 			if node.IsLeaf():
 				break
 			action, node = node.Select(self.c_puct)
-			board.DoMove(action)
+			copyBoard.DoMove(action)
 
 		# policy and value evaluation function returns a tuple which contains both action id and action prob
-		actionProbTuples, leafVal = self.policyEvalFunc(board)
+		actionProbTuples, leafValue = self.policyEvalFunc(copyBoard)
 
-		end, winner = board.GameEnd()
+		end, winner = copyBoard.GameEnd()
 		if not end:
 			node.Expand(actionProbTuples)
 		else:
 			if winner == -1:
 				leafValue = 0.0
 			else:
-				leafValue = (1.0 if winner == board.GetCurrentPlayer() else -1.0)
+				leafValue = (1.0 if winner == copyBoard.GetCurrentPlayer() else -1.0)
 
-		node.UpdateRecursive(-leafValue)
+		# leafValue should be positive ???
+		node.Update(leafValue)
 
 	def GetMoveProbs(self, boardState, temp = 1e-3):
 		for n in range(self.nPlayout):
 			stateCopy = copy.deepcopy(boardState)
-			self.PlayOut(stateCopy)
+			self.DoSimulationMove(stateCopy)
 
 		actVisits = [(act, node.nVisits) for act, node in self.root.children.items()]
 		acts, visits = zip(*actVisits)

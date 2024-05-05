@@ -26,10 +26,22 @@ class AISelfPlayRoom(object):
 		return extendData
 	'''
 
+	def AISelfPlay(self, mctsPlayer):
+		mctProbs = []
+		actionCount = 0
+		while True:
+			actionCount += 1
+			moveId, moveProb = mctsPlayer.GetAction(self)
+			mctProbs.append(moveProb)
+			self.DoMove(moveId)
+			isEnd, winner = self.GameEnd()
+			if isEnd == True:
+				return winner, moveProb
+
 	def StartSelfPlay(self, nGames = 1):
 		self.LoadModel()
 		for i in range(nGames):
-			winner, playData = self.board.AISelfPlay(self.mctsPlayer)
+			winner, playData = self.AISelfPlay(self.mctsPlayer)
 			playData = list(playData)[:]
 			#playData = self.GetEquiData(playData)
 			if os.path.exists():

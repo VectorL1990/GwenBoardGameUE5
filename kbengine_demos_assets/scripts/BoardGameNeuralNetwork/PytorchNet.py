@@ -103,7 +103,7 @@ class PolicyValueNet:
 	def PolicyValueEvaluation(self, board):
 		self.policyValueNet.eval()
 
-		legalMoves = board.availables
+		legalMoves = board.GetLegalMoves()
 		currentState = np.ascontiguousarray(board.CurrentState().reshape(-1, 9, 10, 9)).astype('float16')
 		currentState = torch.as_tensor(currentState).to(self.device)
 
