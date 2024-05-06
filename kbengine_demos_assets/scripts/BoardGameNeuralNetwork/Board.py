@@ -847,7 +847,7 @@ class Board(object):
 
 					# check skill action
 					skillDistance = int(stateStrs[21])
-					skillOveralInfo = stateStrs[23]
+					skillOveralInfo = stateStrs[25]
 					skillInfoStrs = skillOveralInfo.split(',')
 					skillLaunchType = "manual"
 					skillCoolDown = 0
@@ -978,10 +978,9 @@ def playerReqPlayCardAction(boardState, uniqueCardDict, cardId, targetX, targetY
 def playerReqLaunchCardSkillAction(boardState, uniqueCardDict, launchX, launchY, targetX, targetY):
 	launchCardState = boardState[launchY][launchX]
 	launchCardStateStrs = launchCardState.split('/')
-	for k, v in allCards[launchCardStateStrs[2]]["effects"].items():
-		if v["launchType"] == "manual" or v["launchType"] == "manualImmediate":
-			launchEffect()
-			break
+	skillOveralInfoStrs = launchCardStateStrs[25].split(',')
+	if skillOveralInfoStrs[0] == "manual" or skillOveralInfoStrs[0] == "manualImmediate":
+		launchEffect(boardState, launchX, launchY, targetX, targetY, skillOveralInfoStrs)
 
 def playerReqMove(boardState, launchX, launchY, targetX, targetY):
 	legality = geo_rule_dict["Teleport"](launchX, launchY, targetX, targetY)
@@ -1022,7 +1021,7 @@ def TriggerPassiveEffect(stateList, launchResultDict, modifyGrids):
 									modifyGrids.append(passiveModifyGridStrs[0])
 							TriggerPassiveEffect(stateList, passiveEffectResult, modifyGrids)
 
-def launchEffect(stateList, launchX, launchY, targetX, targetY, effectInfo, lastGenerateId):
+def launchEffect(stateList, launchX, launchY, targetX, targetY, effectInfo):
 	if effectName in effect_dict:
 			resultDict = effect_dict[effectName](self.uniqueCardDict, self.gridInfoDict, self.inBattleAvatarList, launchAvatarId, targetGrid, launchGrid, effectInfo)
 			# if launch effect succesfully, settlement has been done
