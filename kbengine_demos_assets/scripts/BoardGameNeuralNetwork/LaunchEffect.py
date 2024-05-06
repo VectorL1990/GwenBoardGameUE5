@@ -40,8 +40,16 @@ def IncreaseDefence(stateList, x, y, targetX, targetY, effectInfo):
 		"modifyType": "increaseDefence",
 		"modifyGrids": []
 	}
-	affix = effectInfo["affix"]
-	affixNb = getAffixDict[affix](stateList)
+	effectValue = 0
+	if effectInfo[8] != "none":
+		affix = effectInfo[8]
+		effectValue = getAffixDict[affix](stateList, x, y, targetX, targetY)
+	else:
+		effectValue = effectInfo[14]
+	targetStateStrs = stateList[targetY][targetX].split('/')
+	targetStateStrs[19] = targetStateStrs[19] + effectValue
+	combineStr = '/'.join(targetStateStrs)
+	stateList[targetY][targetX] = combineStr
 
 def Devour(stateList, x, y, targetX, targetY, effectInfo):
 	returnDict = {
