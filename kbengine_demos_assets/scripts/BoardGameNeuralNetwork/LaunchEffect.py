@@ -41,15 +41,104 @@ def IncreaseDefence(stateList, x, y, targetX, targetY, effectInfo):
 		"modifyGrids": []
 	}
 	effectValue = 0
-	if effectInfo[8] != "none":
-		affix = effectInfo[8]
+	if effectInfo["affixType"] != "none":
+		affix = effectInfo["affixType"]
 		effectValue = getAffixDict[affix](stateList, x, y, targetX, targetY)
 	else:
-		effectValue = effectInfo[14]
+		effectValue = effectInfo["values"]
+	
+	modifyGrids = []
+	if effectInfo["aoeType"] == "H3":
+		if targetX > 0 and stateList[targetY][targetX - 1] != "--":
+			modifyGrids.append([targetX - 1, targetY])
+		if targetX < GlobalConst.maxCol and stateList[targetY][targetX + 1] != "--":
+			modifyGrids.append([targetX + 1, targetY])
+	elif effectInfo["aoeType"] == "V3":
+		if targetY > 0 and stateList[targetY - 1][targetX] != "--":
+			targetDownStateStrs = stateList[targetY - 1][targetX1].split('/')
+			targetDownStateStrs[19] = targetDownStateStrs[19] + effectValue
+			combineStr = '/'.join(targetDownStateStrs)
+			stateList[targetY - 1][targetX] = combineStr
+			returnDict["modifyGrids"].append([targetX, targetY - 1])
+		if targetY < GlobalConst.maxRow and stateList[targetY + 1][targetX] != "--":
+			targetUpStateStrs = stateList[targetY + 1][targetX].split('/')
+			targetUpStateStrs[19] = targetUpStateStrs[19] + effectValue
+			combineStr = '/'.join(targetUpStateStrs)
+			stateList[targetY + 1][targetX] = combineStr
+			returnDict["modifyGrids"].append([targetX, targetY + 1])
+	elif effectInfo["aoeType"] == "sweep":
+		xOffset = targetX - x
+		yOffset = targetY - y
+		if xOffset > 0:
+			# goes right
+			if targetX + 1 < GlobalConst.maxCol and stateList[targetY][targetX + 1] != "--":
+				targetRightStateStrs = stateList[targetY][targetX + 1].split('/')
+				targetRightStateStrs[19] = targetRightStateStrs[19] + effectValue
+				combineStr = '/'.join(targetRightStateStrs)
+				stateList[targetY][targetX + 1] = combineStr
+				returnDict["modifyGrids"].append([targetX + 1, targetY])
+			if targetX + 2 < GlobalConst.maxCol and stateList[targetY][targetX + 2] != "--":
+				targetRightStateStrs = stateList[targetY][targetX + 2].split('/')
+				targetRightStateStrs[19] = targetRightStateStrs[19] + effectValue
+				combineStr = '/'.join(targetRightStateStrs)
+				stateList[targetY][targetX + 2] = combineStr
+				returnDict["modifyGrids"].append([targetX + 2, targetY])
+		elif xOffset < 0:
+			# geos left
+		elif yOffset > 0:
+			# goes up
+		elif yOffset < 0:
+			# goes down
+	elif effectInfo["aoeType"] == "normalCross":
+		sdf
+	elif effectInfo["aoeType"] == "obliqueCross":
+		sdf
+
+	for grid in modifyGrids:
+		targetStateStrs = stateList[grid[1]][grid[0]].split('/')
+		targetStateStrs[19] = targetStateStrs[19] + effectValue
+		combineStr = '/'.join(targetStateStrs)
+		stateList[grid[1]][grid[0]] = combineStr
+		returnDict["modifyGrids"].append([grid[0], grid[1]])
+	return returnDict
+
+def ReplaceDefence(stateList, x, y, targetX, targetY, effectInfo):
+	returnDict = {
+		"success": False,
+		"modifyType": "replaceDefence",
+		"modifyGrids": []
+	}
+	effectValue = 0
+	if effectInfo["affixType"] != "none":
+		affix = effectInfo["affixType"]
+		effectValue = getAffixDict[affix](stateList, x, y, targetX, targetY)
+	else:
+		effectValue = effectInfo["values"]
 	targetStateStrs = stateList[targetY][targetX].split('/')
-	targetStateStrs[19] = targetStateStrs[19] + effectValue
+	targetStateStrs[19] = effectValue
 	combineStr = '/'.join(targetStateStrs)
 	stateList[targetY][targetX] = combineStr
+	returnDict["modifyGrids"].append([targetX, targetY])
+	return returnDict
+
+def IncreaseSelfDefence(stateList, x, y, targetX, targetY, effectInfo):
+	returnDict = {
+		"success": False,
+		"modifyType": "replaceDefence",
+		"modifyGrids": []
+	}
+	effectValue = 0
+	if effectInfo["affixType"] != "none":
+		affix = effectInfo["affixType"]
+		effectValue = getAffixDict[affix](stateList, x, y, targetX, targetY)
+	else:
+		effectValue = effectInfo["values"]
+	targetStateStrs = stateList[targetY][targetX].split('/')
+	targetStateStrs[19] = effectValue
+	combineStr = '/'.join(targetStateStrs)
+	stateList[targetY][targetX] = combineStr
+	returnDict["modifyGrids"].append([targetX, targetY])
+	return returnDict
 
 def Devour(stateList, x, y, targetX, targetY, effectInfo):
 	returnDict = {
