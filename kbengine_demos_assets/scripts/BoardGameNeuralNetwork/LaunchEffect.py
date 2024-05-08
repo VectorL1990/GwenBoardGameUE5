@@ -208,27 +208,27 @@ def GetAoeTargetGrids(stateList, x, y, targetX, targetY, aoeType, targetCamp):
 		# down
 		if targetY > 0 and stateList[targetY - 1][targetX] != "--":
 			if targetCamp == "self":
-					targetGridStateStrs = stateList[targetY - 1][targetX].split('/')
-					if targetGridStateStrs[2] == launchGridCamp:
-						modifyGrids.append([targetX, targetY - 1])
-				elif targetCamp == "oppo":
-					targetGridStateStrs = stateList[targetY - 1][targetX].split('/')
-					if targetGridStateStrs[2] != launchGridCamp:
-						modifyGrids.append([targetX, targetY - 1])
-				else:
+				targetGridStateStrs = stateList[targetY - 1][targetX].split('/')
+				if targetGridStateStrs[2] == launchGridCamp:
 					modifyGrids.append([targetX, targetY - 1])
+			elif targetCamp == "oppo":
+				targetGridStateStrs = stateList[targetY - 1][targetX].split('/')
+				if targetGridStateStrs[2] != launchGridCamp:
+					modifyGrids.append([targetX, targetY - 1])
+			else:
+				modifyGrids.append([targetX, targetY - 1])
 		# up
 		if targetY < GlobalConst.maxRow - 1 and stateList[targetY + 1][targetX] != "--":
 			if targetCamp == "self":
-					targetGridStateStrs = stateList[targetY + 1][targetX].split('/')
-					if targetGridStateStrs[2] == launchGridCamp:
-						modifyGrids.append([targetX, targetY + 1])
-				elif targetCamp == "oppo":
-					targetGridStateStrs = stateList[targetY + 1][targetX].split('/')
-					if targetGridStateStrs[2] != launchGridCamp:
-						modifyGrids.append([targetX, targetY + 1])
-				else:
+				targetGridStateStrs = stateList[targetY + 1][targetX].split('/')
+				if targetGridStateStrs[2] == launchGridCamp:
 					modifyGrids.append([targetX, targetY + 1])
+			elif targetCamp == "oppo":
+				targetGridStateStrs = stateList[targetY + 1][targetX].split('/')
+				if targetGridStateStrs[2] != launchGridCamp:
+					modifyGrids.append([targetX, targetY + 1])
+			else:
+				modifyGrids.append([targetX, targetY + 1])
 	elif aoeType == "obliqueCross":
 		if targetX - 1 >= 0 and targetY - 1 >= 0 and stateList[targetY - 1][targetX - 1] != "--":
 			if targetCamp == "self":
@@ -296,7 +296,8 @@ def IncreaseDefence(stateList, x, y, targetX, targetY, effectInfo):
 
 	for grid in modifyGrids:
 		targetStateStrs = stateList[grid[1]][grid[0]].split('/')
-		targetStateStrs[19] = targetStateStrs[19] + effectValue
+		resultValue = int(targetStateStrs[19]) + effectValue
+		targetStateStrs[19] = str(resultValue)
 		combineStr = '/'.join(targetStateStrs)
 		stateList[grid[1]][grid[0]] = combineStr
 		returnDict["modifyGrids"].append([grid[0], grid[1]])
@@ -320,7 +321,7 @@ def ReplaceDefence(stateList, x, y, targetX, targetY, effectInfo):
 
 	for grid in modifyGrids:
 		targetStateStrs = stateList[grid[1]][grid[0]].split('/')
-		targetStateStrs[19] = effectValue
+		targetStateStrs[19] = str(effectValue)
 		combineStr = '/'.join(targetStateStrs)
 		stateList[grid[1]][grid[0]] = combineStr
 		returnDict["modifyGrids"].append([grid[0], grid[1]])
@@ -343,11 +344,12 @@ def IncreaseSelfDefence(stateList, x, y, targetX, targetY, effectInfo):
 	modifyGrids = GetAoeTargetGrids(stateList, x, y, targetX, targetY, effectInfo["aoeType"], effectInfo["targetCamp"])
 
 	for grid in modifyGrids:
-		targetStateStrs = stateList[[grid[1]][[grid[0]].split('/')
-		targetStateStrs[19] = effectValue
+		targetStateStrs = int(stateList[grid[1]][grid[0]].split('/'))
+		resultValue = int(targetStateStrs[19]) + effectValue
+		targetStateStrs[19] = str(resultValue)
 		combineStr = '/'.join(targetStateStrs)
-		stateList[[grid[1]][[grid[0]] = combineStr
-		returnDict["modifyGrids"].append([[grid[0], [grid[1]])
+		stateList[grid[1]][grid[0]] = combineStr
+		returnDict["modifyGrids"].append([grid[0], grid[1]])
 	return returnDict
 
 
@@ -368,6 +370,77 @@ def GiveTempArmor(stateList, x, y, targetX, targetY, effectInfo):
 	modifyGrids = GetAoeTargetGrids(stateList, x, y, targetX, targetY, effectInfo["aoeType"], effectInfo["targetCamp"])
 
 	for grid in modifyGrids:
+		targetStateStrs = stateList[grid[1]][grid[0]].split('/')
+		if "armor" in targetStateStrs[24]:
+			tags = targetStateStrs[24].split('&')
+			for tag in tags:
+				if "armor" in tag:
+					strs = tag.split('=')
+					strs[1] = str(effectValue)
+					tag = '='.join(strs)
+					combineTags = '&'.join(tags)
+					targetStateStrs[24] = combineTags
+					stateList[grid[1]][grid[0]] = '/'.join(targetStateStrs)
+					break
+		else:
+			targetStateStrs.append("armor=" + str(effectValue))
+			stateList[grid[1]][grid[0]] = '/'.join(targetStateStrs)
+		returnDict["modifyGrids"].append([grid[0], grid[1]])
+	return returnDict
+
+def TempArmor(stateList, x, y, targetX, targetY, effectInfo):
+	returnDict = {
+		"success": False,
+		"modifyType": "giveTempArmor",
+		"modifyGrids": []
+	}
+
+	effectValue = 0
+	if effectInfo["affixType"] != "none":
+		affix = effectInfo["affixType"]
+		effectValue = getAffixDict[affix](stateList, x, y, targetX, targetY)
+	else:
+		effectValue = effectInfo["values"]
+
+	modifyGrids = GetAoeTargetGrids(stateList, x, y, targetX, targetY, effectInfo["aoeType"], effectInfo["targetCamp"])
+
+	for grid in modifyGrids:
+		targetStateStrs = stateList[grid[1]][grid[0]].split('/')
+		if "armor" in targetStateStrs[24]:
+			tags = targetStateStrs[24].split('&')
+			for tag in tags:
+				if "armor" in tag:
+					strs = tag.split('=')
+					strs[1] = str(effectValue)
+					tag = '='.join(strs)
+					combineTags = '&'.join(tags)
+					targetStateStrs[24] = combineTags
+					stateList[grid[1]][grid[0]] = '/'.join(targetStateStrs)
+					break
+		else:
+			targetStateStrs.append("armor=" + str(effectValue))
+			stateList[grid[1]][grid[0]] = '/'.join(targetStateStrs)
+		returnDict["modifyGrids"].append([grid[0], grid[1]])
+	return returnDict
+
+def DefenceHurt(stateList, x, y, targetX, targetY, effectInfo):
+	returnDict = {
+		"success": False,
+		"modifyType": "giveTempArmor",
+		"modifyGrids": []
+	}
+
+	effectValue = 0
+	if effectInfo["affixType"] != "none":
+		affix = effectInfo["affixType"]
+		effectValue = getAffixDict[affix](stateList, x, y, targetX, targetY)
+	else:
+		effectValue = effectInfo["values"]
+
+	modifyGrids = GetAoeTargetGrids(stateList, x, y, targetX, targetY, effectInfo["aoeType"], effectInfo["targetCamp"])
+
+	for grid in modifyGrids:
+
 		
 
 
