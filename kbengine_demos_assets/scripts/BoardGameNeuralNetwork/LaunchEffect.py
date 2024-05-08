@@ -4,6 +4,7 @@ from CheckGeoRule import geoRuleDict
 from GetAffix import getAffixDict
 
 
+
 def Hurt(stateList, targetX, targetY, hurtVal):
 	sdf
 
@@ -34,6 +35,250 @@ def Move(stateList, x, y, targetX, targetY):
 	stateList[y][x] = "--"
 	return returnDict
 
+def GetAoeTargetGrids(stateList, x, y, targetX, targetY, aoeType, targetCamp):
+	modifyGrids = []
+	launchGridStateStrs = stateList[y][x].split('/')
+	launchGridCamp = launchGridStateStrs[2]
+	if aoeType == "H3":
+		if targetX > 0 and stateList[targetY][targetX - 1] != "--":
+			if targetCamp == "self":
+				targetGridStateStrs = stateList[targetY][targetX - 1].split('/')
+				if targetGridStateStrs[2] == launchGridCamp:
+					modifyGrids.append([targetX - 1, targetY])
+			elif targetCamp == "oppo":
+				targetGridStateStrs = stateList[targetY][targetX - 1].split('/')
+				if targetGridStateStrs[2] != launchGridCamp:
+					modifyGrids.append([targetX - 1, targetY])
+			else:
+				modifyGrids.append([targetX - 1, targetY])
+		if targetX < GlobalConst.maxCol - 1 and stateList[targetY][targetX + 1] != "--":
+			if targetCamp == "self":
+				targetGridStateStrs = stateList[targetY][targetX + 1].split('/')
+				if targetGridStateStrs[2] == launchGridCamp:
+					modifyGrids.append([targetX + 1, targetY])
+			elif targetCamp == "oppo":
+				targetGridStateStrs = stateList[targetY][targetX + 1].split('/')
+				if targetGridStateStrs[2] != launchGridCamp:
+					modifyGrids.append([targetX + 1, targetY])
+			else:
+				modifyGrids.append([targetX + 1, targetY])
+	elif aoeType == "V3":
+		if targetY > 0 and stateList[targetY - 1][targetX] != "--":
+			if targetCamp == "self":
+				targetGridStateStrs = stateList[targetY - 1][targetX].split('/')
+				if targetGridStateStrs[2] == launchGridCamp:
+					modifyGrids.append([targetX, targetY - 1])
+			elif targetCamp == "oppo":
+				targetGridStateStrs = stateList[targetY - 1][targetX].split('/')
+				if targetGridStateStrs[2] != launchGridCamp:
+					modifyGrids.append([targetX, targetY - 1])
+			else:
+				modifyGrids.append([targetX, targetY - 1])
+		if targetY < GlobalConst.maxRow - 1 and stateList[targetY + 1][targetX] != "--":
+			if targetCamp == "self":
+				targetGridStateStrs = stateList[targetY + 1][targetX].split('/')
+				if targetGridStateStrs[2] == launchGridCamp:
+					modifyGrids.append([targetX, targetY + 1])
+			elif targetCamp == "oppo":
+				targetGridStateStrs = stateList[targetY + 1][targetX].split('/')
+				if targetGridStateStrs[2] != launchGridCamp:
+					modifyGrids.append([targetX, targetY + 1])
+			else:
+				modifyGrids.append([targetX, targetY + 1])
+	elif aoeType == "sweep":
+		xOffset = targetX - x
+		yOffset = targetY - y
+		if xOffset > 0:
+			if targetX + 1 < GlobalConst.maxCol and stateList[targetY][targetX + 1] != "--":
+				if targetCamp == "self":
+					targetGridStateStrs = stateList[targetY][targetX + 1].split('/')
+					if targetGridStateStrs[2] == launchGridCamp:
+						modifyGrids.append([targetX + 1, targetY])
+				elif targetCamp == "oppo":
+					targetGridStateStrs = stateList[targetY][targetX + 1].split('/')
+					if targetGridStateStrs[2] != launchGridCamp:
+						modifyGrids.append([targetX + 1, targetY])
+				else:
+					modifyGrids.append([targetX + 1, targetY])
+			if targetX + 2 < GlobalConst.maxCol and stateList[targetY][targetX + 2] != "--":
+				if targetCamp == "self":
+					targetGridStateStrs = stateList[targetY][targetX + 2].split('/')
+					if targetGridStateStrs[2] == launchGridCamp:
+						modifyGrids.append([targetX + 2, targetY])
+				elif targetCamp == "oppo":
+					targetGridStateStrs = stateList[targetY][targetX + 2].split('/')
+					if targetGridStateStrs[2] != launchGridCamp:
+						modifyGrids.append([targetX + 2, targetY])
+				else:
+					modifyGrids.append([targetX + 2, targetY])
+		elif xOffset < 0:
+			if targetX - 1 >= 0 and stateList[targetY][targetX - 1] != "--":
+				if targetCamp == "self":
+					targetGridStateStrs = stateList[targetY][targetX - 1].split('/')
+					if targetGridStateStrs[2] == launchGridCamp:
+						modifyGrids.append([targetX - 1, targetY])
+				elif targetCamp == "oppo":
+					targetGridStateStrs = stateList[targetY][targetX - 1].split('/')
+					if targetGridStateStrs[2] != launchGridCamp:
+						modifyGrids.append([targetX - 1, targetY])
+				else:
+					modifyGrids.append([targetX - 1, targetY])
+			if targetX - 2 >= 0 and stateList[targetY][targetX - 2] != "--":
+				if targetCamp == "self":
+					targetGridStateStrs = stateList[targetY][targetX - 2].split('/')
+					if targetGridStateStrs[2] == launchGridCamp:
+						modifyGrids.append([targetX - 2, targetY])
+				elif targetCamp == "oppo":
+					targetGridStateStrs = stateList[targetY][targetX - 2].split('/')
+					if targetGridStateStrs[2] != launchGridCamp:
+						modifyGrids.append([targetX - 2, targetY])
+				else:
+					modifyGrids.append([targetX - 2, targetY])
+		elif yOffset < 0:
+			if targetY - 1 >= 0 and stateList[targetY - 1][targetX] != "--":
+				if targetCamp == "self":
+					targetGridStateStrs = stateList[targetY - 1][targetX].split('/')
+					if targetGridStateStrs[2] == launchGridCamp:
+						modifyGrids.append([targetX, targetY - 1])
+				elif targetCamp == "oppo":
+					targetGridStateStrs = stateList[targetY - 1][targetX].split('/')
+					if targetGridStateStrs[2] != launchGridCamp:
+						modifyGrids.append([targetX, targetY - 1])
+				else:
+					modifyGrids.append([targetX, targetY - 1])
+			if targetY - 2 >= 0 and stateList[targetY - 2][targetX] != "--":
+				if targetCamp == "self":
+					targetGridStateStrs = stateList[targetY - 2][targetX].split('/')
+					if targetGridStateStrs[2] == launchGridCamp:
+						modifyGrids.append([targetX, targetY - 2])
+				elif targetCamp == "oppo":
+					targetGridStateStrs = stateList[targetY - 2][targetX].split('/')
+					if targetGridStateStrs[2] != launchGridCamp:
+						modifyGrids.append([targetX, targetY - 2])
+				else:
+					modifyGrids.append([targetX, targetY - 2])
+		elif yOffset > 0:
+			if targetY + 1 < GlobalConst.maxRow and stateList[targetY + 1][targetX] != "--":
+				if targetCamp == "self":
+					targetGridStateStrs = stateList[targetY + 1][targetX].split('/')
+					if targetGridStateStrs[2] == launchGridCamp:
+						modifyGrids.append([targetX, targetY + 1])
+				elif targetCamp == "oppo":
+					targetGridStateStrs = stateList[targetY + 1][targetX].split('/')
+					if targetGridStateStrs[2] != launchGridCamp:
+						modifyGrids.append([targetX, targetY + 1])
+				else:
+					modifyGrids.append([targetX, targetY + 1])
+			if targetY + 2 < GlobalConst.maxRow and stateList[targetY + 2][targetX] != "--":
+				if targetCamp == "self":
+					targetGridStateStrs = stateList[targetY + 2][targetX].split('/')
+					if targetGridStateStrs[2] == launchGridCamp:
+						modifyGrids.append([targetX, targetY + 2])
+				elif targetCamp == "oppo":
+					targetGridStateStrs = stateList[targetY + 2][targetX].split('/')
+					if targetGridStateStrs[2] != launchGridCamp:
+						modifyGrids.append([targetX, targetY + 2])
+				else:
+					modifyGrids.append([targetX, targetY + 2])
+	elif aoeType == "normalCross":
+		# left
+		if targetX > 0 and stateList[targetY][targetX - 1] != "--":
+			if targetCamp == "self":
+				targetGridStateStrs = stateList[targetY][targetX - 1].split('/')
+				if targetGridStateStrs[2] == launchGridCamp:
+					modifyGrids.append([targetX - 1, targetY])
+			elif targetCamp == "oppo":
+				targetGridStateStrs = stateList[targetY][targetX - 1].split('/')
+				if targetGridStateStrs[2] != launchGridCamp:
+					modifyGrids.append([targetX - 1, targetY])
+			else:
+				modifyGrids.append([targetX - 1, targetY])
+		# right
+		if targetX < GlobalConst.maxCol - 1 and stateList[targetY][targetX + 1] != "--":
+			if targetCamp == "self":
+				targetGridStateStrs = stateList[targetY][targetX + 1].split('/')
+				if targetGridStateStrs[2] == launchGridCamp:
+					modifyGrids.append([targetX + 1, targetY])
+			elif targetCamp == "oppo":
+				targetGridStateStrs = stateList[targetY][targetX + 1].split('/')
+				if targetGridStateStrs[2] != launchGridCamp:
+					modifyGrids.append([targetX + 1, targetY])
+			else:
+				modifyGrids.append([targetX + 1, targetY])
+		# down
+		if targetY > 0 and stateList[targetY - 1][targetX] != "--":
+			if targetCamp == "self":
+					targetGridStateStrs = stateList[targetY - 1][targetX].split('/')
+					if targetGridStateStrs[2] == launchGridCamp:
+						modifyGrids.append([targetX, targetY - 1])
+				elif targetCamp == "oppo":
+					targetGridStateStrs = stateList[targetY - 1][targetX].split('/')
+					if targetGridStateStrs[2] != launchGridCamp:
+						modifyGrids.append([targetX, targetY - 1])
+				else:
+					modifyGrids.append([targetX, targetY - 1])
+		# up
+		if targetY < GlobalConst.maxRow - 1 and stateList[targetY + 1][targetX] != "--":
+			if targetCamp == "self":
+					targetGridStateStrs = stateList[targetY + 1][targetX].split('/')
+					if targetGridStateStrs[2] == launchGridCamp:
+						modifyGrids.append([targetX, targetY + 1])
+				elif targetCamp == "oppo":
+					targetGridStateStrs = stateList[targetY + 1][targetX].split('/')
+					if targetGridStateStrs[2] != launchGridCamp:
+						modifyGrids.append([targetX, targetY + 1])
+				else:
+					modifyGrids.append([targetX, targetY + 1])
+	elif aoeType == "obliqueCross":
+		if targetX - 1 >= 0 and targetY - 1 >= 0 and stateList[targetY - 1][targetX - 1] != "--":
+			if targetCamp == "self":
+				targetGridStateStrs = stateList[targetY - 1][targetX - 1].split('/')
+				if targetGridStateStrs[2] == launchGridCamp:
+					modifyGrids.append([targetX - 1, targetY - 1])
+			elif targetCamp == "oppo":
+				targetGridStateStrs = stateList[targetY - 1][targetX - 1].split('/')
+				if targetGridStateStrs[2] != launchGridCamp:
+					modifyGrids.append([targetX - 1, targetY - 1])
+			else:
+				modifyGrids.append([targetX - 1, targetY - 1])
+		if targetX + 1 < GlobalConst.maxCol and targetY - 1 >= 0 and stateList[targetY - 1][targetX + 1] != "--":
+			if targetCamp == "self":
+				targetGridStateStrs = stateList[targetY - 1][targetX + 1].split('/')
+				if targetGridStateStrs[2] == launchGridCamp:
+					modifyGrids.append([targetX - 1, targetY])
+			elif targetCamp == "oppo":
+				targetGridStateStrs = stateList[targetY - 1][targetX + 1].split('/')
+				if targetGridStateStrs[2] != launchGridCamp:
+					modifyGrids.append([targetX + 1, targetY - 1])
+			else:
+				modifyGrids.append([targetX + 1, targetY - 1])
+		if targetX + 1 < GlobalConst.maxCol and targetY + 1 < GlobalConst.maxRow and stateList[targetY + 1][targetX + 1] != "--":
+			if targetCamp == "self":
+				targetGridStateStrs = stateList[targetY + 1][targetX + 1].split('/')
+				if targetGridStateStrs[2] == launchGridCamp:
+					modifyGrids.append([targetX + 1, targetY + 1])
+			elif targetCamp == "oppo":
+				targetGridStateStrs = stateList[targetY + 1][targetX + 1].split('/')
+				if targetGridStateStrs[2] != launchGridCamp:
+					modifyGrids.append([targetX + 1, targetY + 1])
+			else:
+				modifyGrids.append([targetX + 1, targetY + 1])
+		if targetX - 1 >= 0 and targetY + 1 < GlobalConst.maxRow and stateList[targetY + 1][targetX - 1] != "--":
+			if targetCamp == "self":
+				targetGridStateStrs = stateList[targetY + 1][targetX - 1].split('/')
+				if targetGridStateStrs[2] == launchGridCamp:
+					modifyGrids.append([targetX - 1, targetY + 1])
+			elif targetCamp == "oppo":
+				targetGridStateStrs = stateList[targetY + 1][targetX - 1].split('/')
+				if targetGridStateStrs[2] != launchGridCamp:
+					modifyGrids.append([targetX - 1, targetY + 1])
+			else:
+				modifyGrids.append([targetX - 1, targetY + 1])
+	else:
+		modifyGrids.append([targetX, targetY])
+	return modifyGrids
+
+
 def IncreaseDefence(stateList, x, y, targetX, targetY, effectInfo):
 	returnDict = {
 		"success": False,
@@ -47,52 +292,7 @@ def IncreaseDefence(stateList, x, y, targetX, targetY, effectInfo):
 	else:
 		effectValue = effectInfo["values"]
 	
-	modifyGrids = []
-	if effectInfo["aoeType"] == "H3":
-		if targetX > 0 and stateList[targetY][targetX - 1] != "--":
-			modifyGrids.append([targetX - 1, targetY])
-		if targetX < GlobalConst.maxCol and stateList[targetY][targetX + 1] != "--":
-			modifyGrids.append([targetX + 1, targetY])
-	elif effectInfo["aoeType"] == "V3":
-		if targetY > 0 and stateList[targetY - 1][targetX] != "--":
-			targetDownStateStrs = stateList[targetY - 1][targetX1].split('/')
-			targetDownStateStrs[19] = targetDownStateStrs[19] + effectValue
-			combineStr = '/'.join(targetDownStateStrs)
-			stateList[targetY - 1][targetX] = combineStr
-			returnDict["modifyGrids"].append([targetX, targetY - 1])
-		if targetY < GlobalConst.maxRow and stateList[targetY + 1][targetX] != "--":
-			targetUpStateStrs = stateList[targetY + 1][targetX].split('/')
-			targetUpStateStrs[19] = targetUpStateStrs[19] + effectValue
-			combineStr = '/'.join(targetUpStateStrs)
-			stateList[targetY + 1][targetX] = combineStr
-			returnDict["modifyGrids"].append([targetX, targetY + 1])
-	elif effectInfo["aoeType"] == "sweep":
-		xOffset = targetX - x
-		yOffset = targetY - y
-		if xOffset > 0:
-			# goes right
-			if targetX + 1 < GlobalConst.maxCol and stateList[targetY][targetX + 1] != "--":
-				targetRightStateStrs = stateList[targetY][targetX + 1].split('/')
-				targetRightStateStrs[19] = targetRightStateStrs[19] + effectValue
-				combineStr = '/'.join(targetRightStateStrs)
-				stateList[targetY][targetX + 1] = combineStr
-				returnDict["modifyGrids"].append([targetX + 1, targetY])
-			if targetX + 2 < GlobalConst.maxCol and stateList[targetY][targetX + 2] != "--":
-				targetRightStateStrs = stateList[targetY][targetX + 2].split('/')
-				targetRightStateStrs[19] = targetRightStateStrs[19] + effectValue
-				combineStr = '/'.join(targetRightStateStrs)
-				stateList[targetY][targetX + 2] = combineStr
-				returnDict["modifyGrids"].append([targetX + 2, targetY])
-		elif xOffset < 0:
-			# geos left
-		elif yOffset > 0:
-			# goes up
-		elif yOffset < 0:
-			# goes down
-	elif effectInfo["aoeType"] == "normalCross":
-		sdf
-	elif effectInfo["aoeType"] == "obliqueCross":
-		sdf
+	modifyGrids = GetAoeTargetGrids(stateList, x, y, targetX, targetY, effectInfo["aoeType"], effectInfo["targetCamp"])
 
 	for grid in modifyGrids:
 		targetStateStrs = stateList[grid[1]][grid[0]].split('/')
@@ -101,6 +301,7 @@ def IncreaseDefence(stateList, x, y, targetX, targetY, effectInfo):
 		stateList[grid[1]][grid[0]] = combineStr
 		returnDict["modifyGrids"].append([grid[0], grid[1]])
 	return returnDict
+
 
 def ReplaceDefence(stateList, x, y, targetX, targetY, effectInfo):
 	returnDict = {
@@ -114,12 +315,17 @@ def ReplaceDefence(stateList, x, y, targetX, targetY, effectInfo):
 		effectValue = getAffixDict[affix](stateList, x, y, targetX, targetY)
 	else:
 		effectValue = effectInfo["values"]
-	targetStateStrs = stateList[targetY][targetX].split('/')
-	targetStateStrs[19] = effectValue
-	combineStr = '/'.join(targetStateStrs)
-	stateList[targetY][targetX] = combineStr
-	returnDict["modifyGrids"].append([targetX, targetY])
+
+	modifyGrids = GetAoeTargetGrids(stateList, x, y, targetX, targetY, effectInfo["aoeType"], effectInfo["targetCamp"])
+
+	for grid in modifyGrids:
+		targetStateStrs = stateList[grid[1]][grid[0]].split('/')
+		targetStateStrs[19] = effectValue
+		combineStr = '/'.join(targetStateStrs)
+		stateList[grid[1]][grid[0]] = combineStr
+		returnDict["modifyGrids"].append([grid[0], grid[1]])
 	return returnDict
+
 
 def IncreaseSelfDefence(stateList, x, y, targetX, targetY, effectInfo):
 	returnDict = {
@@ -133,12 +339,37 @@ def IncreaseSelfDefence(stateList, x, y, targetX, targetY, effectInfo):
 		effectValue = getAffixDict[affix](stateList, x, y, targetX, targetY)
 	else:
 		effectValue = effectInfo["values"]
-	targetStateStrs = stateList[targetY][targetX].split('/')
-	targetStateStrs[19] = effectValue
-	combineStr = '/'.join(targetStateStrs)
-	stateList[targetY][targetX] = combineStr
-	returnDict["modifyGrids"].append([targetX, targetY])
+
+	modifyGrids = GetAoeTargetGrids(stateList, x, y, targetX, targetY, effectInfo["aoeType"], effectInfo["targetCamp"])
+
+	for grid in modifyGrids:
+		targetStateStrs = stateList[[grid[1]][[grid[0]].split('/')
+		targetStateStrs[19] = effectValue
+		combineStr = '/'.join(targetStateStrs)
+		stateList[[grid[1]][[grid[0]] = combineStr
+		returnDict["modifyGrids"].append([[grid[0], [grid[1]])
 	return returnDict
+
+
+def GiveTempArmor(stateList, x, y, targetX, targetY, effectInfo):
+	returnDict = {
+		"success": False,
+		"modifyType": "giveTempArmor",
+		"modifyGrids": []
+	}
+
+	effectValue = 0
+	if effectInfo["affixType"] != "none":
+		affix = effectInfo["affixType"]
+		effectValue = getAffixDict[affix](stateList, x, y, targetX, targetY)
+	else:
+		effectValue = effectInfo["values"]
+
+	modifyGrids = GetAoeTargetGrids(stateList, x, y, targetX, targetY, effectInfo["aoeType"], effectInfo["targetCamp"])
+
+	for grid in modifyGrids:
+		
+
 
 def Devour(stateList, x, y, targetX, targetY, effectInfo):
 	returnDict = {
