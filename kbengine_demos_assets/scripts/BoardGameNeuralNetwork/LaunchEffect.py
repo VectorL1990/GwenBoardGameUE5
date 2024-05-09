@@ -6,7 +6,20 @@ from GetAffix import getAffixDict
 
 
 def Hurt(stateList, targetX, targetY, hurtVal):
-	sdf
+	targetStateStrs = stateList[targetY][targetX].split('/')
+	resultHp = int(targetStateStrs[17]) - hurtVal
+	if resultHp < 0:
+		resultHp = 0
+	return resultHp
+
+def UpdateLinkState(linkStates, launchLinkUid, targetLinkUid):
+	if launchLinkUid in linkStates["trueLink"]:
+		# which means
+	else:
+		# search all links which contain target
+		for link in linkStates["trueLink"]:
+			if targetLinkUid in link["targets"]:
+				
 
 def GetLaunchSkillActionId(state_list, x, y, targetX, targetY):
 	gridId = 8 * y + x
@@ -391,7 +404,7 @@ def GiveTempArmor(stateList, x, y, targetX, targetY, effectInfo):
 def TempArmor(stateList, x, y, targetX, targetY, effectInfo):
 	returnDict = {
 		"success": False,
-		"modifyType": "giveTempArmor",
+		"modifyType": "tempArmor",
 		"modifyGrids": []
 	}
 
@@ -426,7 +439,91 @@ def TempArmor(stateList, x, y, targetX, targetY, effectInfo):
 def DefenceHurt(stateList, x, y, targetX, targetY, effectInfo):
 	returnDict = {
 		"success": False,
-		"modifyType": "giveTempArmor",
+		"modifyType": "defenceHurt",
+		"modifyGrids": []
+	}
+
+	effectValue = 0
+	if effectInfo["affixType"] != "none":
+		affix = effectInfo["affixType"]
+		effectValue = getAffixDict[affix](stateList, x, y, targetX, targetY)
+	else:
+		effectValue = effectInfo["values"]
+
+	modifyGrids = GetAoeTargetGrids(stateList, x, y, targetX, targetY, effectInfo["aoeType"], effectInfo["targetCamp"])
+	launchStateStrs = stateList[y][x].split('/')
+	launchDefence = int(launchStateStrs[19])
+	hurtValue = launchDefence / effectValue
+
+	for grid in modifyGrids:
+		resultHp = Hurt(stateList, grid[0], grid[1], hurtValue)
+		targetStateStrs = stateList[grid[1]][grid[0]].split('/')
+		targetStateStrs[17] = str(resultHp)
+		combineStr = '/'.join(targetStateStrs)
+		stateList[grid[1]][grid[0]] = combineStr
+		returnDict["modifyGrids"].append([grid[0], grid[1]])
+	return returnDict
+
+def SwitchCamp(stateList, x, y, targetX, targetY, effectInfo):
+	returnDict = {
+		"success": False,
+		"modifyType": "switchCamp",
+		"modifyGrids": []
+	}
+
+	effectValue = 0
+	if effectInfo["affixType"] != "none":
+		affix = effectInfo["affixType"]
+		effectValue = getAffixDict[affix](stateList, x, y, targetX, targetY)
+	else:
+		effectValue = effectInfo["values"]
+
+	modifyGrids = GetAoeTargetGrids(stateList, x, y, targetX, targetY, effectInfo["aoeType"], effectInfo["targetCamp"])
+	
+	targetCamp = ""
+	launchStateStrs = stateList[y][x].split('/')
+	for grid in modifyGrids:
+		targetStateStrs = stateList[grid[1]][grid[0]].split('/')
+		targetCamp = targetStateStrs[2]
+		targetStateStrs[2] = launchStateStrs[2]
+		combineStr = '/'.join(targetStateStrs)
+		stateList[grid[1]][grid[0]] = combineStr
+		returnDict["modifyGrids"].append([grid[0], grid[1]])
+	
+	launchStateStrs[2] = targetCamp
+	launchCampCombineStr = '/'.join(launchStateStrs)
+	returnDict["modifyGrids"].append([x, y])
+	return returnDict
+
+def Capture(stateList, x, y, targetX, targetY, effectInfo):
+	returnDict = {
+		"success": False,
+		"modifyType": "campture",
+		"modifyGrids": []
+	}
+
+	effectValue = 0
+	if effectInfo["affixType"] != "none":
+		affix = effectInfo["affixType"]
+		effectValue = getAffixDict[affix](stateList, x, y, targetX, targetY)
+	else:
+		effectValue = effectInfo["values"]
+
+	modifyGrids = GetAoeTargetGrids(stateList, x, y, targetX, targetY, effectInfo["aoeType"], effectInfo["targetCamp"])
+	
+	launchStateStrs = stateList[y][x].split('/')
+	for grid in modifyGrids:
+		targetStateStrs = stateList[grid[1]][grid[0]].split('/')
+		targetStateStrs[2] = launchStateStrs[2]
+		combineStr = '/'.join(targetStateStrs)
+		stateList[grid[1]][grid[0]] = combineStr
+		returnDict["modifyGrids"].append([grid[0], grid[1]])
+	return returnDict
+
+def TempHurtLink(stateList, x, y, targetX, targetY, effectInfo, linkState):
+	returnDict = {
+		"success": False,
+		"modifyType": "campture",
 		"modifyGrids": []
 	}
 
@@ -440,8 +537,8 @@ def DefenceHurt(stateList, x, y, targetX, targetY, effectInfo):
 	modifyGrids = GetAoeTargetGrids(stateList, x, y, targetX, targetY, effectInfo["aoeType"], effectInfo["targetCamp"])
 
 	for grid in modifyGrids:
-
-		
+		targetStateStrs = stateList[grid[1]][grid[0]].split('/')
+		if targetStateStrs[16]
 
 
 def Devour(stateList, x, y, targetX, targetY, effectInfo):
