@@ -12,14 +12,32 @@ def Hurt(stateList, targetX, targetY, hurtVal):
 		resultHp = 0
 	return resultHp
 
-def UpdateLinkState(linkStates, launchLinkUid, targetLinkUid):
+def LaunchLinkState(linkStates, launchLinkUid, targetLinkUid, linkRound):
+	'''
+	link = 
+		{
+			"linkType": "hurtLink",
+			"host": card_3,
+			"targets":
+			{
+				"card_1":2,
+				"card_2":3
+			}
+		}
+	'''
 	if launchLinkUid in linkStates["trueLink"]:
 		# which means
 	else:
 		# search all links which contain target
 		for link in linkStates["trueLink"]:
 			if targetLinkUid in link["targets"]:
-				
+				if link["host"] == launchLinkUid:
+					sdf
+				else:
+					# remove targetUid from original link pair first
+					# then add it to new link pair
+					sdf
+
 
 def GetLaunchSkillActionId(state_list, x, y, targetX, targetY):
 	gridId = 8 * y + x
