@@ -1008,6 +1008,21 @@ def TriggerPassiveEffect(stateList, launchResultDict, modifyGrids):
 		modifyGridState = stateList[modifyGridY, modifyGridX]
 		modifyGridStateStrs = modifyGridState.split('/')
 		modifyGridUid = modifyGridStateStrs[0]
+
+		for linkKey, linkInfo in linkStates.items():
+			if linkInfo["linkType"] == 
+
+		
+		if modifyGridStateStrs[3] == "passive":
+			if launchResultDict["modifyType"] == modifyGridStateStrs[13]:
+				# traverse passive trigger checking function
+				passiveTriggerCheckResult = passiveEffectCheckDict[]()
+				if passiveTriggerCheckResult == True:
+					passiveEffectResult = passiveEffectDict[]()
+					# iterate TriggerPassiveEffect
+
+
+
 		for modifyGridEffectKey, modifyGridEffectVal in uniqueCardDict[modifyGridUid]["effects"]:
 			if modifyGridEffectVal["launchType"] == "targetPassive":
 				if modifyGridEffectVal["prereqs"]["triggerEffectType"] == modifyGrid["modifyType"]:

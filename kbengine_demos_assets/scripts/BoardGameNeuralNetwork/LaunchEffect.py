@@ -12,12 +12,11 @@ def Hurt(stateList, targetX, targetY, hurtVal):
 		resultHp = 0
 	return resultHp
 
-def LaunchLinkState(linkStates, launchLinkUid, targetLinkUid, linkRound):
+def LaunchLinkState(linkStates, launchLinkUid, targetLinkUid, linkRound, linkType):
 	'''
 	link = 
 		{
 			"linkType": "hurtLink",
-			"host": card_3,
 			"targets":
 			{
 				"card_1":2,
@@ -25,18 +24,32 @@ def LaunchLinkState(linkStates, launchLinkUid, targetLinkUid, linkRound):
 			}
 		}
 	'''
-	if launchLinkUid in linkStates["trueLink"]:
-		# which means
-	else:
-		# search all links which contain target
-		for link in linkStates["trueLink"]:
-			if targetLinkUid in link["targets"]:
-				if link["host"] == launchLinkUid:
-					sdf
+	updateNewLink = False
+	for linkKey, linkInfo in linkStates.items():
+		if targetLinkUid in linkInfo["targets"]:
+			if linkKey == launchLinkUid:
+				linkInfo["targets"][targetLinkUid] = linkRound
+				updateNewLink = True
+				break
+			else:
+				# remove targetUid from original link pair first
+				# then add it to new link pair
+				linkInfo["targets"].pop(targetLinkUid)
+				if launchLinkUid in linkStates:
+					linkStates[launchLinkUid]["targets"][targetLinkUid] = linkRound
 				else:
-					# remove targetUid from original link pair first
-					# then add it to new link pair
-					sdf
+					newLinkInfo = {"linkType": linkType, "targets": {targetLinkUid: linkRound}}
+					linkStates[launchLinkUid] = newLinkInfo
+				updateNewLink = True
+				break
+	
+	if updateNewLink == False:
+		if launchLinkUid in linkStates:
+			linkStates[launchLinkUid]["targets"][targetLinkUid] = linkRound
+		else:
+			newLinkInfo = {"linkType": linkType, "targets": {targetLinkUid: linkRound}}
+			linkStates[launchLinkUid] = newLinkInfo
+
 
 
 def GetLaunchSkillActionId(state_list, x, y, targetX, targetY):
