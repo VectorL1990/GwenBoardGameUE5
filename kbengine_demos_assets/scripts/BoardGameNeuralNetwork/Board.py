@@ -13,6 +13,8 @@ from CheckPossibleTargetLocateGeoRule import checkPossibleTargetLocationGeoRuleD
 from CheckPrereqRule import checkPrereqRuleDict
 from CheckPrereqTagRule import checkPrereqTagRuleDict
 from CheckPossibleMove import checkPossibleMove
+from CheckPassivePrereqRule import checkPassivePrereqRule
+from PassiveEffect import passiveEffectDict
 import random
 
 # [0]uid
@@ -42,14 +44,15 @@ import random
 # [24]tagType
 # [25]skillName:SeperatedSwap & skillCountDown:0 & skillAvailableTime:1 & selfTarget:0 & prereqTriggerValue:1 & value:3 & assignTag:spy
 
-# range 5
-defaultSkillLaunchCode = np.array([0,0,0,0,0])
+# range 6
+defaultSkillLaunchCode = np.array([0,0,0,0,0,0])
 skillLaunchCoding = dict(
-	auto = 				np.array([1,0,0,0,0]),
-	autoRoundEnd = 		np.array([0,1,0,0,0]),
-	manual = 			np.array([0,0,1,0,0]),
-	manualImmediate = 	np.array([0,0,0,1,0]),
-	passive = 			np.array([0,0,0,0,1])
+	auto = 				np.array([1,0,0,0,0,0]),
+	autoRoundEnd = 		np.array([0,1,0,0,0,0]),
+	manual = 			np.array([0,0,1,0,0,0]),
+	manualImmediate = 	np.array([0,0,0,1,0,0]),
+	passive = 			np.array([0,0,0,0,1,0]),
+	playCard = 			np.array([0,0,0,0,0,1])
 )
 
 # range 14
@@ -537,6 +540,21 @@ skillPrereqCoding = dict(
 	tackleRoundLess =					np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]),
 )
 
+defaultPassiveSkillPrereqTypeCode = np.array([0,0,0,0,0,0,0,0,0,0,0])
+passiveSkillPrereqTypeCoding = dict(
+	beingHurt = 				np.array([1,0,0,0,0,0,0,0,0,0,0]),
+	beingHeal = 				np.array([0,1,0,0,0,0,0,0,0,0,0]),
+	defenceAdded = 				np.array([0,0,1,0,0,0,0,0,0,0,0]),
+	armorAdded = 				np.array([0,0,0,1,0,0,0,0,0,0,0]),
+	woundAdded = 				np.array([0,0,0,0,1,0,0,0,0,0,0]),
+	sublimeAdded = 				np.array([0,0,0,0,0,1,0,0,0,0,0]),
+	poisonAdded = 				np.array([0,0,0,0,0,0,1,0,0,0,0]),
+	lockAdded = 				np.array([0,0,0,0,0,0,0,1,0,0,0]),
+	tackleAdded = 				np.array([0,0,0,0,0,0,0,0,1,0,0]),
+	bePurified = 				np.array([0,0,0,0,0,0,0,0,0,1,0]),
+	beMoved = 					np.array([0,0,0,0,0,0,0,0,0,0,1])
+)
+
 
 class Board(object):
 	def __init__(self):
@@ -553,6 +571,8 @@ class Board(object):
 		self.downSectionHandCards = ['--', '--', '--', '--', '--', '--', '--', '--', '--', '--']
 		self.upSectionHandCards = ['--', '--', '--', '--', '--', '--', '--', '--', '--', '--']
 		self.curPlayerId = 0
+		self.curRoundPassiveEffectTriggeredUid = []
+		self.cardUidDict = {}
 
 
 	def CardCoding(self, cardStateStr):
@@ -955,6 +975,11 @@ class Board(object):
 		elif actionInfo["actionType"] == 2:
 			# which means it's card movement action
 			playerReqMove()
+		elif actionInfo["actionType"] == 3:
+			playerReqEndRound()
+
+	def RoomTellRoundEnd(self):
+		self.curRoundPassiveEffectTriggeredUid.clear()
 
 	def GameEnd(self):
 		sdf
@@ -976,6 +1001,8 @@ def playerReqPlayCardAction(boardState, uniqueCardDict, cardId, targetX, targetY
 		if v["launchType"] == "auto":
 			launchEffect(avatarEntityCall.id, -1, gridNb, k, v)
 
+	TriggerPlayCardEffect()
+
 
 def playerReqLaunchCardSkillAction(boardState, uniqueCardDict, launchX, launchY, targetX, targetY):
 	launchCardState = boardState[launchY][launchX]
@@ -989,6 +1016,9 @@ def playerReqMove(boardState, launchX, launchY, targetX, targetY):
 	if legality == True:
 		launchMove(boardState, launchX, launchY, targetX, targetY)
 
+def playerReqEndRound(boardState):
+	sdf
+
 def launchMove(stateList, launchX, launchY, targetX, targetY):
 	targetGridStr = stateList[targetY][targetX]
 	targetGridStrs = targetGridStr.split('/')
@@ -1000,52 +1030,71 @@ def launchMove(stateList, launchX, launchY, targetX, targetY):
 	else:
 		resultDict = effect_dict["Move"](stateList, launchX, launchY, targetX, targetY)
 
-def TriggerPassiveEffect(stateList, launchResultDict, modifyGrids):
-	for modifyGrid in launchResultDict["modifyGrids"]:
-		# traverse all passive effects attached to compare
-		modifyGridX = modifyGrid["grid"][0]
-		modifyGridY = modifyGrid["grid"][1]
-		modifyGridState = stateList[modifyGridY, modifyGridX]
-		modifyGridStateStrs = modifyGridState.split('/')
-		modifyGridUid = modifyGridStateStrs[0]
 
-		for linkKey, linkInfo in linkStates.items():
-			if linkInfo["linkType"] == 
-
+def TriggerPassiveEffect(board, resultDictList):
+	for i in range(len(resultDictList)):
+		popList = []
+		for modifyUid, modifyDetail in resultDictList[i]["modifyDetails"]:
+			if modifyUid in board.curRoundPassiveEffectTriggeredUid:
+				continue
+			# traverse all passive effects attached to compare
+			modifyGridX = modifyDetail["modifyGridX"]
+			modifyGridY = modifyDetail["modifyGridY"]
+			modifyGridState = board.boardState[modifyGridY, modifyGridX]
+			modifyGridStateStrs = modifyGridState.split('/')
+			effectInfo = {}
+			
+			if modifyGridStateStrs[3] == "passive":
+				if modifyDetail["modifyType"] == modifyGridStateStrs[13]:
+					# traverse passive trigger checking function
+					passiveTriggerCheckResult = checkPassivePrereqRule[modifyDetail["modifyType"]](board.boardState, \
+																							modifyGridX, \
+																							modifyGridY, \
+																							resultDictList[i]["launchX"], \
+																							resultDictList[i]["launchY"], \
+																							modifyDetail["modifyValues"], \
+																							effectInfo)
+					if passiveTriggerCheckResult == True:
+						passiveEffectResult = passiveEffectDict[modifyGridStateStrs[8]]()
+						if len(passiveEffectResult["modifyDetails"]) > 0:
+							board.curRoundPassiveEffectTriggeredUid.append(modifyGridStateStrs[0])
+							resultDictList.append(passiveEffectResult)
+							popList.append(modifyUid)
 		
-		if modifyGridStateStrs[3] == "passive":
-			if launchResultDict["modifyType"] == modifyGridStateStrs[13]:
-				# traverse passive trigger checking function
-				passiveTriggerCheckResult = passiveEffectCheckDict[]()
-				if passiveTriggerCheckResult == True:
-					passiveEffectResult = passiveEffectDict[]()
-					# iterate TriggerPassiveEffect
+		for j in range(len(popList)):
+			resultDictList[i]["modifyDetails"].pop(popList[j])
+	
+	# iterate TriggerPassiveEffect
+	TriggerPassiveEffect(board, resultDictList)
+
+def TriggerPlayCardEffect(board, playCardGridX, playCardGridY):
+	for cardUid, cardGrid in board.cardUidDict.items():
+		cardStateStrs = board.boardState[cardGrid[1]][cardGrid[0]].split('/')
+		if cardStateStrs[3] == "playCard":
+			sdf
+
+	TriggerPassiveEffect()
+
+
+def TriggerRoundEndEffect(board):
+	for cardUid, cardGrid in board.cardUidDict.items():
+		cardStateStrs = board.boardState[cardGrid[1]][cardGrid[0]].split('/')
+		if cardStateStrs[3] == "roundEnd":
+			sdf
+
+	TriggerPassiveEffect()
 
 
 
-		for modifyGridEffectKey, modifyGridEffectVal in uniqueCardDict[modifyGridUid]["effects"]:
-			if modifyGridEffectVal["launchType"] == "targetPassive":
-				if modifyGridEffectVal["prereqs"]["triggerEffectType"] == modifyGrid["modifyType"]:
-					if modifyGridEffectKey in passive_effect_dict:
-						passiveEffectResult = passive_effect_dict[modifyGridEffectKey](stateList, modifyGridX, modifyGridY, launchX, launchY, modifyGridEffectVal)
-						if passiveEffectResult["success"] == True:
-							for passiveModifyGrid in passiveEffectResult["modifyGrids"]:
-								passiveModifyGridX = passiveModifyGrid["grid"][0]
-								passiveModifyGridY = passiveModifyGrid["grid"][1]
-								passiveModifyGridStr = stateList[passiveModifyGridY][passiveModifyGridX]
-								passiveModifyGridStrs = passiveModifyGridStr.split('/')
-								if passiveModifyGridStrs[0] not in modifyGrids:
-									modifyGrids.append(passiveModifyGridStrs[0])
-							TriggerPassiveEffect(stateList, passiveEffectResult, modifyGrids)
 
-def launchEffect(stateList, launchX, launchY, targetX, targetY, effectInfo):
+def launchEffect(board, launchX, launchY, targetX, targetY, effectInfo):
 	if effectName in effect_dict:
 			resultDict = effect_dict[effectName](self.uniqueCardDict, self.gridInfoDict, self.inBattleAvatarList, launchAvatarId, targetGrid, launchGrid, effectInfo)
 			# if launch effect succesfully, settlement has been done
 			# broadcast latest operation result to all clients
 			modifyGrids = []
 			if resultDict["success"] == True:
-				TriggerPassiveEffect(stateList, resultDict, modifyGrids)
+				TriggerPassiveEffect(board.boardState, resultDict, modifyGrids)
 
 				# assemble all modification and notify all clients
 				syncModifyGridInfos = []
