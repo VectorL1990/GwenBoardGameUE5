@@ -104,6 +104,7 @@ class PolicyValueNet:
 		self.policyValueNet.eval()
 
 		legalMoves = board.GetLegalMoves()
+		legalMovesCoding = board.GetActionCodings(legalMoves)
 		currentState = np.ascontiguousarray(board.CurrentState().reshape(-1, 9, 10, 9)).astype('float16')
 		currentState = torch.as_tensor(currentState).to(self.device)
 
@@ -111,7 +112,7 @@ class PolicyValueNet:
 			logActProbs, value = self.policyValueNet(currentState)
 		logActProbs, value = logActProbs.cpu(), value.cpu()
 		actProbTuples = np.exp(logActProbs.detach().numpy().astype('float16').flatten())
-		actProbTuples = zip(legalMoves, actProbTuples[legalMoves])
+		actProbTuples = zip(legalMovesCoding, actProbTuples[legalMovesCoding])
 		return actProbTuples, value.detach().numpy()
 
 	def SaveModel(self, modelFile):

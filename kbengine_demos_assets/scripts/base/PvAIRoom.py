@@ -122,6 +122,9 @@ class AISelfPlayRoom(KBEngine.Entity):
 					# which means this skill is still available to launch
 			#		self.launchEffect(clientActionSequence, targetGridNb, launchGridNb, skillName, self.uniqueCardDict[cardUid]["effects"][skillName])
 
+	def avatarReqEndRound(self, avatarEntityCall, clientActionSequence):
+		self.board.DoMove()
+
 
 	def leaveRoom(self, entityID):
 		self.onLeave(entityID)
@@ -176,9 +179,7 @@ class AISelfPlayRoom(KBEngine.Entity):
 					moveId, moveProb = self.mctsPlayer.GetAction()
 					self.board.DoMove(moveId)
 					# at the same time we should syncronize board state to human player
-				else:
-					moveId, moveProb = self.mctsPlayer.GetAction(self)
-					self.board.DoMove(moveId)
+
 				self.curTimeClockInterval = 0
 				self.battleState = GlobalConst.g_battleState.BATTLE_INTERLUDE
 			else:

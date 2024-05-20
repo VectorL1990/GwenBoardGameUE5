@@ -955,6 +955,17 @@ class Board(object):
 							for grid in range(len(targetGeoCheckGrids)):
 								action = "launchSkill/"
 								moves.append(action)
+		moves.append("EndRound")
+
+	def GetActionCodings(self, actions):
+		actionCodings = []
+		for i in range(len(actions)):
+			actionStrs = actions[i].split('/')
+			if actionStrs[0] == "launchSkill":
+				launchGridNb = int(actionStrs[1])
+				targetGridNb = int(actionStrs[2])
+				actionNb = GlobalConst.totalPlayCardActionNb + GlobalConst.totalMoveActionNb + GlobalConst.totalGridNb * launchGridNb + targetGridNb
+				actionCodings.append(actionNb)
 
 		
 	def GetActionInfoByKey(self, actionKey):
