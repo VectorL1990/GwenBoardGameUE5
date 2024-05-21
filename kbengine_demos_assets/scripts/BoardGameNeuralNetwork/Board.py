@@ -716,6 +716,16 @@ class Board(object):
 			cardCode = cardCode.extend(int(attackRangeStr))
 
 			return cardCode
+		
+	def GetCurrentCoding(self):
+		rowCodings = []
+		for y in range(0, GlobalConst.maxRow):
+			colCodings = []
+			for x in range(0, GlobalConst.maxCol):
+				cardCoding = self.CardCoding(self.boardState[y][x])
+				colCodings.append(cardCoding)
+			rowCodings.append(colCodings)
+		return rowCodings
 
 	# this function is only being called by action interpretation
 	# which means nn outputs a specific action, which should be interpreted as a string type action
@@ -883,6 +893,7 @@ class Board(object):
 										handCardGridNb = handCardGridY * GlobalConst.maxCol + handCardGridX
 										targetGridNb = y * GlobalConst.maxCol + x
 										action = "playCard/" + str(handCardGridNb) + '/' + str(targetGridNb)
+										moves.append(action)
 					else:
 						# which means it's up section player turn
 						if y >= GlobalConst.maxRow / 2:
@@ -892,6 +903,7 @@ class Board(object):
 										handCardGridNb = handCardGridY * GlobalConst.maxCol + handCardGridX
 										targetGridNb = y * GlobalConst.maxCol + x
 										action = "playCard/" + str(handCardGridNb) + '/' + str(targetGridNb)
+										moves.append(action)
 				else:
 					# it could be launch skill move or card movement
 					stateStrs = self.boardState[y][x].split('/')

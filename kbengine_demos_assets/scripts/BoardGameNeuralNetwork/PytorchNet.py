@@ -105,11 +105,11 @@ class PolicyValueNet:
 
 		legalMoves = board.GetLegalMoves()
 		legalMovesCoding = board.GetActionCodings(legalMoves)
-		currentState = np.ascontiguousarray(board.CurrentState().reshape(-1, 9, 10, 9)).astype('float16')
-		currentState = torch.as_tensor(currentState).to(self.device)
+		currentCoding = np.ascontiguousarray(board.GetCurrentCoding().reshape(-1, 9, 10, 9)).astype('float16')
+		currentCoding = torch.as_tensor(currentCoding).to(self.device)
 
 		with autocast():
-			logActProbs, value = self.policyValueNet(currentState)
+			logActProbs, value = self.policyValueNet(currentCoding)
 		logActProbs, value = logActProbs.cpu(), value.cpu()
 		actProbTuples = np.exp(logActProbs.detach().numpy().astype('float16').flatten())
 		actProbTuples = zip(legalMovesCoding, actProbTuples[legalMovesCoding])
