@@ -8,5 +8,5 @@ def BeingHurt(stateList, targetX, targetY, launchX, launchY, modifyValue, effect
         return False
     
 checkPassivePrereqRule = {
-	'beingHurt': BeingHurt,
+	'BeingHurt': BeingHurt,
 }

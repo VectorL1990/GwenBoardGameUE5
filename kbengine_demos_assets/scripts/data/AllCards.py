@@ -2,7 +2,7 @@
 
 allCards={"Ardio": {'hp': 4, 'defence': 60, 'agility': 5, 'tags': [],
 		"effects":{
-			"IncreaseDefenceByHurtNbTLine": {"launchType": "manual", "coolDown": 3, "availableTimes": 1, "launchGeoType": "point", "targetGeoType":"line", "aoeType":"point", "targetCamp":"oppo", "effectType":"increaseDefence", "effectAffix":"hurtNb", "effectAffixCamp":"self", "prereqTagCondition":"none", "prereqTag":"none", "prereqCampType":"none", "prereqType":"none", "values":"0"}
+			"IncreaseDefenceByHurtNbTLine": {"launchType": "manual", "coolDown": 3, "availableTimes": 1, "launchGeoType": "point", "targetGeoType":"line", "aoeType":"point", "targetCamp":"oppo", "effectType":"increaseDefence", "effectAffix":"hurtNb", "effectAffixCamp":"self", "prereqTagCondition":"none", "prereqTag":"none", "prereqCampType":"none", "prereqType":"none", "passivePrereqType": "none", "values":"0"}
 		}
 	}, 
 	"Tabora": {'hp': 4, 'defence': 60, 'agility': 5, 'tags': [],

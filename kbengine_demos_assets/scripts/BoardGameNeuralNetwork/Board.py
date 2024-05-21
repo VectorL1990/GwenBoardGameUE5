@@ -20,29 +20,33 @@ import random
 # [0]uid
 # [1]cardName
 # [2]camp
-# [3]skillLaunchType
-# [4]skillLaunchGeoType
-# [5]skillTargetGeoType
-# [6]skillAoeType
-# [7]skillTargetCampType
-# [8]skillEffectType
-# [9]skillEffectAffixCampType
-# [10]skillEffectAffixType
-# [11]skillTagConditionType
-# [12]]skillPrereqCampType
-# [13]skillPrereqType
-# [14]skillPrereqTagType
-# [15]skillLinkType
-# [16]linkPairNb
-# [17]hp
-# [18]originHp
-# [19]defence
-# [20]originDefence
-# [21]agility
-# [22]moveType
-# [23]attackRange
-# [24]tagType
-# [25]skillName:SeperatedSwap & skillCountDown:0 & skillAvailableTime:1 & selfTarget:0 & prereqTriggerValue:1 & value:3 & assignTag:spy
+# [3]hp
+# [4]originHp
+# [5]defence
+# [6]originDefence
+# [7]agility
+# [8]moveType
+# [9]attackRange
+# [10]tagType
+# [11]skillInfo = 
+#		skillName:SeperatedSwap & 
+#		launchType: passive &
+# 		coolDown:0 & 
+#		availableTimes:1 & 
+#		launchGeoType: line &
+#		targetGeoType: line &
+#		aoeType: point &
+#		targetCamp: oppo &
+#		effectType: hurt &
+#		effectAffix: self &
+#		effectAffixCamp: hurtNb &
+#		prereqTagCondition: none &
+#		prereqTag: none &
+#		prereqCamp: none &
+#		prereqType: none &
+#		passivePrereqType: none &
+#		value:3 
+
 
 # range 6
 defaultSkillLaunchCode = np.array([0,0,0,0,0,0])
@@ -144,13 +148,13 @@ skillEffectCoding = dict(
 	# capture related
 	switchCamp = 								np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
 	capture = 									np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
-	tempHurtLink = 								np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
+	hurtTransfer = 								np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
 	hurtLink = 									np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
-	tempHealLink = 								np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
+	healTransfer = 								np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
 	healLink = 									np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
-	tempSublimeLink = 							np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
-	tempSilenceLink = 							np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
-	tempWoundLink = 							np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
+	sublimeTransfer = 							np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
+	silenceTransfer = 							np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
+	woundTransfer = 							np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
 	wound = 									np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
 	convertSublimeToWound = 					np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
 	transferWound = 							np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
@@ -386,18 +390,19 @@ cardTagCoding = dict(
 	lock = 							np.zeros([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]),
 )
 
-
+# same as code type 42
 defaultSkillPrereqTagCode = defaultCardTagCode
 skillPrereqTagCoding = cardTagCoding
 
-
+# range 3
 defaultSkillPrereqCampCode = np.array([0,0,0])
 skillPrereqCampCoding = dict(
-	selfCamp = 				np.array([1,0,0]),
-	oppoCamp = 				np.array([0,1,0]),
-	arbitraryCamp = 		np.array([0,0,1])
+	self = 				np.array([1,0,0]),
+	oppo = 				np.array([0,1,0]),
+	arbitrary = 		np.array([0,0,1])
 )
 
+# range 126
 defaultSkillPrereqCode = np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
 skillPrereqCoding = dict(
 	# hp related 31
@@ -540,6 +545,7 @@ skillPrereqCoding = dict(
 	tackleRoundLess =					np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]),
 )
 
+# range 11
 defaultPassiveSkillPrereqTypeCode = np.array([0,0,0,0,0,0,0,0,0,0,0])
 passiveSkillPrereqTypeCoding = dict(
 	beingHurt = 				np.array([1,0,0,0,0,0,0,0,0,0,0]),
@@ -559,14 +565,23 @@ passiveSkillPrereqTypeCoding = dict(
 class Board(object):
 	def __init__(self):
 		self.uniqueCardDict = {}
-		self.boardState = [['--', '--', '--', '--', '--', '--', '--', '--'],
-							['--', '--', '--', '--', '--', '--', '--', '--'],
-							['--', '--', '--', '--', '--', '--', '--', '--'],
-							['--', '--', '--', '--', '--', '--', '--', '--'],
-							['--', '--', '--', '--', '--', '--', '--', '--'],
-							['--', '--', '--', '--', '--', '--', '--', '--'],
-							['--', '--', '--', '--', '--', '--', '--', '--'],
-							['--', '--', '--', '--', '--', '--', '--', '--']]
+		self.boardState = [
+			['--', '--', '--', '--', '--', '--', '--', '--'],
+			['--', '--', '--', '--', '--', '--', '--', '--'],
+			['--', '--', '--', '--', '--', '--', '--', '--'],
+			['--', '--', '--', '--', '--', '--', '--', '--'],
+			['--', '--', '--', '--', '--', '--', '--', '--'],
+			['--', '--', '--', '--', '--', '--', '--', '--'],
+			['--', '--', '--', '--', '--', '--', '--', '--'],
+			['--', '--', '--', '--', '--', '--', '--', '--'],
+			['--', '--', '--', '--', '--', '--', '--', '--'],
+			['--', '--', '--', '--', '--', '--', '--', '--'],
+			['--', '--', '--', '--', '--', '--', '--', '--'],
+			['--', '--', '--', '--', '--', '--', '--', '--'],
+			['--', '--', '--', '--', '--', '--', '--', '--'],
+			['--', '--', '--', '--', '--', '--', '--', '--'],
+			['--', '--', '--', '--', '--', '--', '--', '--'],
+			['--', '--', '--', '--', '--', '--', '--', '--']]
 
 		self.downSectionHandCards = ['--', '--', '--', '--', '--', '--', '--', '--', '--', '--']
 		self.upSectionHandCards = ['--', '--', '--', '--', '--', '--', '--', '--', '--', '--']
@@ -579,34 +594,60 @@ class Board(object):
 		# [0]uid
 		# [1]cardName
 		# [2]camp
-		# [3]skillLaunchType
-		# [4]skillLaunchGeoType
-		# [5]skillTargetGeoType
-		# [6]skillAoeType
-		# [7]skillTargetCampType
-		# [8]skillEffectType
-		# [9]skillEffectAffixCampType
-		# [10]skillEffectAffixType
-		# [11]skillTagConditionType
-		# [12]]skillPrereqCampType
-		# [13]skillPrereqType
-		# [14]skillPrereqTagType
-		# [15]skillLinkType
-		# [16]linkPairNb
-		# [17]hp
-		# [18]originHp
-		# [19]defence
-		# [20]originDefence
-		# [21]agility
-		# [22]moveType
-		# [23]attackRange
-		# [24]tagType
-		# [25]skillName:SeperatedSwap & skillCountDown:0 & skillAvailableTime:1 & selfTarget:0 & prereqTriggerValue:1 & value:3 & assignTag:spy
+		# [3]hp
+		# [4]originHp
+		# [5]defence
+		# [6]originDefence
+		# [7]agility
+		# [8]moveType
+		# [9]attackRange
+		# [10]tagType
+		# [11]skillInfo = 
+		#		skillName:SeperatedSwap & 
+		#		launchType: passive &
+		# 		coolDown:0 & 
+		#		availableTimes:1 & 
+		#		launchGeoType: line &
+		#		targetGeoType: line &
+		#		aoeType: point &
+		#		targetCamp: oppo &
+		#		effectType: hurt &
+		#		effectAffix: self &
+		#		effectAffixCamp: hurtNb &
+		#		prereqTagCondition: none &
+		#		prereqTag: none &
+		#		prereqCamp: none &
+		#		prereqType: none &
+		#		passivePrereqType: none &
+		#		value:3 
 
-		# 1 + 5 + 14 + 20 + 6 + 3 + 17 + 3 + 84 + 5 + 3 + 86 + 42 + 10 + hp + defence + agil + moveType + attackRange + 42 = 346
-		# total 346 channels
+		# [0]camp
+		# [1]hp
+		# [2]originHp
+		# [3]defence
+		# [4]originDefence
+		# [5]agility
+		# [6]moveType
+		# [7]attackRange
+		# [8]tagType
+		# [9] launchType
+		# [10] coolDown
+		# [11] availableTimes
+		# [12] launchGeoType
+		# [13] targetGeoType
+		# [14] aoeType
+		# [15] targetCamp
+		# [16] effectType
+		# [17] effectAffix
+		# [18] effectAffixCamp
+		# [19] prereqTagCondition
+		# [20] prereqTag
+		# [21] prereqCamp
+		# [22] prereqType
+		# [23] passivePrereqType
+
 		if cardStateStr == "--":
-			return np.zeros(348)
+			return np.zeros(451)
 		else:
 			cardStateStrs = cardStateStr.split("/")
 			skillLaunchTypeStr = 			cardStateStrs[3]
@@ -833,128 +874,95 @@ class Board(object):
 
 	def GetLegalMoves(self):
 		moves = []
-		for y in range(0, GlobalConst.maxRow):
+		for y in range(GlobalConst.boardStartRow, GlobalConst.boardEndRow + 1):
 			for x in range(0, GlobalConst.maxCol):
 				# check legal moves for every grid
 				if self.boardState[y][x] == "--":
 					# check play card actions
 					if self.curPlayerId == 0:
-						# which means it's down section player turn, player can not put cards in up section
 						if y < GlobalConst.maxRow / 2:
-							# traverse all hand cards of down section player
-							for cardNb in range(0, len(self.downSectionHandCards)):
-								if self.downSectionHandCards[cardNb] != '--':
-									action = "playCard_" + str(cardNb) + "_" + str(y) + "_" + str(x)
-									moves.append(action)
+							# which means it's down section player turn, player can not put cards in up section
+							for handCardGridY in range(GlobalConst.handCardStartRow, GlobalConst.handCardEndRow + 1):
+								for handCardGridX in range(0, GlobalConst.maxCol):
+									if self.boardState[handCardGridY][handCardGridX] != "--":
+										handCardGridNb = handCardGridY * GlobalConst.maxCol + handCardGridX
+										targetGridNb = y * GlobalConst.maxCol + x
+										action = "playCard/" + str(handCardGridNb) + '/' + str(targetGridNb)
 					else:
 						# which means it's up section player turn
 						if y >= GlobalConst.maxRow / 2:
-							for cardNb in range(0, len(self.upSectionHandCards)):
-								if self.upSectionHandCards[cardNb] != '--':
-									action = "playCard_" + str(cardNb + GlobalConst.handCardNb) + "_" + str(y) + "_" + str(x)
-									moves.append(action)
+							for handCardGridY in range(GlobalConst.maxRow - GlobalConst.handCardEndRow - 1, GlobalConst.maxRow - GlobalConst.handCardEndRow):
+								for handCardGridX in range(0, GlobalConst.maxCol):
+									if self.boardState[handCardGridY][handCardGridX] != "--":
+										handCardGridNb = handCardGridY * GlobalConst.maxCol + handCardGridX
+										targetGridNb = y * GlobalConst.maxCol + x
+										action = "playCard/" + str(handCardGridNb) + '/' + str(targetGridNb)
 				else:
 					# it could be launch skill move or card movement
 					stateStrs = self.boardState[y][x].split('/')
 					# check move action
 					possibleMoveGrids = []
-					moveType = stateStrs[22]
-					if moveType == "line":
-						possibleMoveGrids = checkPossibleMove["MoveLine"](self.boardState, x, y, stateStrs[21])
-					elif moveType == "Diagonal":
-						possibleMoveGrids = checkPossibleMove["MoveDiagonal"](self.boardState, x, y, stateStrs[21])
+					moveType = stateStrs[8]
+					if moveType == "MoveLine":
+						possibleMoveGrids = checkPossibleMove["MoveLine"](self.boardState, x, y, stateStrs[8])
+					elif moveType == "MoveDiagonal":
+						possibleMoveGrids = checkPossibleMove["MoveDiagonal"](self.boardState, x, y, stateStrs[8])
+					elif moveType == "MoveSeperate":
+						possibleMoveGrids = checkPossibleMove["MoveSeperate"](self.boardState, x, y, stateStrs[8])
+					elif moveType == "MoveDiagonalSeperate":
+						possibleMoveGrids = checkPossibleMove["MoveDiagonalSeperate"](self.boardState, x, y, stateStrs[8])
+					
 					for i in range(len(possibleMoveGrids)):
-						action = "move/"
+						moveGridX = possibleMoveGrids[i][0]
+						moveGridY = possibleMoveGrids[i][1]
+						launchMoveGridNb = y * GlobalConst.maxCol + x
+						targetMoveGridNb = moveGridY * GlobalConst.maxCol + moveGridX
+						action = "move/" + str(launchMoveGridNb) + '/' + str(targetMoveGridNb)
 						moves.append(action)
 
 					# check skill action
-					skillDistance = int(stateStrs[21])
-					skillOveralInfo = stateStrs[25]
-					skillInfoStrs = skillOveralInfo.split(',')
-					skillLaunchType = "manual"
-					skillCoolDown = 0
-					skillAvailableTimes = 0
-					launchGeoType = "point"
-					targetGeoType = "line"
-					aoeType = "point"
-					targetCamp = "oppo"
-					effectType = "increaseDefence"
-					effectAffix = "hurtNb"
-					effectAffixCamp = "self"
-					prereqTagCondition = "tagOnBoard"
-					prereqTag = "human"
-					prereqCampType = "self"
-					prereqType = "hpSumMore"
-					for skillInfo in skillInfoStrs:
-						skillInfoKV = skillInfo.split(':')
-						if skillInfoKV[0] == "launchType":
-							skillLaunchType = skillInfoKV[1]
-						elif skillInfoKV[0] == "coolDown":
-							skillCoolDown = int(skillInfoKV[1])
-						elif skillInfoKV[0] == "availableTimes":
-							skillAvailableTimes = int(skillInfoKV[1])
-						elif skillInfoKV[0] == "launchGeoType":
-							launchGeoType = skillInfoKV[1]
-							# check geo legality
-						elif skillInfoKV[0] == "targetGeoType":
-							targetGeoType = skillInfoKV[1]
-							# target geometry rule could be composite
-						elif skillInfoKV[0] == "aoeType":
-							aoeType = skillInfoKV[1]
-						elif skillInfoKV[0] == "targetCamp":
-							targetCamp = skillInfoKV[1]
-						elif skillInfoKV[0] == "effectType":
-							effectType = skillInfoKV[1]
-						elif skillInfoKV[0] == "effectAffix":
-							effectAffix = skillInfoKV[1]
-						elif skillInfoKV[0] == "effectAffixCamp":
-							effectAffixCamp = skillInfoKV[1]
-						elif skillInfoKV[0] == "prereqTagCondition":
-							prereqTagCondition = skillInfoKV[1]
-						elif skillInfoKV[0] == "prereqTag":
-							prereqTag = skillInfoKV[1]
-						elif skillInfoKV[0] == "prereqCampType":
-							prereqCampType = skillInfoKV[1]
-						elif skillInfoKV[0] == "prereqType":
-							prereqType = skillInfoKV[1]
-							# we should check prerequisites for
-						elif skillInfoKV[0] == "values":
-							values = skillInfoKV[1].split('&')
+					attackRange = int(stateStrs[9])
+					skillInfo = self.GetCardSkillInfo(self.boardState[y][x])
+
 					
-					if skillLaunchType == "manual" or skillLaunchType == "manualImmediate":
-						if (skillCoolDown == 0 or skillCoolDown == -1) and (skillAvailableTimes > 0 or skillAvailableTimes == -1):
-							targetGeoCheckGrids = []
-							if '&' in targetGeoType:
-								targetGeoTypes = targetGeoType.split('&')
-								if targetCamp == "oppo":
-									firstCheckGrids = checkPossibleTargetGeoRuleDict[targetGeoTypes[0]](self.boardState, x, y, False, skillDistance)
-									targetGeoCheckGrids = checkPossibleTargetLocationGeoRuleDict[targetGeoTypes[1]](self.boardState, firstCheckGrids)
-								elif targetCamp == "self":
-									firstCheckGrids = checkPossibleTargetGeoRuleDict[targetGeoTypes[0]](self.boardState, x, y, True, skillDistance)
-									targetGeoCheckGrids = checkPossibleTargetLocationGeoRuleDict[targetGeoTypes[1]](self.boardState, firstCheckGrids)
-							else:
-								if targetCamp == "oppo":
-									targetGeoCheckGrids = checkPossibleTargetGeoRuleDict[targetGeoType](self.boardState, x, y, False, skillDistance)
-								elif targetCamp == "self":
-									targetGeoCheckGrids = checkPossibleTargetGeoRuleDict[targetGeoType](self.boardState, x, y, True, skillDistance)
+					if (skillInfo["launchType"] == "manual" or skillInfo["launchType"] == "manualImmediate") and \
+						(skillInfo["coolDown"] == 0 or skillInfo["coolDown"] == -1) and \
+						(skillInfo["availableTimes"] > 0 or skillInfo["availableTimes"] == -1):
+						targetGeoCheckGrids = []
+						if '&' in targetGeoType:
+							# there are maybe two kinds target geo type checking
+							targetGeoTypes = targetGeoType.split('&')
+							if targetCamp == "oppo":
+								firstCheckGrids = checkPossibleTargetGeoRuleDict[targetGeoTypes[0]](self.boardState, x, y, False, attackRange)
+								targetGeoCheckGrids = checkPossibleTargetLocationGeoRuleDict[targetGeoTypes[1]](self.boardState, firstCheckGrids)
+							elif targetCamp == "self":
+								firstCheckGrids = checkPossibleTargetGeoRuleDict[targetGeoTypes[0]](self.boardState, x, y, True, attackRange)
+								targetGeoCheckGrids = checkPossibleTargetLocationGeoRuleDict[targetGeoTypes[1]](self.boardState, firstCheckGrids)
+						else:
+							if targetCamp == "oppo":
+								targetGeoCheckGrids = checkPossibleTargetGeoRuleDict[targetGeoType](self.boardState, x, y, False, attackRange)
+							elif targetCamp == "self":
+								targetGeoCheckGrids = checkPossibleTargetGeoRuleDict[targetGeoType](self.boardState, x, y, True, attackRange)
 							
-							checkGridNb = 0
-							while checkGridNb < len(targetGeoCheckGrids):
-								if prereqType != "none":
-									if checkPrereqRuleDict[prereqType](self.boardState, x, y, targetGeoCheckGrids[checkGridNb][0], targetGeoCheckGrids[checkGridNb][1], prereqCampType) == False:
-										targetGeoCheckGrids.remove(targetGeoCheckGrids[checkGridNb])
-										continue
+						checkGridNb = 0
+						while checkGridNb < len(targetGeoCheckGrids):
+							if skillInfo["prereqType"] != "none":
+								if checkPrereqRuleDict[skillInfo["prereqType"]](self.boardState, x, y, targetGeoCheckGrids[checkGridNb][0], targetGeoCheckGrids[checkGridNb][1], skillInfo["prereqCampType"]) == False:
+									targetGeoCheckGrids.remove(targetGeoCheckGrids[checkGridNb])
+									continue
 
-								if prereqTagCondition != "none":
-									if checkPrereqTagRuleDict[prereqTagCondition](self.boardState, x, y, targetGeoCheckGrids[checkGridNb][0], targetGeoCheckGrids[checkGridNb][1], prereqTag) == False:
-										targetGeoCheckGrids.remove(targetGeoCheckGrids[checkGridNb])
-										continue
-										
-								checkGridNb += 1
+							if skillInfo["prereqTagCondition"] != "none":
+								if checkPrereqTagRuleDict[skillInfo["prereqTagCondition"]](self.boardState, x, y, targetGeoCheckGrids[checkGridNb][0], targetGeoCheckGrids[checkGridNb][1], skillInfo["prereqTag"]) == False:
+									targetGeoCheckGrids.remove(targetGeoCheckGrids[checkGridNb])
+									continue
+									
+							checkGridNb += 1
 
-							for grid in range(len(targetGeoCheckGrids)):
-								action = "launchSkill/"
-								moves.append(action)
+						for grid in range(len(targetGeoCheckGrids)):
+							launchSkillGridNb = y * GlobalConst.maxCol + x
+							targetSkillGridNb = grid[1] * GlobalConst.maxCol + grid[0]
+							action = "launchSkill/" + str(launchSkillGridNb) + '/' + str(targetSkillGridNb)
+							moves.append(action)
 		moves.append("EndRound")
 
 	def GetActionCodings(self, actions):
@@ -966,17 +974,52 @@ class Board(object):
 				targetGridNb = int(actionStrs[2])
 				actionNb = GlobalConst.totalPlayCardActionNb + GlobalConst.totalMoveActionNb + GlobalConst.totalGridNb * launchGridNb + targetGridNb
 				actionCodings.append(actionNb)
+			elif actionStrs[0] == "move"
+				launchGridNb = int(actionStrs[1])
+				targetGridNb = int(actionStrs[2])
+				actionNb = GlobalConst.totalPlayCardActionNb + GlobalConst.totalGridNb * launchGridNb + targetGridNb
+				actionCodings.append(actionNb)
+			elif actionStrs[0] == "playCard":
+				launchGridNb = int(actionStrs[1])
+				targetGridNb = int(actionStrs[2])
+				actionNb = GlobalConst.totalGridNb * launchGridNb + targetGridNb
+				actionCodings.append(actionNb)
+			elif actionStrs[0] == "EndRound":
+				actionNb = GlobalConst.totalPlayCardActionNb + GlobalConst.totalMoveActionNb + GlobalConst.totalLaunchSkillActionNb
+				actionCodings.append(actionNb)
 
+		return actionCodings
+
+	def GetActionDecodings(self, actionNb):
+		sdf
 		
-	def GetActionInfoByKey(self, actionKey):
-		actionInfo = {}
-		actionKeyStrs = actionKey.split('/')
-		if actionKeyStrs[0] == "launchSkill":
-			actionInfo["actionType"] = "launchSkill"
+	def GetCardSkillInfo(self, stateStr):
+		stateStrs = stateStr.split('/')
+		skillInfoStrs = stateStrs[11].split('&')
+		skillInfo = {
+			"skillName": 				skillInfoStrs[0],
+			"launchType":				skillInfoStrs[1],
+			"coolDown": 				skillInfoStrs[2],
+			"availableTimes": 			skillInfoStrs[3],
+			"launchGeoType": 			skillInfoStrs[4],
+			"targetGeoType": 			skillInfoStrs[5],
+			"aoeType": 					skillInfoStrs[6],
+			"targetCamp": 				skillInfoStrs[7],
+			"effectType": 				skillInfoStrs[8],
+			"effectAffix": 				skillInfoStrs[9],
+			"effectAffixCamp": 			skillInfoStrs[10],
+			"prereqTagCondition": 		skillInfoStrs[11],
+			"prereqTag": 				skillInfoStrs[12],
+			"prereqCampType": 			skillInfoStrs[13],
+			"prereqType": 				skillInfoStrs[14],
+			"passivePrereqType": 		skillInfoStrs[15],
+			"values": 					skillInfoStrs[16]
+		}
+		return skillInfo
 
 
 	def DoMove(self, actionKey):
-		actionInfo = self.GetActionInfoByKey(actionKey)
+		actionInfo = self.GetActionDecoding(actionKey)
 		if actionInfo["actionType"] == 0:
 			# which means it's card playing action
 			playerReqPlayCardAction(self.boardState, self.uniqueCardDict, actionInfo["playCardUid"], actionInfo["targetX"], actionInfo["targetY"])
@@ -1047,16 +1090,19 @@ def TriggerPassiveEffect(board, resultDictList):
 		popList = []
 		for modifyUid, modifyDetail in resultDictList[i]["modifyDetails"]:
 			if modifyUid in board.curRoundPassiveEffectTriggeredUid:
+				popList.append(modifyUid)
 				continue
 			# traverse all passive effects attached to compare
 			modifyGridX = modifyDetail["modifyGridX"]
 			modifyGridY = modifyDetail["modifyGridY"]
 			modifyGridState = board.boardState[modifyGridY, modifyGridX]
 			modifyGridStateStrs = modifyGridState.split('/')
-			effectInfo = {}
+			effectInfo = {
+
+			}
 			
 			if modifyGridStateStrs[3] == "passive":
-				if modifyDetail["modifyType"] == modifyGridStateStrs[13]:
+				if modifyDetail["modifyType"] == modifyGridStateStrs[15]:
 					# traverse passive trigger checking function
 					passiveTriggerCheckResult = checkPassivePrereqRule[modifyDetail["modifyType"]](board.boardState, \
 																							modifyGridX, \
