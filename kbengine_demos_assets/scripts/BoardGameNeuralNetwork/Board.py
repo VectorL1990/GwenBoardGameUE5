@@ -621,61 +621,54 @@ class Board(object):
 		#		passivePrereqType: none &
 		#		value:3 
 
-		# [0]camp
-		# [1]hp
-		# [2]originHp
-		# [3]defence
-		# [4]originDefence
-		# [5]agility
-		# [6]moveType
-		# [7]attackRange
-		# [8]tagType
-		# [9] launchType
-		# [10] coolDown
-		# [11] availableTimes
-		# [12] launchGeoType
-		# [13] targetGeoType
-		# [14] aoeType
-		# [15] targetCamp
-		# [16] effectType
-		# [17] effectAffix
-		# [18] effectAffixCamp
-		# [19] prereqTagCondition
-		# [20] prereqTag
-		# [21] prereqCamp
-		# [22] prereqType
-		# [23] passivePrereqType
+		# [0]camp = 2
+		# [1]hp = 1
+		# [2]originHp = 1
+		# [3]defence = 1
+		# [4]originDefence = 1
+		# [5]agility = 1
+		# [6]moveType = 4
+		# [7]attackRange = 1
+		# [8]tagType = 42
+		# [9] launchType = 6
+		# [10] coolDown = 1
+		# [11] availableTimes = 1
+		# [12] launchGeoType = 14
+		# [13] targetGeoType = 20
+		# [14] aoeType = 6
+		# [15] targetCamp = 3
+		# [16] effectType = 86
+		# [17] effectAffix = 84
+		# [18] effectAffixCamp = 3
+		# [19] prereqTagCondition = 5
+		# [20] prereqTag = 42
+		# [21] prereqCamp = 3
+		# [22] prereqType = 126
+		# [23] passivePrereqType = 11
 
 		if cardStateStr == "--":
-			return np.zeros(451)
+			return np.zeros(465)
 		else:
 			cardStateStrs = cardStateStr.split("/")
-			skillLaunchTypeStr = 			cardStateStrs[3]
-			skillLaunchGeoTypeStr = 		cardStateStrs[4]
-			skillTargetGeoTypeStr = 		cardStateStrs[5]
-			skillAoeTypeStr = 				cardStateStrs[6]
-			skillTargetCampTypeStr = 		cardStateStrs[7]
-			skillEffectTypeStr = 			cardStateStrs[8]
-			skillEffectAffixTypeStr = 		cardStateStrs[9]
-			skillTagConditionTypeStr = 		cardStateStrs[10]
-			skillPrereqCampTypeStr = 		cardStateStrs[11]
-			skillPrereqTypeStr = 			cardStateStrs[12]
-			skillPrereqTagTypeStr = 		cardStateStrs[13]
-			linkPairNbStr = 				cardStateStrs[14]
-			hpStr = 						cardStateStrs[15]
-			defenceStr = 					cardStateStrs[16]
-			agilityStr = 					cardStateStrs[17]
-			moveTypeStr = 					cardStateStrs[18]
-			attackRangeStr = 				cardStateStrs[19]
-			tagTypeStr = 					cardStateStrs[20]
+			skillInfo = self.GetCardSkillInfo(cardStateStr)
 
-			skillLaunchTypeCode = defaultSkillLaunchCode
-			if skillLaunchTypeStr in skillLaunchCoding:
-				skillLaunchTypeCode = skillLaunchCoding[skillLaunchTypeStr]
+			camp = int(cardStateStrs[0])
+			hp = int(cardStateStrs[1])
+			originHp = int(cardStateStrs[2])
+			defence = int(cardStateStrs[3])
+			originDefence = int(cardStateStrs[4])
+			agility = int(cardStateStrs[5])
+			moveType = int(cardStateStrs[6])
+			attackRange = int(cardStateStrs[7])
+			
 
-			skillEffectCode = defaultSkillEffectCode
-			if skillEffectTypeStr in skillEffectCoding:
-				skillEffectCode = skillEffectCoding[skillEffectTypeStr]
+			launchTypeCode = defaultSkillLaunchCode
+			if skillInfo["launchType"] in skillLaunchCoding:
+				launchTypeCode = skillLaunchCoding[skillInfo["launchType"]]
+
+			effectTypeCode = defaultSkillEffectCode
+			if skillInfo["effectType"] in skillEffectCoding:
+				effectTypeCode = skillEffectCoding[skillInfo["effectType"]]
 
 			skillGeoCode = defaultSkillGeoCode
 			if skillGeoTypeStr in skillGeoCoding:
@@ -727,6 +720,7 @@ class Board(object):
 	# this function is only being called by action interpretation
 	# which means nn outputs a specific action, which should be interpreted as a string type action
 	# which indicates how to select specific card to put on board
+	'''
 	def CardDecoding(self, cardCoding):
 		skillLaunchTypeStr = ""
 		curCodeLen = 0
@@ -866,6 +860,7 @@ class Board(object):
 
 		resultStr = skillLaunchTypeStr + "/" + skillGeoTypeStr + "/" + skillEffectTypeStr + "/" + skillTagConditionStr + "/" + cardTypeStr + "/" + skillPrereqTagStr + "/" + skillPrereqTypeStr + "/" + skillLinkTypeStr
 		return resultStr
+	'''
 
 		
 
@@ -929,20 +924,20 @@ class Board(object):
 						(skillInfo["coolDown"] == 0 or skillInfo["coolDown"] == -1) and \
 						(skillInfo["availableTimes"] > 0 or skillInfo["availableTimes"] == -1):
 						targetGeoCheckGrids = []
-						if '&' in targetGeoType:
+						if '&' in skillInfo["targetGeoType"]:
 							# there are maybe two kinds target geo type checking
-							targetGeoTypes = targetGeoType.split('&')
-							if targetCamp == "oppo":
+							targetGeoTypes = skillInfo["targetGeoType"].split('&')
+							if skillInfo["targetCamp"] == "oppo":
 								firstCheckGrids = checkPossibleTargetGeoRuleDict[targetGeoTypes[0]](self.boardState, x, y, False, attackRange)
 								targetGeoCheckGrids = checkPossibleTargetLocationGeoRuleDict[targetGeoTypes[1]](self.boardState, firstCheckGrids)
-							elif targetCamp == "self":
+							elif skillInfo["targetCamp"] == "self":
 								firstCheckGrids = checkPossibleTargetGeoRuleDict[targetGeoTypes[0]](self.boardState, x, y, True, attackRange)
 								targetGeoCheckGrids = checkPossibleTargetLocationGeoRuleDict[targetGeoTypes[1]](self.boardState, firstCheckGrids)
 						else:
-							if targetCamp == "oppo":
-								targetGeoCheckGrids = checkPossibleTargetGeoRuleDict[targetGeoType](self.boardState, x, y, False, attackRange)
-							elif targetCamp == "self":
-								targetGeoCheckGrids = checkPossibleTargetGeoRuleDict[targetGeoType](self.boardState, x, y, True, attackRange)
+							if skillInfo["targetCamp"] == "oppo":
+								targetGeoCheckGrids = checkPossibleTargetGeoRuleDict[skillInfo["targetGeoType"]](self.boardState, x, y, False, attackRange)
+							elif skillInfo["targetCamp"] == "self":
+								targetGeoCheckGrids = checkPossibleTargetGeoRuleDict[skillInfo["targetGeoType"]](self.boardState, x, y, True, attackRange)
 							
 						checkGridNb = 0
 						while checkGridNb < len(targetGeoCheckGrids):
