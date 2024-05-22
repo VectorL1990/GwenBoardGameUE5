@@ -34,7 +34,7 @@ class AISelfPlayRoom(object):
 			moveId, moveProb = mctsPlayer.GetAction(self)
 			mctProbs.append(moveProb)
 			self.DoMove(moveId)
-			isEnd, winner = self.GameEnd()
+			isEnd, winner = self.CheckGameEnd()
 			if isEnd == True:
 				return winner, moveProb
 

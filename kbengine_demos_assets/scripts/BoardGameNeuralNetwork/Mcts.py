@@ -81,7 +81,7 @@ class MCTS(object):
 		# policy and value evaluation function returns a tuple which contains both action id and action prob
 		actionProbTuples, leafValue = self.policyEvalFunc(copyBoard)
 
-		end, winner = copyBoard.GameEnd()
+		end, winner = copyBoard.CheckGameEnd()
 		if not end:
 			node.Expand(actionProbTuples)
 		else:

@@ -18,6 +18,8 @@ totalPlayCardActionId = 64
 totalLaunchSkillActionId = 4096
 totalMoveCardActionId = 896
 totalMoveNb = 5056
+endRoundActionId = 2000
+maxRound = 20
 '''
 categorize all cards into features below
 1. skillLaunchType 3

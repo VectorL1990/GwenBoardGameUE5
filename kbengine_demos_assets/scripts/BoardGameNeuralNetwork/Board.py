@@ -588,6 +588,7 @@ class Board(object):
 		self.curPlayerId = 0
 		self.curRoundPassiveEffectTriggeredUid = []
 		self.cardUidDict = {}
+		self.curRound = 0
 
 
 	def CardCoding(self, cardStateStr):
@@ -1025,8 +1026,8 @@ class Board(object):
 		return skillInfo
 
 
-	def DoMove(self, actionKey):
-		actionInfo = self.GetActionDecoding(actionKey)
+	def DoMove(self, actionId):
+		actionInfo = self.GetActionDecoding(actionId)
 		if actionInfo["actionType"] == 0:
 			# which means it's card playing action
 			playerReqPlayCardAction(self.boardState, self.uniqueCardDict, actionInfo["playCardUid"], actionInfo["targetX"], actionInfo["targetY"])
@@ -1038,12 +1039,18 @@ class Board(object):
 			playerReqMove()
 		elif actionInfo["actionType"] == 3:
 			playerReqEndRound()
+			self.curRound += 1
+				
 
 	def RoomTellRoundEnd(self):
 		self.curRoundPassiveEffectTriggeredUid.clear()
+		self.curRound += 1
 
-	def GameEnd(self):
-		sdf
+	def CheckGameEnd(self):
+		if self.curRound >= GlobalConst.maxRound:
+			return True
+		else:
+			return False
 
 	
 
