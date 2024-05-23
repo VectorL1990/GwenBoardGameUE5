@@ -50,6 +50,11 @@
 			<Arg> INT32 </Arg>
 			<Arg> INT32 </Arg>
 		</reqLaunchCardSkill>
+
+		<reqRoundEnd>
+			<Exposed/>
+			<Arg> INT32 </Arg>
+		</reqRoundEnd>
 	</BaseMethods>
 
 	<CellMethods>

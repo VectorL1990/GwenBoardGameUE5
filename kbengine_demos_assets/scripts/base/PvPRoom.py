@@ -127,11 +127,6 @@ class PvPRoom(KBEngine.Entity):
 		if actionSequenceLatency == 1:
 			actionId = actionIdConverterDict["GetPlayCardActionId"]()
 			self.board.DoMove(actionId)
-			# which means there's no information lost on client side
-			# find corresponding card info from card dictionary, including effects attached to this card
-			#for k,v in self.uniqueCardDict[cardUid]["effects"].items():
-			#	if v["launchType"] == "auto":
-			#		self.launchEffect(avatarClientActionSequence, -1, gridNb, k, v)
 
 
 	def avatarReqLaunchCardSkillAction(self, avatarEntityCall, clientActionSequence, cardUid, skillName, launchGridNb, targetGridNb):
@@ -139,12 +134,20 @@ class PvPRoom(KBEngine.Entity):
 		if actionSequenceLatency == 1:
 			actionId = actionIdConverterDict["GetLaunchSkillActionId"]
 			self.board.DoMove(actionId)
-			# which means there's no information lost on client side
-			#if skillName in self.uniqueCardDict[cardUid]["effects"]:
-			#	if self.uniqueCardDict[cardUid]["effects"][skillName]["availableTimes"] >= 1:
-			#		# which means this skill is still available to launch
-			#		self.launchEffect(clientActionSequence, targetGridNb, launchGridNb, skillName, self.uniqueCardDict[cardUid]["effects"][skillName])
+	
+	def avatarReqEndRound(self, avatarEntityCall, clientActionSequence):
+		self.roomReqEndRound()
 
+	def roomReqEndRound(self):
+		self.curSwitchNb += 1
+		self.curControlNb += 1
+		if self.curControlNb >= len(self.inBattleAvatarList):
+			self.curControlNb = 0
+		# send messages to all proxys to switch controller
+		for avatar in self.avatars:
+			self.avatars[avatar].roomReqSwitchController(self.curSwitchNb, self.inBattleAvatarList[self.curControlNb].id)
+		self.curTimeClockInterval = 0
+		self.battleState = GlobalConst.g_battleState.BATTLE_INTERLUDE
 
 	def leaveRoom(self, entityID):
 		self.onLeave(entityID)
@@ -196,16 +199,7 @@ class PvPRoom(KBEngine.Entity):
 			self.curBattleTick += 1
 			self.updateAvatarHeartBeat()
 			if self.curTimeClockInterval >= self.maxLaunchActionTimeInterval:
-				# which means we should modify controller to another player
-				self.curSwitchNb += 1
-				self.curControlNb += 1
-				if self.curControlNb >= len(self.inBattleAvatarList):
-					self.curControlNb = 0
-				# send messages to all proxys to switch controller
-				for avatar in self.avatars:
-					self.avatars[avatar].roomReqSwitchController(self.curSwitchNb, self.inBattleAvatarList[self.curControlNb].id)
-				self.curTimeClockInterval = 0
-				self.battleState = GlobalConst.g_battleState.BATTLE_INTERLUDE
+				self.roomReqEndRound()
 			else:
 				self.curTimeClockInterval += 1
 				for avatar in self.avatars:
@@ -251,74 +245,5 @@ class PvPRoom(KBEngine.Entity):
 
 		# notify hall to record battle result
 
-	
-	def getGridNbByRowAndCol(self, row, col):
-		if row < 0 or row > 2*GlobalConst.g_boardHalfRow:
-			return -1
-		elif col < 0 or col > GlobalConst.g_boardColumn:
-			return -1
-		else:
-			return row*GlobalConst.g_boardColumn + col
-
-	def calculateCardHp(self, cardUid, hurt):
-		# return dead or not
-		if hurt <= self.uniqueCardDict[cardUid]["defence"]:
-			self.uniqueCardDict[cardUid]["defence"] -= hurt
-			return False
-		else:
-			overflow = hurt - self.uniqueCardDict[cardUid]["defence"]
-			if overflow < self.uniqueCardDict[cardUid]["hp"]:
-				self.uniqueCardDict[cardUid]["hp"] -= overflow
-				return False
-			else:
-				self.uniqueCardDict[cardUid]["hp"] = 0
-				return True
-		
-	# effect dictionary should be something shown below
-	'''
-	"effects":{
-		"FormationV": {"launchType": "manual", "countDown": 1, "once": True, "selfTarget": False, "prereqs":{}, "effectValues": {"value": 2, "distance": 0}}
-	}
-	'''
-	def launchEffect(self, clientActionSequence, targetX, targetY, launchX, launchY, effectName, effectInfo):
-		if effectName in effect_dict:
-			resultDict = effect_dict[effectName](self.uniqueCardDict, self.gridInfoDict, self.inBattleAvatarList, launchAvatarId, targetGrid, launchGrid, effectInfo)
-			# if launch effect succesfully, settlement has been done
-			# broadcast latest operation result to all clients
-			if resultDict["success"] == True:
-				modifyGridIds = resultDict["modifyGrids"]
-				# traverse all target cards to trigger their passive effects
-				for targetGridXY in resultDict["modifyGrids"]:
-					targetGridState = self.state_list[targetGridXY[0], targetGridXY[1]]
-					targetGridStateStrs = targetGridState.split('/')
-					for targetPassiveEffectKey,targetPassiveEffectValue in self.uniqueCardDict[targetGridStateStrs[0]]["effects"]:
-						if targetPassiveEffectValue["launchType"] == "targetPassive":
-							if targetPassiveEffectValue["prereqs"]["triggerEffectType"] == resultDict["triggerEffectType"]:
-								if targetPassiveEffectKey in passive_effect_dict:
-									passiveEffectResultDict = passive_effect_dict[targetPassiveEffectKey]
-									(
-										self.state_list,
-										targetGridXY[0],
-										targetGridXY[1],
-										launchX,
-										launchY,
-										targetPassiveEffectValue
-									)
-									if passiveEffectResultDict["success"] == True:
-										targetPassiveEffectValue["effectValues"]["isRoundEnd"] = True
-										for passiveModifyGrid in passiveEffectResultDict["modifyGrids"]:
-											if passiveModifyGrid not in modifyGridIds:
-												modifyGridIds.append(passiveModifyGrid)
-				# assemble all modification and notify all clients
-				syncModifyGridInfos = []
-				for modifyGrid in modifyGridIds:
-					syncModifyGridInfos.append(self.gridInfoDict[modifyGrid])
-				
-				# only necessary when it's pvp battle
-				for avatar in self.avatars:
-					self.avatars[avatar].roomReqUpdateActionModification(syncModificationInfo)
-			else:
-				# if effect lauching fails, notify corresponding client
-				self.avatars[launchAvatarId].roomReqNotifyLaunchSkillFailed(self.curActionSequence, clientActionSequence)
 
 

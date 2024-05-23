@@ -239,6 +239,8 @@ class Avatar(KBEngine.Proxy,
 	def reqLaunchCardSkill(self, clientActionSequence, cardUid, skillName, launchGridNb, targetGridNb):
 		self.roomEntityCall.avatarReqLaunchCardSkillAction(self, clientActionSequence, cardUid, skillName, launchGridNb, targetGridNb)
 
+	def reqRoundEnd(self, clientActionSequence):
+		self.roomEntityCall.avatarReqEndRound(self, clientActionSequence)
 
 	#--------------------------------------------------------------------------------------------
 	#                              Callbacks

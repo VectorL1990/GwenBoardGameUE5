@@ -113,10 +113,21 @@ class AISelfPlayRoom(KBEngine.Entity):
 
 	def avatarReqEndRound(self, avatarEntityCall, clientActionSequence):
 		self.board.DoMove(GlobalConst.endRoundActionId)
+		self.roomReqEndRound()
 
 
 	def leaveRoom(self, entityID):
 		self.onLeave(entityID)
+
+	def roomReqEndRound(self):
+		self.curSwitchNb += 1
+		self.curControlNb += 1
+		if self.curControlNb >= len(self.inBattleAvatarList):
+			self.curControlNb = 0
+		# send messages to all proxys to switch controller
+		self.avatarEntity.roomReqSwitchController(self.curSwitchNb, self.avatarEntity.id)
+		self.curTimeClockInterval = 0
+		self.battleState = GlobalConst.g_battleState.BATTLE_INTERLUDE
 
 		
 	def onTimer(self, tid, userArg):
@@ -157,20 +168,10 @@ class AISelfPlayRoom(KBEngine.Entity):
 			self.curBattleTick += 1
 			self.updateAvatarHeartBeat()
 			if self.curTimeClockInterval >= self.maxLaunchActionTimeInterval:
-				# which means we should modify controller to another player
-				self.curSwitchNb += 1
-				self.curControlNb += 1
-				if self.curControlNb >= len(self.inBattleAvatarList):
-					self.curControlNb = 0
-				# send messages to all proxys to switch controller
-				self.avatarEntity.roomReqSwitchController(self.curSwitchNb, self.avatarEntity.id)
+				self.roomReqEndRound()
 				if self.humanTurn == False:
 					moveId, moveProb = self.mctsPlayer.GetAction()
 					self.board.DoMove(moveId)
-					# at the same time we should syncronize board state to human player
-
-				self.curTimeClockInterval = 0
-				self.battleState = GlobalConst.g_battleState.BATTLE_INTERLUDE
 			else:
 				self.curTimeClockInterval += 1
 				self.avatarEntity.roomReqSyncTimeInfo(self.curTimeClockInterval, self.battleState.value)

@@ -10,8 +10,8 @@
 	<Avatar hasClient="true"></Avatar>
 	<Gate hasClient="true"></Gate>
 	<TestEntity hasClient="true"></TestEntity>
-	<Player hasClient="true"></Player>
 	<Hall></Hall>
 	<PvPRoom></PvPRoom>
+	<PvAIRoom></PvAIRoom>
 	<Matcher></Matcher>
 </root>
