@@ -28,5 +28,5 @@ public:
     UFUNCTION(BlueprintNativeEvent)
     void BasicInitDone();
 
-    virtual void SpawnSelectCard(TArray<FString> cardList) override;
+    virtual void SpawnSelectCard() override;
 };

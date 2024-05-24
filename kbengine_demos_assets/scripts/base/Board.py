@@ -1,3 +1,5 @@
+import redis
+import pickle
 import numpy as np
 import copy
 import time
@@ -982,7 +984,7 @@ class Board(object):
 				targetGridNb = int(actionStrs[2])
 				actionNb = GlobalConst.totalPlayCardActionNb + GlobalConst.totalMoveActionNb + GlobalConst.totalGridNb * launchGridNb + targetGridNb
 				actionCodings.append(actionNb)
-			elif actionStrs[0] == "move"
+			elif actionStrs[0] == "move":
 				launchGridNb = int(actionStrs[1])
 				targetGridNb = int(actionStrs[2])
 				actionNb = GlobalConst.totalPlayCardActionNb + GlobalConst.totalGridNb * launchGridNb + targetGridNb

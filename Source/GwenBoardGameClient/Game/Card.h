@@ -31,6 +31,9 @@ public:
 
     FPLAY_CARD_INFO GetCardInfo();
 
+    void Discard();
+
+    CardAnimationStatus cardAnimationStatus = CardAnimationStatus::Default;
     BattleCardStatus cardStatus = BattleCardStatus::Standby;
 
     FString cardName;
@@ -42,6 +45,10 @@ public:
     int32 agility;
 
     int32 defence;
+
+    UPROPERTY(EditAnywhere)
+    UMaterialInterface* basicCardMat;
+
 
     UPROPERTY()
     TArray<FString> inherentTags;

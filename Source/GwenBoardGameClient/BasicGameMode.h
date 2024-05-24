@@ -50,7 +50,7 @@ public:
 
     virtual void onSyncPlayerBattleInfo(const UKBEventData* eventData);
 
-    virtual void SpawnSelectCard(TArray<FString> cardList);
+    virtual void SpawnSelectCard();
 
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<AActor> kbeMainClass;

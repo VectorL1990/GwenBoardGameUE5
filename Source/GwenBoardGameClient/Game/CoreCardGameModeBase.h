@@ -71,9 +71,9 @@ public:
 
     void InitPreBattle();
 
-    void SetupBattleBoardAndCards();
+    //void SetupBattleBoardAndCards();
 
-    void TriggerBattlePreparation();
+    //void TriggerBattlePreparation();
 
     void CalibrateGridInfos(TArray<FBATTLE_GRID_INFO> gridInfos);
 
@@ -140,7 +140,9 @@ public:
     void onSyncUpdateSelectedCards(const UKBEventData* eventData);
 
 
-    virtual void SpawnSelectCard(TArray<FString> cardList) override;
+    virtual void SpawnSelectCard() override;
+
+    bool isSinglePlay = true;
 
     bool hasReqEnterRoom = false;
 
@@ -153,6 +155,8 @@ public:
     TMap<FString, float> interludeStateTicksMap;
 
     TMap<FString, float> battleStateTicksMap;
+
+    float curBattleStateTick = 0.0;
 
     int32 receiveActionSequence = 0;
 

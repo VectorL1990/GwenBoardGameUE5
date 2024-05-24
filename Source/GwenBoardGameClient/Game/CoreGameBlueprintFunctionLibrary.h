@@ -8,6 +8,14 @@
 #include "CoreGameBlueprintFunctionLibrary.generated.h"
 
 UENUM(BlueprintType)
+enum class CardAnimationStatus : uint8
+{
+    Default = 0,
+    Generating = 1,
+    Discarding = 2,
+};
+
+UENUM(BlueprintType)
 enum class BattleCardStatus : uint8
 {
     Select,
