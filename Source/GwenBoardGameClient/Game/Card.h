@@ -23,6 +23,9 @@ protected:
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;
 
+private:
+    float cardAnimStateTick = 0.0;
+
 public:
     // Called every frame
     virtual void Tick(float DeltaTime) override;
@@ -49,11 +52,9 @@ public:
     UPROPERTY(EditAnywhere)
     UMaterialInterface* basicCardMat;
 
-
     UPROPERTY()
     TArray<FString> inherentTags;
 
     UPROPERTY()
     TArray<FSTATE_TAG_INFO> stateTags;
-
 };

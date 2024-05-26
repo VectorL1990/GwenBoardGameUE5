@@ -3,6 +3,7 @@
 
 #include "Card.h"
 
+
 // Sets default values
 ACard::ACard()
 {
@@ -25,9 +26,13 @@ void ACard::Tick(float DeltaTime)
     if (cardAnimationStatus == CardAnimationStatus::Generating)
     {
         UMaterialInstanceDynamic* matInstance = UMaterialInstanceDynamic::Create(basicCardMat, this);
-        UStaticMesh* test;
-        test->SetMaterial(0, matInstance);
     }
+    else if (cardAnimationStatus == CardAnimationStatus::Discarding)
+    {
+
+    }
+
+    
 }
 
 void ACard::InitCard(FString cardName)
