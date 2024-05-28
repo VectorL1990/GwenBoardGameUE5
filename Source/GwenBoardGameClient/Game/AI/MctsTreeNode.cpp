@@ -12,9 +12,10 @@ void UMctsTreeNode::Init(UMctsTreeNode* inParent, float inP)
 				u = 0.0;
 }
 
-void UMctsTreeNode::GetValue()
+float UMctsTreeNode::GetValue()
 {
-				u = UMctsTreeNode::cPuct * 
+				return 0.0;
+				//u = UMctsTreeNode::cPuct * 
 }
 
 void UMctsTreeNode::Expand(TMap<int, float> actionProbs)
@@ -34,7 +35,6 @@ void UMctsTreeNode::Select(int& outAction, UMctsTreeNode* outNode)
 {
 				float maxQU = 0.0;
 				int maxQUAction = 0;
-				UMctsTreeNode* maxQUNode;
 				for (TMap<int, UMctsTreeNode*>::TConstIterator iter = children.CreateConstIterator(); iter; ++iter)
 				{
 								float nodeQU = iter->Value->GetValue();
@@ -42,11 +42,10 @@ void UMctsTreeNode::Select(int& outAction, UMctsTreeNode* outNode)
 								{
 												maxQU = nodeQU;
 												maxQUAction = iter->Key;
-												maxQUNode = iter->Value;
+												outNode = iter->Value;
 								}
 				}
 				outAction = maxQUAction;
-				outNode = maxQUNode;
 }
 
 void UMctsTreeNode::UpdateCurNode(float inQ)
