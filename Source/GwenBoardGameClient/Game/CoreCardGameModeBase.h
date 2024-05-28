@@ -64,6 +64,9 @@ public:
     TMap<CameraType, ABattleCamera*> camerasMap;
 
 public:
+    // --- Main game logic
+    void SinglePlayerGameLoop(float dT);
+
     // --- Local logic functions
     void CheckEntitiesCreated();
 
@@ -144,7 +147,11 @@ public:
 
     bool isSinglePlay = true;
 
+    bool isHumanTurn = true;
+
     bool hasReqEnterRoom = false;
+
+    SingleBattleState singleBattleState = SingleBattleState::Default;
 
     InterludeState interludeState = InterludeState::Default;
 

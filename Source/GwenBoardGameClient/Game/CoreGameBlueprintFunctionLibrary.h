@@ -43,6 +43,16 @@ enum class ClientBattleState : uint8
     InBattle = 3,
 };
 
+UENUM(BlueprintType)
+enum class SingleBattleState : uint8
+{
+    Default = 0,
+    SelectCard = 1,
+    SelectCardInterlude = 2,
+    Battle = 3,
+    BattleInterlude = 4
+};
+
 UENUM(BLueprintType)
 enum class NetworkStatus : uint8
 {

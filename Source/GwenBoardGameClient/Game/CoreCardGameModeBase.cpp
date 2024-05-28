@@ -146,105 +146,56 @@ void ACoreCardGameModeBase::Tick(float deltaTime)
 				}
 }
 
-/*
-void ACoreCardGameModeBase::TickSingleGame(float dT)
+void ACoreCardGameModeBase::SinglePlayerGameLoop(float dT)
 {
-				if (interludeState == InterludeState::SelectCardDemoPauseInterlude)
+				if (singleBattleState == SingleBattleState::Default)
 				{
-								// Pause for a while for final select cards demonstration
-								if (curCountingTick >= interludeStateTicksMap["SelectCardDemoPauseInterlude"])
+								return;
+				}
+				else if (singleBattleState == SingleBattleState::SelectCard)
+				{
+								if (curCountingTick >= battleStateTicksMap["MaxSelectCardInterval"])
 								{
-												// delete all demonstrated hand cards fist
-												for (TMap<FString, ACard*>::TConstIterator iter = handCardMap.CreateConstIterator(); iter; ++iter)
-												{
-																if (iter->Value->IsValidLowLevel())
-																{
-																				iter->Value->Destroy();
-																}
-												}
-												handCardMap.Empty();
-
-												// move camera to specific location
-												APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
-												AActor* targetCamera = camerasMap[CameraType::SelectCardCamera];
-												playerController->SetViewTargetWithBlend(targetCamera, 2.0);
-
-
-												// which means selected cards demonstration ends
+												// switch to select card interlude
+												singleBattleState = SingleBattleState::SelectCardInterlude;
 												curCountingTick = 0.0;
-												interludeState = InterludeState::MoveCameraCardSelectionToBattle;
 								}
 								else
 								{
 												curCountingTick += dT;
 								}
 				}
-				else if (interludeState == InterludeState::MoveCameraCardSelectionToBattle)
+				else if (singleBattleState == SingleBattleState::SelectCardInterlude)
 				{
-								if (curCountingTick >= interludeStateTicksMap["MoveCameraCardSelectionToBattle"])
+								if (curCountingTick >= battleStateTicksMap["MaxSelectCardInterludeInterval"])
 								{
-												// when camera motion done, we should demonstrate our board right now
-												for (TMap<int32, ABoardGrid*>::TConstIterator iter = boardGrids.CreateConstIterator(); iter; ++iter)
+												singleBattleState = SingleBattleState::Battle;
+												curCountingTick = 0.0;
+								}
+								else
+								{
+												curCountingTick += dT;
+								}
+				}
+				else if (singleBattleState == SingleBattleState::Battle)
+				{
+								if (curCountingTick >= battleStateTicksMap["MaxLaunchActionTimeInterval"])
+								{
+												singleBattleState = SingleBattleState::BattleInterlude;
+												curCountingTick = 0.0;
+								}
+								else
+								{
+												if (!isHumanTurn)
 												{
-																iter->Value->DemonstrateInitEffect();
+																// Get action from neural network
+
 												}
+												curCountingTick += dT;
+								}
+				}
+}
 
-												curCountingTick = 0.0;
-												interludeState = InterludeState::DemoBoardInterlude;
-								}
-								else
-								{
-												curCountingTick += deltaTime;
-								}
-				}
-				else if (interludeState == InterludeState::DemoBoardInterlude)
-				{
-								if (curCountingTick >= interludeStateTicksMap["DemoBoardInterlude"])
-								{
-												// when battle board init effect demonstration is done, start actual battle
-
-												curCountingTick = 0.0;
-												// which means stop interlude counting, begin battle counting
-												interludeState = InterludeState::Default;
-								}
-								else
-								{
-												curCountingTick += deltaTime;
-								}
-				}
-
-				if (clientBattleState == ClientBattleState::ReqEnterRoom)
-				{
-								if (curReqEnterRoomTick >= battleStateTicksMap["ReqEnterRoom"])
-								{
-												// which means account has already entered world
-												// trigger reqEnterRoom so that server gives side gives client to avatar
-												ReqEnterRoom();
-												curReqEnterRoomTick = 0.0;
-								}
-								else
-								{
-												curReqEnterRoomTick += deltaTime;
-								}
-				}
-				else if (clientBattleState == ClientBattleState::SelectCard)
-				{
-								SpawnSelectCard();
-				}
-				else if (clientBattleState == ClientBattleState::InBattle)
-				{
-								// we should always keep sending sync information to server
-								if (curBattleStateTick >= battleStateTicksMap["SyncHeartBeatInterval"])
-								{
-												ReqSyncHeartBeat();
-								}
-
-								if (curBattleStateTick >= battleStateTicksMap["SyncBattleInterval"])
-								{
-												ReqLatestBattleInfo();
-								}
-				}
-}*/
 
 void ACoreCardGameModeBase::CheckEntitiesCreated()
 {
