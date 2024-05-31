@@ -76,6 +76,16 @@ void EntityBaseEntityCall_AvatarBase::reqPlayCardAction(int32 arg1, const FStrin
 	sendCall(NULL);
 }
 
+void EntityBaseEntityCall_AvatarBase::reqRoundEnd(int32 arg1)
+{
+	Bundle* pBundleRet = newCall("reqRoundEnd", 0);
+	if(!pBundleRet)
+		return;
+
+	pBundleRet->writeInt32(arg1);
+	sendCall(NULL);
+}
+
 void EntityBaseEntityCall_AvatarBase::reqSyncHeartBeat()
 {
 	Bundle* pBundleRet = newCall("reqSyncHeartBeat", 0);

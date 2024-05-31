@@ -8,6 +8,9 @@
 	</Properties>
 
 	<ClientMethods>
+		<onAccountClientEnabled>
+		</onAccountClientEnabled>
+
 		<onReqTest>
 			<Arg> INT32 </Arg>
 		</onReqTest>

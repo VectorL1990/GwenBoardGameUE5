@@ -65,7 +65,7 @@
 		</Properties>
 	</SYNC_EFFECT_INFO>
 
-	<BATTLE_GRID_ROW_INFO>
+	<BATTLE_GRID_ROW_INFO> FIXED_DICT
 		<Properties>
 			<cols>
 				<Type> ARRAY <of> STRING </of> </Type>
@@ -73,7 +73,7 @@
 		</Properties>
 	</BATTLE_GRID_ROW_INFO>
 
-	<BATTLE_BOARD_INFO>
+	<BATTLE_BOARD_INFO> FIXED_DICT
 		<Properties>
 			<rows>
 				<Type> ARRAY <of> BATTLE_GRID_ROW_INFO </of> </Type>
@@ -81,14 +81,14 @@
 		</Properties>
 	</BATTLE_BOARD_INFO>
 
-	<BATTLE_GRID_STRING_STATE>
+	<BATTLE_GRID_STRING_STATE> FIXED_DICT
 		<Properties>
 			<gridNb>
 				<Type> INT32 </Type>
 			</gridNb>
 			<gridState>
 				<Type> STRING </Type>
-			<gridState>
+			</gridState>
 		</Properties>
 	</BATTLE_GRID_STRING_STATE>
 

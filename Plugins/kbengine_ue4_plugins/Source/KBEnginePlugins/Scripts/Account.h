@@ -22,6 +22,7 @@ namespace KBEngine
         void ReqEnterRoom();
         void ReqMatch();
 
+        virtual void onAccountClientEnabled() override;
         virtual void onReqTest(int32 param) override;
         virtual void onSyncRoomCreated(uint64 roomKey) override;
     };

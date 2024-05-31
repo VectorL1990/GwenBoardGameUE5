@@ -12,8 +12,8 @@ void ALoginGameModeBase::BeginPlay()
 {
 				Super::InitEvents();
 				InitEvents();
-				ReqTest();
 				InitKBEMain();
+				ReqTest();
 				BasicInitDone();
 }
 

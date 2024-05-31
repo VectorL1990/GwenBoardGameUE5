@@ -163,16 +163,16 @@ namespace KBEngine
 				void Avatar::onSyncLatestBattleState(const CORE_UPDATE_BATLLE_INFO& battleInfo)
 				{
 								UKBEventData_onSyncLatestBattleState* eventData = NewObject<UKBEventData_onSyncLatestBattleState>();
-								eventData->curSwitchControllerSequence = battleInfo.curSwitchControllerSequence;
+								/*eventData->curSwitchControllerSequence = battleInfo.curSwitchControllerSequence;
 								eventData->curControllerNb = battleInfo.curControllerNb;
 								eventData->curControllerAvatarId = FString::Printf(TEXT("%lld"), battleInfo.curControllerAvatarId);
 								eventData->curActionSequence = battleInfo.curActionSequence;
-								for (int32 i = 0; i < battleInfo.updateList.Num(); i++)
+								for (int32 i = 0; i < battleInfo.updateList.rows.Num(); i++)
 								{
 												FBATTLE_GRID_INFO gridInfo;
-												gridInfo.gridNb = battleInfo.updateList[i].gridNb;
-												gridInfo.cardUid = battleInfo.updateList[i].cardUid;
-												gridInfo.avatarId = FString::Printf(TEXT("%lld"), battleInfo.updateList[i].avatarId);
+												gridInfo.gridNb = battleInfo.updateList.rows[i].gridNb;
+												gridInfo.cardUid = battleInfo.updateList.rows[i].cardUid;
+												gridInfo.avatarId = FString::Printf(TEXT("%lld"), battleInfo.updateList.rows[i].avatarId);
 												eventData->updateGridInfos.Add(gridInfo);
 								}
 								for (int32 i = 0; i < battleInfo.playerInfo.cardList.Num(); i++)
@@ -202,7 +202,7 @@ namespace KBEngine
 												}
 												eventData->cardList.Add(cardInfo);
 								}
-								eventData->handCardList = battleInfo.playerInfo.handCardList;
+								eventData->handCardList = battleInfo.playerInfo.handCardList;*/
 								KBENGINE_EVENT_FIRE("onSyncLatestBattleState", eventData);
 				}
 
@@ -307,6 +307,7 @@ namespace KBEngine
 				void Avatar::onSyncUpdateActionInfo(const SYNC_MODIFICATION_INFO& modificationInfo)
 				{
 								UKBEventData_onSyncUpdateActionInfo* eventData = NewObject<UKBEventData_onSyncUpdateActionInfo>();
+								/*
 								eventData->actionSequence = modificationInfo.actionSequence;
 								for (int32 i = 0; i < modificationInfo.updateCardList.Num(); i++)
 								{
@@ -365,6 +366,7 @@ namespace KBEngine
 												gridInfo.avatarId = FString::Printf(TEXT("%lld"), modificationInfo.updateGridList[i].avatarId);
 												eventData->gridInfos.Add(gridInfo);
 								}
+								*/
 								KBENGINE_EVENT_FIRE("onSyncUpdateActionInfo", eventData);
 				}
 

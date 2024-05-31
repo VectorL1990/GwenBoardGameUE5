@@ -132,42 +132,6 @@ inline bool operator ==(const ENTITYID_LIST& a, const ENTITYID_LIST& b)
 	return a == b;
 };
 
-class BAG
-{
-public:
-	TArray<TArray<int64>> values22;
-
-	BAG():
-	values22()
-	{
-	}
-
-};
-
-inline bool operator ==(const BAG& a, const BAG& b)
-{
-	return a.values22 == b.values22;
-};
-
-class EXAMPLES
-{
-public:
-	int64 k1;
-	int64 k2;
-
-	EXAMPLES():
-	k1(0),
-	k2(0)
-	{
-	}
-
-};
-
-inline bool operator ==(const EXAMPLES& a, const EXAMPLES& b)
-{
-	return a.k1 == b.k1 && a.k2 == b.k2;
-};
-
 class TEST_ENTITY_PROPS
 {
 public:
@@ -183,69 +147,6 @@ public:
 inline bool operator ==(const TEST_ENTITY_PROPS& a, const TEST_ENTITY_PROPS& b)
 {
 	return a.test1 == b.test1;
-};
-
-class PLAYER_ACTION
-{
-public:
-	uint8 actionType;
-	FString playCardName;
-	int32 targetGridNb;
-
-	PLAYER_ACTION():
-	actionType(0),
-	playCardName(),
-	targetGridNb(0)
-	{
-	}
-
-};
-
-inline bool operator ==(const PLAYER_ACTION& a, const PLAYER_ACTION& b)
-{
-	return a.actionType == b.actionType && a.playCardName == b.playCardName && a.targetGridNb == b.targetGridNb;
-};
-
-class UPDATE_GRID_INFO
-{
-public:
-	int32 gridNb;
-	int32 cardUid;
-	FString updateType;
-	int32 updateValue;
-
-	UPDATE_GRID_INFO():
-	gridNb(0),
-	cardUid(0),
-	updateType(),
-	updateValue(0)
-	{
-	}
-
-};
-
-inline bool operator ==(const UPDATE_GRID_INFO& a, const UPDATE_GRID_INFO& b)
-{
-	return a.gridNb == b.gridNb && a.cardUid == b.cardUid && a.updateType == b.updateType && a.updateValue == b.updateValue;
-};
-
-class UPDATE_GRID_INFO_LIST
-{
-public:
-	int32 updateId;
-	TArray<UPDATE_GRID_INFO> updateGridList;
-
-	UPDATE_GRID_INFO_LIST():
-	updateId(0),
-	updateGridList()
-	{
-	}
-
-};
-
-inline bool operator ==(const UPDATE_GRID_INFO_LIST& a, const UPDATE_GRID_INFO_LIST& b)
-{
-	return a.updateId == b.updateId && a.updateGridList == b.updateGridList;
 };
 
 class STATE_INFO
@@ -290,39 +191,57 @@ inline bool operator ==(const SYNC_EFFECT_INFO& a, const SYNC_EFFECT_INFO& b)
 	return a.effectName == b.effectName && a.countDown == b.countDown && a.availableTimes == b.availableTimes;
 };
 
-class BATTLE_GRID_INFO
+class BATTLE_GRID_ROW_INFO
 {
 public:
-	int32 gridNb;
-	FString cardUid;
-	FString cardName;
-	uint8 hp;
-	uint8 defence;
-	uint8 agility;
-	TArray<FString> tags;
-	TArray<STATE_INFO> stateTags;
-	TArray<SYNC_EFFECT_INFO> effectInfos;
-	uint64 avatarId;
+	TArray<FString> cols;
 
-	BATTLE_GRID_INFO():
-	gridNb(0),
-	cardUid(),
-	cardName(),
-	hp(0),
-	defence(0),
-	agility(0),
-	tags(),
-	stateTags(),
-	effectInfos(),
-	avatarId(0)
+	BATTLE_GRID_ROW_INFO():
+	cols()
 	{
 	}
 
 };
 
-inline bool operator ==(const BATTLE_GRID_INFO& a, const BATTLE_GRID_INFO& b)
+inline bool operator ==(const BATTLE_GRID_ROW_INFO& a, const BATTLE_GRID_ROW_INFO& b)
 {
-	return a.gridNb == b.gridNb && a.cardUid == b.cardUid && a.cardName == b.cardName && a.hp == b.hp && a.defence == b.defence && a.agility == b.agility && a.tags == b.tags && a.stateTags == b.stateTags && a.effectInfos == b.effectInfos && a.avatarId == b.avatarId;
+	return a.cols == b.cols;
+};
+
+class BATTLE_BOARD_INFO
+{
+public:
+	TArray<BATTLE_GRID_ROW_INFO> rows;
+
+	BATTLE_BOARD_INFO():
+	rows()
+	{
+	}
+
+};
+
+inline bool operator ==(const BATTLE_BOARD_INFO& a, const BATTLE_BOARD_INFO& b)
+{
+	return a.rows == b.rows;
+};
+
+class BATTLE_GRID_STRING_STATE
+{
+public:
+	int32 gridNb;
+	FString gridState;
+
+	BATTLE_GRID_STRING_STATE():
+	gridNb(0),
+	gridState()
+	{
+	}
+
+};
+
+inline bool operator ==(const BATTLE_GRID_STRING_STATE& a, const BATTLE_GRID_STRING_STATE& b)
+{
+	return a.gridNb == b.gridNb && a.gridState == b.gridState;
 };
 
 class SYNC_CARD_INFO
@@ -382,7 +301,7 @@ public:
 	uint8 curControllerNb;
 	uint64 curControllerAvatarId;
 	int32 curActionSequence;
-	TArray<BATTLE_GRID_INFO> updateList;
+	BATTLE_BOARD_INFO updateList;
 	SYNC_PLAYER_BATTLE_INFO playerInfo;
 
 	CORE_UPDATE_BATLLE_INFO():
@@ -425,7 +344,7 @@ class SYNC_MODIFICATION_INFO
 {
 public:
 	int32 actionSequence;
-	TArray<BATTLE_GRID_INFO> updateGridList;
+	TArray<BATTLE_GRID_STRING_STATE> updateGridList;
 	TArray<SYNC_CARD_INFO> updateCardList;
 
 	SYNC_MODIFICATION_INFO():

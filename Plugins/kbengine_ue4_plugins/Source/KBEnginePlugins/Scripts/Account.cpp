@@ -10,6 +10,7 @@ namespace KBEngine
 
     Account::Account() : AccountBase()
     {
+        
     }
 
     Account::~Account()
@@ -48,6 +49,7 @@ namespace KBEngine
 
     void Account::reqTest(int32 param)
     {
+        GEngine->AddOnScreenDebugMessage(-1, 10.0, FColor::Cyan, "Account reqTest message has already sent to server");
         pBaseEntityCall->reqTest(param);
     }
 
@@ -59,6 +61,11 @@ namespace KBEngine
     void Account::ReqMatch()
     {
         pBaseEntityCall->reqMatch();
+    }
+
+    void Account::onAccountClientEnabled()
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 10.0, FColor::Red, "Receive onAccountClientEnabled message");
     }
 
     void Account::onReqTest(int32 param)

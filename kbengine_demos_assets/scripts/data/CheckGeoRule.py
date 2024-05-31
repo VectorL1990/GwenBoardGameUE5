@@ -827,9 +827,6 @@ def DevourNextSpawnArbitrary(stateList, x, y, targetX, targetY, selfOrOppoCamp, 
 
 
 rule_dict = {
-	'FormationVShoot': FormationVShoot,
-	'LineObstacleSwap': LineObstacleSwap,
-	'HurtRandomOppoFirstRow': HurtRandomOppoFirstRow
 }
 
 #result = test_dict['test']('Alice',1,1)

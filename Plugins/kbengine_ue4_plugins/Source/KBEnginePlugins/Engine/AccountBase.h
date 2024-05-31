@@ -27,6 +27,7 @@ public:
 	EntityCellEntityCall_AccountBase* pCellEntityCall;
 
 
+	virtual void onAccountClientEnabled() = 0; 
 	virtual void onReqTest(int32 arg1) = 0; 
 	virtual void onSyncRoomCreated(uint64 arg1) = 0; 
 

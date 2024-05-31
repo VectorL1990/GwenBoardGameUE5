@@ -1,6 +1,6 @@
 import random
 import GlobalConst
-from CheckGeoRule import geoRuleDict
+from CheckGeoRule import rule_dict
 
 def GetPlayCardActionId(stateList, targetX, targetY):
 	sdf
@@ -32,7 +32,7 @@ def GetPossibleMove(stateList, x, y):
 			else:
 				moveGridStateStrs = moveGridState.split('/')
 				if moveGridStateStrs[3] == "Teleport":
-					if geoRuleDict["Teleport"](x, y, x, y + i) == True:
+					if rule_dict["Teleport"](x, y, x, y + i) == True:
 						actionId = GetMoveActionId(stateList, x, y, x, y + i)
 						actionIds.append(actionId)
 				yPlus = False
@@ -44,7 +44,7 @@ def GetPossibleMove(stateList, x, y):
 			else:
 				moveGridStateStrs = moveGridState.split('/')
 				if moveGridStateStrs[3] == "Teleport":
-					if geoRuleDict["Teleport"](x, y, x, y - i) == True:
+					if rule_dict["Teleport"](x, y, x, y - i) == True:
 						actionId = GetMoveActionId(stateList, x, y, x, y - i)
 						actionIds.append(actionId)
 				yNeg = False
@@ -56,7 +56,7 @@ def GetPossibleMove(stateList, x, y):
 			else:
 				moveGridStateStrs = moveGridState.split('/')
 				if moveGridStateStrs[3] == "Teleport":
-					if geoRuleDict["Teleport"](x, y, x + i, y) == True:
+					if rule_dict["Teleport"](x, y, x + i, y) == True:
 						actionId = GetMoveActionId(stateList, x, y, x + i, y)
 						actionIds.append(actionId)
 				xPlus = False
@@ -68,7 +68,7 @@ def GetPossibleMove(stateList, x, y):
 			else:
 				moveGridStateStrs = moveGridState.split('/')
 				if moveGridStateStrs[3] == "Teleport":
-					if geoRuleDict["Teleport"](x, y, x - i, y) == True:
+					if rule_dict["Teleport"](x, y, x - i, y) == True:
 						actionId = GetMoveActionId(stateList, x, y, x - i, y)
 						actionIds.append(actionId)
 				xNeg = False
@@ -76,36 +76,12 @@ def GetPossibleMove(stateList, x, y):
 
 
 def GetLegalSkillAction(stateList, x, y, targetGeoRule, selfOppoCampFlag, distance):
-	sdf
+	return False
 
-def DevourNextSpawnFar(stateList, x, y, selfOrOppoCamp, distance):
-	actionIds = []
-	if stateList[y][x] == "--":
-		return False
-	else:
-		if stateList[y][x + 1] != "--":
-			stateList[]
-		upLegality = geoRuleDict["DevourNextSpawnFar"](stateList, x, y, x, y + 1, selfOrOppoCamp, distance)
-		downLegality = geoRuleDict["DevourNextSpawnFar"](stateList, x, y, x, y - 1, selfOrOppoCamp, distance)
-		rightLegality = geoRuleDict["DevourNextSpawnFar"](stateList, x, y, x + 1, y, selfOrOppoCamp, distance)
-		leftLegality = geoRuleDict["DevourNextSpawnFar"](stateList, x, y, x - 1, y, selfOrOppoCamp, distance)
-		if upLegality == True:
-			actionId = GetLaunchSkillActionId(stateList, x, y, x, y + 1)
-			actionIds.append(actionId)
-		if downLegality == True:
-			actionId = GetLaunchSkillActionId(stateList, x, y, x, y - 1)
-			actionIds.append(actionId)
-		if rightLegality == True:
-			actionId = GetLaunchSkillActionId(stateList, x, y, x + 1, y)
-			actionIds.append(actionId)
-		if leftLegality == True:
-			actionId = GetLaunchSkillActionId(stateList, x, y, x - 1, y)
-			actionIds.append(actionId)
-		return True, actionIds
 
 
 def SpawnBulletForward(state_list, x, y, effectInfo):
-	sdf
+	return False
 
 
 
@@ -116,13 +92,13 @@ def TriangleSeperated(state_list, x, y, effectInfo):
 	else:
 		for i in range(2, effectInfo["effectValues"]["distance"] + 1, 1):
 			# top left direction
-			leftLegality = geoRuleDict["TriangleSeperated"](state_list, x, y, x - i, y, effectInfo)
+			leftLegality = rule_dict["TriangleSeperated"](state_list, x, y, x - i, y, effectInfo)
 			# bottom left direciton
-			rightLegality = geoRuleDict["TriangleSeperated"](state_list, x, y, x + i, y, effectInfo)
+			rightLegality = rule_dict["TriangleSeperated"](state_list, x, y, x + i, y, effectInfo)
 			# top right direciton
-			downLegality = geoRuleDict["TriangleSeperated"](state_list, x, y, x, y - i, effectInfo)
+			downLegality = rule_dict["TriangleSeperated"](state_list, x, y, x, y - i, effectInfo)
 			# bottom right direciton
-			upLegality = geoRuleDict["TriangleSeperated"](state_list, x, y, x, y + i, effectInfo)
+			upLegality = rule_dict["TriangleSeperated"](state_list, x, y, x, y + i, effectInfo)
 
 			if leftLegality == True:
 				actionId = GetLaunchSkillActionId(state_list, x, y, x - i, y)
@@ -204,9 +180,9 @@ def LinkGrid(state_list, x, y, effectInfo):
 		search_oppo_flag = effectInfo["effectValues"]["values"][1]
 		searched_list = []
 		if search_oppo_flag == 1:
-			geoRuleDict["SearchLink"](state_list, x, y, launchCamp, True, searched_list)
+			rule_dict["SearchLink"](state_list, x, y, launchCamp, True, searched_list)
 		else:
-			geoRuleDict["SearchLink"](state_list, x, y, launchCamp, False, searched_list)
+			rule_dict["SearchLink"](state_list, x, y, launchCamp, False, searched_list)
 		for grid in searched_list:
 			splitStrs = grid.split('_')
 			targetY = int(splitStrs[0])
@@ -238,13 +214,13 @@ def HornHurtDiagonal(state_list, x, y, effectInfo):
 	else:
 		for i in range(1, effectInfo["effectValues"]["distance"] + 1, 1):
 			# top left direction
-			TLLegality = geoRuleDict["HornHurtDiagonal"](state_list, x, y, x - i, y + i, effectInfo)
+			TLLegality = rule_dict["HornHurtDiagonal"](state_list, x, y, x - i, y + i, effectInfo)
 			# bottom left direciton
-			BLLegality = geoRuleDict["HornHurtDiagonal"](state_list, x, y, x - i, y - i, effectInfo)
+			BLLegality = rule_dict["HornHurtDiagonal"](state_list, x, y, x - i, y - i, effectInfo)
 			# top right direciton
-			TRLegality = geoRuleDict["HornHurtDiagonal"](state_list, x, y, x + i, y + i, effectInfo)
+			TRLegality = rule_dict["HornHurtDiagonal"](state_list, x, y, x + i, y + i, effectInfo)
 			# bottom right direciton
-			BRLegality = geoRuleDict["HornHurtDiagonal"](state_list, x, y, x + i, y - i, effectInfo)
+			BRLegality = rule_dict["HornHurtDiagonal"](state_list, x, y, x + i, y - i, effectInfo)
 
 			if TLLegality == True:
 				actionId = GetLaunchSkillActionId(state_list, x, y, x - i, y + i)
@@ -263,10 +239,7 @@ def HornHurtDiagonal(state_list, x, y, effectInfo):
 
 		
 
-legalSkillActionsDict = {
-	'FormationVShoot': FormationVShoot,
-	'LineObstacleSwap': LineObstacleSwap,
-	'HurtRandomOppoFirstRow': HurtRandomOppoFirstRow
+actionIdConverterDict = {
 }
 
 #result = test_dict['test']('Alice',1,1)

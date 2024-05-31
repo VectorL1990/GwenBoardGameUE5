@@ -44,8 +44,7 @@ def CheckTagNext(stateList, x, y, targetX, targetY, targetTag, prereqTagNb, self
 
 
 checkPrereqTagRuleDict = {
-	'CheckTagOnBoard': CheckTagOnBoard,
-	'Seperate': Seperate,
-	'Diagonal': Diagonal,
-	"DiagonalSeperate": DiagonalSeperate
+	"CheckTagOnBoard": CheckTagOnBoard,
+	"CheckTagOnTarget": CheckTagOnTarget,
+	"CheckTagNext": CheckTagNext
 }

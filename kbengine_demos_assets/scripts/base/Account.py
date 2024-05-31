@@ -46,6 +46,7 @@ class Account(KBEngine.Proxy):
 	def onClientEnabled(self):
 		INFO_MSG("Account[%i]::onClientEnabled:entities enable. entityCall:%s, clientType(%i), clientDatas=(%s), hasAvatar=%s, accountName=%s" % \
 			(self.id, self.client, self.getClientType(), self.getClientDatas(), self.activeAvatar, self.__ACCOUNT_NAME__))
+		self.client.onAccountClientEnabled()
 			
 	def onLogOnAttempt(self, ip, port, password):
 		INFO_MSG("Account[%i]::onLogOnAttempt: ip=%s, port=%i, selfclient=%s" % (self.id, ip, port, self.client))

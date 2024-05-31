@@ -69,8 +69,9 @@ def sameColSelfHpLessOppo(stateList, x, y, targetX, targetY, launchCampNb, selfO
 		return False
 
 checkPrereqRuleDict = {
-	'Line': Line,
-	'Seperate': Seperate,
-	'Diagonal': Diagonal,
-	"DiagonalSeperate": DiagonalSeperate
+	"SelfBeHeal": SelfBeHeal,
+	"sameRowSelfHpMoreOppo": sameRowSelfHpMoreOppo,
+	"sameRowSelfHpLessOppo": sameRowSelfHpLessOppo,
+	"sameColSelfHpMoreOppo": sameColSelfHpMoreOppo,
+	"sameColSelfHpLessOppo": sameColSelfHpLessOppo
 }

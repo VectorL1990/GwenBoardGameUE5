@@ -30,131 +30,11 @@ public:
 };
 
 
-class KBENGINEPLUGINS_API DATATYPE_BAG : DATATYPE_BASE
-{
-public:
-	class KBENGINEPLUGINS_API DATATYPE__BAG_values22_ArrayType_ChildArray : public DATATYPE_BASE
-	{
-	public:
-		class KBENGINEPLUGINS_API DATATYPE___BAG_values22_ArrayType_ArrayType_ChildArray : public DATATYPE_BASE
-		{
-		public:
-			void createFromStreamEx(MemoryStream& stream, TArray<int64>& datas)
-			{
-				uint32 size = stream.readUint32();
-				while(size > 0)
-				{
-					--size;
-					datas.Add(stream.readInt64());
-				};
-
-			}
-
-			void addToStreamEx(Bundle& stream, const TArray<int64>& v)
-			{
-				stream.writeUint32((uint32)v.Num());
-				for(int i=0; i<v.Num(); ++i)
-				{
-					stream.writeInt64(v[i]);
-				};
-			}
-		};
-
-		DATATYPE___BAG_values22_ArrayType_ArrayType_ChildArray itemType;
-
-		void createFromStreamEx(MemoryStream& stream, TArray<TArray<int64>>& datas)
-		{
-			uint32 size = stream.readUint32();
-			while(size > 0)
-			{
-				--size;
-				itemType.createFromStreamEx(stream, datas.EmplaceAt_GetRef(datas.Num()));
-			};
-
-		}
-
-		void addToStreamEx(Bundle& stream, const TArray<TArray<int64>>& v)
-		{
-			stream.writeUint32((uint32)v.Num());
-			for(int i=0; i<v.Num(); ++i)
-			{
-				itemType.addToStreamEx(stream, v[i]);
-			};
-		}
-	};
-
-	DATATYPE__BAG_values22_ArrayType_ChildArray values22_DataType;
-
-	void createFromStreamEx(MemoryStream& stream, BAG& datas);
-	void addToStreamEx(Bundle& stream, const BAG& v);
-};
-
-
-class KBENGINEPLUGINS_API DATATYPE_EXAMPLES : DATATYPE_BASE
-{
-public:
-	void createFromStreamEx(MemoryStream& stream, EXAMPLES& datas);
-	void addToStreamEx(Bundle& stream, const EXAMPLES& v);
-};
-
-
 class KBENGINEPLUGINS_API DATATYPE_TEST_ENTITY_PROPS : DATATYPE_BASE
 {
 public:
 	void createFromStreamEx(MemoryStream& stream, TEST_ENTITY_PROPS& datas);
 	void addToStreamEx(Bundle& stream, const TEST_ENTITY_PROPS& v);
-};
-
-
-class KBENGINEPLUGINS_API DATATYPE_PLAYER_ACTION : DATATYPE_BASE
-{
-public:
-	void createFromStreamEx(MemoryStream& stream, PLAYER_ACTION& datas);
-	void addToStreamEx(Bundle& stream, const PLAYER_ACTION& v);
-};
-
-
-class KBENGINEPLUGINS_API DATATYPE_UPDATE_GRID_INFO : DATATYPE_BASE
-{
-public:
-	void createFromStreamEx(MemoryStream& stream, UPDATE_GRID_INFO& datas);
-	void addToStreamEx(Bundle& stream, const UPDATE_GRID_INFO& v);
-};
-
-
-class KBENGINEPLUGINS_API DATATYPE_UPDATE_GRID_INFO_LIST : DATATYPE_BASE
-{
-public:
-	class KBENGINEPLUGINS_API DATATYPE__UPDATE_GRID_INFO_LIST_updateGridList_ArrayType_ChildArray : public DATATYPE_BASE
-	{
-	public:
-		DATATYPE_UPDATE_GRID_INFO itemType;
-
-		void createFromStreamEx(MemoryStream& stream, TArray<UPDATE_GRID_INFO>& datas)
-		{
-			uint32 size = stream.readUint32();
-			while(size > 0)
-			{
-				--size;
-				itemType.createFromStreamEx(stream, datas.EmplaceAt_GetRef(datas.Num()));
-			};
-
-		}
-
-		void addToStreamEx(Bundle& stream, const TArray<UPDATE_GRID_INFO>& v)
-		{
-			stream.writeUint32((uint32)v.Num());
-			for(int i=0; i<v.Num(); ++i)
-			{
-				itemType.addToStreamEx(stream, v[i]);
-			};
-		}
-	};
-
-	DATATYPE__UPDATE_GRID_INFO_LIST_updateGridList_ArrayType_ChildArray updateGridList_DataType;
-
-	void createFromStreamEx(MemoryStream& stream, UPDATE_GRID_INFO_LIST& datas);
-	void addToStreamEx(Bundle& stream, const UPDATE_GRID_INFO_LIST& v);
 };
 
 
@@ -174,10 +54,10 @@ public:
 };
 
 
-class KBENGINEPLUGINS_API DATATYPE_BATTLE_GRID_INFO : DATATYPE_BASE
+class KBENGINEPLUGINS_API DATATYPE_BATTLE_GRID_ROW_INFO : DATATYPE_BASE
 {
 public:
-	class KBENGINEPLUGINS_API DATATYPE__BATTLE_GRID_INFO_tags_ArrayType_ChildArray : public DATATYPE_BASE
+	class KBENGINEPLUGINS_API DATATYPE__BATTLE_GRID_ROW_INFO_cols_ArrayType_ChildArray : public DATATYPE_BASE
 	{
 	public:
 		void createFromStreamEx(MemoryStream& stream, TArray<FString>& datas)
@@ -201,14 +81,22 @@ public:
 		}
 	};
 
-	DATATYPE__BATTLE_GRID_INFO_tags_ArrayType_ChildArray tags_DataType;
+	DATATYPE__BATTLE_GRID_ROW_INFO_cols_ArrayType_ChildArray cols_DataType;
 
-	class KBENGINEPLUGINS_API DATATYPE__BATTLE_GRID_INFO_stateTags_ArrayType_ChildArray : public DATATYPE_BASE
+	void createFromStreamEx(MemoryStream& stream, BATTLE_GRID_ROW_INFO& datas);
+	void addToStreamEx(Bundle& stream, const BATTLE_GRID_ROW_INFO& v);
+};
+
+
+class KBENGINEPLUGINS_API DATATYPE_BATTLE_BOARD_INFO : DATATYPE_BASE
+{
+public:
+	class KBENGINEPLUGINS_API DATATYPE__BATTLE_BOARD_INFO_rows_ArrayType_ChildArray : public DATATYPE_BASE
 	{
 	public:
-		DATATYPE_STATE_INFO itemType;
+		DATATYPE_BATTLE_GRID_ROW_INFO itemType;
 
-		void createFromStreamEx(MemoryStream& stream, TArray<STATE_INFO>& datas)
+		void createFromStreamEx(MemoryStream& stream, TArray<BATTLE_GRID_ROW_INFO>& datas)
 		{
 			uint32 size = stream.readUint32();
 			while(size > 0)
@@ -219,7 +107,7 @@ public:
 
 		}
 
-		void addToStreamEx(Bundle& stream, const TArray<STATE_INFO>& v)
+		void addToStreamEx(Bundle& stream, const TArray<BATTLE_GRID_ROW_INFO>& v)
 		{
 			stream.writeUint32((uint32)v.Num());
 			for(int i=0; i<v.Num(); ++i)
@@ -229,38 +117,18 @@ public:
 		}
 	};
 
-	DATATYPE__BATTLE_GRID_INFO_stateTags_ArrayType_ChildArray stateTags_DataType;
+	DATATYPE__BATTLE_BOARD_INFO_rows_ArrayType_ChildArray rows_DataType;
 
-	class KBENGINEPLUGINS_API DATATYPE__BATTLE_GRID_INFO_effectInfos_ArrayType_ChildArray : public DATATYPE_BASE
-	{
-	public:
-		DATATYPE_SYNC_EFFECT_INFO itemType;
+	void createFromStreamEx(MemoryStream& stream, BATTLE_BOARD_INFO& datas);
+	void addToStreamEx(Bundle& stream, const BATTLE_BOARD_INFO& v);
+};
 
-		void createFromStreamEx(MemoryStream& stream, TArray<SYNC_EFFECT_INFO>& datas)
-		{
-			uint32 size = stream.readUint32();
-			while(size > 0)
-			{
-				--size;
-				itemType.createFromStreamEx(stream, datas.EmplaceAt_GetRef(datas.Num()));
-			};
 
-		}
-
-		void addToStreamEx(Bundle& stream, const TArray<SYNC_EFFECT_INFO>& v)
-		{
-			stream.writeUint32((uint32)v.Num());
-			for(int i=0; i<v.Num(); ++i)
-			{
-				itemType.addToStreamEx(stream, v[i]);
-			};
-		}
-	};
-
-	DATATYPE__BATTLE_GRID_INFO_effectInfos_ArrayType_ChildArray effectInfos_DataType;
-
-	void createFromStreamEx(MemoryStream& stream, BATTLE_GRID_INFO& datas);
-	void addToStreamEx(Bundle& stream, const BATTLE_GRID_INFO& v);
+class KBENGINEPLUGINS_API DATATYPE_BATTLE_GRID_STRING_STATE : DATATYPE_BASE
+{
+public:
+	void createFromStreamEx(MemoryStream& stream, BATTLE_GRID_STRING_STATE& datas);
+	void addToStreamEx(Bundle& stream, const BATTLE_GRID_STRING_STATE& v);
 };
 
 
@@ -419,34 +287,7 @@ public:
 class KBENGINEPLUGINS_API DATATYPE_CORE_UPDATE_BATLLE_INFO : DATATYPE_BASE
 {
 public:
-	class KBENGINEPLUGINS_API DATATYPE__CORE_UPDATE_BATLLE_INFO_updateList_ArrayType_ChildArray : public DATATYPE_BASE
-	{
-	public:
-		DATATYPE_BATTLE_GRID_INFO itemType;
-
-		void createFromStreamEx(MemoryStream& stream, TArray<BATTLE_GRID_INFO>& datas)
-		{
-			uint32 size = stream.readUint32();
-			while(size > 0)
-			{
-				--size;
-				itemType.createFromStreamEx(stream, datas.EmplaceAt_GetRef(datas.Num()));
-			};
-
-		}
-
-		void addToStreamEx(Bundle& stream, const TArray<BATTLE_GRID_INFO>& v)
-		{
-			stream.writeUint32((uint32)v.Num());
-			for(int i=0; i<v.Num(); ++i)
-			{
-				itemType.addToStreamEx(stream, v[i]);
-			};
-		}
-	};
-
-	DATATYPE__CORE_UPDATE_BATLLE_INFO_updateList_ArrayType_ChildArray updateList_DataType;
-
+	DATATYPE_BATTLE_BOARD_INFO updateList_DataType;
 	DATATYPE_SYNC_PLAYER_BATTLE_INFO playerInfo_DataType;
 	void createFromStreamEx(MemoryStream& stream, CORE_UPDATE_BATLLE_INFO& datas);
 	void addToStreamEx(Bundle& stream, const CORE_UPDATE_BATLLE_INFO& v);
@@ -467,9 +308,9 @@ public:
 	class KBENGINEPLUGINS_API DATATYPE__SYNC_MODIFICATION_INFO_updateGridList_ArrayType_ChildArray : public DATATYPE_BASE
 	{
 	public:
-		DATATYPE_BATTLE_GRID_INFO itemType;
+		DATATYPE_BATTLE_GRID_STRING_STATE itemType;
 
-		void createFromStreamEx(MemoryStream& stream, TArray<BATTLE_GRID_INFO>& datas)
+		void createFromStreamEx(MemoryStream& stream, TArray<BATTLE_GRID_STRING_STATE>& datas)
 		{
 			uint32 size = stream.readUint32();
 			while(size > 0)
@@ -480,7 +321,7 @@ public:
 
 		}
 
-		void addToStreamEx(Bundle& stream, const TArray<BATTLE_GRID_INFO>& v)
+		void addToStreamEx(Bundle& stream, const TArray<BATTLE_GRID_STRING_STATE>& v)
 		{
 			stream.writeUint32((uint32)v.Num());
 			for(int i=0; i<v.Num(); ++i)
