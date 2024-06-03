@@ -35,6 +35,21 @@ class Account(KBEngine.Proxy):
 		DEBUG_MSG("Account::reqMatch: entityID=%i" % (self.id))
 		KBEngine.globalData["Hall"].applyMatch(self)
 
+	def reqModifyCardGroup(self, cardGroupNb, cardGroup):
+		#newCardGroup = {
+		#	"stringList": ["aaa", "kkk", "ooo"]
+		#}
+		#self.persistPlayerInfo["persistCardList"].append(newCardGroup)
+		'''
+		if cardGroupNb >= len(self.persistPlayerInfo["persistCardList"]):
+			self.persistPlayerInfo["persistCardList"].append(cardGroup)
+			#self.persistPlayerInfo["persistCardList"][cardGroupNb] = cardGroup["stringList"]
+		else:
+			self.persistPlayerInfo["persistCardList"][cardGroupNb] = cardGroup
+		self.writeToDB()
+		'''
+		return
+
 	def syncRoomCreated(self, roomKey):
 		self.roomKey = roomKey
 		self.onSyncRoomCreated(roomKey)
@@ -46,7 +61,21 @@ class Account(KBEngine.Proxy):
 	def onClientEnabled(self):
 		INFO_MSG("Account[%i]::onClientEnabled:entities enable. entityCall:%s, clientType(%i), clientDatas=(%s), hasAvatar=%s, accountName=%s" % \
 			(self.id, self.client, self.getClientType(), self.getClientDatas(), self.activeAvatar, self.__ACCOUNT_NAME__))
-		self.client.onAccountClientEnabled()
+		allPersistCardGroup = {
+			"persistCardList": [],
+			"campNb": 0
+		}
+		defaultRomeCardGroup = {
+			"stringList": GlobalConst.defaultRomeCardGroup
+		}
+		defaultHanCardGroup = {
+			"stringList": GlobalConst.defaultHanCardGroup
+		}
+		allPersistCardGroup["persistCardList"].append(defaultRomeCardGroup)
+		allPersistCardGroup["persistCardList"].append(defaultHanCardGroup)
+		for i in range(len(self.persistPlayerInfo["persistCardList"])):
+			allPersistCardGroup["persistCardList"].append(self.persistPlayerInfo["persistCardList"][i])
+		self.client.onAccountClientEnabled(allPersistCardGroup)
 			
 	def onLogOnAttempt(self, ip, port, password):
 		INFO_MSG("Account[%i]::onLogOnAttempt: ip=%s, port=%i, selfclient=%s" % (self.id, ip, port, self.client))
@@ -105,7 +134,6 @@ class Account(KBEngine.Proxy):
 		
 		avatar.accountEntity = self
 		avatar.roomEntityCall = KBEngine.globalData["Hall"].rooms[self.roomKey]
-		#avatar.persistPlayerInfo = self.persistPlayerInfo
 		avatar.persistPlayerInfo = {
 			"persistCardList" : ["DustyRanger", 
 				"BlackGuard", 

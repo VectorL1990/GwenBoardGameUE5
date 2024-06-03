@@ -182,12 +182,21 @@
 
 	
 
-	
+	<CARD_GROUP> FIXED_DICT
+		<Properties>
+			<stringList>
+				<Type> ARRAY <of>	STRING </of>	</Type>
+			</stringList>
+		</Properties>
+	</CARD_GROUP>
 
 	<PLAYER_PERSIST_INFO> FIXED_DICT
 		<Properties>
+			<selectCardGroup>
+				<Type> UINT8 </Type>
+			</selectCardGroup>
 			<persistCardList>
-				<Type> ARRAY <of>	STRING </of>	</Type>
+				<Type> ARRAY <of>	CARD_GROUP </of>	</Type>
 			</persistCardList>
 			<campNb>
 				<Type>	UINT8	</Type>

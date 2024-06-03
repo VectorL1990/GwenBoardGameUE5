@@ -53,4 +53,6 @@ class GWENBOARDGAMECLIENT_API UGwenBoardGameInstance : public UGameInstance
 				float timeBetweenTicks = 0.008f;
 
 				FString curRoomKey;
+
+				TArray<FString> selectCardList;
 };

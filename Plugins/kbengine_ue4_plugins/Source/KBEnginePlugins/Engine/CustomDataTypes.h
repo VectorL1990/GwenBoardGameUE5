@@ -366,10 +366,10 @@ public:
 };
 
 
-class KBENGINEPLUGINS_API DATATYPE_PLAYER_PERSIST_INFO : DATATYPE_BASE
+class KBENGINEPLUGINS_API DATATYPE_CARD_GROUP : DATATYPE_BASE
 {
 public:
-	class KBENGINEPLUGINS_API DATATYPE__PLAYER_PERSIST_INFO_persistCardList_ArrayType_ChildArray : public DATATYPE_BASE
+	class KBENGINEPLUGINS_API DATATYPE__CARD_GROUP_stringList_ArrayType_ChildArray : public DATATYPE_BASE
 	{
 	public:
 		void createFromStreamEx(MemoryStream& stream, TArray<FString>& datas)
@@ -389,6 +389,42 @@ public:
 			for(int i=0; i<v.Num(); ++i)
 			{
 				stream.writeString(v[i]);
+			};
+		}
+	};
+
+	DATATYPE__CARD_GROUP_stringList_ArrayType_ChildArray stringList_DataType;
+
+	void createFromStreamEx(MemoryStream& stream, CARD_GROUP& datas);
+	void addToStreamEx(Bundle& stream, const CARD_GROUP& v);
+};
+
+
+class KBENGINEPLUGINS_API DATATYPE_PLAYER_PERSIST_INFO : DATATYPE_BASE
+{
+public:
+	class KBENGINEPLUGINS_API DATATYPE__PLAYER_PERSIST_INFO_persistCardList_ArrayType_ChildArray : public DATATYPE_BASE
+	{
+	public:
+		DATATYPE_CARD_GROUP itemType;
+
+		void createFromStreamEx(MemoryStream& stream, TArray<CARD_GROUP>& datas)
+		{
+			uint32 size = stream.readUint32();
+			while(size > 0)
+			{
+				--size;
+				itemType.createFromStreamEx(stream, datas.EmplaceAt_GetRef(datas.Num()));
+			};
+
+		}
+
+		void addToStreamEx(Bundle& stream, const TArray<CARD_GROUP>& v)
+		{
+			stream.writeUint32((uint32)v.Num());
+			for(int i=0; i<v.Num(); ++i)
+			{
+				itemType.addToStreamEx(stream, v[i]);
 			};
 		}
 	};

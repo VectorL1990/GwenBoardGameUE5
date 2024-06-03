@@ -43,6 +43,8 @@ public:
     UFUNCTION()
     void ReqEnterRoom();
 
+    void ReceivePlayerPersistInfo(const UKBEventData* eventData);
+
     UFUNCTION()
     void onCreateAccountResult(const UKBEventData* eventData);
 

@@ -29,6 +29,7 @@ void ABasicGameMode::InitEvents()
 				KBENGINE_REGISTER_EVENT(KBEngine::KBEventTypes::onCreateAccountResult, onCreateAccountResult);
 				KBENGINE_REGISTER_EVENT("onSyncRoomCreated", onSyncRoomCreated);
 				KBENGINE_REGISTER_EVENT("onSyncPlayerBattleInfo", onSyncPlayerBattleInfo);
+				KBENGINE_REGISTER_EVENT("ReceivePlayerPersistInfo", ReceivePlayerPersistInfo);
 }
 
 void ABasicGameMode::onKicked(const UKBEventData* eventData)
@@ -103,6 +104,15 @@ void ABasicGameMode::onSyncPlayerBattleInfo(const UKBEventData* eventData)
 								GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, onSyncPlayerBattleInfoData->cardList[i].cardKey);
 				}
 				//InitPlayerBattleInfoDone(onSyncPlayerBattleInfoData->cardList);
+}
+
+void ABasicGameMode::ReceivePlayerPersistInfo(const UKBEventData* eventData)
+{
+				const UKBEventData_ReceivePlayerPersistInfo* castEventData = Cast<UKBEventData_ReceivePlayerPersistInfo>(eventData);
+				for (int32 i = 0; i < castEventData->cardGroups.Num(); i++)
+				{
+
+				}
 }
 
 void ABasicGameMode::SpawnSelectCard()

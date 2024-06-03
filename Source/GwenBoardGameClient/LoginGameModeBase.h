@@ -21,6 +21,9 @@ public:
 
     void ReqTest();
 
+    UFUNCTION(BlueprintCallable)
+    void ReqModifyCardGroup();
+
     void onReqTest(const UKBEventData* eventData);
 
     

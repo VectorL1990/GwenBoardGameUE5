@@ -175,6 +175,41 @@ public:
 								int32 testParam;
 };
 
+UCLASS(Blueprintable, BlueprintType)
+class KBENGINEPLUGINS_API UKBEventData_ReqModifyCardGroup : public UKBEventData
+{
+				GENERATED_BODY()
+
+public:
+				UPROPERTY(EditAnywhere)
+								int32 groupNb;
+
+				UPROPERTY(EditAnywhere)
+				TArray<FString> cardList;
+};
+
+USTRUCT(BlueprintType)
+struct FCardGroup
+{
+				GENERATED_BODY()
+public:
+				UPROPERTY(EditAnywhere)
+								TArray<FString> cardList;
+};
+
+UCLASS(Blueprintable, BlueprintType)
+class KBENGINEPLUGINS_API UKBEventData_ReceivePlayerPersistInfo : public UKBEventData
+{
+				GENERATED_BODY()
+public:
+				UPROPERTY(EditAnywhere)
+				TArray<FCardGroup> cardGroups;
+};
+
+
+
+
+
 
 
 USTRUCT(BlueprintType)

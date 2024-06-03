@@ -58,3 +58,6 @@ g_demoMaps = {
 	b'kbengine_ogre_demo' : 2,
 	b'' : 1,
 }
+
+defaultRomeCardGroup = ["Vulso", "Vulso", "Vulso"]
+defaultHanCardGroup = ["Tabora", "Tabora", "Tabora"]

@@ -199,6 +199,16 @@ void DATATYPE_SYNC_MODIFICATION_INFO::addToStreamEx(Bundle& stream, const SYNC_M
 	updateCardList_DataType.addToStreamEx(stream, v.updateCardList);
 }
 
+void DATATYPE_CARD_GROUP::createFromStreamEx(MemoryStream& stream, CARD_GROUP& datas)
+{
+	stringList_DataType.createFromStreamEx(stream, datas.stringList);
+}
+
+void DATATYPE_CARD_GROUP::addToStreamEx(Bundle& stream, const CARD_GROUP& v)
+{
+	stringList_DataType.addToStreamEx(stream, v.stringList);
+}
+
 void DATATYPE_PLAYER_PERSIST_INFO::createFromStreamEx(MemoryStream& stream, PLAYER_PERSIST_INFO& datas)
 {
 	persistCardList_DataType.createFromStreamEx(stream, datas.persistCardList);

@@ -361,10 +361,27 @@ inline bool operator ==(const SYNC_MODIFICATION_INFO& a, const SYNC_MODIFICATION
 	return a.actionSequence == b.actionSequence && a.updateGridList == b.updateGridList && a.updateCardList == b.updateCardList;
 };
 
+class CARD_GROUP
+{
+public:
+	TArray<FString> stringList;
+
+	CARD_GROUP():
+	stringList()
+	{
+	}
+
+};
+
+inline bool operator ==(const CARD_GROUP& a, const CARD_GROUP& b)
+{
+	return a.stringList == b.stringList;
+};
+
 class PLAYER_PERSIST_INFO
 {
 public:
-	TArray<FString> persistCardList;
+	TArray<CARD_GROUP> persistCardList;
 	uint8 campNb;
 
 	PLAYER_PERSIST_INFO():

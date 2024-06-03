@@ -9,6 +9,7 @@
 
 	<ClientMethods>
 		<onAccountClientEnabled>
+			<Arg> PLAYER_PERSIST_INFO </Arg>
 		</onAccountClientEnabled>
 
 		<onReqTest>
@@ -33,6 +34,12 @@
 		<reqMatch>
 			<Exposed/>
 		</reqMatch>
+
+		<reqModifyCardGroup>
+			<Exposed/>
+			<Arg> INT32 </Arg>
+			<Arg> CARD_GROUP </Arg>
+		</reqModifyCardGroup>
 	</BaseMethods>
 
 	<CellMethods>

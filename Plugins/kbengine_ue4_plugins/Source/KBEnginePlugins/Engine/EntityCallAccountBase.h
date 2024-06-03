@@ -27,6 +27,7 @@ public:
 	virtual ~EntityBaseEntityCall_AccountBase();
 	void reqEnterRoom();
 	void reqMatch();
+	void reqModifyCardGroup(int32 arg1, const CARD_GROUP& arg2);
 	void reqTest(int32 arg1);
 };
 
