@@ -82,7 +82,7 @@ void ACoreCardGamePC::ShowBattleWidget()
 {
     UUserWidget* widget = CreateWidget(this, battleWidgetBPClass);
     widget->AddToPlayerScreen(-1);
-    battleWidget = Cast<UBattleWidget>(widget);
+    //battleWidget = Cast<UBattleWidget>(widget);
 }
 
 void ACoreCardGamePC::ReceiveFinishCardSelection()

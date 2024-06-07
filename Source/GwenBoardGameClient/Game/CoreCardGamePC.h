@@ -33,7 +33,7 @@ public:
     ACoreCardGameManager* coreCardGameManager;
 
     UPROPERTY(EditDefaultsOnly)
-    TSubclassOf<UBattleWidget> battleWidgetBPClass;
+    TSubclassOf<UUserWidget> battleWidgetBPClass;
 
     UPROPERTY()
     UBattleWidget* battleWidget;
