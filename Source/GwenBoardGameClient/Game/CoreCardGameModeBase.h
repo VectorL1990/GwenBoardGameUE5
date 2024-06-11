@@ -61,11 +61,25 @@ public:
     UPROPERTY(EditDefaultsOnly)
     float gridSpawnCardOffset = 0.1;
 
+    UPROPERTY(EditDefaultsOnly)
+    float cardSelfRotInterval;
+
+    UPROPERTY(EditDefaultsOnly)
+    float spreadCardRotInterval;
+
+    UPROPERTY(EditDefaultsOnly)
+    float spreadCardRotRadius;
+
+    UPROPERTY(EditDefaultsOnly)
+    FVector spreadCardOffset;
+
     TMap<CameraType, ABattleCamera*> camerasMap;
 
 public:
     // --- Main game logic
     void SinglePlayerGameLoop(float dT);
+
+    void CalculateCardSpread();
 
     // --- Local logic functions
     void CheckEntitiesCreated();

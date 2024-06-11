@@ -196,6 +196,56 @@ void ACoreCardGameModeBase::SinglePlayerGameLoop(float dT)
 				}
 }
 
+void ACoreCardGameModeBase::CalculateCardSpread()
+{
+				TArray<float> handCardYawList;
+				for (int32 i = 0; i < handCardKeyList.Num(); i++)
+				{
+								float cardSelfRot = 0.0;
+								float spreadCardRot = 0.0;
+								float spreadCardPositionY = 0.0;
+								if (handCardKeyList.Num() % 2 == 0)
+								{
+												int32 halfCardNum = handCardKeyList.Num() / 2;
+												if (i < halfCardNum)
+												{
+																cardSelfRot = -((float)halfCardNum - (float)i - 0.5) * cardSelfRotInterval;
+																spreadCardRot = -((float)halfCardNum - (float)i - 0.5) * spreadCardRotInterval;
+																spreadCardPositionY = -spreadCardRotRadius * FMath::Cos(spreadCardRot * PI / 180.0);
+												}
+												else
+												{
+																cardSelfRot = ((float)i - (float)halfCardNum + 0.5) * cardSelfRotInterval;
+																spreadCardRot = ((float)i - (float)halfCardNum + 0.5) * spreadCardRotInterval;
+																spreadCardPositionY = spreadCardRotRadius * FMath::Cos(spreadCardRot * PI / 180.0);
+												}
+								}
+								else
+								{
+												int32 halfCardNum = handCardKeyList.Num() / 2;
+												if (i < halfCardNum)
+												{
+																cardSelfRot = -((float)halfCardNum - (float)i) * cardSelfRotInterval;
+																spreadCardRot = -((float)halfCardNum - (float)i) * spreadCardRotInterval;
+																spreadCardPositionY = -spreadCardRotRadius * FMath::Cos(spreadCardRot * PI / 180.0);
+												}
+												else
+												{
+																cardSelfRot = ((float)i - (float)halfCardNum) * cardSelfRotInterval;
+																spreadCardRot = ((float)i - (float)halfCardNum) * spreadCardRotInterval;
+																spreadCardPositionY = spreadCardRotRadius * FMath::Cos(spreadCardRot * PI / 180.0);
+												}
+								}
+								float spreadCardPositionX = spreadCardRotRadius * FMath::Sin(spreadCardRot * PI / 180.0);
+								
+								FVector cardLocation = FVector(spreadCardPositionX, spreadCardPositionY, 0.0);
+								cardLocation -= spreadCardOffset;
+								FTransform cardTransform;
+								cardTransform.SetLocation(cardLocation);
+								
+				}
+}
+
 
 void ACoreCardGameModeBase::CheckEntitiesCreated()
 {
