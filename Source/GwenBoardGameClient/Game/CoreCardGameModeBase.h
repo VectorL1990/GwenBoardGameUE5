@@ -79,6 +79,9 @@ public:
     // --- Main game logic
     void SinglePlayerGameLoop(float dT);
 
+    UPROPERTY()
+    TArray<ACard*> testCards;
+
     void CalculateCardSpread();
 
     // --- Local logic functions

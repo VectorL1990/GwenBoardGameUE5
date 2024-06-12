@@ -13,7 +13,7 @@
 void ACoreCardGamePC::BeginPlay()
 {
     SetShowMouseCursor(true);
-    ShowBattleWidget();
+    //ShowBattleWidget();
 }
 
 void ACoreCardGamePC::Tick(float DeltaTime)

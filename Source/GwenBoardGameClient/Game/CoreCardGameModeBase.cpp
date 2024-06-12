@@ -16,6 +16,7 @@ void ACoreCardGameModeBase::BeginPlay()
 				GetAllPresetObjects();
 				InitPreBattle();
 				CheckEntitiesCreated();
+				CalculateCardSpread();
 }
 
 void ACoreCardGameModeBase::InitEvents()
@@ -199,14 +200,14 @@ void ACoreCardGameModeBase::SinglePlayerGameLoop(float dT)
 void ACoreCardGameModeBase::CalculateCardSpread()
 {
 				TArray<float> handCardYawList;
-				for (int32 i = 0; i < handCardKeyList.Num(); i++)
+				for (int32 i = 0; i < 10; i++)
 				{
 								float cardSelfRot = 0.0;
 								float spreadCardRot = 0.0;
 								float spreadCardPositionY = 0.0;
-								if (handCardKeyList.Num() % 2 == 0)
+								if (10 % 2 == 0)
 								{
-												int32 halfCardNum = handCardKeyList.Num() / 2;
+												int32 halfCardNum = 10 / 2;
 												if (i < halfCardNum)
 												{
 																cardSelfRot = -((float)halfCardNum - (float)i - 0.5) * cardSelfRotInterval;
@@ -222,7 +223,7 @@ void ACoreCardGameModeBase::CalculateCardSpread()
 								}
 								else
 								{
-												int32 halfCardNum = handCardKeyList.Num() / 2;
+												int32 halfCardNum = 10 / 2;
 												if (i < halfCardNum)
 												{
 																cardSelfRot = -((float)halfCardNum - (float)i) * cardSelfRotInterval;
@@ -238,11 +239,12 @@ void ACoreCardGameModeBase::CalculateCardSpread()
 								}
 								float spreadCardPositionX = spreadCardRotRadius * FMath::Sin(spreadCardRot * PI / 180.0);
 								
-								FVector cardLocation = FVector(spreadCardPositionX, spreadCardPositionY, 0.0);
+								FVector cardLocation = FVector(spreadCardPositionX, spreadCardPositionY, 500.0);
 								cardLocation -= spreadCardOffset;
-								FTransform cardTransform;
-								cardTransform.SetLocation(cardLocation);
+								FRotator cardRotation = FRotator(0.0, spreadCardRot, 0.0);
 								
+								ACard* card = GetWorld()->SpawnActor<ACard>(cardBPClass, cardLocation, cardRotation);
+								testCards.Add(card);
 				}
 }
 
@@ -290,7 +292,7 @@ void ACoreCardGameModeBase::InitPreBattle()
 {
 				APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
 				ACoreCardGamePC* coreCardGamePC = Cast<ACoreCardGamePC>(playerController);
-				coreCardGamePC->InitSelectCardCamera();
+				//coreCardGamePC->InitSelectCardCamera();
 }
 
 void ACoreCardGameModeBase::CalibrateGridInfos(TArray<FBATTLE_GRID_INFO> gridInfos)
