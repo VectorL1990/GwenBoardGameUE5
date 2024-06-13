@@ -71,6 +71,12 @@ public:
     float spreadCardRotRadius;
 
     UPROPERTY(EditDefaultsOnly)
+    float spreadCardHeight;
+
+    UPROPERTY(EditDefaultsOnly)
+    float spreadCardStepHeight;
+
+    UPROPERTY(EditDefaultsOnly)
     FVector spreadCardOffset;
 
     TMap<CameraType, ABattleCamera*> camerasMap;

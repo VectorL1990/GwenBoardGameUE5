@@ -208,7 +208,7 @@ void ACoreCardGameModeBase::CalculateCardSpread()
 								if (10 % 2 == 0)
 								{
 												int32 halfCardNum = 10 / 2;
-												if (i < halfCardNum)
+												if (i <= halfCardNum)
 												{
 																cardSelfRot = -((float)halfCardNum - (float)i - 0.5) * cardSelfRotInterval;
 																spreadCardRot = -((float)halfCardNum - (float)i - 0.5) * spreadCardRotInterval;
@@ -218,13 +218,13 @@ void ACoreCardGameModeBase::CalculateCardSpread()
 												{
 																cardSelfRot = ((float)i - (float)halfCardNum + 0.5) * cardSelfRotInterval;
 																spreadCardRot = ((float)i - (float)halfCardNum + 0.5) * spreadCardRotInterval;
-																spreadCardPositionY = spreadCardRotRadius * FMath::Cos(spreadCardRot * PI / 180.0);
+																spreadCardPositionY = -spreadCardRotRadius * FMath::Cos(spreadCardRot * PI / 180.0);
 												}
 								}
 								else
 								{
 												int32 halfCardNum = 10 / 2;
-												if (i < halfCardNum)
+												if (i <= halfCardNum)
 												{
 																cardSelfRot = -((float)halfCardNum - (float)i) * cardSelfRotInterval;
 																spreadCardRot = -((float)halfCardNum - (float)i) * spreadCardRotInterval;
@@ -234,12 +234,12 @@ void ACoreCardGameModeBase::CalculateCardSpread()
 												{
 																cardSelfRot = ((float)i - (float)halfCardNum) * cardSelfRotInterval;
 																spreadCardRot = ((float)i - (float)halfCardNum) * spreadCardRotInterval;
-																spreadCardPositionY = spreadCardRotRadius * FMath::Cos(spreadCardRot * PI / 180.0);
+																spreadCardPositionY = -spreadCardRotRadius * FMath::Cos(spreadCardRot * PI / 180.0);
 												}
 								}
 								float spreadCardPositionX = spreadCardRotRadius * FMath::Sin(spreadCardRot * PI / 180.0);
 								
-								FVector cardLocation = FVector(spreadCardPositionX, spreadCardPositionY, 500.0);
+								FVector cardLocation = FVector(spreadCardPositionX, spreadCardPositionY, spreadCardHeight + spreadCardStepHeight * i);
 								cardLocation -= spreadCardOffset;
 								FRotator cardRotation = FRotator(0.0, spreadCardRot, 0.0);
 								
@@ -292,7 +292,7 @@ void ACoreCardGameModeBase::InitPreBattle()
 {
 				APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
 				ACoreCardGamePC* coreCardGamePC = Cast<ACoreCardGamePC>(playerController);
-				//coreCardGamePC->InitSelectCardCamera();
+				coreCardGamePC->InitSelectCardCamera();
 }
 
 void ACoreCardGameModeBase::CalibrateGridInfos(TArray<FBATTLE_GRID_INFO> gridInfos)
