@@ -79,6 +79,18 @@ public:
     UPROPERTY(EditDefaultsOnly)
     FVector spreadCardOffset;
 
+    UPROPERTY(EditDefaultsOnly)
+    float hoverMoveRightCardsOffset;
+
+    UPROPERTY(EditDefaultsOnly)
+    float hoverCardUpOffset;
+
+    UPROPERTY(EditDefaultsOnly)
+    float hoverMoveCardInterpDeltaTime;
+
+    UPROPERTY(EditDefaultsOnly)
+    float hoverMoveCardInterpSpeed;
+
     TMap<CameraType, ABattleCamera*> camerasMap;
 
 public:
@@ -88,7 +100,20 @@ public:
     UPROPERTY()
     TArray<ACard*> testCards;
 
+    TArray<FRotator> testCardRots;
+    TArray<FVector> testCardLocations;
+
+    TArray<FVector> testCardTempLocations;
+
+    void SpawnTestCards();
+
+    void RearrangeCardLocations(int32 hoverCardNb);
+
+    void RecoverCardLocations();
+
     void CalculateCardSpread();
+
+    void MoveRearrangeCards();
 
     // --- Local logic functions
     void CheckEntitiesCreated();

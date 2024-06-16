@@ -16,7 +16,14 @@ void ACoreCardGameModeBase::BeginPlay()
 				GetAllPresetObjects();
 				InitPreBattle();
 				CheckEntitiesCreated();
+
+				SpawnTestCards();
 				CalculateCardSpread();
+				for (int32 i = 0; i < testCards.Num(); i++)
+				{
+								testCards[i]->SetActorLocation(testCardLocations[i]);
+								testCards[i]->SetActorRotation(testCardRots[i]);
+				}
 }
 
 void ACoreCardGameModeBase::InitEvents()
@@ -41,6 +48,8 @@ void ACoreCardGameModeBase::InitEvents()
 
 void ACoreCardGameModeBase::Tick(float deltaTime)
 {
+				MoveRearrangeCards();
+
 				if (isSinglePlay)
 				{
 								
@@ -197,17 +206,50 @@ void ACoreCardGameModeBase::SinglePlayerGameLoop(float dT)
 				}
 }
 
+void ACoreCardGameModeBase::SpawnTestCards()
+{
+				for (int32 i = 0; i < 10; i++)
+				{
+								FVector spawnLoc = FVector(0.0, 0.0, 0.0);
+								ACard* card = GetWorld()->SpawnActor<ACard>(cardBPClass, spawnLoc, FRotator::ZeroRotator);
+								testCards.Add(card);
+				}
+}
+
+void ACoreCardGameModeBase::RearrangeCardLocations(int32 hoverCardNb)
+{
+				if (hoverCardNb >= testCards.Num())
+				{
+								return;
+				}
+
+				// Move cards on the right side of hovered card
+				for (int32 i = hoverCardNb; i < testCards.Num(); i++)
+				{
+								FVector cardOffset = FVector(hoverMoveRightCardsOffset, 0.0, 0.0);
+								testCardTempLocations[i] = testCardLocations[i] + cardOffset;
+				}
+
+				FVector hoverCardOffset = FVector(0.0, -hoverCardUpOffset, 0.0);
+				testCardTempLocations[hoverCardNb] = testCardLocations[hoverCardNb] + hoverCardOffset;
+}
+
+void ACoreCardGameModeBase::RecoverCardLocations()
+{
+				testCardTempLocations = testCardLocations;
+}
+
 void ACoreCardGameModeBase::CalculateCardSpread()
 {
 				TArray<float> handCardYawList;
-				for (int32 i = 0; i < 10; i++)
+				for (int32 i = 0; i < testCards.Num(); i++)
 				{
 								float cardSelfRot = 0.0;
 								float spreadCardRot = 0.0;
 								float spreadCardPositionY = 0.0;
-								if (10 % 2 == 0)
+								if (testCards.Num() % 2 == 0)
 								{
-												int32 halfCardNum = 10 / 2;
+												int32 halfCardNum = testCards.Num() / 2;
 												if (i <= halfCardNum)
 												{
 																cardSelfRot = -((float)halfCardNum - (float)i - 0.5) * cardSelfRotInterval;
@@ -223,7 +265,7 @@ void ACoreCardGameModeBase::CalculateCardSpread()
 								}
 								else
 								{
-												int32 halfCardNum = 10 / 2;
+												int32 halfCardNum = testCards.Num() / 2;
 												if (i <= halfCardNum)
 												{
 																cardSelfRot = -((float)halfCardNum - (float)i) * cardSelfRotInterval;
@@ -243,8 +285,19 @@ void ACoreCardGameModeBase::CalculateCardSpread()
 								cardLocation -= spreadCardOffset;
 								FRotator cardRotation = FRotator(0.0, spreadCardRot, 0.0);
 								
-								ACard* card = GetWorld()->SpawnActor<ACard>(cardBPClass, cardLocation, cardRotation);
-								testCards.Add(card);
+								testCardRots.Add(cardRotation);
+								testCardLocations.Add(cardLocation);
+				}
+				testCardTempLocations = testCardLocations;
+}
+
+void ACoreCardGameModeBase::MoveRearrangeCards()
+{
+				for (int32 i = 0; i < testCards.Num(); i++)
+				{
+								FVector cardCurLocation = testCards[i]->GetActorLocation();
+								FVector interpLocation = FMath::VInterpTo(cardCurLocation, testCardTempLocations[i], hoverMoveCardInterpDeltaTime, hoverMoveCardInterpSpeed);
+								testCards[i]->SetActorLocation(interpLocation);
 				}
 }
 

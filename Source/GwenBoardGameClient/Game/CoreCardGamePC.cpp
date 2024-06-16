@@ -18,7 +18,7 @@ void ACoreCardGamePC::BeginPlay()
 
 void ACoreCardGamePC::Tick(float DeltaTime)
 {
-
+    DealHover();
 }
 
 void ACoreCardGamePC::DealHover()
@@ -27,15 +27,25 @@ void ACoreCardGamePC::DealHover()
     bool hitSomething = GetHitResultUnderCursorByChannel(TraceTypeQuery1, false, hitResult);
     if (hitSomething && hitResult.bBlockingHit)
     {
-        if (hitResult.GetComponent() && hitResult.GetComponent()->ComponentHasTag(FName(TEXT("BoardGrid"))))
+        if (hitResult.GetComponent() && hitResult.GetComponent()->ComponentHasTag(FName(TEXT("CardPlane"))))
         {
-            ABoardGrid* boardGrid = Cast<ABoardGrid>(hitResult.GetActor());
-            if (boardGrid)
+            AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
+            ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
+            for (int32 i = 0; i < coreCardGameMode->testCards.Num(); i++)
             {
-                // if play has toggle card in hand, we should spawn a shadow card on board for demonstration
-                
+                if (coreCardGameMode->testCards[i] == hitResult.GetComponent()->GetOwner())
+                {
+                    coreCardGameMode->RearrangeCardLocations(i);
+                    break;
+                }
             }
         }
+    }
+    else
+    {
+        AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
+        ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
+        coreCardGameMode->RecoverCardLocations();
     }
 }
 
