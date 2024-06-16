@@ -33,7 +33,7 @@ class Hall(KBEngine.Entity):
 
 	def createRoom(self, playerEntityIdList):
 		newRoomKey = KBEngine.genUUID64()
-		KBEngine.createEntityAnywhere("Room", \
+		KBEngine.createEntityAnywhere("PvPRoom", \
 			{
 				"roomKey":newRoomKey, \
 			}, \

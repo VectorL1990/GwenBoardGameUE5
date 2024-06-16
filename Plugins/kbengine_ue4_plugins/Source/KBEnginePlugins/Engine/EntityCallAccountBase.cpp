@@ -1,4 +1,5 @@
 #include "EntityCallAccountBase.h"
+#include "EntityDef.h"
 #include "Bundle.h"
 
 namespace KBEngine
@@ -28,6 +29,17 @@ void EntityBaseEntityCall_AccountBase::reqMatch()
 	if(!pBundleRet)
 		return;
 
+	sendCall(NULL);
+}
+
+void EntityBaseEntityCall_AccountBase::reqModifyCardGroup(int32 arg1, const CARD_GROUP& arg2)
+{
+	Bundle* pBundleRet = newCall("reqModifyCardGroup", 0);
+	if(!pBundleRet)
+		return;
+
+	pBundleRet->writeInt32(arg1);
+	((DATATYPE_CARD_GROUP*)EntityDef::id2datatypes[44])->addToStreamEx(*pBundleRet, arg2);
 	sendCall(NULL);
 }
 

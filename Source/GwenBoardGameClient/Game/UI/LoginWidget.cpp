@@ -31,6 +31,12 @@ void ULoginWidget::ClickButton(FString buttonName)
 								ABasicGameMode* basicGameMode = Cast<ABasicGameMode>(gameMode);
 								basicGameMode->ReqMatch();
 				}
+				else if (buttonName == "ReqModifyCard")
+				{
+								AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
+								ALoginGameModeBase* loginGameMode = Cast<ALoginGameModeBase>(gameMode);
+								loginGameMode->ReqModifyCardGroup();
+				}
 }
 
 void ULoginWidget::ChangePlayerName(FString name)

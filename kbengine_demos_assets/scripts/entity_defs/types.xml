@@ -28,26 +28,6 @@
 	
 	<ENTITYID_LIST> ARRAY <of> ENTITY_ID </of>	</ENTITYID_LIST>
 	
-	<BAG>	FIXED_DICT
-		<Properties>
-			<values22>
-				<Type>	ARRAY <of> ARRAY <of>INT64 </of></of>	</Type>
-			</values22>
-		</Properties>
-	</BAG>	
-	
-	<EXAMPLES>	FIXED_DICT
-		<Properties>
-			<k1>
-				<Persistent>	false	</Persistent>
-				<Type>	INT64	</Type>
-			</k1>
-			
-			<k2>
-				<Type>	INT64	</Type>
-			</k2>
-		</Properties>
-	</EXAMPLES>	
 
 	<TEST_ENTITY_PROPS> FIXED_DICT
 		<Properties>
@@ -57,67 +37,60 @@
 		</Properties>
 	</TEST_ENTITY_PROPS>
 
-	<PLAYER_ACTION> FIXED_DICT
+	<STATE_INFO> FIXED_DICT
 		<Properties>
-			<actionType>
-				<Type> UINT8 </Type>
-			</actionType>
-			<playCardName>
+			<state>
 				<Type> STRING </Type>
-			</playCardName>
-			<targetGridNb>
-				<Type> INT32 </Type>
-			</targetGridNb>
+			</state>
+			<stipulation>
+				<Type> UINT8 </Type>
+			</stipulation>
+			<curCount>
+				<Type> UINT8 </Type>
+			</curCount>
 		</Properties>
-	</PLAYER_ACTION>
+	</STATE_INFO>
 
-	<UPDATE_GRID_INFO> FIXED_DICT
+	<SYNC_EFFECT_INFO> FIXED_DICT
+		<Properties>
+			<effectName>
+				<Type> STRING </Type>
+			</effectName>
+			<countDown>
+				<Type> UINT8 </Type>
+			</countDown>
+			<availableTimes>
+				<Type> UINT8 </Type>
+			</availableTimes>
+		</Properties>
+	</SYNC_EFFECT_INFO>
+
+	<BATTLE_GRID_ROW_INFO> FIXED_DICT
+		<Properties>
+			<cols>
+				<Type> ARRAY <of> STRING </of> </Type>
+			</cols>
+		</Properties>
+	</BATTLE_GRID_ROW_INFO>
+
+	<BATTLE_BOARD_INFO> FIXED_DICT
+		<Properties>
+			<rows>
+				<Type> ARRAY <of> BATTLE_GRID_ROW_INFO </of> </Type>
+			</rows>
+		</Properties>
+	</BATTLE_BOARD_INFO>
+
+	<BATTLE_GRID_STRING_STATE> FIXED_DICT
 		<Properties>
 			<gridNb>
 				<Type> INT32 </Type>
 			</gridNb>
-			<cardUid>
-				<Type> INT32 </Type>
-			</cardUid>
-			<updateType>
+			<gridState>
 				<Type> STRING </Type>
-			</updateType>
-			<updateValue>
-				<Type> INT32 </Type>
-			</updateValue>
+			</gridState>
 		</Properties>
-	</UPDATE_GRID_INFO>
-
-	<UPDATE_GRID_INFO_LIST> FIXED_DICT
-		<Properties>
-			<updateId>
-				<Type> INT32 </Type>
-			</updateId>
-			<updateGridList>
-				<Type> ARRAY <of> UPDATE_GRID_INFO </of> </Type>
-			</updateGridList>
-		</Properties>
-	</UPDATE_GRID_INFO_LIST>
-
-	<BATTLE_GRID_INFO> FIXED_DICT
-		<Properties>
-			<gridNb>
-				<Type> INT32 </Type>
-			</gridNb>
-			<cardUid>
-				<Type> STRING </Type>
-			</cardUid>
-			<hp>
-				<Type> UINT8 </Type>
-			</hp>
-			<defence>
-				<Type> UINT8 </Type>
-			</defence>
-			<agility>
-				<Type> UINT8 </Type>
-			</agility>
-		</Properties>
-	</BATTLE_GRID_INFO>
+	</BATTLE_GRID_STRING_STATE>
 
 	<SYNC_CARD_INFO> FIXED_DICT
 		<Properties>
@@ -139,6 +112,12 @@
 			<tags>
 				<Type> ARRAY <of> STRING </of> </Type>
 			</tags>
+			<stateTags>
+				<Type> ARRAY <of> STATE_INFO </of> </Type>
+			</stateTags>
+			<effectInfos>
+				<Type> ARRAY <of> SYNC_EFFECT_INFO </of> </Type>
+			</effectInfos>
 		</Properties>
 	</SYNC_CARD_INFO>
 
@@ -155,11 +134,20 @@
 
 	<CORE_UPDATE_BATLLE_INFO> FIXED_DICT
 		<Properties>
-			<curTick>
+			<curSwitchControllerSequence>
 				<Type> INT32 </Type>
-			</curTick>
+			</curSwitchControllerSequence>
+			<curControllerNb>
+				<Type> UINT8 </Type>
+			</curControllerNb>
+			<curControllerAvatarId>
+				<Type> UINT64 </Type>
+			</curControllerAvatarId>
+			<curActionSequence>
+				<Type> INT32 </Type>
+			</curActionSequence>
 			<updateList>
-				<Type>	ARRAY <of> BATTLE_GRID_INFO </of>	</Type>
+				<Type> BATTLE_BOARD_INFO	</Type>
 			</updateList>
 			<playerInfo>
 				<Type> SYNC_PLAYER_BATTLE_INFO </Type>
@@ -178,14 +166,37 @@
 		</Properties>
 	</SYNC_BATTLE_TIME_INFO>
 
-	
+	<SYNC_MODIFICATION_INFO> FIXED_DICT
+		<Properties>
+			<actionSequence>
+				<Type> INT32 </Type>
+			</actionSequence>
+			<updateGridList>
+				<Type> ARRAY <of> BATTLE_GRID_STRING_STATE </of> </Type>
+			</updateGridList>
+			<updateCardList>
+				<Type> ARRAY <of> SYNC_CARD_INFO </of> </Type>
+			</updateCardList>
+		</Properties>
+	</SYNC_MODIFICATION_INFO>
 
 	
+
+	<CARD_GROUP> FIXED_DICT
+		<Properties>
+			<stringList>
+				<Type> ARRAY <of>	STRING </of>	</Type>
+			</stringList>
+		</Properties>
+	</CARD_GROUP>
 
 	<PLAYER_PERSIST_INFO> FIXED_DICT
 		<Properties>
+			<selectCardGroup>
+				<Type> UINT8 </Type>
+			</selectCardGroup>
 			<persistCardList>
-				<Type> ARRAY <of>	STRING </of>	</Type>
+				<Type> ARRAY <of>	CARD_GROUP </of>	</Type>
 			</persistCardList>
 			<campNb>
 				<Type>	UINT8	</Type>

@@ -89,13 +89,20 @@ void AccountBase::onRemoteMethodCall(MemoryStream& stream)
 
 	switch(pMethod->methodUtype)
 	{
-		case 4:
+		case 5:
+		{
+			PLAYER_PERSIST_INFO onAccountClientEnabled_arg1;
+			((DATATYPE_PLAYER_PERSIST_INFO*)pMethod->args[0])->createFromStreamEx(stream, onAccountClientEnabled_arg1);
+			onAccountClientEnabled(onAccountClientEnabled_arg1);
+			break;
+		}
+		case 6:
 		{
 			int32 onReqTest_arg1 = stream.readInt32();
 			onReqTest(onReqTest_arg1);
 			break;
 		}
-		case 5:
+		case 7:
 		{
 			uint64 onSyncRoomCreated_arg1 = stream.readUint64();
 			onSyncRoomCreated(onSyncRoomCreated_arg1);

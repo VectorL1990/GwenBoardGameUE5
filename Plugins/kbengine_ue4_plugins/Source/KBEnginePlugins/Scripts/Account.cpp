@@ -10,6 +10,7 @@ namespace KBEngine
 
     Account::Account() : AccountBase()
     {
+        
     }
 
     Account::~Account()
@@ -34,6 +35,12 @@ namespace KBEngine
                 ReqMatch();
             });
 
+        KBENGINE_REGISTER_EVENT_OVERRIDE_FUNC("ReqModifyCardGroup", "ReqModifyCardGroup", [this](const UKBEventData* pEventData)
+            {
+                const UKBEventData_ReqModifyCardGroup& data = static_cast<const UKBEventData_ReqModifyCardGroup&>(*pEventData);
+                ReqModifyCardGroup(data.groupNb, data.cardList);
+            });
+
         UKBEventData_onLoginSuccessfully* pEventData = NewObject<UKBEventData_onLoginSuccessfully>();
         pEventData->entity_uuid = KBEngineApp::getSingleton().entity_uuid();
         pEventData->entity_id = id();
@@ -48,6 +55,7 @@ namespace KBEngine
 
     void Account::reqTest(int32 param)
     {
+        GEngine->AddOnScreenDebugMessage(-1, 10.0, FColor::Cyan, "Account reqTest message has already sent to server");
         pBaseEntityCall->reqTest(param);
     }
 
@@ -59,6 +67,26 @@ namespace KBEngine
     void Account::ReqMatch()
     {
         pBaseEntityCall->reqMatch();
+    }
+
+    void Account::ReqModifyCardGroup(int32 groupNb, TArray<FString> cardList)
+    {
+        CARD_GROUP cardGroup;
+        cardGroup.stringList = cardList;
+        pBaseEntityCall->reqModifyCardGroup(groupNb, cardGroup);
+    }
+
+    void Account::onAccountClientEnabled(const PLAYER_PERSIST_INFO& arg1)
+    {
+        UKBEventData_ReceivePlayerPersistInfo* eventData = NewObject<UKBEventData_ReceivePlayerPersistInfo>();
+        for (int32 i = 0; i < arg1.persistCardList.Num(); i++)
+        {
+            FCardGroup cardGroup;
+            cardGroup.cardList = arg1.persistCardList[i].stringList;
+            eventData->cardGroups.Add(cardGroup);
+        }
+        
+        KBENGINE_EVENT_FIRE("ReceivePlayerPersistInfo", eventData);
     }
 
     void Account::onReqTest(int32 param)

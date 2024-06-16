@@ -3,6 +3,7 @@
 
 #include "Card.h"
 
+
 // Sets default values
 ACard::ACard()
 {
@@ -22,12 +23,21 @@ void ACard::BeginPlay()
 void ACard::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
+    if (cardAnimationStatus == CardAnimationStatus::Generating)
+    {
+        UMaterialInstanceDynamic* matInstance = UMaterialInstanceDynamic::Create(basicCardMat, this);
+    }
+    else if (cardAnimationStatus == CardAnimationStatus::Discarding)
+    {
 
+    }
+
+    
 }
 
 void ACard::InitCard(FString cardName)
 {
-
+    cardAnimationStatus = CardAnimationStatus::Generating;
 }
 
 FPLAY_CARD_INFO ACard::GetCardInfo()
@@ -37,5 +47,10 @@ FPLAY_CARD_INFO ACard::GetCardInfo()
     info.defence = defence;
     info.agility = agility;
     return info;
+}
+
+void ACard::Discard()
+{
+    cardAnimationStatus = CardAnimationStatus::Discarding;
 }
 

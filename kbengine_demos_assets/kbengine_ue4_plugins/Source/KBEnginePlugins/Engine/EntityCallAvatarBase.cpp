@@ -23,6 +23,15 @@ void EntityBaseEntityCall_AvatarBase::reqChangeSelectCard(const FString& arg1)
 	sendCall(NULL);
 }
 
+void EntityBaseEntityCall_AvatarBase::reqEnterRoom()
+{
+	Bundle* pBundleRet = newCall("reqEnterRoom", 0);
+	if(!pBundleRet)
+		return;
+
+	sendCall(NULL);
+}
+
 void EntityBaseEntityCall_AvatarBase::reqFinishSelectCards()
 {
 	Bundle* pBundleRet = newCall("reqFinishSelectCards", 0);
@@ -38,6 +47,32 @@ void EntityBaseEntityCall_AvatarBase::reqLatestBattleInfo()
 	if(!pBundleRet)
 		return;
 
+	sendCall(NULL);
+}
+
+void EntityBaseEntityCall_AvatarBase::reqLaunchCardSkill(int32 arg1, const FString& arg2, const FString& arg3, int32 arg4, int32 arg5)
+{
+	Bundle* pBundleRet = newCall("reqLaunchCardSkill", 0);
+	if(!pBundleRet)
+		return;
+
+	pBundleRet->writeInt32(arg1);
+	pBundleRet->writeString(arg2);
+	pBundleRet->writeString(arg3);
+	pBundleRet->writeInt32(arg4);
+	pBundleRet->writeInt32(arg5);
+	sendCall(NULL);
+}
+
+void EntityBaseEntityCall_AvatarBase::reqPlayCardAction(int32 arg1, const FString& arg2, int32 arg3)
+{
+	Bundle* pBundleRet = newCall("reqPlayCardAction", 0);
+	if(!pBundleRet)
+		return;
+
+	pBundleRet->writeInt32(arg1);
+	pBundleRet->writeString(arg2);
+	pBundleRet->writeInt32(arg3);
 	sendCall(NULL);
 }
 

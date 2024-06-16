@@ -43,6 +43,8 @@ public:
     UFUNCTION()
     void ReqEnterRoom();
 
+    void ReceivePlayerPersistInfo(const UKBEventData* eventData);
+
     UFUNCTION()
     void onCreateAccountResult(const UKBEventData* eventData);
 
@@ -50,7 +52,7 @@ public:
 
     virtual void onSyncPlayerBattleInfo(const UKBEventData* eventData);
 
-    virtual void InitPlayerBattleInfoDone(TArray<FString> cardList);
+    virtual void SpawnSelectCard();
 
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<AActor> kbeMainClass;

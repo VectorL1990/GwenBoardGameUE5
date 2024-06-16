@@ -2,6 +2,10 @@
 
 
 #include "CoreCardGameModeBase.h"
+#include "Kismet/GameplayStatics.h"
+#include "CoreCardGamePC.h"
+#include "Engine/KBEngine.h"
+#include "Engine/Entity.h"
 #include "Scripts/BattleEvents.h"
 
 void ACoreCardGameModeBase::BeginPlay()
@@ -10,18 +14,30 @@ void ACoreCardGameModeBase::BeginPlay()
 				InitKBEMain();
 				InitDone();
 				GetAllPresetObjects();
+				InitPreBattle();
+				CheckEntitiesCreated();
+
+				SpawnTestCards();
+				CalculateCardSpread();
+				for (int32 i = 0; i < testCards.Num(); i++)
+				{
+								testCards[i]->SetActorLocation(testCardLocations[i]);
+								testCards[i]->SetActorRotation(testCardRots[i]);
+				}
 }
 
 void ACoreCardGameModeBase::InitEvents()
 {
 				Super::InitEvents();
-				KBENGINE_REGISTER_EVENT("onStopCardSelection", onStopCardSelection);
+				KBENGINE_REGISTER_EVENT("onEnterWorld", onEnterWorld);
 				KBENGINE_REGISTER_EVENT("onSyncBattleResult", onSyncBattleResult);
 				KBENGINE_REGISTER_EVENT("onSyncChangeHandCardSuccess", onSyncChangeHandCardSuccess);
 				KBENGINE_REGISTER_EVENT("onSyncExhaustCardReplacement", onSyncExhaustCardReplacement);
 				KBENGINE_REGISTER_EVENT("onSyncHeartBeat", onSyncHeartBeat);
 				KBENGINE_REGISTER_EVENT("onSyncLatestBattleState", onSyncLatestBattleState);
 				KBENGINE_REGISTER_EVENT("onSyncPlayerBattleInfo", onSyncPlayerBattleInfo);
+				KBENGINE_REGISTER_EVENT("onSyncReceiveEnterRoom", onSyncReceiveEnterRoom);
+				KBENGINE_REGISTER_EVENT("onSyncReceiveFinishCardSelection", onSyncReceiveFinishCardSelection);
 				KBENGINE_REGISTER_EVENT("onSyncResumeBattle", onSyncResumeBattle);
 				KBENGINE_REGISTER_EVENT("onSyncRoomStartBattle", onSyncRoomStartBattle);
 				KBENGINE_REGISTER_EVENT("onSyncSelectCardInterlude", onSyncSelectCardInterlude);
@@ -32,6 +48,17 @@ void ACoreCardGameModeBase::InitEvents()
 
 void ACoreCardGameModeBase::Tick(float deltaTime)
 {
+				MoveRearrangeCards();
+
+				if (isSinglePlay)
+				{
+								
+				}
+				else
+				{
+
+				}
+
 				if (interludeState == InterludeState::SelectCardDemoPauseInterlude)
 				{
 								// Pause for a while for final select cards demonstration
@@ -96,15 +123,198 @@ void ACoreCardGameModeBase::Tick(float deltaTime)
 								}
 				}
 
-				if (clientBattleState == ClientBattleState::SyncHeartBeat)
+				if (clientBattleState == ClientBattleState::ReqEnterRoom)
 				{
-								if (curCountingTick >= battleStateTicksMap["SyncHeartBeatInterval"])
+								if (curReqEnterRoomTick >= battleStateTicksMap["ReqEnterRoom"])
+								{
+												// which means account has already entered world
+												// trigger reqEnterRoom so that server gives side gives client to avatar
+												ReqEnterRoom();
+												curReqEnterRoomTick = 0.0;
+								}
+								else
+								{
+												curReqEnterRoomTick += deltaTime;
+								}
+				}
+				else if (clientBattleState == ClientBattleState::SelectCard)
+				{
+								SpawnSelectCard();
+				}
+				else if (clientBattleState == ClientBattleState::InBattle)
+				{
+								// we should always keep sending sync information to server
+								if (curBattleStateTick >= battleStateTicksMap["SyncHeartBeatInterval"])
 								{
 												ReqSyncHeartBeat();
+								}
+
+								if (curBattleStateTick >= battleStateTicksMap["SyncBattleInterval"])
+								{
+												ReqLatestBattleInfo();
 								}
 				}
 }
 
+void ACoreCardGameModeBase::SinglePlayerGameLoop(float dT)
+{
+				if (singleBattleState == SingleBattleState::Default)
+				{
+								return;
+				}
+				else if (singleBattleState == SingleBattleState::SelectCard)
+				{
+								if (curCountingTick >= battleStateTicksMap["MaxSelectCardInterval"])
+								{
+												// switch to select card interlude
+												singleBattleState = SingleBattleState::SelectCardInterlude;
+												curCountingTick = 0.0;
+								}
+								else
+								{
+												curCountingTick += dT;
+								}
+				}
+				else if (singleBattleState == SingleBattleState::SelectCardInterlude)
+				{
+								if (curCountingTick >= battleStateTicksMap["MaxSelectCardInterludeInterval"])
+								{
+												singleBattleState = SingleBattleState::Battle;
+												curCountingTick = 0.0;
+								}
+								else
+								{
+												curCountingTick += dT;
+								}
+				}
+				else if (singleBattleState == SingleBattleState::Battle)
+				{
+								if (curCountingTick >= battleStateTicksMap["MaxLaunchActionTimeInterval"])
+								{
+												singleBattleState = SingleBattleState::BattleInterlude;
+												curCountingTick = 0.0;
+								}
+								else
+								{
+												if (!isHumanTurn)
+												{
+																// Get action from neural network
+
+												}
+												curCountingTick += dT;
+								}
+				}
+}
+
+void ACoreCardGameModeBase::SpawnTestCards()
+{
+				for (int32 i = 0; i < 10; i++)
+				{
+								FVector spawnLoc = FVector(0.0, 0.0, 0.0);
+								ACard* card = GetWorld()->SpawnActor<ACard>(cardBPClass, spawnLoc, FRotator::ZeroRotator);
+								testCards.Add(card);
+				}
+}
+
+void ACoreCardGameModeBase::RearrangeCardLocations(int32 hoverCardNb)
+{
+				if (hoverCardNb >= testCards.Num())
+				{
+								return;
+				}
+
+				// Move cards on the right side of hovered card
+				for (int32 i = hoverCardNb; i < testCards.Num(); i++)
+				{
+								FVector cardOffset = FVector(hoverMoveRightCardsOffset, 0.0, 0.0);
+								testCardTempLocations[i] = testCardLocations[i] + cardOffset;
+				}
+
+				FVector hoverCardOffset = FVector(0.0, -hoverCardUpOffset, 0.0);
+				testCardTempLocations[hoverCardNb] = testCardLocations[hoverCardNb] + hoverCardOffset;
+}
+
+void ACoreCardGameModeBase::RecoverCardLocations()
+{
+				testCardTempLocations = testCardLocations;
+}
+
+void ACoreCardGameModeBase::CalculateCardSpread()
+{
+				TArray<float> handCardYawList;
+				for (int32 i = 0; i < testCards.Num(); i++)
+				{
+								float cardSelfRot = 0.0;
+								float spreadCardRot = 0.0;
+								float spreadCardPositionY = 0.0;
+								if (testCards.Num() % 2 == 0)
+								{
+												int32 halfCardNum = testCards.Num() / 2;
+												if (i <= halfCardNum)
+												{
+																cardSelfRot = -((float)halfCardNum - (float)i - 0.5) * cardSelfRotInterval;
+																spreadCardRot = -((float)halfCardNum - (float)i - 0.5) * spreadCardRotInterval;
+																spreadCardPositionY = -spreadCardRotRadius * FMath::Cos(spreadCardRot * PI / 180.0);
+												}
+												else
+												{
+																cardSelfRot = ((float)i - (float)halfCardNum + 0.5) * cardSelfRotInterval;
+																spreadCardRot = ((float)i - (float)halfCardNum + 0.5) * spreadCardRotInterval;
+																spreadCardPositionY = -spreadCardRotRadius * FMath::Cos(spreadCardRot * PI / 180.0);
+												}
+								}
+								else
+								{
+												int32 halfCardNum = testCards.Num() / 2;
+												if (i <= halfCardNum)
+												{
+																cardSelfRot = -((float)halfCardNum - (float)i) * cardSelfRotInterval;
+																spreadCardRot = -((float)halfCardNum - (float)i) * spreadCardRotInterval;
+																spreadCardPositionY = -spreadCardRotRadius * FMath::Cos(spreadCardRot * PI / 180.0);
+												}
+												else
+												{
+																cardSelfRot = ((float)i - (float)halfCardNum) * cardSelfRotInterval;
+																spreadCardRot = ((float)i - (float)halfCardNum) * spreadCardRotInterval;
+																spreadCardPositionY = -spreadCardRotRadius * FMath::Cos(spreadCardRot * PI / 180.0);
+												}
+								}
+								float spreadCardPositionX = spreadCardRotRadius * FMath::Sin(spreadCardRot * PI / 180.0);
+								
+								FVector cardLocation = FVector(spreadCardPositionX, spreadCardPositionY, spreadCardHeight + spreadCardStepHeight * i);
+								cardLocation -= spreadCardOffset;
+								FRotator cardRotation = FRotator(0.0, spreadCardRot, 0.0);
+								
+								testCardRots.Add(cardRotation);
+								testCardLocations.Add(cardLocation);
+				}
+				testCardTempLocations = testCardLocations;
+}
+
+void ACoreCardGameModeBase::MoveRearrangeCards()
+{
+				for (int32 i = 0; i < testCards.Num(); i++)
+				{
+								FVector cardCurLocation = testCards[i]->GetActorLocation();
+								FVector interpLocation = FMath::VInterpTo(cardCurLocation, testCardTempLocations[i], hoverMoveCardInterpDeltaTime, hoverMoveCardInterpSpeed);
+								testCards[i]->SetActorLocation(interpLocation);
+				}
+}
+
+
+void ACoreCardGameModeBase::CheckEntitiesCreated()
+{
+				KBEngine::KBEngineApp::ENTITIES_MAP& entities = KBEngine::KBEngineApp::getSingleton().entities();
+				for (auto& item : entities)
+				{
+								KBEngine::Entity* entity = item.Value;
+								UKBEventData_onEnterWorld* eventData = NewObject<UKBEventData_onEnterWorld>();
+								eventData->entityID = entity->id();
+								eventData->spaceID = KBEngine::KBEngineApp::getSingleton().spaceID();
+								eventData->isPlayer = entity->isPlayer();
+								KBENGINE_EVENT_FIRE(KBEngine::KBEventTypes::onEnterWorld, eventData);
+				}
+}
 
 void ACoreCardGameModeBase::GetAllPresetObjects()
 {
@@ -131,10 +341,189 @@ void ACoreCardGameModeBase::GetAllPresetObjects()
 				}
 }
 
-void ACoreCardGameModeBase::ReqEnterRoom()
+void ACoreCardGameModeBase::InitPreBattle()
 {
-				UKBEventData* eventData = NewObject<UKBEventData>();
-				KBENGINE_EVENT_FIRE("ReqEnterRoom", eventData);
+				APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
+				ACoreCardGamePC* coreCardGamePC = Cast<ACoreCardGamePC>(playerController);
+				coreCardGamePC->InitSelectCardCamera();
+}
+
+void ACoreCardGameModeBase::CalibrateGridInfos(TArray<FBATTLE_GRID_INFO> gridInfos)
+{
+				for (TMap<int32, ABoardGrid*>::TConstIterator iter = boardGrids.CreateConstIterator(); iter; ++iter)
+				{
+								iter->Value->DemonstrateInitEffect();
+				}
+				for (int32 i = 0; i < gridInfos.Num(); i++)
+				{
+								if (!boardGrids[gridInfos[i].gridNb]->card)
+								{
+												// which means card is missed in this grid, we should spawn a brand new card corresponding to supplement information from server
+												FVector spawnLoc = boardGrids[gridInfos[i].gridNb]->GetActorLocation();
+												spawnLoc.Z += gridSpawnCardOffset;
+												FRotator spawnRot = FRotator::ZeroRotator;
+												ACard* suplementCard = GetWorld()->SpawnActor<ACard>(cardBPClass, spawnLoc, spawnRot);
+												suplementCard->InitCard(allCardInfoMap[gridInfos[i].cardUid].cardName);
+												suplementCard->hp = gridInfos[i].hp;
+												suplementCard->defence = gridInfos[i].defence;
+												suplementCard->agility = gridInfos[i].agility;
+												suplementCard->inherentTags = gridInfos[i].tags;
+												suplementCard->stateTags = gridInfos[i].stateTags;
+												allCardMap.Add(gridInfos[i].cardUid, suplementCard);
+
+												boardGrids[gridInfos[i].gridNb]->card = suplementCard;
+								}
+								else
+								{
+												if (boardGrids[gridInfos[i].gridNb]->card->cardUid != gridInfos[i].cardUid)
+												{
+																// which means a wrong card is placed in this grid
+																// delete occupied card first
+																FString cardUid = boardGrids[gridInfos[i].gridNb]->card->cardUid;
+																if (boardGrids[gridInfos[i].gridNb]->card->IsValidLowLevel())
+																{
+																				boardGrids[gridInfos[i].gridNb]->card->ConditionalBeginDestroy();
+																}
+																allCardMap.Remove(cardUid);
+
+																// replace or spawn sync card for this grid
+																if (allCardMap.Contains(gridInfos[i].cardUid))
+																{
+																				// which means a existing card which should be placed in this grid is located somewhere else
+																				// in this case we should delete that card, it doesn't matter because that "cavity" will be make up
+																				if (allCardMap[gridInfos[i].cardUid]->IsValidLowLevel())
+																				{
+																								allCardMap[gridInfos[i].cardUid]->Destroy();
+																				}
+																				allCardMap.Remove(gridInfos[i].cardUid);
+
+																				for (TMap<int32, ABoardGrid*>::TConstIterator iter = boardGrids.CreateConstIterator(); iter; ++iter)
+																				{
+																								if (iter->Value->card && iter->Value->card->cardUid == gridInfos[i].cardUid)
+																								{
+																												iter->Value->card = NULL;
+																												break;
+																								}
+																				}
+																}
+
+																FVector spawnLoc = boardGrids[gridInfos[i].gridNb]->GetActorLocation();
+																spawnLoc.Z += gridSpawnCardOffset;
+																FRotator spawnRot = FRotator::ZeroRotator;
+																ACard* replacedCard = GetWorld()->SpawnActor<ACard>(cardBPClass, spawnLoc, spawnRot);
+																replacedCard->InitCard(allCardInfoMap[gridInfos[i].cardUid].cardName);
+																replacedCard->hp = gridInfos[i].hp;
+																replacedCard->defence = gridInfos[i].defence;
+																replacedCard->agility = gridInfos[i].agility;
+																replacedCard->inherentTags = gridInfos[i].tags;
+																replacedCard->stateTags = gridInfos[i].stateTags;
+																allCardMap.Add(gridInfos[i].cardUid, replacedCard);
+
+																boardGrids[gridInfos[i].gridNb]->card = replacedCard;
+
+												}
+												else
+												{
+																// which means card id is correct, calibrate card information
+																if (boardGrids[gridInfos[i].gridNb]->card->hp != gridInfos[i].hp)
+																{
+																				boardGrids[gridInfos[i].gridNb]->card->hp = gridInfos[i].hp;
+																}
+																if (boardGrids[gridInfos[i].gridNb]->card->defence != gridInfos[i].defence)
+																{
+																				boardGrids[gridInfos[i].gridNb]->card->defence = gridInfos[i].defence;
+																}
+																if (boardGrids[gridInfos[i].gridNb]->card->agility != gridInfos[i].agility)
+																{
+																				boardGrids[gridInfos[i].gridNb]->card->agility = gridInfos[i].agility;
+																}
+																if (boardGrids[gridInfos[i].gridNb]->card->inherentTags.Num() != gridInfos[i].tags.Num())
+																{
+																				boardGrids[gridInfos[i].gridNb]->card->inherentTags = gridInfos[i].tags;
+																}
+																else
+																{
+																				for (int32 j = 0; j < gridInfos[j].tags.Num(); j++)
+																				{
+																								if (!boardGrids[gridInfos[i].gridNb]->card->inherentTags.Contains(gridInfos[i].tags[j]))
+																								{
+																												boardGrids[gridInfos[i].gridNb]->card->inherentTags.Add(gridInfos[i].tags[j]);
+																												// let's replace all tags to board grid
+																												boardGrids[gridInfos[i].gridNb]->card->inherentTags = gridInfos[i].tags;
+																												// update actor demonstration and ui
+																												break;
+
+																								}
+																				}
+																}
+
+																if (boardGrids[gridInfos[i].gridNb]->card->stateTags.Num() != gridInfos[i].stateTags.Num())
+																{
+																				boardGrids[gridInfos[i].gridNb]->card->stateTags = gridInfos[i].stateTags;
+																}
+																else
+																{
+																				bool reqCorrection = false;
+																				for (int32 j = 0; j < gridInfos[i].stateTags.Num(); j++)
+																				{
+																								bool findCorrespondStateTag = false;
+																								for (int32 k = 0; k < boardGrids[gridInfos[i].gridNb]->card->stateTags.Num(); k++)
+																								{
+																												if (gridInfos[i].stateTags[j].stateName == boardGrids[gridInfos[i].gridNb]->card->stateTags[k].stateName)
+																												{
+																																findCorrespondStateTag = true;
+																																if (gridInfos[i].stateTags[j].curCount != boardGrids[gridInfos[i].gridNb]->card->stateTags[k].curCount ||
+																																				gridInfos[i].stateTags[j].stipulation != boardGrids[gridInfos[i].gridNb]->card->stateTags[k].stipulation)
+																																{
+																																				boardGrids[gridInfos[i].gridNb]->card->stateTags = gridInfos[i].stateTags;
+																																				reqCorrection = true;
+																																				break;
+																																}
+																												}
+																								}
+																								if (reqCorrection)
+																								{
+																												break;
+																								}
+																				}
+																}
+												}
+								}
+				}
+}
+
+void ACoreCardGameModeBase::CalibratePlayerCardInfos(TArray<FSYNC_CARD_INFO> allCardInfoList, TArray<FString> handCardUidList)
+{
+				for (int32 i = 0; i < allCardInfoList.Num(); i++)
+				{
+								if (allCardInfoMap.Contains(allCardInfoList[i].cardKey))
+								{
+												if (allCardInfoMap[allCardInfoList[i].cardKey].hp != allCardInfoList[i].hp)
+												{
+																allCardInfoMap[allCardInfoList[i].cardKey].hp = allCardInfoList[i].hp;
+												}
+												if (allCardInfoMap[allCardInfoList[i].cardKey].defence != allCardInfoList[i].defence)
+												{
+																allCardInfoMap[allCardInfoList[i].cardKey].defence = allCardInfoList[i].defence;
+												}
+								}
+				}
+}
+
+void ACoreCardGameModeBase::CalibrateCurrentGlobalInfo(int32 curActionSequence, int32 curSwitchControllerSequence, uint8 curControllerNb)
+{
+				if (curActionSequence != receiveActionSequence)
+				{
+								receiveActionSequence = curActionSequence;
+				}
+				if (curSwitchControllerSequence != receiveSwitchControllerSequence)
+				{
+								receiveSwitchControllerSequence = curSwitchControllerSequence;
+				}
+				if (curControllerNb != receiveControllerNb)
+				{
+								receiveControllerNb = receiveControllerNb;
+				}
 }
 
 void ACoreCardGameModeBase::ReqPlayCard(int32 targetGridNb, int32 playCardUid)
@@ -146,6 +535,15 @@ void ACoreCardGameModeBase::ReqPlayCard(int32 targetGridNb, int32 playCardUid)
 				playCardInfo.targetGridNb = targetGridNb;
 				eventData->playCardInfo = playCardInfo;
 				KBENGINE_EVENT_FIRE("ReqSendAction", eventData);
+}
+
+void ACoreCardGameModeBase::onEnterWorld(const UKBEventData* eventData)
+{
+				const UKBEventData_onEnterWorld* onEnterWorldData = Cast<UKBEventData_onEnterWorld>(eventData);
+				if (onEnterWorldData->isPlayer)
+				{
+								clientBattleState = ClientBattleState::ReqEnterRoom;
+				}
 }
 
 void ACoreCardGameModeBase::ReqChangeSelectCard(FString changeCardKey)
@@ -177,6 +575,26 @@ void ACoreCardGameModeBase::ReqLatestBattleInfo()
 {
 				UKBEventData* eventData = NewObject<UKBEventData>();
 				KBENGINE_EVENT_FIRE("ReqLatestBattleInfo", eventData);
+}
+
+void ACoreCardGameModeBase::ReqPlayCardAction(int32 actionSequence, FString cardUid, int32 gridNb)
+{
+				UKBEventData_reqPlayCardAction* eventData = NewObject<UKBEventData_reqPlayCardAction>();
+				eventData->actionSequence = actionSequence;
+				eventData->cardUid = cardUid;
+				eventData->gridNb = gridNb;
+				KBENGINE_EVENT_FIRE("ReqPlayCardAction", eventData);
+}
+
+void ACoreCardGameModeBase::ReqLaunchCardSkill(int32 actionSequence, FString cardUid, FString skillName, int32 launchGridNb, int32 targetGridNb)
+{
+				UKBEventData_reqLaunchCardSkill* eventData = NewObject<UKBEventData_reqLaunchCardSkill>();
+				eventData->actionSequence = actionSequence;
+				eventData->cardUid = cardUid;
+				eventData->skillName = skillName;
+				eventData->launchGridNb = launchGridNb;
+				eventData->targetGridNb = targetGridNb;
+				KBENGINE_EVENT_FIRE("ReqLaunchCardSkill", eventData);
 }
 
 void ACoreCardGameModeBase::onUpdateGridInfoList(const UKBEventData* eventData)
@@ -241,11 +659,12 @@ void ACoreCardGameModeBase::InitDone_Implementation()
 
 }
 
-void ACoreCardGameModeBase::onStopCardSelection(const UKBEventData* eventData)
-{}
-
 void ACoreCardGameModeBase::onSyncBattleResult(const UKBEventData* eventData)
-{}
+{
+				// which means battle ends
+				const UKBEventData_onSyncBattleResult* syncBattleResultData = Cast<UKBEventData_onSyncBattleResult>(eventData);
+
+}
 
 void ACoreCardGameModeBase::onSyncChangeHandCardSuccess(const UKBEventData* eventData)
 {
@@ -272,7 +691,10 @@ void ACoreCardGameModeBase::onSyncChangeHandCardSuccess(const UKBEventData* even
 												{
 																FVector changeHandCardLoc = handCardMap[onSyncChangeHandCardSuccessData->changeHandCardKey]->GetActorLocation();
 																FRotator changeHandCardRot = handCardMap[onSyncChangeHandCardSuccessData->changeHandCardKey]->GetActorRotation();
-																handCardMap[onSyncChangeHandCardSuccessData->changeHandCardKey]->Destroy();
+																if (handCardMap[onSyncChangeHandCardSuccessData->changeHandCardKey]->IsValidLowLevel())
+																{
+																				handCardMap[onSyncChangeHandCardSuccessData->changeHandCardKey]->Destroy();
+																}
 																handCardMap.Remove(onSyncChangeHandCardSuccessData->changeHandCardKey);
 																ACard* changeHandCard = GetWorld()->SpawnActor<ACard>(cardBPClass, changeHandCardLoc, changeHandCardRot);
 																changeHandCard->cardStatus = BattleCardStatus::Select;
@@ -301,6 +723,7 @@ void ACoreCardGameModeBase::onSyncChangeHandCardSuccess(const UKBEventData* even
 
 void ACoreCardGameModeBase::onSyncPlayerBattleInfo(const UKBEventData* eventData)
 {
+				// when client receive this message, it means avatar is ready both on server and client sides
 				const UKBEventData_onSyncPlayerBattleInfo* onSyncPlayerBattleInfoData = Cast<UKBEventData_onSyncPlayerBattleInfo>(eventData);
 
 				for (int32 i = 0; i < onSyncPlayerBattleInfoData->cardList.Num(); i++)
@@ -314,6 +737,31 @@ void ACoreCardGameModeBase::onSyncPlayerBattleInfo(const UKBEventData* eventData
 				handCardKeyList = onSyncPlayerBattleInfoData->handCardList;
 }
 
+void ACoreCardGameModeBase::onSyncReceiveEnterRoom(const UKBEventData* eventData)
+{
+				const UKBEventData_onSyncReceiveEnterRoom* onSyncEnterRoomData = Cast<UKBEventData_onSyncReceiveEnterRoom>(eventData);
+				if (onSyncEnterRoomData->result == 1)
+				{
+								// which means server has received enter room message
+								// no need to keep checking again
+								clientBattleState = ClientBattleState::SelectCard;
+				}
+				else
+				{
+								// which means server has already received room entering message more than once
+								// which implies that client maybe lose some messages
+								clientBattleState = ClientBattleState::SelectCard;
+				}
+}
+
+void ACoreCardGameModeBase::onSyncReceiveFinishCardSelection(const UKBEventData* eventData)
+{
+				// nofity battle widget
+				APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
+				ACoreCardGamePC* coreCardPC = Cast<ACoreCardGamePC>(playerController);
+				coreCardPC->ReceiveFinishCardSelection();
+}
+
 void ACoreCardGameModeBase::onSyncExhaustCardReplacement(const UKBEventData* eventData)
 {
 				// which means this player lost some information
@@ -323,13 +771,31 @@ void ACoreCardGameModeBase::onSyncExhaustCardReplacement(const UKBEventData* eve
 }
 
 void ACoreCardGameModeBase::onSyncHeartBeat(const UKBEventData* eventData)
-{}
+{
+
+}
 
 void ACoreCardGameModeBase::onSyncLatestBattleState(const UKBEventData* eventData)
-{}
+{
+				// Compare current operation sequence
+				const UKBEventData_onSyncLatestBattleState* latestBattleStateData = Cast<UKBEventData_onSyncLatestBattleState>(eventData);
+				if (receiveActionSequence < latestBattleStateData->curActionSequence ||
+								receiveSwitchControllerSequence != latestBattleStateData->curSwitchControllerSequence ||
+								receiveControllerNb != latestBattleStateData->curControllerNb)
+				{
+								// which means client got information latency or information loss
+								// we should use sync information for battle recovering
+								CalibrateGridInfos(latestBattleStateData->updateGridInfos);
+								CalibratePlayerCardInfos(latestBattleStateData->cardList, latestBattleStateData->handCardList);
+								CalibrateCurrentGlobalInfo(latestBattleStateData->curActionSequence, latestBattleStateData->curSwitchControllerSequence, latestBattleStateData->curControllerNb);
+				}
+}
 
 void ACoreCardGameModeBase::onSyncResumeBattle(const UKBEventData* eventData)
-{}
+{
+				// which means server has finished switch controller interlude
+				// restart counting again
+}
 
 void ACoreCardGameModeBase::onSyncUpdateSelectedCards(const UKBEventData* eventData)
 {
@@ -374,7 +840,11 @@ void ACoreCardGameModeBase::onSyncUpdateSelectedCards(const UKBEventData* eventD
 
 void ACoreCardGameModeBase::onSyncRoomStartBattle(const UKBEventData* eventData)
 {
-
+				// when this message is received, it means server passes card selection interlude
+				// this only means that we could spawn time count down slider on UI menu
+				interludeState = InterludeState::Default;
+				clientBattleState = ClientBattleState::InBattle;
+				curCountingTick = 0.0;
 }
 
 void ACoreCardGameModeBase::onSyncSelectCardInterlude(const UKBEventData* eventData)
@@ -386,12 +856,16 @@ void ACoreCardGameModeBase::onSyncSelectCardInterlude(const UKBEventData* eventD
 }
 
 void ACoreCardGameModeBase::onSyncSwitchController(const UKBEventData* eventData)
-{}
+{
+				const UKBEventData_onSyncSwitchController* switchControllerData = Cast<UKBEventData_onSyncSwitchController>(eventData);
+
+}
 
 void ACoreCardGameModeBase::onSyncTimeInterval(const UKBEventData* eventData)
-{}
+{
+}
 
-void ACoreCardGameModeBase::InitPlayerBattleInfoDone(TArray<FString> cardList)
+void ACoreCardGameModeBase::SpawnSelectCard()
 {
 				FRotator spawnRot = FRotator::ZeroRotator;
 				for (int32 i = 0; i < handCardKeyList.Num(); i++)

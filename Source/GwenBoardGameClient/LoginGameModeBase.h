@@ -21,6 +21,9 @@ public:
 
     void ReqTest();
 
+    UFUNCTION(BlueprintCallable)
+    void ReqModifyCardGroup();
+
     void onReqTest(const UKBEventData* eventData);
 
     
@@ -28,5 +31,5 @@ public:
     UFUNCTION(BlueprintNativeEvent)
     void BasicInitDone();
 
-    virtual void InitPlayerBattleInfoDone(TArray<FString> cardList) override;
+    virtual void SpawnSelectCard() override;
 };

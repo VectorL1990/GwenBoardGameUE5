@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Button.h"
+#include "TextBlock.h"
 #include "../CoreGameBlueprintFunctionLibrary.h"
 #include "BattleWidget.generated.h"
 
@@ -17,4 +19,14 @@ class GWENBOARDGAMECLIENT_API UBattleWidget : public UUserWidget
 public:
     void SetupCardDetail();
 
+    UFUNCTION(BlueprintCallable)
+    void ClickButton(FString buttonName);
+
+    void SetFinishCardSelectionText();
+
+    UPROPERTY(BlueprintReadWrite)
+    UButton* finishSelectCardButton;
+
+    UPROPERTY(BlueprintReadWrite)
+    UTextBlock* finishCardSelectionText;
 };

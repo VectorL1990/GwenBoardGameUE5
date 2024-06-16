@@ -69,6 +69,36 @@ public:
 };
 
 USTRUCT(BlueprintType)
+struct FSTATE_TAG_INFO
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(EditAnywhere)
+		FString stateName;
+
+	UPROPERTY(EditAnywhere)
+		uint8 stipulation;
+
+	UPROPERTY(EditAnywhere)
+		uint8 curCount;
+};
+
+USTRUCT(BlueprintType)
+struct FSYNC_EFFECT_INFO
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(EditAnywhere)
+		FString effectName;
+
+	UPROPERTY(EditAnywhere)
+		uint8 availableTimes;
+
+	UPROPERTY(EditAnywhere)
+		uint8 countDown;
+};
+
+USTRUCT(BlueprintType)
 struct FBATTLE_GRID_INFO
 {
 				GENERATED_BODY()
@@ -80,13 +110,28 @@ public:
 								FString cardUid;
 
 				UPROPERTY(EditAnywhere)
-								int32 hp;
+				FString cardName;
 
 				UPROPERTY(EditAnywhere)
-								int32 defence;
+				uint8 hp;
 
 				UPROPERTY(EditAnywhere)
-								uint8 agility;
+				uint8 defence;
+
+				UPROPERTY(EditAnywhere)
+				uint8 agility;
+
+				UPROPERTY(EditAnywhere)
+				TArray<FString> tags;
+
+				UPROPERTY(EditAnywhere)
+				TArray<FSTATE_TAG_INFO> stateTags;
+
+				UPROPERTY(EditAnywhere)
+				TArray<FSYNC_EFFECT_INFO> effectInfos;
+
+				UPROPERTY(EditAnywhere)
+								FString avatarId;
 };
 
 USTRUCT(BlueprintType)
@@ -97,6 +142,8 @@ public:
 				UPROPERTY(EditAnywhere)
 								TArray<FBATTLE_GRID_INFO> updateInfos;
 };
+
+
 
 UCLASS(Blueprintable, BlueprintType)
 class KBENGINEPLUGINS_API UKBEventData_onUpdateBattle : public UKBEventData
@@ -128,6 +175,43 @@ public:
 								int32 testParam;
 };
 
+UCLASS(Blueprintable, BlueprintType)
+class KBENGINEPLUGINS_API UKBEventData_ReqModifyCardGroup : public UKBEventData
+{
+				GENERATED_BODY()
+
+public:
+				UPROPERTY(EditAnywhere)
+								int32 groupNb;
+
+				UPROPERTY(EditAnywhere)
+				TArray<FString> cardList;
+};
+
+USTRUCT(BlueprintType)
+struct FCardGroup
+{
+				GENERATED_BODY()
+public:
+				UPROPERTY(EditAnywhere)
+								TArray<FString> cardList;
+};
+
+UCLASS(Blueprintable, BlueprintType)
+class KBENGINEPLUGINS_API UKBEventData_ReceivePlayerPersistInfo : public UKBEventData
+{
+				GENERATED_BODY()
+public:
+				UPROPERTY(EditAnywhere)
+				TArray<FCardGroup> cardGroups;
+};
+
+
+
+
+
+
+
 USTRUCT(BlueprintType)
 struct FSYNC_CARD_INFO
 {
@@ -150,6 +234,12 @@ public:
 
 				UPROPERTY(EditAnywhere)
 								TArray<FString> tags;
+
+				UPROPERTY(EditAnywhere)
+								TArray<FSTATE_TAG_INFO> stateTags;
+
+				UPROPERTY(EditAnywhere)
+								TArray<FSYNC_EFFECT_INFO> effectInfos;
 };
 
 USTRUCT(BlueprintType)
@@ -190,6 +280,16 @@ public:
 
 				UPROPERTY()
 								TArray<FString> handCardList;
+};
+
+UCLASS(Blueprintable, BlueprintType)
+class KBENGINEPLUGINS_API UKBEventData_onSyncReceiveEnterRoom : public UKBEventData
+{
+				GENERATED_BODY()
+
+public:
+				UPROPERTY(EditAnywhere)
+								uint8 result;
 };
 
 UCLASS(Blueprintable, BlueprintType)
@@ -248,6 +348,19 @@ public:
 };
 
 UCLASS(Blueprintable, BlueprintType)
+class KBENGINEPLUGINS_API UKBEventData_onSyncLaunchSkillFailed : public UKBEventData
+{
+				GENERATED_BODY()
+
+public:
+				UPROPERTY(EditAnywhere)
+				int32 curActionSequence;
+
+				UPROPERTY(EditAnywhere)
+				int32 clientActionSequence;
+};
+
+UCLASS(Blueprintable, BlueprintType)
 class KBENGINEPLUGINS_API UKBEventData_onSyncBattleResult : public UKBEventData
 {
 				GENERATED_BODY()
@@ -274,7 +387,16 @@ class KBENGINEPLUGINS_API UKBEventData_onSyncLatestBattleState : public UKBEvent
 
 public:
 				UPROPERTY(EditAnywhere)
-				int32 curBattleTick;
+				int32 curSwitchControllerSequence;
+
+				UPROPERTY(EditAnywhere)
+				uint8 curControllerNb;
+
+				UPROPERTY(EditAnywhere)
+				FString curControllerAvatarId;
+
+				UPROPERTY(EditAnywhere)
+				int32 curActionSequence;
 
 				UPROPERTY(EditAnywhere)
 				TArray<FBATTLE_GRID_INFO> updateGridInfos;
@@ -293,7 +415,7 @@ class KBENGINEPLUGINS_API UKBEventData_onSyncResumeBattle : public UKBEventData
 
 public:
 				UPROPERTY(EditAnywhere)
-				uint8 controllerNb;
+				int32 controllerNb;
 };
 
 UCLASS(Blueprintable, BlueprintType)
@@ -316,7 +438,7 @@ class KBENGINEPLUGINS_API UKBEventData_onSyncSwitchController : public UKBEventD
 
 public:
 				UPROPERTY(EditAnywhere)
-				uint8 controllerNb;
+				int32 controllerNb;
 
 				UPROPERTY(EditAnywhere)
 								FString avatarId;
@@ -333,4 +455,61 @@ public:
 
 				UPROPERTY(EditAnywhere)
 								int32 curTime;
+};
+
+UCLASS(Blueprintable, BlueprintType)
+class KBENGINEPLUGINS_API UKBEventData_onSyncUpdateActionInfo : public UKBEventData
+{
+				GENERATED_BODY()
+
+public:
+				UPROPERTY(EditAnywhere)
+				int32 actionSequence;
+
+				UPROPERTY(EditAnywhere)
+				TArray<FBATTLE_GRID_INFO> gridInfos;
+
+				UPROPERTY(EditAnywhere)
+				TArray<FSYNC_CARD_INFO> updateCardInfos;
+				
+};
+
+UCLASS(Blueprintable, BlueprintType)
+class KBENGINEPLUGINS_API UKBEventData_reqPlayCardAction : public UKBEventData
+{
+				GENERATED_BODY()
+
+public:
+				UPROPERTY(EditAnywhere)
+								int32 actionSequence;
+
+				UPROPERTY(EditAnywhere)
+								FString cardUid;
+
+				UPROPERTY(EditAnywhere)
+								int32 gridNb;
+
+};
+
+UCLASS(Blueprintable, BlueprintType)
+class KBENGINEPLUGINS_API UKBEventData_reqLaunchCardSkill : public UKBEventData
+{
+				GENERATED_BODY()
+
+public:
+				UPROPERTY(EditAnywhere)
+								int32 actionSequence;
+
+				UPROPERTY(EditAnywhere)
+								FString cardUid;
+
+				UPROPERTY(EditAnywhere)
+								FString skillName;
+
+				UPROPERTY(EditAnywhere)
+								int32 launchGridNb;
+
+				UPROPERTY(EditAnywhere)
+								int32 targetGridNb;
+
 };

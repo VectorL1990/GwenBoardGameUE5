@@ -37,18 +37,21 @@ public:
 	uint32 utype;
 	virtual void onUtypeChanged(uint32 oldValue) {}
 
-	virtual void onStopCardSelection() = 0; 
 	virtual void onSyncBattleResult(const STRING_LIST& arg1) = 0; 
 	virtual void onSyncChangeHandCardSuccess(uint8 arg1, const FString& arg2, const FString& arg3) = 0; 
 	virtual void onSyncExhaustCardReplacement() = 0; 
 	virtual void onSyncHeartBeat(int32 arg1) = 0; 
 	virtual void onSyncLatestBattleState(const CORE_UPDATE_BATLLE_INFO& arg1) = 0; 
+	virtual void onSyncLaunchSkillFailed(int32 arg1, int32 arg2) = 0; 
 	virtual void onSyncPlayerBattleInfo(const SYNC_PLAYER_BATTLE_INFO& arg1) = 0; 
-	virtual void onSyncResumeBattle(uint8 arg1) = 0; 
+	virtual void onSyncReceiveEnterRoom(uint8 arg1) = 0; 
+	virtual void onSyncReceiveFinishCardSelection() = 0; 
+	virtual void onSyncResumeBattle(int32 arg1) = 0; 
 	virtual void onSyncRoomStartBattle() = 0; 
 	virtual void onSyncSelectCardInterlude(const SYNC_PLAYER_BATTLE_INFO& arg1) = 0; 
-	virtual void onSyncSwitchController(uint8 arg1, uint64 arg2) = 0; 
+	virtual void onSyncSwitchController(int32 arg1, uint64 arg2) = 0; 
 	virtual void onSyncTimeInterval(const SYNC_BATTLE_TIME_INFO& arg1) = 0; 
+	virtual void onSyncUpdateActionInfo(const SYNC_MODIFICATION_INFO& arg1) = 0; 
 	virtual void onSyncUpdateSelectedCards(uint8 arg1, const SYNC_PLAYER_BATTLE_INFO& arg2) = 0; 
 
 	void onComponentsEnterworld() override;

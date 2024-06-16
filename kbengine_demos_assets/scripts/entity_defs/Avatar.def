@@ -10,6 +10,10 @@
 	</Properties>
 
 	<BaseMethods>
+		<reqEnterRoom>
+			<Exposed/>
+		</reqEnterRoom>
+
 		<reqChangeSelectCard>
 			<Exposed/>
 			<Arg> STRING </Arg>
@@ -30,12 +34,46 @@
 		<reqLatestBattleInfo>
 			<Exposed/>
 		</reqLatestBattleInfo>
+
+		<reqPlayCardAction>
+			<Exposed/>
+			<Arg> INT32 </Arg>
+			<Arg> STRING </Arg>
+			<Arg> INT32 </Arg>
+		</reqPlayCardAction>
+
+		<reqLaunchCardSkill>
+			<Exposed/>
+			<Arg> INT32 </Arg>
+			<Arg> STRING </Arg>
+			<Arg> STRING </Arg>
+			<Arg> INT32 </Arg>
+			<Arg> INT32 </Arg>
+		</reqLaunchCardSkill>
+
+		<reqRoundEnd>
+			<Exposed/>
+			<Arg> INT32 </Arg>
+		</reqRoundEnd>
 	</BaseMethods>
 
 	<CellMethods>
 	</CellMethods>
 
 	<ClientMethods>
+		<onSyncReceiveEnterRoom>
+			<Arg> BOOL </Arg>
+		</onSyncReceiveEnterRoom>
+
+		<onSyncUpdateActionInfo>
+			<Arg> SYNC_MODIFICATION_INFO </Arg>
+		</onSyncUpdateActionInfo>
+
+		<onSyncLaunchSkillFailed>
+			<Arg> INT32 </Arg>
+			<Arg> INT32 </Arg>
+		</onSyncLaunchSkillFailed>
+
 		<onSyncPlayerBattleInfo>
 			<Arg> SYNC_PLAYER_BATTLE_INFO </Arg>
 		</onSyncPlayerBattleInfo>
@@ -58,9 +96,6 @@
 		<onSyncRoomStartBattle>
 		</onSyncRoomStartBattle>
 
-		<onStopCardSelection>
-		</onStopCardSelection>
-
 		<onSyncTimeInterval>
 			<Arg> SYNC_BATTLE_TIME_INFO </Arg>
 		</onSyncTimeInterval>
@@ -71,12 +106,12 @@
 
 
 		<onSyncSwitchController>
-			<Arg> UINT8 </Arg>
+			<Arg> INT32 </Arg>
 			<Arg> UINT64 </Arg>
 		</onSyncSwitchController>
 
 		<onSyncResumeBattle>
-			<Arg> UINT8 </Arg>
+			<Arg> INT32 </Arg>
 		</onSyncResumeBattle>
 
 		<onSyncHeartBeat>
@@ -90,6 +125,9 @@
 		<onSyncBattleResult>
 			<Arg> STRING_LIST </Arg>
 		</onSyncBattleResult>
+
+		<onSyncReceiveFinishCardSelection>
+		</onSyncReceiveFinishCardSelection>
 	</ClientMethods>
 </root>
 

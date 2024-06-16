@@ -31,6 +31,15 @@ namespace KBEngine
 			sendCall(null);
 		}
 
+		public void reqEnterRoom()
+		{
+			Bundle pBundle = newCall("reqEnterRoom", 0);
+			if(pBundle == null)
+				return;
+
+			sendCall(null);
+		}
+
 		public void reqFinishSelectCards()
 		{
 			Bundle pBundle = newCall("reqFinishSelectCards", 0);
@@ -46,6 +55,32 @@ namespace KBEngine
 			if(pBundle == null)
 				return;
 
+			sendCall(null);
+		}
+
+		public void reqLaunchCardSkill(Int32 arg1, string arg2, string arg3, Int32 arg4, Int32 arg5)
+		{
+			Bundle pBundle = newCall("reqLaunchCardSkill", 0);
+			if(pBundle == null)
+				return;
+
+			bundle.writeInt32(arg1);
+			bundle.writeString(arg2);
+			bundle.writeString(arg3);
+			bundle.writeInt32(arg4);
+			bundle.writeInt32(arg5);
+			sendCall(null);
+		}
+
+		public void reqPlayCardAction(Int32 arg1, string arg2, Int32 arg3)
+		{
+			Bundle pBundle = newCall("reqPlayCardAction", 0);
+			if(pBundle == null)
+				return;
+
+			bundle.writeInt32(arg1);
+			bundle.writeString(arg2);
+			bundle.writeInt32(arg3);
 			sendCall(null);
 		}
 

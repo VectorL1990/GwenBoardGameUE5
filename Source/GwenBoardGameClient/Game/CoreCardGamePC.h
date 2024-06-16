@@ -23,8 +23,17 @@ public:
     UFUNCTION(BlueprintCallable)
     void DealLeftClick();
 
+    void InitSelectCardCamera();
+
+    void ShowBattleWidget();
+
+    void ReceiveFinishCardSelection();
+
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
     ACoreCardGameManager* coreCardGameManager;
+
+    UPROPERTY(EditDefaultsOnly)
+    TSubclassOf<UUserWidget> battleWidgetBPClass;
 
     UPROPERTY()
     UBattleWidget* battleWidget;
@@ -33,4 +42,6 @@ protected:
     virtual void BeginPlay() override;
 
     virtual void Tick(float DeltaTime) override;
+
+    
 };

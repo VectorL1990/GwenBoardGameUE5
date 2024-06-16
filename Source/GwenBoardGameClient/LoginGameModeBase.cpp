@@ -12,8 +12,8 @@ void ALoginGameModeBase::BeginPlay()
 {
 				Super::InitEvents();
 				InitEvents();
-				ReqTest();
 				InitKBEMain();
+				ReqTest();
 				BasicInitDone();
 }
 
@@ -31,6 +31,17 @@ void ALoginGameModeBase::ReqTest()
 				KBENGINE_EVENT_FIRE("reqTest", eventData);
 }
 
+void ALoginGameModeBase::ReqModifyCardGroup()
+{
+				UKBEventData_ReqModifyCardGroup* eventData = NewObject<UKBEventData_ReqModifyCardGroup>();
+				eventData->groupNb = 0;
+				eventData->cardList.Add("aaa");
+				eventData->cardList.Add("bbb");
+				eventData->cardList.Add("ccc");
+				eventData->cardList.Add("ddd");
+				KBENGINE_EVENT_FIRE("ReqModifyCardGroup", eventData);
+}
+
 void ALoginGameModeBase::onReqTest(const UKBEventData* eventData)
 {
 				const UKBEventData_onReqTest* onReqTestEventData = Cast<UKBEventData_onReqTest>(eventData);
@@ -42,7 +53,7 @@ void ALoginGameModeBase::BasicInitDone_Implementation()
 
 }
 
-void ALoginGameModeBase::InitPlayerBattleInfoDone(TArray<FString> cardList)
+void ALoginGameModeBase::SpawnSelectCard()
 {
 
 }

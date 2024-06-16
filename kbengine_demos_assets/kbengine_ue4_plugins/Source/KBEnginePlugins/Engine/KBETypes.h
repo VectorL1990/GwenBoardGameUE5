@@ -248,21 +248,73 @@ inline bool operator ==(const UPDATE_GRID_INFO_LIST& a, const UPDATE_GRID_INFO_L
 	return a.updateId == b.updateId && a.updateGridList == b.updateGridList;
 };
 
+class STATE_INFO
+{
+public:
+	FString state;
+	uint8 stipulation;
+	uint8 curCount;
+
+	STATE_INFO():
+	state(),
+	stipulation(0),
+	curCount(0)
+	{
+	}
+
+};
+
+inline bool operator ==(const STATE_INFO& a, const STATE_INFO& b)
+{
+	return a.state == b.state && a.stipulation == b.stipulation && a.curCount == b.curCount;
+};
+
+class SYNC_EFFECT_INFO
+{
+public:
+	FString effectName;
+	uint8 countDown;
+	uint8 availableTimes;
+
+	SYNC_EFFECT_INFO():
+	effectName(),
+	countDown(0),
+	availableTimes(0)
+	{
+	}
+
+};
+
+inline bool operator ==(const SYNC_EFFECT_INFO& a, const SYNC_EFFECT_INFO& b)
+{
+	return a.effectName == b.effectName && a.countDown == b.countDown && a.availableTimes == b.availableTimes;
+};
+
 class BATTLE_GRID_INFO
 {
 public:
 	int32 gridNb;
 	FString cardUid;
+	FString cardName;
 	uint8 hp;
 	uint8 defence;
 	uint8 agility;
+	TArray<FString> tags;
+	TArray<STATE_INFO> stateTags;
+	TArray<SYNC_EFFECT_INFO> effectInfos;
+	uint64 avatarId;
 
 	BATTLE_GRID_INFO():
 	gridNb(0),
 	cardUid(),
+	cardName(),
 	hp(0),
 	defence(0),
-	agility(0)
+	agility(0),
+	tags(),
+	stateTags(),
+	effectInfos(),
+	avatarId(0)
 	{
 	}
 
@@ -270,7 +322,7 @@ public:
 
 inline bool operator ==(const BATTLE_GRID_INFO& a, const BATTLE_GRID_INFO& b)
 {
-	return a.gridNb == b.gridNb && a.cardUid == b.cardUid && a.hp == b.hp && a.defence == b.defence && a.agility == b.agility;
+	return a.gridNb == b.gridNb && a.cardUid == b.cardUid && a.cardName == b.cardName && a.hp == b.hp && a.defence == b.defence && a.agility == b.agility && a.tags == b.tags && a.stateTags == b.stateTags && a.effectInfos == b.effectInfos && a.avatarId == b.avatarId;
 };
 
 class SYNC_CARD_INFO
@@ -282,6 +334,8 @@ public:
 	uint8 defence;
 	uint8 agility;
 	TArray<FString> tags;
+	TArray<STATE_INFO> stateTags;
+	TArray<SYNC_EFFECT_INFO> effectInfos;
 
 	SYNC_CARD_INFO():
 	cardKey(),
@@ -289,7 +343,9 @@ public:
 	hp(0),
 	defence(0),
 	agility(0),
-	tags()
+	tags(),
+	stateTags(),
+	effectInfos()
 	{
 	}
 
@@ -297,7 +353,7 @@ public:
 
 inline bool operator ==(const SYNC_CARD_INFO& a, const SYNC_CARD_INFO& b)
 {
-	return a.cardKey == b.cardKey && a.cardName == b.cardName && a.hp == b.hp && a.defence == b.defence && a.agility == b.agility && a.tags == b.tags;
+	return a.cardKey == b.cardKey && a.cardName == b.cardName && a.hp == b.hp && a.defence == b.defence && a.agility == b.agility && a.tags == b.tags && a.stateTags == b.stateTags && a.effectInfos == b.effectInfos;
 };
 
 class SYNC_PLAYER_BATTLE_INFO
@@ -322,12 +378,18 @@ inline bool operator ==(const SYNC_PLAYER_BATTLE_INFO& a, const SYNC_PLAYER_BATT
 class CORE_UPDATE_BATLLE_INFO
 {
 public:
-	int32 curTick;
+	int32 curSwitchControllerSequence;
+	uint8 curControllerNb;
+	uint64 curControllerAvatarId;
+	int32 curActionSequence;
 	TArray<BATTLE_GRID_INFO> updateList;
 	SYNC_PLAYER_BATTLE_INFO playerInfo;
 
 	CORE_UPDATE_BATLLE_INFO():
-	curTick(0),
+	curSwitchControllerSequence(0),
+	curControllerNb(0),
+	curControllerAvatarId(0),
+	curActionSequence(0),
 	updateList(),
 	playerInfo()
 	{
@@ -337,7 +399,7 @@ public:
 
 inline bool operator ==(const CORE_UPDATE_BATLLE_INFO& a, const CORE_UPDATE_BATLLE_INFO& b)
 {
-	return a.curTick == b.curTick && a.updateList == b.updateList && a.playerInfo == b.playerInfo;
+	return a.curSwitchControllerSequence == b.curSwitchControllerSequence && a.curControllerNb == b.curControllerNb && a.curControllerAvatarId == b.curControllerAvatarId && a.curActionSequence == b.curActionSequence && a.updateList == b.updateList && a.playerInfo == b.playerInfo;
 };
 
 class SYNC_BATTLE_TIME_INFO
@@ -357,6 +419,27 @@ public:
 inline bool operator ==(const SYNC_BATTLE_TIME_INFO& a, const SYNC_BATTLE_TIME_INFO& b)
 {
 	return a.curTime == b.curTime && a.battleState == b.battleState;
+};
+
+class SYNC_MODIFICATION_INFO
+{
+public:
+	int32 actionSequence;
+	TArray<BATTLE_GRID_INFO> updateGridList;
+	TArray<SYNC_CARD_INFO> updateCardList;
+
+	SYNC_MODIFICATION_INFO():
+	actionSequence(0),
+	updateGridList(),
+	updateCardList()
+	{
+	}
+
+};
+
+inline bool operator ==(const SYNC_MODIFICATION_INFO& a, const SYNC_MODIFICATION_INFO& b)
+{
+	return a.actionSequence == b.actionSequence && a.updateGridList == b.updateGridList && a.updateCardList == b.updateCardList;
 };
 
 class PLAYER_PERSIST_INFO

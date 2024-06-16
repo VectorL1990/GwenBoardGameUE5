@@ -15,6 +15,7 @@ class Avatar(KBEngine.Proxy,
 		GameObject.__init__(self)
 		
 		self.accountEntity = None
+		self.hasEnterRoom = False
 		self.persistPlayerInfo = None
 		self.allCardDict = {}
 		self.handCardList = []
@@ -67,11 +68,13 @@ class Avatar(KBEngine.Proxy,
 		for k, v in self.allCardDict.items():
 			cardInfo = {
 				"cardKey": k,
-				"cardName": v["CardName"],
-				"hp": v["Hp"],
-				"defence": v["Defence"],
-				"agility": v["Agility"],
-				"tags": v["Tags"],
+				"cardName": v["cardName"],
+				"hp": v["hp"],
+				"defence": v["defence"],
+				"agility": v["agility"],
+				"tags": v["tags"],
+				"stateTags": v["stateTags"],
+				"effectInfos": v["effects"]
 			}
 			allCardList.append(cardInfo)
 
@@ -93,11 +96,13 @@ class Avatar(KBEngine.Proxy,
 		for k, v in self.allCardDict.items():
 			cardInfo = {
 				"cardKey": k,
-				"cardName": v["CardName"],
-				"hp": v["Hp"],
-				"defence": v["Defence"],
-				"agility": v["Agility"],
-				"tags": v["Tags"],
+				"cardName": v["cardName"],
+				"hp": v["hp"],
+				"defence": v["defence"],
+				"agility": v["agility"],
+				"tags": v["tags"],
+				"stateTags": v["stateTags"],
+				"effectInfos": v["effects"]
 			}
 			allCardList.append(cardInfo)
 
@@ -133,11 +138,13 @@ class Avatar(KBEngine.Proxy,
 		for k, v in self.allCardDict.items():
 			cardInfo = {
 				"cardKey": k,
-				"cardName": v["CardName"],
-				"hp": v["Hp"],
-				"defence": v["Defence"],
-				"agility": v["Agility"],
-				"tags": v["Tags"],
+				"cardName": v["cardName"],
+				"hp": v["hp"],
+				"defence": v["defence"],
+				"agility": v["agility"],
+				"tags": v["tags"],
+				"stateTags": v["stateTags"],
+				"effectInfos": v["effects"]
 			}
 			allCardList.append(cardInfo)
 
@@ -147,9 +154,30 @@ class Avatar(KBEngine.Proxy,
 		}
 		self.client.onSyncLatestBattleState(battleInfo)
 
+	def roomReqUpdateActionModification(self, syncModificationInfo):
+		self.client.onSyncUpdateActionInfo(syncModificationInfo)
+
+	def roomReqNotifyLaunchSkillFailed(self, curActionSequence, clientLaunchActionSequence):
+		self.client.onSyncLaunchSkillFailed(curActionSequence, clientLaunchActionSequence)
+
 	#---
 	#
 	#---
+	def reqEnterRoom(self):
+		if self.hasEnterRoom == False:
+			self.hasEnterRoom = True
+			cardList = self.persistPlayerInfo["persistCardList"]
+			playerBattleInfo = {
+				"cardList" : cardList,
+			}
+			# shuffle and encode all cards
+			self.shuffleCardList(playerBattleInfo["cardList"])
+			self.client.onSyncReceiveEnterRoom(True)
+			# tell room avatar is ready
+			self.roomEntityCall.avatarEnterRoom(self)
+		else:
+			self.client.onSyncReceiveEnterRoom(False)
+
 	def reqChangeSelectCard(self, cardKey):
 		leftChangeCardNb = GlobalConst.g_maxChangeCardNb - self.changeSelectCardNb
 		if leftChangeCardNb <= 1:
@@ -179,11 +207,13 @@ class Avatar(KBEngine.Proxy,
 		for k, v in self.allCardDict.items():
 			cardInfo = {
 				"cardKey": k,
-				"cardName": v["CardName"],
-				"hp": v["Hp"],
-				"defence": v["Defence"],
-				"agility": v["Agility"],
-				"tags": v["Tags"],
+				"cardName": v["cardName"],
+				"hp": v["hp"],
+				"defence": v["defence"],
+				"agility": v["agility"],
+				"tags": v["tags"],
+				"stateTags": v["stateTags"],
+				"effectInfos": v["effects"]
 			}
 			allCardList.append(cardInfo)
 
@@ -194,6 +224,7 @@ class Avatar(KBEngine.Proxy,
 		self.client.onSyncUpdateSelectedCards(self.changeSelectCardNb, syncPlayerBattleInfo)
 	
 	def reqFinishSelectCards(self):
+		self.client.onSyncReceiveFinishCardSelection()
 		self.roomEntityCall.avatarFinishSelectCards(self)
 
 	def reqSyncHeartBeat(self):
@@ -202,20 +233,20 @@ class Avatar(KBEngine.Proxy,
 	def reqLatestBattleInfo(self):
 		self.roomEntityCall.avatarReqLatestBattleInfo(self)
 
+	def reqPlayCardAction(self, clientActionSequence, cardUid, gridNb):
+		self.roomEntityCall.avatarReqPlayCardAction(self, clientActionSequence, cardUid, gridNb)
+
+	def reqLaunchCardSkill(self, clientActionSequence, cardUid, skillName, launchGridNb, targetGridNb):
+		self.roomEntityCall.avatarReqLaunchCardSkillAction(self, clientActionSequence, cardUid, skillName, launchGridNb, targetGridNb)
+
+	def reqRoundEnd(self, clientActionSequence):
+		self.roomEntityCall.avatarReqEndRound(self, clientActionSequence)
 
 	#--------------------------------------------------------------------------------------------
 	#                              Callbacks
 	#--------------------------------------------------------------------------------------------
 	def onClientEnabled(self):
-		cardList = self.persistPlayerInfo["persistCardList"]
-		playerBattleInfo = {
-			"cardList" : cardList,
-		}
-		# shuffle and encode all cards
-		self.shuffleCardList(playerBattleInfo["cardList"])
-
-		# tell room avatar is ready
-		self.roomEntityCall.avatarEnterRoom(self)
+		return
 
 		
 		

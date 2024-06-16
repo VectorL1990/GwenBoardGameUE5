@@ -2,6 +2,7 @@
 
 
 #include "BasicGameMode.h"
+#include "Kismet/GameplayStatics.h"
 #include "Engine/KBEngine.h"
 #include "Engine/KBEMain.h"
 #include "Scripts/BattleEvents.h"
@@ -28,6 +29,7 @@ void ABasicGameMode::InitEvents()
 				KBENGINE_REGISTER_EVENT(KBEngine::KBEventTypes::onCreateAccountResult, onCreateAccountResult);
 				KBENGINE_REGISTER_EVENT("onSyncRoomCreated", onSyncRoomCreated);
 				KBENGINE_REGISTER_EVENT("onSyncPlayerBattleInfo", onSyncPlayerBattleInfo);
+				KBENGINE_REGISTER_EVENT("ReceivePlayerPersistInfo", ReceivePlayerPersistInfo);
 }
 
 void ABasicGameMode::onKicked(const UKBEventData* eventData)
@@ -86,7 +88,12 @@ void ABasicGameMode::onSyncRoomCreated(const UKBEventData* eventData)
 				const UKBEventData_onSyncRoomCreated* onSyncRoomCreatedData = Cast<UKBEventData_onSyncRoomCreated>(eventData);
 				sRoomKey = onSyncRoomCreatedData->sRoomKey;
 				GEngine->AddOnScreenDebugMessage(-1, 10.0, FColor::Red, "onSyncRoomCreated room key is: " + sRoomKey);
-				ReqEnterRoom();
+				UGameInstance* gameInstance = UGameplayStatics::GetGameInstance(this);
+				UGwenBoardGameInstance* gwenGameInstance = Cast<UGwenBoardGameInstance>(gameInstance);
+				gwenGameInstance->curRoomKey = sRoomKey;
+				// at this point we should switch to battle level
+				// and then we send message to server about entering room
+				UGameplayStatics::OpenLevel(this, "DesertBoardMap");
 }
 
 void ABasicGameMode::onSyncPlayerBattleInfo(const UKBEventData* eventData)
@@ -99,7 +106,16 @@ void ABasicGameMode::onSyncPlayerBattleInfo(const UKBEventData* eventData)
 				//InitPlayerBattleInfoDone(onSyncPlayerBattleInfoData->cardList);
 }
 
-void ABasicGameMode::InitPlayerBattleInfoDone(TArray<FString> cardList)
+void ABasicGameMode::ReceivePlayerPersistInfo(const UKBEventData* eventData)
+{
+				const UKBEventData_ReceivePlayerPersistInfo* castEventData = Cast<UKBEventData_ReceivePlayerPersistInfo>(eventData);
+				for (int32 i = 0; i < castEventData->cardGroups.Num(); i++)
+				{
+
+				}
+}
+
+void ABasicGameMode::SpawnSelectCard()
 {
 
 }

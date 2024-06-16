@@ -5,6 +5,36 @@ from enum import Enum
 g_handCardAmount = 10
 g_maxChangeHandCardNb = 3
 g_maxHeartBeatCount = 60
+maxCol = 8
+handCardStartRow = 2
+handCardEndRow = 3
+graveCardStartRow = 0
+graveCardEndRow = 1
+boardStartRow = 4
+boardEndRow = 11
+maxRow = 16
+handCardNb = 10
+totalPlayCardActionId = 64
+totalLaunchSkillActionId = 4096
+totalMoveCardActionId = 896
+totalMoveNb = 5056
+endRoundActionId = 2000
+maxRound = 20
+'''
+categorize all cards into features below
+1. skillLaunchType 3
+2. skillGeoType 21
+'''
+totalPlayCardTypeNb = 20250
+cardCodeLen = 63
+skillLaunchTypdeCodeLen = 3
+skillGeoCodeLen = 15
+skillEffectCodeLen = 15
+skillTagConditionCodeLen = 3
+cardTypeCodeLen = 50
+cardLinkPairLen = 10
+g_boardColumn = 10
+g_boardHalfRow = 3
 
 class g_battleState(Enum):
 	DEFAULT = 1
@@ -28,3 +58,6 @@ g_demoMaps = {
 	b'kbengine_ogre_demo' : 2,
 	b'' : 1,
 }
+
+defaultRomeCardGroup = ["Vulso", "Vulso", "Vulso"]
+defaultHanCardGroup = ["Tabora", "Tabora", "Tabora"]

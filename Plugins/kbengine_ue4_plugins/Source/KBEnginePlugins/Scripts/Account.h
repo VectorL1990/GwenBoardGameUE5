@@ -21,7 +21,9 @@ namespace KBEngine
         void reqTest(int32 param);
         void ReqEnterRoom();
         void ReqMatch();
+        void ReqModifyCardGroup(int32 groupNb, TArray<FString> cardList);
 
+        virtual void onAccountClientEnabled(const PLAYER_PERSIST_INFO& arg1) override;
         virtual void onReqTest(int32 param) override;
         virtual void onSyncRoomCreated(uint64 roomKey) override;
     };

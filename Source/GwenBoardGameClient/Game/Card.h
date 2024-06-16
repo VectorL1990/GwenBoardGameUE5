@@ -23,6 +23,9 @@ protected:
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;
 
+private:
+    float cardAnimStateTick = 0.0;
+
 public:
     // Called every frame
     virtual void Tick(float DeltaTime) override;
@@ -31,11 +34,14 @@ public:
 
     FPLAY_CARD_INFO GetCardInfo();
 
+    void Discard();
+
+    CardAnimationStatus cardAnimationStatus = CardAnimationStatus::Default;
     BattleCardStatus cardStatus = BattleCardStatus::Standby;
 
     FString cardName;
 
-    int32 cardUid;
+    FString cardUid;
 
     int32 hp;
 
@@ -43,4 +49,12 @@ public:
 
     int32 defence;
 
+    UPROPERTY(EditAnywhere)
+    UMaterialInterface* basicCardMat;
+
+    UPROPERTY()
+    TArray<FString> inherentTags;
+
+    UPROPERTY()
+    TArray<FSTATE_TAG_INFO> stateTags;
 };

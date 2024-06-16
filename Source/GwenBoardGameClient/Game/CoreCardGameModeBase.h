@@ -58,20 +58,86 @@ public:
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<AActor> boardGridBPClass;
 
-    
+    UPROPERTY(EditDefaultsOnly)
+    float gridSpawnCardOffset = 0.1;
 
-private:
+    UPROPERTY(EditDefaultsOnly)
+    float cardSelfRotInterval;
+
+    UPROPERTY(EditDefaultsOnly)
+    float spreadCardRotInterval;
+
+    UPROPERTY(EditDefaultsOnly)
+    float spreadCardRotRadius;
+
+    UPROPERTY(EditDefaultsOnly)
+    float spreadCardHeight;
+
+    UPROPERTY(EditDefaultsOnly)
+    float spreadCardStepHeight;
+
+    UPROPERTY(EditDefaultsOnly)
+    FVector spreadCardOffset;
+
+    UPROPERTY(EditDefaultsOnly)
+    float hoverMoveRightCardsOffset;
+
+    UPROPERTY(EditDefaultsOnly)
+    float hoverCardUpOffset;
+
+    UPROPERTY(EditDefaultsOnly)
+    float hoverMoveCardInterpDeltaTime;
+
+    UPROPERTY(EditDefaultsOnly)
+    float hoverMoveCardInterpSpeed;
+
+    TMap<CameraType, ABattleCamera*> camerasMap;
+
+public:
+    // --- Main game logic
+    void SinglePlayerGameLoop(float dT);
+
+    UPROPERTY()
+    TArray<ACard*> testCards;
+
+    TArray<FRotator> testCardRots;
+    TArray<FVector> testCardLocations;
+
+    TArray<FVector> testCardTempLocations;
+
+    void SpawnTestCards();
+
+    void RearrangeCardLocations(int32 hoverCardNb);
+
+    void RecoverCardLocations();
+
+    void CalculateCardSpread();
+
+    void MoveRearrangeCards();
+
     // --- Local logic functions
+    void CheckEntitiesCreated();
+
     void GetAllPresetObjects();
 
-    void SetupBattleBoardAndCards();
+    void InitPreBattle();
 
-    void TriggerBattlePreparation();
+    //void SetupBattleBoardAndCards();
+
+    //void TriggerBattlePreparation();
+
+    void CalibrateGridInfos(TArray<FBATTLE_GRID_INFO> gridInfos);
+
+    void CalibratePlayerCardInfos(TArray<FSYNC_CARD_INFO> allCardInfoList, TArray<FString> handCardUidList);
+
+    void CalibrateCurrentGlobalInfo(int32 curActionSequence, int32 curSwitchControllerSequence, uint8 curControllerNb);
 
     // --- Account req functions
-    void ReqEnterRoom();
 
     void ReqPlayCard(int32 targetGridNb, int32 playCardUid);
+
+    // --- Account sync functions
+    void onEnterWorld(const UKBEventData* eventData);
 
     // --- Avatar req functions
     void ReqChangeSelectCard(FString changeCardKey);
@@ -84,13 +150,15 @@ private:
 
     void ReqLatestBattleInfo();
 
+    void ReqPlayCardAction(int32 actionSequence, FString cardUid, int32 gridNb);
+
+    void ReqLaunchCardSkill(int32 actionSequence, FString cardUid, FString skillName, int32 launchGridNb, int32 targetGridNb);
+
     // --- Avatar sync functions
 
     void onReceiveUpdateCoreGame(const UKBEventData* eventData);
 
     void onUpdateGridInfoList(const UKBEventData* eventData);
-
-    void onStopCardSelection(const UKBEventData* eventData);
 
     void onSyncBattleResult(const UKBEventData* eventData);
 
@@ -102,7 +170,13 @@ private:
 
     void onSyncLatestBattleState(const UKBEventData* eventData);
 
+    void onSyncLaunchSkillFailed(const UKBEventData* eventData);
+
     virtual void onSyncPlayerBattleInfo(const UKBEventData* eventData) override;
+
+    void onSyncReceiveEnterRoom(const UKBEventData* eventData);
+
+    void onSyncReceiveFinishCardSelection(const UKBEventData* eventData);
 
     void onSyncResumeBattle(const UKBEventData* eventData);
 
@@ -117,24 +191,37 @@ private:
     void onSyncUpdateSelectedCards(const UKBEventData* eventData);
 
 
-    virtual void InitPlayerBattleInfoDone(TArray<FString> cardList) override;
+    virtual void SpawnSelectCard() override;
+
+    bool isSinglePlay = true;
+
+    bool isHumanTurn = true;
+
+    bool hasReqEnterRoom = false;
+
+    SingleBattleState singleBattleState = SingleBattleState::Default;
 
     InterludeState interludeState = InterludeState::Default;
 
     NetworkStatus networkStatus = NetworkStatus::Default;
 
-    ClientBattleState clientBattleState = ClientBattleState::BeforeBattle;
+    ClientBattleState clientBattleState = ClientBattleState::Default;
 
     TMap<FString, float> interludeStateTicksMap;
 
     TMap<FString, float> battleStateTicksMap;
 
+    float curBattleStateTick = 0.0;
+
+    int32 receiveActionSequence = 0;
+
     float curCountingTick = 0.0;
 
-    int32 curReceiveUpdateId = 0;
+    float curReqEnterRoomTick = 0.0;
 
-    UPROPERTY(EditAnywhere)
-        TMap<CameraType, ABattleCamera*> camerasMap;
+    uint8 receiveControllerNb = 0;
+
+    int32 receiveSwitchControllerSequence = 0;
 
     UPROPERTY()
         TMap<int32, ABoardGrid*> boardGrids;
