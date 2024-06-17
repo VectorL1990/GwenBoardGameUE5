@@ -31,6 +31,7 @@ void ACoreCardGamePC::DealHover()
         {
             AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
             ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
+            coreCardGameMode->RecoverCardLocations();
             for (int32 i = 0; i < coreCardGameMode->testCards.Num(); i++)
             {
                 if (coreCardGameMode->testCards[i] == hitResult.GetComponent()->GetOwner())
@@ -39,6 +40,12 @@ void ACoreCardGamePC::DealHover()
                     break;
                 }
             }
+        }
+        else
+        {
+            AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
+            ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
+            coreCardGameMode->RecoverCardLocations();
         }
     }
     else
