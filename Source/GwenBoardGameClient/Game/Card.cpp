@@ -2,6 +2,7 @@
 
 
 #include "Card.h"
+#include "CoreCardGameModeBase.h"
 
 
 // Sets default values
@@ -52,5 +53,10 @@ FPLAY_CARD_INFO ACard::GetCardInfo()
 void ACard::Discard()
 {
     cardAnimationStatus = CardAnimationStatus::Discarding;
+}
+
+void ACard::MoveCard()
+{
+    //float test = ACoreCardGameModeBase::cardMoveTime;
 }
 

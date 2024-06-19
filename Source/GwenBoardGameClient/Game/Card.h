@@ -30,6 +30,8 @@ public:
     // Called every frame
     virtual void Tick(float DeltaTime) override;
 
+    void MoveCard();
+
     void InitCard(FString cardName);
 
     FPLAY_CARD_INFO GetCardInfo();
@@ -57,4 +59,7 @@ public:
 
     UPROPERTY()
     TArray<FSTATE_TAG_INFO> stateTags;
+
+    UPROPERTY(BlueprintReadWrite)
+    float curMoveCardTime = 0.0;
 };

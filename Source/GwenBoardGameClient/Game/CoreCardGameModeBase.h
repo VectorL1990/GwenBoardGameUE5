@@ -91,6 +91,7 @@ public:
     UPROPERTY(EditDefaultsOnly)
     float hoverMoveCardInterpSpeed;
 
+
     TMap<CameraType, ABattleCamera*> camerasMap;
 
 public:
