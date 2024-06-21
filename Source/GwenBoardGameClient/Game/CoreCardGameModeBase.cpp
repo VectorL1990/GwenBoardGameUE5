@@ -208,6 +208,8 @@ void ACoreCardGameModeBase::SinglePlayerGameLoop(float dT)
 
 void ACoreCardGameModeBase::SpawnTestCards()
 {
+				FVector spawnTestLoc = FVector(0.0, 0.0, 0.0);
+				testMoveCard = GetWorld()->SpawnActor<ACard>(cardBPClass, spawnTestLoc, FRotator::ZeroRotator);
 				for (int32 i = 0; i < 10; i++)
 				{
 								FVector spawnLoc = FVector(0.0, 0.0, 0.0);
@@ -300,6 +302,14 @@ void ACoreCardGameModeBase::MoveRearrangeCards()
 								testCards[i]->SetActorLocation(interpLocation);
 				}
 }
+
+void ACoreCardGameModeBase::MoveCard(FVector originLoc, FVector targetLoc, float midHeight)
+{
+				testMoveCard->SetActorLocation(originLoc);
+				FVector midPoint = (originLoc + targetLoc) / 2.0;
+				midPoint.Z = midHeight;
+}
+
 
 
 void ACoreCardGameModeBase::CheckEntitiesCreated()

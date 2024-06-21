@@ -91,6 +91,7 @@ public:
     UPROPERTY(EditDefaultsOnly)
     float hoverMoveCardInterpSpeed;
 
+
     TMap<CameraType, ABattleCamera*> camerasMap;
 
 public:
@@ -105,6 +106,8 @@ public:
 
     TArray<FVector> testCardTempLocations;
 
+    ACard* testMoveCard;
+
     void SpawnTestCards();
 
     void RearrangeCardLocations(int32 hoverCardNb);
@@ -114,6 +117,9 @@ public:
     void CalculateCardSpread();
 
     void MoveRearrangeCards();
+
+    UFUNCTION(BlueprintCallable)
+    void MoveCard(FVector originLoc, FVector targetLoc, float midHeight);
 
     // --- Local logic functions
     void CheckEntitiesCreated();
