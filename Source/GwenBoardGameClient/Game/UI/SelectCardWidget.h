@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "TextBlock.h"
 #include "SelectCardWidget.generated.h"
 
 /**
@@ -16,4 +17,6 @@ class GWENBOARDGAMECLIENT_API USelectCardWidget : public UUserWidget
 public:
     UFUNCTION(BlueprintCallable)
     void ClickButton(FString buttonName);
+
+
 };

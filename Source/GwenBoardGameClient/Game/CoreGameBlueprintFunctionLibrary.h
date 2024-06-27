@@ -68,6 +68,12 @@ enum class CameraType : uint8
     BattleCamera = 2,
 };
 
+UENUM(BlueprintType)
+enum class BattleCardWidgetType : uint8
+{
+    BattleSelectCard = 0,
+};
+
 
 
 

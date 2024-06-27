@@ -15,6 +15,102 @@
  *
  */
 
+USTRUCT(BlueprintType, Blueprintable)
+struct FCardInfo
+{
+    GENERATED_USTRUCT_BODY()
+public:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FString cardName;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        FString aliasCN;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        FString aliasEN;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        FString cardFunctionCN;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        FString cardFunctionEN;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        FString despCN;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        FString despEN;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        int32 hp;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        int32 defence;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        int32 agility;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        TArray<FString> cardTags;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        FString launchType;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        int32 coolDown;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        int32 availableTimes;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        FString launchGeoType;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        FString targetGeoType;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        FString aoeType;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        FString targetCamp;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        FString effectType;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        FString effectAffix;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        FString effectAffixCamp;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        FString prereqTagCondition;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        FString prereqTag;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        FString prereqCampType;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        FString prereqType;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        FString passivePrereqType;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        TArray<int32> values;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        UTexture* texture;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        FString moveType;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        FString cardCategory;
+};
+
 
 UCLASS()
 class GWENBOARDGAMECLIENT_API ACoreCardGameModeBase : public ABasicGameMode
@@ -30,6 +126,9 @@ public:
 
     UFUNCTION(BlueprintNativeEvent)
     void InitDone();
+
+    UPROPERTY()
+    TMap<FString, FCardInfo> allCardInfos;
 
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<ACard> cardBPClass;
@@ -95,6 +194,47 @@ public:
     TMap<CameraType, ABattleCamera*> camerasMap;
 
 public:
+    // --- Select card logic
+    UFUNCTION(BlueprintNativeEvent)
+    void TriggerReadCardInfo();
+
+    UFUNCTION(BlueprintCallable)
+    void SetCardInfo(FString cardName,
+        FString aliasCN,
+        FString aliasEN,
+        FString cardFunctionCN,
+        FString cardFunctionEN,
+        FString despCN,
+        FString despEN,
+        int32 hp,
+        int32 defence,
+        int32 agility,
+        TArray<FString> cardTags,
+        FString launchType,
+        int32 coolDown,
+        int32 availableTimes,
+        FString launchGeoType,
+        FString targetGeoType,
+        FString aoeType,
+        FString targetCamp,
+        FString effectType,
+        FString effectAffix,
+        FString effectAffixCamp,
+        FString prereqTagCondition,
+        FString prereqTag,
+        FString prereqCampType,
+        FString prereqType,
+        FString passivePrereqType,
+        TArray<int32> values,
+        UTexture* texture,
+        FString moveType,
+        FString cardCategory);
+
+    void RandSelectCards();
+
+    UPROPERTY(EditDefaultsOnly)
+    int32 startingSelectCardNb = 10;
+
     // --- Main game logic
     void SinglePlayerGameLoop(float dT);
 
