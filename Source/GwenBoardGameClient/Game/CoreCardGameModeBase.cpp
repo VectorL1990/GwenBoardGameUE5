@@ -245,6 +245,16 @@ void ACoreCardGameModeBase::RandSelectCards()
 								selectCardNbList.Add(cardNbList[randCardNb]);
 								cardNbList.RemoveAt(randCardNb);
 				}
+
+				for (int32 i = 0; i < selectCardNbList.Num(); i++)
+				{
+
+				}
+}
+
+void ACoreCardGameModeBase::FinishCardSelection()
+{
+				// Trigger by Select Card widget, next operation depends on single or multi players game mode
 }
 
 void ACoreCardGameModeBase::SinglePlayerGameLoop(float dT)
@@ -296,6 +306,21 @@ void ACoreCardGameModeBase::SinglePlayerGameLoop(float dT)
 								}
 				}
 }
+
+void ACoreCardGameModeBase::ReqPlayCard(int32 actionSequence, FString cardUid, int32 targetX, int32 targetY)
+{
+				FCardInfo cardInfo = battleCardUidMap[cardUid];
+				// modify board card states
+
+				// launch auto skill attached to card
+				if (cardInfo.launchType == "auto")
+				{
+
+				}
+}
+
+void ACoreCardGameModeBase::ReqLaunchCardSkill()
+{}
 
 void ACoreCardGameModeBase::SpawnTestCards()
 {
@@ -627,16 +652,6 @@ void ACoreCardGameModeBase::CalibrateCurrentGlobalInfo(int32 curActionSequence, 
 				}
 }
 
-void ACoreCardGameModeBase::ReqPlayCard(int32 targetGridNb, int32 playCardUid)
-{
-				UKBEventData_reqSendAction* eventData = NewObject<UKBEventData_reqSendAction>();
-				eventData->actionType = "playCard";
-				FPLAY_CARD_KBE_INFO playCardInfo;
-				playCardInfo.playCardId = playCardUid;
-				playCardInfo.targetGridNb = targetGridNb;
-				eventData->playCardInfo = playCardInfo;
-				KBENGINE_EVENT_FIRE("ReqSendAction", eventData);
-}
 
 void ACoreCardGameModeBase::onEnterWorld(const UKBEventData* eventData)
 {
@@ -678,7 +693,7 @@ void ACoreCardGameModeBase::ReqLatestBattleInfo()
 				KBENGINE_EVENT_FIRE("ReqLatestBattleInfo", eventData);
 }
 
-void ACoreCardGameModeBase::ReqPlayCardAction(int32 actionSequence, FString cardUid, int32 gridNb)
+void ACoreCardGameModeBase::MultiPlayerReqPlayCardAction(int32 actionSequence, FString cardUid, int32 gridNb)
 {
 				UKBEventData_reqPlayCardAction* eventData = NewObject<UKBEventData_reqPlayCardAction>();
 				eventData->actionSequence = actionSequence;
@@ -687,7 +702,7 @@ void ACoreCardGameModeBase::ReqPlayCardAction(int32 actionSequence, FString card
 				KBENGINE_EVENT_FIRE("ReqPlayCardAction", eventData);
 }
 
-void ACoreCardGameModeBase::ReqLaunchCardSkill(int32 actionSequence, FString cardUid, FString skillName, int32 launchGridNb, int32 targetGridNb)
+void ACoreCardGameModeBase::MultiPlayerReqLaunchCardSkill(int32 actionSequence, FString cardUid, FString skillName, int32 launchGridNb, int32 targetGridNb)
 {
 				UKBEventData_reqLaunchCardSkill* eventData = NewObject<UKBEventData_reqLaunchCardSkill>();
 				eventData->actionSequence = actionSequence;

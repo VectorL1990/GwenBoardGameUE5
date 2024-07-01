@@ -130,6 +130,9 @@ public:
     UPROPERTY()
     TMap<FString, FCardInfo> allCardInfos;
 
+    UPROPERTY()
+    TMap<FString, FCardInfo> battleCardUidMap;
+
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<ACard> cardBPClass;
 
@@ -232,11 +235,15 @@ public:
 
     void RandSelectCards();
 
+    void FinishCardSelection();
+
     UPROPERTY(EditDefaultsOnly)
     int32 startingSelectCardNb = 10;
 
     // --- Main game logic
-    void SinglePlayerGameLoop(float dT);
+    void ReqPlayCard(int32 actionSequence, FString cardUid, int32 targetX, int32 targetY);
+
+    void ReqLaunchCardSkill();
 
     UPROPERTY()
     TArray<ACard*> testCards;
@@ -261,6 +268,9 @@ public:
     UFUNCTION(BlueprintCallable)
     void MoveCard(FVector originLoc, FVector targetLoc, float midHeight);
 
+    // --- Single game logic
+    void SinglePlayerGameLoop(float dT);
+
     // --- Local logic functions
     void CheckEntitiesCreated();
 
@@ -278,10 +288,6 @@ public:
 
     void CalibrateCurrentGlobalInfo(int32 curActionSequence, int32 curSwitchControllerSequence, uint8 curControllerNb);
 
-    // --- Account req functions
-
-    void ReqPlayCard(int32 targetGridNb, int32 playCardUid);
-
     // --- Account sync functions
     void onEnterWorld(const UKBEventData* eventData);
 
@@ -296,9 +302,9 @@ public:
 
     void ReqLatestBattleInfo();
 
-    void ReqPlayCardAction(int32 actionSequence, FString cardUid, int32 gridNb);
+    void MultiPlayerReqPlayCardAction(int32 actionSequence, FString cardUid, int32 gridNb);
 
-    void ReqLaunchCardSkill(int32 actionSequence, FString cardUid, FString skillName, int32 launchGridNb, int32 targetGridNb);
+    void MultiPlayerReqLaunchCardSkill(int32 actionSequence, FString cardUid, FString skillName, int32 launchGridNb, int32 targetGridNb);
 
     // --- Avatar sync functions
 

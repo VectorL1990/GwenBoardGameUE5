@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "TextBlock.h"
+#include "BattleCardWidget.h"
 #include "SelectCardWidget.generated.h"
 
 /**
@@ -18,5 +19,6 @@ public:
     UFUNCTION(BlueprintCallable)
     void ClickButton(FString buttonName);
 
-
+    UPROPERTY(EditDefaultsOnly)
+    TArray<UBattleCardWidget*> initSeletableCardWidgetList;
 };
