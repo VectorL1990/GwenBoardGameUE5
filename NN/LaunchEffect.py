@@ -106,6 +106,17 @@ def GetAoeTargetGrids(stateList, x, y, targetX, targetY, aoeType, targetCamp):
 					modifyGrids.append([targetX + 1, targetY])
 			else:
 				modifyGrids.append([targetX + 1, targetY])
+		if stateList[targetY][targetX] != "--":
+			if targetCamp == "self":
+				targetGridStateStrs = stateList[targetY][targetX].split('/')
+				if targetGridStateStrs[2] == launchGridCamp:
+					modifyGrids.append([targetX, targetY])
+			elif targetCamp == "oppo":
+				targetGridStateStrs = stateList[targetY][targetX].split('/')
+				if targetGridStateStrs[2] != launchGridCamp:
+					modifyGrids.append([targetX, targetY])
+			else:
+				modifyGrids.append([targetX, targetY])
 	elif aoeType == "V3":
 		if targetY > 0 and stateList[targetY - 1][targetX] != "--":
 			if targetCamp == "self":
@@ -129,6 +140,17 @@ def GetAoeTargetGrids(stateList, x, y, targetX, targetY, aoeType, targetCamp):
 					modifyGrids.append([targetX, targetY + 1])
 			else:
 				modifyGrids.append([targetX, targetY + 1])
+		if stateList[targetY][targetX] != "--":
+			if targetCamp == "self":
+				targetGridStateStrs = stateList[targetY][targetX].split('/')
+				if targetGridStateStrs[2] == launchGridCamp:
+					modifyGrids.append([targetX, targetY])
+			elif targetCamp == "oppo":
+				targetGridStateStrs = stateList[targetY][targetX].split('/')
+				if targetGridStateStrs[2] != launchGridCamp:
+					modifyGrids.append([targetX, targetY])
+			else:
+				modifyGrids.append([targetX, targetY])
 	elif aoeType == "sweep":
 		xOffset = targetX - x
 		yOffset = targetY - y
@@ -319,7 +341,16 @@ def GetAoeTargetGrids(stateList, x, y, targetX, targetY, aoeType, targetCamp):
 			else:
 				modifyGrids.append([targetX - 1, targetY + 1])
 	else:
-		modifyGrids.append([targetX, targetY])
+		if targetCamp == "self":
+				targetGridStateStrs = stateList[targetY][targetX].split('/')
+				if targetGridStateStrs[2] == launchGridCamp:
+					modifyGrids.append([targetX, targetY])
+			elif targetCamp == "oppo":
+				targetGridStateStrs = stateList[targetY][targetX].split('/')
+				if targetGridStateStrs[2] != launchGridCamp:
+					modifyGrids.append([targetX, targetY])
+			else:
+				modifyGrids.append([targetX, targetY])
 	return modifyGrids
 
 

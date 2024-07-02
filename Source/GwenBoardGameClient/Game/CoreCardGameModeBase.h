@@ -7,6 +7,7 @@
 #include "GameFramework/GameModeBase.h"
 
 #include "../BasicGameMode.h"
+#include "CoreGameBlueprintFunctionLibrary.h"
 #include "BoardGrid.h"
 #include "BattleCamera.h"
 #include "CoreCardGameModeBase.generated.h"
@@ -14,102 +15,6 @@
 /**
  *
  */
-
-USTRUCT(BlueprintType, Blueprintable)
-struct FCardInfo
-{
-    GENERATED_USTRUCT_BODY()
-public:
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    FString cardName;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        FString aliasCN;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        FString aliasEN;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        FString cardFunctionCN;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        FString cardFunctionEN;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        FString despCN;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        FString despEN;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        int32 hp;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        int32 defence;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        int32 agility;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        TArray<FString> cardTags;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        FString launchType;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        int32 coolDown;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        int32 availableTimes;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        FString launchGeoType;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        FString targetGeoType;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        FString aoeType;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        FString targetCamp;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        FString effectType;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        FString effectAffix;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        FString effectAffixCamp;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        FString prereqTagCondition;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        FString prereqTag;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        FString prereqCampType;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        FString prereqType;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        FString passivePrereqType;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        TArray<int32> values;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        UTexture* texture;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        FString moveType;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        FString cardCategory;
-};
 
 
 UCLASS()
@@ -131,7 +36,7 @@ public:
     TMap<FString, FCardInfo> allCardInfos;
 
     UPROPERTY()
-    TMap<FString, FCardInfo> battleCardUidMap;
+    TMap<FString, FInstanceCardInfo> battleCardUidMap;
 
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<ACard> cardBPClass;
@@ -196,6 +101,7 @@ public:
 
     TMap<CameraType, ABattleCamera*> camerasMap;
 
+
 public:
     // --- Select card logic
     UFUNCTION(BlueprintNativeEvent)
@@ -244,6 +150,8 @@ public:
     void ReqPlayCard(int32 actionSequence, FString cardUid, int32 targetX, int32 targetY);
 
     void ReqLaunchCardSkill();
+
+    //void LaunchSkill();
 
     UPROPERTY()
     TArray<ACard*> testCards;

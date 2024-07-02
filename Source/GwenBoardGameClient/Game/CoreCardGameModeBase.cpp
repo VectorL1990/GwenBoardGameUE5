@@ -309,11 +309,11 @@ void ACoreCardGameModeBase::SinglePlayerGameLoop(float dT)
 
 void ACoreCardGameModeBase::ReqPlayCard(int32 actionSequence, FString cardUid, int32 targetX, int32 targetY)
 {
-				FCardInfo cardInfo = battleCardUidMap[cardUid];
+				FInstanceCardInfo cardInfo = battleCardUidMap[cardUid];
 				// modify board card states
 
 				// launch auto skill attached to card
-				if (cardInfo.launchType == "auto")
+				if (cardInfo.originCardInfo.launchType == "auto")
 				{
 
 				}
