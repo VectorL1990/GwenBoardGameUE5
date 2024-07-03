@@ -342,15 +342,15 @@ def GetAoeTargetGrids(stateList, x, y, targetX, targetY, aoeType, targetCamp):
 				modifyGrids.append([targetX - 1, targetY + 1])
 	else:
 		if targetCamp == "self":
-				targetGridStateStrs = stateList[targetY][targetX].split('/')
-				if targetGridStateStrs[2] == launchGridCamp:
-					modifyGrids.append([targetX, targetY])
-			elif targetCamp == "oppo":
-				targetGridStateStrs = stateList[targetY][targetX].split('/')
-				if targetGridStateStrs[2] != launchGridCamp:
-					modifyGrids.append([targetX, targetY])
-			else:
+			targetGridStateStrs = stateList[targetY][targetX].split('/')
+			if targetGridStateStrs[2] == launchGridCamp:
 				modifyGrids.append([targetX, targetY])
+		elif targetCamp == "oppo":
+			targetGridStateStrs = stateList[targetY][targetX].split('/')
+			if targetGridStateStrs[2] != launchGridCamp:
+				modifyGrids.append([targetX, targetY])
+		else:
+			modifyGrids.append([targetX, targetY])
 	return modifyGrids
 
 

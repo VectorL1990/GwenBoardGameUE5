@@ -4,7 +4,7 @@ import GlobalConst
 def ColDiff(stateList, x, y, targetX, targetY):
 	return abs(x - targetX)
 
-def SamRowHurtCardNb(stateList, x, y, targetX, targetY):
+def SameRowHurtCardNb(stateList, x, y, targetX, targetY):
 	hurtCardNb = 0
 	for i in range(0, GlobalConst.maxCol, 1):
 		stateStr = stateList[y][i]
@@ -17,5 +17,5 @@ def SamRowHurtCardNb(stateList, x, y, targetX, targetY):
 
 getAffixDict = {
 	"ColDiff": ColDiff,
-	'SamRowHurtCardNb': SamRowHurtCardNb
+	'SamRowHurtCardNb': SameRowHurtCardNb
 }

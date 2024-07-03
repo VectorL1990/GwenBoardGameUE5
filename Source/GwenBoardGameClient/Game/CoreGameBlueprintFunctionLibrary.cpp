@@ -392,6 +392,11 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::IncreaseDefence(
     int32 targetX,
     int32 targetY)
 {
-    
+    if (effectInfo.effectAffix != "none")
+    {
+
+    }
+    FEffectResultDict effectResultDict;
+    return effectResultDict;
 }
 
