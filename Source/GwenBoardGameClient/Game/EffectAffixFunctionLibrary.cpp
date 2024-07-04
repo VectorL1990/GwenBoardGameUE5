@@ -7,6 +7,7 @@ int32 UEffectAffixFunctionLibrary::GetAffix(
     FString affixType,
     TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
     TMap<int32, FBoardRow>& boardCardInfo,
+    FEffectInfo& effectInfo,
     int32 launchX,
     int32 launchY,
     int32 targetX,
@@ -19,32 +20,118 @@ int32 UEffectAffixFunctionLibrary::GetAffix(
     }
 }
 
-int32 UEffectAffixFunctionLibrary::ColDiff(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, int32 launchX, int32 launchY, int32 targetX, int32 targetY)
+int32 UEffectAffixFunctionLibrary::ColDiff(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 targetX, int32 targetY)
 {
     int32 colDiff = FMath::Abs(targetX - launchX);
     return colDiff;
 }
 
-int32 UEffectAffixFunctionLibrary::RowDiff(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, int32 launchX, int32 launchY, int32 targetX, int32 targetY)
+int32 UEffectAffixFunctionLibrary::RowDiff(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 targetX, int32 targetY)
 {
     int32 rowDiff = FMath::Abs(targetY - launchY);
     return rowDiff;
 }
 
-int32 UEffectAffixFunctionLibrary::DistDiff(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, int32 launchX, int32 launchY, int32 targetX, int32 targetY)
+int32 UEffectAffixFunctionLibrary::DistDiff(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 targetX, int32 targetY)
 {
     int32 colDiff = FMath::Abs(targetX - launchX);
     int32 rowDiff = FMath::Abs(targetY - launchY);
     return colDiff + rowDiff;
 }
 
-int32 UEffectAffixFunctionLibrary::SameRowNb(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, int32 launchX, int32 launchY, int32 targetX, int32 targetY)
+int32 UEffectAffixFunctionLibrary::SameRowNb(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 targetX, int32 targetY)
 {
+    int32 sameRowNb = 0;
     for (int32 i = 0; i < UGlobalConstFunctionLibrary::maxCol; i++)
     {
         int32 uid = boardCardInfo[targetY].colCardInfos[i];
-
+        if (uid != -1)
+        {
+            /*
+            if ((effectInfo.effectAffixCamp == "self" && allInstanceCardInfo[uid].camp == allInstanceCardInfo[launchUid].camp) ||
+                (effectInfo.effectAffixCamp == "oppo" && allInstanceCardInfo[uid].camp != allInstanceCardInfo[launchUid].camp) ||
+                effectInfo.effectAffixCamp == "none")
+            {
+                
+            }*/
+            sameRowNb += 1;
+        }
     }
+    return sameRowNb;
+}
+
+int32 UEffectAffixFunctionLibrary::SameColNb(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 targetX, int32 targetY)
+{
+    int32 sameColNb = 0;
+    for (int32 i = 0; i < UGlobalConstFunctionLibrary::maxRow; i++)
+    {
+        int32 uid = boardCardInfo[i].colCardInfos[targetX];
+        if (uid != -1)
+        {
+            sameColNb += 1;
+        }
+    }
+    return sameColNb;
+}
+
+int32 UEffectAffixFunctionLibrary::SameRowSelfCampNb(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 targetX, int32 targetY)
+{
+    int32 sameRowNb = 0;
+    for (int32 i = 0; i < UGlobalConstFunctionLibrary::maxCol; i++)
+    {
+        int32 launchUid = boardCardInfo[launchY].colCardInfos[launchX];
+        int32 uid = boardCardInfo[targetY].colCardInfos[i];
+        if (uid != -1 && allInstanceCardInfo[uid].camp == allInstanceCardInfo[launchUid].camp)
+        {
+            sameRowNb += 1;
+        }
+    }
+    return sameRowNb;
+}
+
+int32 UEffectAffixFunctionLibrary::SameColSelfCampNb(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 targetX, int32 targetY)
+{
+    int32 sameColNb = 0;
+    for (int32 i = 0; i < UGlobalConstFunctionLibrary::maxRow; i++)
+    {
+        int32 launchUid = boardCardInfo[launchY].colCardInfos[launchX];
+        int32 uid = boardCardInfo[i].colCardInfos[targetX];
+        if (uid != -1 && allInstanceCardInfo[uid].camp == allInstanceCardInfo[launchUid].camp)
+        {
+            sameColNb += 1;
+        }
+    }
+    return sameColNb;
+}
+
+int32 UEffectAffixFunctionLibrary::SameRowOppoCampNb(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 targetX, int32 targetY)
+{
+    int32 sameRowNb = 0;
+    for (int32 i = 0; i < UGlobalConstFunctionLibrary::maxCol; i++)
+    {
+        int32 launchUid = boardCardInfo[launchY].colCardInfos[launchX];
+        int32 uid = boardCardInfo[targetY].colCardInfos[i];
+        if (uid != -1 && allInstanceCardInfo[uid].camp != allInstanceCardInfo[launchUid].camp)
+        {
+            sameRowNb += 1;
+        }
+    }
+    return sameRowNb;
+}
+
+int32 UEffectAffixFunctionLibrary::SameColOppoCampNb(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 targetX, int32 targetY)
+{
+    int32 sameColNb = 0;
+    for (int32 i = 0; i < UGlobalConstFunctionLibrary::maxRow; i++)
+    {
+        int32 launchUid = boardCardInfo[launchY].colCardInfos[launchX];
+        int32 uid = boardCardInfo[i].colCardInfos[targetX];
+        if (uid != -1 && allInstanceCardInfo[uid].camp != allInstanceCardInfo[launchUid].camp)
+        {
+            sameColNb += 1;
+        }
+    }
+    return sameColNb;
 }
 
 void UEffectAffixFunctionLibrary::testFunc1(int32 launchX, int32 launchY, int32 targetX, int32 targetY)

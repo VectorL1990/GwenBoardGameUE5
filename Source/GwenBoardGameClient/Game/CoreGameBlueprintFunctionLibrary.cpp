@@ -2,6 +2,7 @@
 
 
 #include "Game/CoreGameBlueprintFunctionLibrary.h"
+#include "EffectAffixFunctionLibrary.h"
 
 TArray<FGridXY> UCoreGameBlueprintFunctionLibrary::GetAoeTargetGrids(
     TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
@@ -392,11 +393,44 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::IncreaseDefence(
     int32 targetX,
     int32 targetY)
 {
+    int32 effectValue = 0;
     if (effectInfo.effectAffix != "none")
     {
-
+        effectValue = UEffectAffixFunctionLibrary::GetAffix(
+            effectInfo.effectAffix,
+            allInstanceCardInfo,
+            boardCardInfo,
+            effectInfo,
+            launchX,
+            launchY,
+            targetX,
+            targetY);
     }
+    else
+    {
+        effectValue = effectInfo.values[0];
+    }
+
     FEffectResultDict effectResultDict;
+    effectResultDict.modifyType = "increaseDefence";
+    effectResultDict.success = true;
+
+    TArray<FGridXY> targetGrids = GetAoeTargetGrids(
+        allInstanceCardInfo,
+        boardCardInfo,
+        launchX,
+        launchY,
+        targetX,
+        targetY,
+        effectInfo.aoeType,
+        effectInfo.targetCamp);
+
+    for (int32 i = 0; i < targetGrids.Num(); i++)
+    {
+        int32 uid = boardCardInfo[targetGrids[i].y].colCardInfos[targetGrids[i].x];
+        allInstanceCardInfo[uid].curDefence = allInstanceCardInfo[uid].curDefence + effectValue;
+        effectResultDict.modifyGrids.Add(targetGrids[i]);
+    }
     return effectResultDict;
 }
 
