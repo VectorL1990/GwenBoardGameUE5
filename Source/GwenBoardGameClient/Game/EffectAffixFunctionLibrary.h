@@ -43,6 +43,8 @@ public:
 
     static int32 SameColOppoCampNb(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 targetX, int32 targetY);
 
+    static int32 SameRowSameHpNb(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 targetX, int32 targetY);
+
     static void testFunc1(int32 launchX, int32 launchY, int32 targetX, int32 targetY);
 
     void (*FuncPtr)(int32 launchX, int32 launchY, int32 targetX, int32 targetY) = testFunc1;

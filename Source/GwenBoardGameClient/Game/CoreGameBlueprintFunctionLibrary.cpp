@@ -11,14 +11,14 @@ TArray<FGridXY> UCoreGameBlueprintFunctionLibrary::GetAoeTargetGrids(
     int32 launchY,
     int32 targetX,
     int32 targetY,
-    AoeType aoeType,
+    FString aoeType,
     FString targetCamp)
 {
     int32 launchUid = boardCardInfo[launchY].colCardInfos[launchX];
     uint8 launchCamp = allInstanceCardInfo[launchUid].camp;
 
 				TArray<FGridXY> modifyGrids;
-				if (aoeType == AoeType::H3)
+				if (aoeType == "H3")
 				{
         // check left grid
         if (targetX > 0 && boardCardInfo[targetY].colCardInfos[targetX - 1] != -1)
@@ -66,7 +66,7 @@ TArray<FGridXY> UCoreGameBlueprintFunctionLibrary::GetAoeTargetGrids(
             }
         }
     }
-    else if (aoeType == AoeType::V3)
+    else if (aoeType == "V3")
     {
         // check left grid
         if (targetY > 0 && boardCardInfo[targetY - 1].colCardInfos[targetX] != -1)
@@ -114,7 +114,7 @@ TArray<FGridXY> UCoreGameBlueprintFunctionLibrary::GetAoeTargetGrids(
             }
         }
     }
-    else if (aoeType == AoeType::Sweep)
+    else if (aoeType == "Sweep")
     {
         int32 xOffset = targetX - launchX;
         int32 yOffset = targetY - launchY;
@@ -239,7 +239,7 @@ TArray<FGridXY> UCoreGameBlueprintFunctionLibrary::GetAoeTargetGrids(
             }
         }
     }
-    else if (aoeType == AoeType::NormalCross)
+    else if (aoeType == "NormalCross")
     {
         if (targetX > 0 && boardCardInfo[targetY].colCardInfos[targetX - 1] != -1)
         {
@@ -301,7 +301,7 @@ TArray<FGridXY> UCoreGameBlueprintFunctionLibrary::GetAoeTargetGrids(
             }
         }
     }
-    else if (aoeType == AoeType::ObliqueCross)
+    else if (aoeType == "ObliqueCross")
     {
         if (targetX - 1 >= 0 && targetY - 1 >= 0 && boardCardInfo[targetY - 1].colCardInfos[targetX - 1] != -1)
         {

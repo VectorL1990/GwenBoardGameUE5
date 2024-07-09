@@ -16,8 +16,9 @@ int32 UEffectAffixFunctionLibrary::GetAffix(
     int32 affixValue = 0;
     if (affixType == "ColDiff")
     {
-        affixValue = ColDiff(allInstanceCardInfo, boardCardInfo, launchX, launchY, targetX, targetY);
+        affixValue = ColDiff(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY);
     }
+    return affixValue;
 }
 
 int32 UEffectAffixFunctionLibrary::ColDiff(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 targetX, int32 targetY)
@@ -132,6 +133,43 @@ int32 UEffectAffixFunctionLibrary::SameColOppoCampNb(TMap<int32, FInstanceCardIn
         }
     }
     return sameColNb;
+}
+
+int32 UEffectAffixFunctionLibrary::SameRowSameHpNb(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 targetX, int32 targetY)
+{
+    int32 sameRowSameHpNb = 0;
+    for (int32 i = 0; i < UGlobalConstFunctionLibrary::maxCol; i++)
+    {
+        int32 launchUid = boardCardInfo[launchY].colCardInfos[launchX];
+        int32 uid = boardCardInfo[targetY].colCardInfos[i];
+        if (effectInfo.effectAffixCamp == "self")
+        {
+            if (uid != -1 &&
+                allInstanceCardInfo[uid].camp == allInstanceCardInfo[launchUid].camp &&
+                allInstanceCardInfo[uid].curHp == allInstanceCardInfo[launchUid].curHp)
+            {
+                sameRowSameHpNb += 1;
+            }
+        }
+        else if (effectInfo.effectAffixCamp == "oppo")
+        {
+            if (uid != -1 &&
+                allInstanceCardInfo[uid].camp != allInstanceCardInfo[launchUid].camp &&
+                allInstanceCardInfo[uid].curHp == allInstanceCardInfo[launchUid].curHp)
+            {
+                sameRowSameHpNb += 1;
+            }
+        }
+        else
+        {
+            if (uid != -1 &&
+                allInstanceCardInfo[uid].curHp == allInstanceCardInfo[launchUid].curHp)
+            {
+                sameRowSameHpNb += 1;
+            }
+        }
+    }
+    return sameRowSameHpNb;
 }
 
 void UEffectAffixFunctionLibrary::testFunc1(int32 launchX, int32 launchY, int32 targetX, int32 targetY)

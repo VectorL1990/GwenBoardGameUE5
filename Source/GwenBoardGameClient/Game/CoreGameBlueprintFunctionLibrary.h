@@ -107,7 +107,7 @@ public:
             int32 launchY, 
             int32 targetX, 
             int32 targetY, 
-            AoeType aoeType, 
+            FString aoeType, 
             FString targetCamp);
 
     static FEffectResultDict IncreaseDefence(
