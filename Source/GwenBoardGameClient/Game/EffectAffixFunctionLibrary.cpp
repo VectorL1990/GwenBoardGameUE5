@@ -271,6 +271,7 @@ int32 UEffectAffixFunctionLibrary::SameRowLargerHpCardNb(TMap<int32, FInstanceCa
             }
         }
     }
+    return sameRowLargerHpCardNb;
 }
 
 int32 UEffectAffixFunctionLibrary::SameColLargerHpCardNb(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 targetX, int32 targetY)
@@ -307,6 +308,7 @@ int32 UEffectAffixFunctionLibrary::SameColLargerHpCardNb(TMap<int32, FInstanceCa
             }
         }
     }
+    return sameColLargerHpCardNb;
 }
 
 int32 UEffectAffixFunctionLibrary::SameRowSmallerHpCardNb(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 targetX, int32 targetY)
@@ -343,6 +345,7 @@ int32 UEffectAffixFunctionLibrary::SameRowSmallerHpCardNb(TMap<int32, FInstanceC
             }
         }
     }
+    return sameRowSmallerHpCardNb;
 }
 
 int32 UEffectAffixFunctionLibrary::SameColSmallerHpCardNb(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 targetX, int32 targetY)
@@ -379,6 +382,7 @@ int32 UEffectAffixFunctionLibrary::SameColSmallerHpCardNb(TMap<int32, FInstanceC
             }
         }
     }
+    return sameColSmallerHpCardNb;
 }
 
 int32 UEffectAffixFunctionLibrary::SameRowHpMoreNb(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 targetX, int32 targetY)
@@ -423,6 +427,7 @@ int32 UEffectAffixFunctionLibrary::SameRowHpMoreNb(TMap<int32, FInstanceCardInfo
             }
         }
     }
+    return sameRowHpMoreNb;
 }
 
 int32 UEffectAffixFunctionLibrary::SameRowSameDefenceNb(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 targetX, int32 targetY)
