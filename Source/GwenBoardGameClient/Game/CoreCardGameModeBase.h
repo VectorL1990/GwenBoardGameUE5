@@ -179,7 +179,7 @@ public:
     // --- Single game logic
     void SinglePlayerGameLoop(float dT);
 
-    void GetLegalLaunchSkillAction(int32 launchX, int32 launchY);
+    void GetLegalLaunchSkillAction(TMap<int32, FBoardRow>& boardCardInfo, TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY);
 
     // --- Local logic functions
     void CheckEntitiesCreated();

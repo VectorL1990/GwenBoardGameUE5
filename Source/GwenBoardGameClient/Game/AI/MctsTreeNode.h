@@ -24,6 +24,8 @@ private:
 
     float p;
 
+    float evaluateQ;
+
     float q;
     
     float u;
@@ -33,15 +35,16 @@ public:
 
     float GetValue();
 
+    // Expand executes after selecting max U + Q leaf node
     void Expand(TMap<int, float> actionProbs);
 
     void Select(int& outAction, UMctsTreeNode* outNode);
 
-    void UpdateCurNode(float inQ);
+    void UpdateEvaluateQValue(float inQ);
 
-    void UpdateRecursive(float inQ);
+    void UpdateParentQValue(float leafQ);
 
-    void Update(float leafQ);
+    void UpdateCurNodeQValue(float leafQ);
 	
     static float cPuct;
 };

@@ -7,6 +7,7 @@
 #include "CoreCardGamePC.h"
 #include "Engine/KBEngine.h"
 #include "Engine/Entity.h"
+#include "CheckTargetGeoRuleLibrary.h"
 #include "Scripts/BattleEvents.h"
 
 void ACoreCardGameModeBase::BeginPlay()
@@ -307,9 +308,25 @@ void ACoreCardGameModeBase::SinglePlayerGameLoop(float dT)
 				}
 }
 
-void ACoreCardGameModeBase::GetLegalLaunchSkillAction(int32 launchX, int32 launchY)
+void ACoreCardGameModeBase::GetLegalLaunchSkillAction(TMap<int32, FBoardRow>& boardCardInfo, TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY)
 {
-				
+				/*int32 uid = boardCardInfo[launchY].colCardInfos[launchX];
+				if ((effectInfo.launchType == "manual" || effectInfo.launchType == "manualImmediate") &&
+								(effectInfo.coolDown == 0 || effectInfo.coolDown == -1) &&
+								(effectInfo.availableTimes > 0 || effectInfo.availableTimes == -1))
+				{
+								if (effectInfo.targetGeoType.Contains("&"))
+								{
+												TArray<FString> splitStrs;
+												effectInfo.targetGeoType.ParseIntoArray(splitStrs, TEXT("&"), true);
+												TArray<FGridXY> possibleGeoGrids = UCheckTargetGeoRuleLibrary::GetPossibleTargetGeoGrids(splitStrs[0], allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY);
+												UCheckTargetGeoRuleLibrary::CheckPossibleTargetLocateGeoGrids(splitStrs[1], allInstanceCardInfo, boardCardInfo, possibleGeoGrids);
+								}
+								else
+								{
+
+								}
+				}*/
 }
 
 void ACoreCardGameModeBase::ReqPlayCard(int32 actionSequence, FString cardUid, int32 targetX, int32 targetY)

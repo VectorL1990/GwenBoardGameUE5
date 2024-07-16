@@ -14,8 +14,8 @@ void UMctsTreeNode::Init(UMctsTreeNode* inParent, float inP)
 
 float UMctsTreeNode::GetValue()
 {
-				return 0.0;
-				//u = UMctsTreeNode::cPuct * 
+				u = UMctsTreeNode::cPuct * p * FMath::Sqrt((float)parent->visit) / (1.0 + (float)parent->visit);
+				return u;
 }
 
 void UMctsTreeNode::Expand(TMap<int, float> actionProbs)
@@ -48,25 +48,27 @@ void UMctsTreeNode::Select(int& outAction, UMctsTreeNode* outNode)
 				outAction = maxQUAction;
 }
 
-void UMctsTreeNode::UpdateCurNode(float inQ)
+void UMctsTreeNode::UpdateEvaluateQValue(float inQ)
 {
-				UpdateRecursive(inQ);
-				visit += 1;
+				evaluateQ = inQ;
 				q = inQ;
+				visit += 1;
+				UpdateParentQValue(inQ);
 }
 
-void UMctsTreeNode::UpdateRecursive(float inQ)
+void UMctsTreeNode::UpdateParentQValue(float leafQ)
 {
 				if (parent)
 				{
-								parent->UpdateRecursive(inQ);
+								parent->UpdateParentQValue(leafQ);
 				}
-				Update(inQ);
+				UpdateCurNodeQValue(leafQ);
 }
 
-void UMctsTreeNode::Update(float leafQ)
+void UMctsTreeNode::UpdateCurNodeQValue(float leafQ)
 {
 				visit += 1;
-				q += (q - leafQ)/(float)visit;
+				q = (q - leafQ) / visit;
 }
+
 

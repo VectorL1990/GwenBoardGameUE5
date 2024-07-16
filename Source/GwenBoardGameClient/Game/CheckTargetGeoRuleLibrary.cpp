@@ -3,6 +3,12 @@
 
 #include "Game/CheckTargetGeoRuleLibrary.h"
 
+TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleTargetGeoGrids(FString geoRule, TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 distance)
+{
+				TArray<FGridXY> possibleGrids;
+				return possibleGrids;
+}
+
 TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleLine(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 distance)
 {
 				TArray<FGridXY> possibleGrids;
@@ -301,5 +307,79 @@ TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleDiagonal(TMap<int32, FIns
 				}
 
 				return possibleGrids;
+}
+
+
+
+
+
+
+
+void UCheckTargetGeoRuleLibrary::CheckPossibleTargetLocateGeoGrids(FString locateGeoRule, TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, TArray<FGridXY>& checkGrids)
+{
+				if (locateGeoRule == "three")
+				{
+								CheckPossibleTargetLocateThree(allInstanceCardInfo, boardCardInfo, checkGrids);
+				}
+}
+
+void UCheckTargetGeoRuleLibrary::CheckPossibleTargetLocateThree(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, TArray<FGridXY>& checkGrids)
+{
+				int32 checkGridNb = 0;
+				while (checkGridNb < checkGrids.Num())
+				{
+								int32 targetX = checkGrids[checkGridNb].x;
+								int32 targetY = checkGrids[checkGridNb].y;
+								if (targetX == 0 || targetX == UGlobalConstFunctionLibrary::maxCol - 1)
+								{
+												// which means we only need to check vertical direction
+												if (targetY != 0 && targetY != UGlobalConstFunctionLibrary::maxRow - 1)
+												{
+																if (boardCardInfo[targetY - 1].colCardInfos[targetX] != -1 && boardCardInfo[targetY + 1].colCardInfos[targetX] != -1)
+																{
+																				checkGridNb += 1;
+																				continue;
+																}
+																else
+																{
+																				checkGrids.RemoveAt(checkGridNb);
+																}
+												}
+												else
+												{
+																checkGrids.RemoveAt(checkGridNb);
+												}
+								}
+								else
+								{
+												if (targetY == 0 || targetY == UGlobalConstFunctionLibrary::maxRow - 1)
+												{
+																// which means we only need to check horizontal direction
+																if (boardCardInfo[targetY].colCardInfos[targetX - 1] != -1 && boardCardInfo[targetY].colCardInfos[targetX + 1] != -1)
+																{
+																				checkGridNb += 1;
+																				continue;
+																}
+																else
+																{
+																				checkGrids.RemoveAt(checkGridNb);
+																}
+												}
+												else
+												{
+																// which means we need to check horizontal and vertical directions
+																if ((boardCardInfo[targetY].colCardInfos[targetX - 1] != -1 && boardCardInfo[targetY].colCardInfos[targetX + 1] != -1) ||
+																				(boardCardInfo[targetY - 1].colCardInfos[targetX] != -1 && boardCardInfo[targetY + 1].colCardInfos[targetX] != -1))
+																{
+																				checkGridNb += 1;
+																				continue;
+																}
+																else
+																{
+																				checkGrids.RemoveAt(checkGridNb);
+																}
+												}
+								}
+				}
 }
 
