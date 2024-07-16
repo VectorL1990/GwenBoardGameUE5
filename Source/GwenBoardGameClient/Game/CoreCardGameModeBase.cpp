@@ -307,6 +307,11 @@ void ACoreCardGameModeBase::SinglePlayerGameLoop(float dT)
 				}
 }
 
+void ACoreCardGameModeBase::GetLegalLaunchSkillAction(int32 launchX, int32 launchY)
+{
+				
+}
+
 void ACoreCardGameModeBase::ReqPlayCard(int32 actionSequence, FString cardUid, int32 targetX, int32 targetY)
 {
 				FInstanceCardInfo cardInfo = battleCardUidMap[cardUid];

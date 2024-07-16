@@ -179,6 +179,8 @@ public:
     // --- Single game logic
     void SinglePlayerGameLoop(float dT);
 
+    void GetLegalLaunchSkillAction(int32 launchX, int32 launchY);
+
     // --- Local logic functions
     void CheckEntitiesCreated();
 

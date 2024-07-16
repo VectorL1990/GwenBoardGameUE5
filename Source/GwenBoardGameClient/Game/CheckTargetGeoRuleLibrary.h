@@ -15,6 +15,9 @@ class GWENBOARDGAMECLIENT_API UCheckTargetGeoRuleLibrary : public UBlueprintFunc
 {
 				GENERATED_BODY()
 public:
-				static TArray<FGridXY> Line(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 distance);
-	
+				static TArray<FGridXY> GetPossibleLine(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 distance);
+
+				static TArray<FGridXY> GetPossibleSeperate(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 distance);
+
+				static TArray<FGridXY> GetPossibleDiagonal(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 distance);
 };
