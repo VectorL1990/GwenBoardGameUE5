@@ -14,8 +14,9 @@ void UMctsTreeNode::Init(UMctsTreeNode* inParent, float inP)
 
 float UMctsTreeNode::GetValue()
 {
-				u = UMctsTreeNode::cPuct * p * FMath::Sqrt((float)parent->visit) / (1.0 + (float)parent->visit);
-				return u;
+				//u = UMctsTreeNode::cPuct * p * FMath::Sqrt((float)parent->visit) / (1.0 + (float)parent->visit);
+				//return u;
+				return 0;
 }
 
 void UMctsTreeNode::Expand(TMap<int, float> actionProbs)

@@ -55,7 +55,7 @@ skillLaunchCoding = dict(
 	playCard = 			list([0,0,0,0,0,1])
 )
 
-# range 14
+# range 10
 defaultSkillLauchGeoCode = list([0,0,0,0,0,0,0,0,0,0,0,0,0,0])
 skillLaunchGeoCoding = dict(
 	point = 					list([1,0,0,0,0,0,0,0,0,0,0,0,0,0]),
@@ -65,38 +65,34 @@ skillLaunchGeoCoding = dict(
 	obliqueCross = 				list([0,0,0,0,1,0,0,0,0,0,0,0,0,0]),
 	normalCross = 				list([0,0,0,0,0,1,0,0,0,0,0,0,0,0]),
 	selfSection = 				list([0,0,0,0,0,0,1,0,0,0,0,0,0,0]),
-	selfFrontCol = 				list([0,0,0,0,0,0,0,1,0,0,0,0,0,0]),
-	selfBackCol = 				list([0,0,0,0,0,0,0,0,1,0,0,0,0,0]),
 	selfFrontLine = 			list([0,0,0,0,0,0,0,0,0,1,0,0,0,0]),
 	oppoSection = 				list([0,0,0,0,0,0,0,0,0,0,1,0,0,0]),
-	oppoFrontCol = 				list([0,0,0,0,0,0,0,0,0,0,0,1,0,0]),
-	oppoBackCol = 				list([0,0,0,0,0,0,0,0,0,0,0,0,1,0]),
 	oppoFrontLine = 			list([0,0,0,0,0,0,0,0,0,0,0,0,0,1])
 )
 
-# range 20
-defaultSkillTargetGeoCode = list([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+# range 6
+defaultSkillTargetGeoCode = list([0,0,0,0,0,0])
 skillTargetGeoCoding = dict(
-	line = 						list([1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
-	seperated = 				list([0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
-	diagonal = 					list([0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
-	diagonalSeperated = 		list([0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
-	three = 					list([0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
-	horn = 						list([0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0]),
-	triangle = 					list([0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0]),
-	obliqueCross = 				list([0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0]),
-	normalCross = 				list([0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0]),
-	selfSection = 				list([0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0]),
-	selfFrontCol = 				list([0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0]),
-	selfBackCol = 				list([0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0]),
-	selfFrontLine = 			list([0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0]),
-	oppoSection = 				list([0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0]),
-	oppoFrontCol = 				list([0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0]),
-	oppoBackCol = 				list([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0]),
-	oppoFrontLine = 			list([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0]),
-	connect = 					list([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0]),
-	teleport = 					list([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0]),
-	arbitrary = 				list([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1])
+	line = 						list([1,0,0,0,0,0]),
+	seperated = 				list([0,1,0,0,0,0]),
+	diagonal = 					list([0,0,1,0,0,0]),
+	diagonalSeperated = 		list([0,0,0,1,0,0]),
+	connect = 					list([0,0,0,0,1,0]),
+	arbitrary = 				list([0,0,0,0,0,1])
+)
+
+# range 9
+defaultSkillTargetLocateGeoCode = list([0,0,0,0,0,0,0,0,0])
+skillTargetLocateGeoCoding = dict(
+	three = 					list([1,0,0,0,0,0,0,0,0]),
+	horn = 						list([0,1,0,0,0,0,0,0,0]),
+	triangle = 					list([0,0,1,0,0,0,0,0,0]),
+	obliqueCross = 				list([0,0,0,1,0,0,0,0,0]),
+	normalCross = 				list([0,0,0,0,1,0,0,0,0]),
+	selfSection = 				list([0,0,0,0,0,1,0,0,0]),
+	selfFrontLine = 			list([0,0,0,0,0,0,1,0,0]),
+	oppoSection = 				list([0,0,0,0,0,0,0,1,0]),
+	oppoFrontLine = 			list([0,0,0,0,0,0,0,0,1])
 )
 
 # range 6
