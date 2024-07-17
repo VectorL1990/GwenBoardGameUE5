@@ -46,5 +46,9 @@ public:
 
     void UpdateCurNodeQValue(float leafQ);
 	
+    bool IsLeaf();
+
+    bool IsRoot();
+
     static float cPuct;
 };

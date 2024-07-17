@@ -227,6 +227,18 @@ public:
         TArray<FGridXY> modifyGrids;
 };
 
+USTRUCT(BlueprintType, Blueprintable)
+struct FCopyBoardInfo
+{
+    GENERATED_USTRUCT_BODY()
+public:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TMap<int32, FBoardRow> boardRows;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TMap<int32, FString> boardCardUids;
+};
+
 /**
  * 
  */

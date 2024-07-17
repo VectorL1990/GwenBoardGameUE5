@@ -30,3 +30,13 @@ void ABattleBoard::LaunchSkill(int32 launchX, int32 launchY, int32 targetX, int3
 				//if (effectInfo.aoeType == "")
 }
 
+void ABattleBoard::SimulationMove()
+{
+
+}
+
+void ABattleBoard::StateCoding()
+[
+
+]
+

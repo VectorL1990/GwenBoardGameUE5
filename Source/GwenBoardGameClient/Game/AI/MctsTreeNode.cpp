@@ -71,4 +71,28 @@ void UMctsTreeNode::UpdateCurNodeQValue(float leafQ)
 				q = (q - leafQ) / visit;
 }
 
+bool UMctsTreeNode::IsLeaf()
+{
+				if (children.Num() == 0)
+				{
+								return true;
+				}
+				else
+				{
+								return false;
+				}
+}
+
+bool UMctsTreeNode::IsRoot()
+{
+				if (!parent)
+				{
+								return true;
+				}
+				else
+				{
+								return false;
+				}
+}
+
 

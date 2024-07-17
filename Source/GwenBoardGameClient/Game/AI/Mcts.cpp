@@ -25,3 +25,21 @@ void AMcts::Tick(float DeltaTime)
 
 }
 
+void AMcts::DoSimulationMove(FCopyBoardInfo& copyBoardInfo)
+{
+				UMctsTreeNode* curNode = treeRoot;
+				while (true)
+				{
+								if (curNode->IsLeaf())
+								{
+												break;
+								}
+								int32 action = 0;
+								UMctsTreeNode* selectNode = NULL;
+								curNode->Select(action, selectNode);
+								curNode = selectNode;
+				}
+
+
+}
+
