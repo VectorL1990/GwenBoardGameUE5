@@ -6,6 +6,8 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "GlobalConstFunctionLibrary.h"
 #include "Scripts/BattleEvents.h"
+#include <vector>
+#include <random>
 #include "CoreGameBlueprintFunctionLibrary.generated.h"
 
 UENUM(BlueprintType)
@@ -99,6 +101,10 @@ class GWENBOARDGAMECLIENT_API UCoreGameBlueprintFunctionLibrary : public UBluepr
 public:
     static const int32 maxCol = 8;
     static const int32 maxRow = 8;
+
+    static void QueryRemotePolicyValue(uint8* boardState, TMap<int32, float>& actionProbs, float& stateValue);
+
+    static int32 GetDirichletAction(const TArray<int32>& actions, const TArray<float>& probs);
 
     static TArray<FGridXY> GetAoeTargetGrids(
             TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,

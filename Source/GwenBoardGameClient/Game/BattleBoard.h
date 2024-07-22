@@ -29,8 +29,6 @@ public:
 
 				void LaunchSkill(int32 launchX, int32 launchY, int32 targetX, int32 targetY, FEffectInfo& effectInfo);
 
-				void SimulationMove();
-
 				void StateCoding();
 
 				uint8* GetSkillLaunchTypeCoding(FString launchType);

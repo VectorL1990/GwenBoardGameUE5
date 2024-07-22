@@ -25,7 +25,9 @@ public:
 	// Called every frame
 				virtual void Tick(float DeltaTime) override;
 
-				void DoSimulationMove(FCopyBoardInfo& copyBoardInfo);
+				void DoSimulationMove(uint8* boardState);
+
+				void GetMoveProbs(uint8* boardState);
 
 				UPROPERTY()
 				UMctsTreeNode* treeRoot;

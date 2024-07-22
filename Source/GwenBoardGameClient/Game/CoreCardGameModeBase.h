@@ -177,6 +177,7 @@ public:
     void MoveCard(FVector originLoc, FVector targetLoc, float midHeight);
 
     // --- Single game logic
+
     void SinglePlayerGameLoop(float dT);
 
     void GetLegalLaunchSkillAction(TMap<int32, FBoardRow>& boardCardInfo, TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY);

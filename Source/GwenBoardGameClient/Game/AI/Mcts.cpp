@@ -2,6 +2,7 @@
 
 
 #include "Game/AI/Mcts.h"
+#include "../CoreGameBlueprintFunctionLibrary.h"
 
 // Sets default values
 AMcts::AMcts()
@@ -25,7 +26,7 @@ void AMcts::Tick(float DeltaTime)
 
 }
 
-void AMcts::DoSimulationMove(FCopyBoardInfo& copyBoardInfo)
+void AMcts::DoSimulationMove(uint8* boardState)
 {
 				UMctsTreeNode* curNode = treeRoot;
 				while (true)
@@ -40,6 +41,28 @@ void AMcts::DoSimulationMove(FCopyBoardInfo& copyBoardInfo)
 								curNode = selectNode;
 				}
 
+				TMap<int32, float> predictActionProbs;
+				float simulationStateValue;
+				UCoreGameBlueprintFunctionLibrary::QueryRemotePolicyValue(boardState, predictActionProbs, simulationStateValue);
 
+				// Tell whether game is end
+				bool isGameEnd = false;
+
+				// expand the tree and update P, U for each node
+				if (!isGameEnd)
+				{
+								curNode->Expand(predictActionProbs);
+				}
+				else
+				{
+
+				}
+
+				curNode->UpdateEvaluateQValue(simulationStateValue);
+}
+
+void AMcts::GetMoveProbs(uint8* boardState)
+{
+				for (int32 i=0;)
 }
 

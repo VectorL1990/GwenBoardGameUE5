@@ -15,7 +15,7 @@ ABattleBoard::ABattleBoard()
 void ABattleBoard::BeginPlay()
 {
 				Super::BeginPlay();
-	
+				
 }
 
 // Called every frame
@@ -28,11 +28,6 @@ void ABattleBoard::Tick(float DeltaTime)
 void ABattleBoard::LaunchSkill(int32 launchX, int32 launchY, int32 targetX, int32 targetY, FEffectInfo& effectInfo)
 {
 				//if (effectInfo.aoeType == "")
-}
-
-void ABattleBoard::SimulationMove()
-{
-
 }
 
 void ABattleBoard::StateCoding()
@@ -121,10 +116,10 @@ uint8* ABattleBoard::GetSkillTargetLocateGeoCoding(FString targetLocateGeoType)
 uint8* ABattleBoard::GetSkillAoeCoding(FString aoeType)
 {
 				uint8* coding = skillAoeCoding;
-				if (aoeType == "point")													coding[0] = 1;
-				else if (aoeType == "sweep")								coding[1] = 1;
-				else if (aoeType == "H3")											coding[2] = 1;
-				else if (aoeType == "V3")											coding[3] = 1;
+				if (aoeType == "point")																	coding[0] = 1;
+				else if (aoeType == "sweep")												coding[1] = 1;
+				else if (aoeType == "H3")															coding[2] = 1;
+				else if (aoeType == "V3")															coding[3] = 1;
 				else if (aoeType == "normalCross")						coding[4] = 1;
 				else if (aoeType == "obliqueCross")					coding[5] = 1;
 				return coding;
@@ -142,41 +137,41 @@ uint8* ABattleBoard::GetSkillTargetCampCoding(FString targetCampType)
 uint8* ABattleBoard::GetSkillEffectCoding(FString effectType)
 {
 				uint8* coding = skillEffectCoding;
-				if (effectType == "hurt")																			coding[0] = 1;
-				else if (effectType == "heal")																		coding[1] = 1;
+				if (effectType == "hurt")																											coding[0] = 1;
+				else if (effectType == "heal")																						coding[1] = 1;
 				else if (effectType == "increaseDefence")											coding[2] = 1;
 				else if (effectType == "replaceDefence")												coding[3] = 1;
 				else if (effectType == "increaseSelfDefence")							coding[4] = 1;
-				else if (effectType == "giveTempArmor")									coding[5] = 1;
-				else if (effectType == "giveArmor")													coding[6] = 1;
-				else if (effectType == "tempArmor")													coding[7] = 1;
-				else if (effectType == "defenceHurt")											coding[8] = 1;
-				else if (effectType == "defenceHeal")											coding[9] = 1;
-				else if (effectType == "defenceDetonate")							coding[10] = 1;
-				else if (effectType == "useArmorHurt")										coding[11] = 1;
-				else if (effectType == "useArmorHeal")										coding[12] = 1;
-				else if (effectType == "armorDetonate")									coding[13] = 1;
+				else if (effectType == "giveTempArmor")													coding[5] = 1;
+				else if (effectType == "giveArmor")																	coding[6] = 1;
+				else if (effectType == "tempArmor")																	coding[7] = 1;
+				else if (effectType == "defenceHurt")															coding[8] = 1;
+				else if (effectType == "defenceHeal")															coding[9] = 1;
+				else if (effectType == "defenceDetonate")											coding[10] = 1;
+				else if (effectType == "useArmorHurt")														coding[11] = 1;
+				else if (effectType == "useArmorHeal")														coding[12] = 1;
+				else if (effectType == "armorDetonate")													coding[13] = 1;
 				else if (effectType == "armorDetonateSilence")						coding[14] = 1;
 				else if (effectType == "armorDetonateWound")								coding[15] = 1;
 				else if (effectType == "armorDetonatePoison")							coding[16] = 1;
 				else if (effectType == "armorDetonateSublime")						coding[17] = 1;
-				else if (effectType == "switchCamp")												coding[18] = 1;
-				else if (effectType == "capture")															coding[19] = 1;
+				else if (effectType == "switchCamp")																coding[18] = 1;
+				else if (effectType == "capture")																			coding[19] = 1;
 				else if (effectType == "hurtTransfer")														coding[20] = 1;
 				else if (effectType == "hurtLink")																		coding[21] = 1;
-				else if (effectType == "healTransfer")										coding[22] = 1;
-				else if (effectType == "healLink")														coding[23] = 1;
+				else if (effectType == "healTransfer")														coding[22] = 1;
+				else if (effectType == "healLink")																		coding[23] = 1;
 				else if (effectType == "sublimeTransfer")											coding[24] = 1;
 				else if (effectType == "silenceTransfer")											coding[25] = 1;
 				else if (effectType == "woundTransfer")													coding[26] = 1;
-				else if (effectType == "wound")																	coding[27] = 1;
+				else if (effectType == "wound")																					coding[27] = 1;
 				else if (effectType == "convertSublimeToWound")					coding[28] = 1;
 				else if (effectType == "transferWound")													coding[29] = 1;
 				else if (effectType == "revenge")																			coding[30] = 1;
 				else if (effectType == "revengeWound")														coding[31] = 1;
 				else if (effectType == "repayHeal")																	coding[32] = 1;
 				else if (effectType == "repaySublime")														coding[33] = 1;
-				else if (effectType == "devour")																coding[34] = 1;
+				else if (effectType == "devour")																				coding[34] = 1;
 				else if (effectType == "devourSublime")													coding[35] = 1;
 				else if (effectType == "devourButWound")												coding[36] = 1;
 				else if (effectType == "deadWishConvert")											coding[37] = 1;
@@ -185,23 +180,23 @@ uint8* ABattleBoard::GetSkillEffectCoding(FString effectType)
 				else if (effectType == "deadWishSpawnDown")									coding[40] = 1;
 				else if (effectType == "deadWishSpawnRight")								coding[41] = 1;
 				else if (effectType == "deadWishSpawnLeft")									coding[42] = 1;
-				else if (effectType == "deadWishDestroyUp")													coding[43] = 1;
-				else if (effectType == "deadWishDestroyDown")											coding[44] = 1;
-				else if (effectType == "deadWishDestroyRight") coding[45] = 1;
-				else if (effectType == "deadWishDestroyLeft") coding[46] = 1;
-				else if (effectType == "deadWishHeal") coding[47] = 1;
-				else if (effectType == "deadWishHealUp") coding[48] = 1;
-				else if (effectType == "deadWishHealDown") coding[49] = 1;
-				else if (effectType == "deadWishHealRight") coding[50] = 1;
-				else if (effectType == "deadWishHealLeft") coding[51] = 1;
-				else if (effectType == "deadWishSublime") coding[52] = 1;
-				else if (effectType == "deadWishTackle") coding[53] = 1;
-				else if (effectType == "deadWishWound") coding[54] = 1;
-				else if (effectType == "explode") coding[55] = 1;
-				else if (effectType == "explodeToPoison") coding[56] = 1;
-				else if (effectType == "explodeToWound") coding[57] = 1;
-				else if (effectType == "exchange") coding[58] = 1;
-				else if (effectType == "drag") coding[59] = 1;
+				else if (effectType == "deadWishDestroyUp")									coding[43] = 1;
+				else if (effectType == "deadWishDestroyDown")							coding[44] = 1;
+				else if (effectType == "deadWishDestroyRight")						coding[45] = 1;
+				else if (effectType == "deadWishDestroyLeft")							coding[46] = 1;
+				else if (effectType == "deadWishHeal")														coding[47] = 1;
+				else if (effectType == "deadWishHealUp")												coding[48] = 1;
+				else if (effectType == "deadWishHealDown")										coding[49] = 1;
+				else if (effectType == "deadWishHealRight")									coding[50] = 1;
+				else if (effectType == "deadWishHealLeft")										coding[51] = 1;
+				else if (effectType == "deadWishSublime")											coding[52] = 1;
+				else if (effectType == "deadWishTackle")												coding[53] = 1;
+				else if (effectType == "deadWishWound")													coding[54] = 1;
+				else if (effectType == "explode")																			coding[55] = 1;
+				else if (effectType == "explodeToPoison")											coding[56] = 1;
+				else if (effectType == "explodeToWound")												coding[57] = 1;
+				else if (effectType == "exchange")																		coding[58] = 1;
+				else if (effectType == "drag")																						coding[59] = 1;
 				else if (effectType == "push") coding[60] = 1;
 				else if (effectType == "sublime") coding[61] = 1;
 				else if (effectType == "lock") coding[62] = 1;

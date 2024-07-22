@@ -4,6 +4,56 @@
 #include "Game/CoreGameBlueprintFunctionLibrary.h"
 #include "EffectAffixFunctionLibrary.h"
 
+
+
+void UCoreGameBlueprintFunctionLibrary::QueryRemotePolicyValue(uint8* boardState, TMap<int32, float>& actionProbs, float& stateValue)
+{
+    
+}
+
+int32 UCoreGameBlueprintFunctionLibrary::GetDirichletAction(const TArray<int32>& actions, const TArray<float>& probs)
+{
+    std::vector<int> stdActions(actions.Num());
+    FMemory::Memcpy(stdActions.data(), actions.GetData(), actions.Num()*sizeof(int));
+    std::vector<float> stdProbs(probs.Num());
+    FMemory::Memcpy(stdProbs.data(), probs.GetData(), probs.Num() * sizeof(float));
+
+    std::random_device randomDevice;
+    std::mt19937 randSeed(randomDevice());
+
+
+    // dirichlet random
+    std::gamma_distribution<float> gamma;
+    std::vector<float> dirichletNoises(stdActions.size());
+    float sum = 0.0;
+
+    for (int32 i = 0; i < probs.Num(); i++)
+    {
+        gamma = std::gamma_distribution<float>(probs[i], 1.0);
+        dirichletNoises[i] = gamma(randSeed);
+        sum += dirichletNoises[i];
+    }
+
+    for (float& dirichletNoise : dirichletNoises)
+    {
+        dirichletNoise /= sum;
+    }
+
+
+    std::vector<float> combineProbs(probs.Num());
+    // combine orginal probs and noise probs
+    for (int32 i = 0; i < probs.Num(); i++)
+    {
+        combineProbs[i] = 0.75*probs[i] + 0.25*dirichletNoises[i];
+    }
+
+
+    // choose action by discrete distribution
+    std::discrete_distribution<int> dist(combineProbs.begin(), combineProbs.end());
+    
+    return stdActions[dist(randSeed)];
+}
+
 TArray<FGridXY> UCoreGameBlueprintFunctionLibrary::GetAoeTargetGrids(
     TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
     TMap<int32, FBoardRow>& boardCardInfo,
