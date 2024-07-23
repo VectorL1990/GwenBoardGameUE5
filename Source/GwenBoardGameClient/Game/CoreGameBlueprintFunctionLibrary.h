@@ -102,6 +102,8 @@ public:
     static const int32 maxCol = 8;
     static const int32 maxRow = 8;
 
+    static void Softmax(const TArray<float>& x, float temp, TArray<float>& softmax);
+
     static void QueryRemotePolicyValue(uint8* boardState, TMap<int32, float>& actionProbs, float& stateValue);
 
     static int32 GetDirichletAction(const TArray<int32>& actions, const TArray<float>& probs);

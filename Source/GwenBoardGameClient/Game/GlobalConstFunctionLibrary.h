@@ -250,5 +250,5 @@ public:
 
     static const int32 maxCol = 8;
     static const int32 maxRow = 8;
-    
+    static const int32 boardStateLen = 1000;
 };

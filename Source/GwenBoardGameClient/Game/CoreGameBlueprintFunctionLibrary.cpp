@@ -5,6 +5,21 @@
 #include "EffectAffixFunctionLibrary.h"
 
 
+void UCoreGameBlueprintFunctionLibrary::Softmax(const TArray<float>& x, float temp, TArray<float>& softmax)
+{
+    float expSum = 0.0;
+    for (int32 i = 0; i < x.Num(); i++)
+    {
+        float exp = FMath::Exp(x[i] / temp);
+        expSum += exp;
+    }
+
+    for (int32 i = 0; i < x.Num(); i++)
+    {
+        softmax[i] = x[i] / expSum;
+    }
+}
+
 
 void UCoreGameBlueprintFunctionLibrary::QueryRemotePolicyValue(uint8* boardState, TMap<int32, float>& actionProbs, float& stateValue)
 {

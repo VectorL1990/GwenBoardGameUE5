@@ -25,10 +25,22 @@ public:
 	// Called every frame
 				virtual void Tick(float DeltaTime) override;
 
+				void InitMcts(int32 simulationMoves);
+
 				void DoSimulationMove(uint8* boardState);
 
-				void GetMoveProbs(uint8* boardState);
+				void GetMoveProbs(uint8* boardState, TArray<int32>& outActs, TArray<float>& softmaxProbs);
+
+				void UpdateCurSearchNode(int32 targetMove);
+
+				void GetAction(uint8* boardState, int32& targetMove, TArray<float> softmaxProbs);
+
+				UPROPERTY()
+				int32 expandSimulationMoves = 200;
 
 				UPROPERTY()
 				UMctsTreeNode* treeRoot;
+
+				UPROPERTY()
+				UMctsTreeNode* curSearchNode;
 };

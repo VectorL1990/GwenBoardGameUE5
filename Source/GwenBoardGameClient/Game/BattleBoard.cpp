@@ -30,7 +30,7 @@ void ABattleBoard::LaunchSkill(int32 launchX, int32 launchY, int32 targetX, int3
 				//if (effectInfo.aoeType == "")
 }
 
-void ABattleBoard::StateCoding()
+uint8* ABattleBoard::StateCoding()
 {
 				for (TMap<int32, FBoardRow>::TConstIterator rowIter = boardRows.CreateConstIterator(); rowIter; ++rowIter)
 				{
@@ -56,6 +56,8 @@ void ABattleBoard::StateCoding()
 												
 								}
 				}
+
+				return skillLaunchTypeCoding;
 }
 
 uint8* ABattleBoard::GetSkillLaunchTypeCoding(FString launchType)
