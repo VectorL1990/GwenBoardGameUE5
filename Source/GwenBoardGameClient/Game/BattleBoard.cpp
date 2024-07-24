@@ -2,6 +2,7 @@
 
 
 #include "Game/BattleBoard.h"
+#include "CheckTargetGeoRuleLibrary.h"
 
 // Sets default values
 ABattleBoard::ABattleBoard()
@@ -23,6 +24,35 @@ void ABattleBoard::Tick(float DeltaTime)
 {
 				Super::Tick(DeltaTime);
 
+}
+
+void ABattleBoard::GetLegalMoves(TArray<int32>& legalMoves)
+{
+				for (int32 i = 0; i < UGlobalConstFunctionLibrary::maxRow; i++)
+				{
+								for (int32 j = 0; j < UGlobalConstFunctionLibrary::maxCol; j++)
+								{
+												if (boardRows[i].colCardInfos[j] == -1)
+												{
+																// which means this grid is empty, we should consider about play action
+												}
+												else
+												{
+																// which means this grid is not empty, we could launch skill or move card
+
+																// check possible skills
+																FEffectInfo effectInfo;
+																if (effectInfo.targetGeoType.Contains("&"))
+																{
+																				TArray<FString> targetGeo
+																}
+																UCheckTargetGeoRuleLibrary::CheckPossibleTargetLocateGeoGrids(
+																				effectInfo.targetGeoType, 
+																				allInstanceCardInfo,
+																				boardRows,)
+												}
+								}
+				}
 }
 
 void ABattleBoard::LaunchSkill(int32 launchX, int32 launchY, int32 targetX, int32 targetY, FEffectInfo& effectInfo)

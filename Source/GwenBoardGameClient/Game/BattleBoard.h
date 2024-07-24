@@ -27,6 +27,8 @@ public:
 				// Called every frame
 				virtual void Tick(float DeltaTime) override;
 
+				void GetLegalMoves(TArray<int32>& legalMoves);
+
 				void LaunchSkill(int32 launchX, int32 launchY, int32 targetX, int32 targetY, FEffectInfo& effectInfo);
 
 				uint8* StateCoding();
