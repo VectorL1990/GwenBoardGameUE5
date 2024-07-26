@@ -95,6 +95,12 @@ public:
         TArray<int32> values;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        int32 moveDistance;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        int32 attackDistance;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
         UTexture* texture;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)

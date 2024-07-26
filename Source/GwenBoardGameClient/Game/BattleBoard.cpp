@@ -3,6 +3,8 @@
 
 #include "Game/BattleBoard.h"
 #include "CheckTargetGeoRuleLibrary.h"
+#include "CheckPrereqTagFunctionLibrary.h"
+#include "CheckPrereqFunctionLibrary.h"
 
 // Sets default values
 ABattleBoard::ABattleBoard()
@@ -28,11 +30,11 @@ void ABattleBoard::Tick(float DeltaTime)
 
 void ABattleBoard::GetLegalMoves(TArray<int32>& legalMoves)
 {
-				for (int32 i = 0; i < UGlobalConstFunctionLibrary::maxRow; i++)
+				for (int32 row = 0; row < UGlobalConstFunctionLibrary::maxRow; row++)
 				{
-								for (int32 j = 0; j < UGlobalConstFunctionLibrary::maxCol; j++)
+								for (int32 col = 0; col < UGlobalConstFunctionLibrary::maxCol; col++)
 								{
-												if (boardRows[i].colCardInfos[j] == -1)
+												if (boardRows[row].colCardInfos[col] == -1)
 												{
 																// which means this grid is empty, we should consider about play action
 												}
@@ -42,14 +44,75 @@ void ABattleBoard::GetLegalMoves(TArray<int32>& legalMoves)
 
 																// check possible skills
 																FEffectInfo effectInfo;
+																FInstanceCardInfo cardInfo = allInstanceCardInfo[boardRows[row].colCardInfos[col]];
+																TArray<FGridXY> possibleGrids;
 																if (effectInfo.targetGeoType.Contains("&"))
 																{
-																				TArray<FString> targetGeo
+																				TArray<FString> targetGeoTypes;
+																				effectInfo.targetGeoType.ParseIntoArray(targetGeoTypes, TEXT("&"), true);
+																				possibleGrids = UCheckTargetGeoRuleLibrary::GetPossibleTargetGeoGrids(
+																								targetGeoTypes[0],
+																								allInstanceCardInfo,
+																								boardRows,
+																								effectInfo,
+																								col,
+																								row,
+																								cardInfo.originCardInfo.attackDistance);
+
+																				UCheckTargetGeoRuleLibrary::CheckPossibleTargetLocateGeoGrids(
+																								targetGeoTypes[1],
+																								allInstanceCardInfo,
+																								boardRows,
+																								possibleGrids);
 																}
-																UCheckTargetGeoRuleLibrary::CheckPossibleTargetLocateGeoGrids(
-																				effectInfo.targetGeoType, 
-																				allInstanceCardInfo,
-																				boardRows,)
+																else
+																{
+																				possibleGrids = UCheckTargetGeoRuleLibrary::GetPossibleTargetGeoGrids(
+																								effectInfo.targetGeoType,
+																								allInstanceCardInfo,
+																								boardRows,
+																								effectInfo,
+																								col,
+																								row,
+																								cardInfo.originCardInfo.attackDistance);
+																}
+
+																int32 checkGridNb = 0;
+																while (checkGridNb < possibleGrids.Num())
+																{
+																				// do prereq check first
+																				if (effectInfo.prereqType != "none")
+																				{
+																								if (!UCheckPrereqFunctionLibrary::CheckPrereqRule(
+																												effectInfo.prereqType, 
+																												col, 
+																												row, 
+																												possibleGrids[checkGridNb].x, 
+																												possibleGrids[checkGridNb].y, 
+																												cardInfo.camp, 
+																												effectInfo.prereqCampType))
+																								{
+																												possibleGrids.RemoveAt(checkGridNb);
+																												continue;
+																								}
+																				}
+
+																				if (effectInfo.prereqTagCondition != "none")
+																				{
+																								if (!UCheckPrereqTagFunctionLibrary::CheckPrereqTagRule(allInstanceCardInfo, boardRows, effectInfo, col, row))
+																								{
+																												possibleGrids.RemoveAt(checkGridNb);
+																												continue;
+																								}
+																				}
+
+																				checkGridNb += 1;
+																}
+
+																for (int32 i = 0; i < possibleGrids.Num(); i++)
+																{
+
+																}
 												}
 								}
 				}

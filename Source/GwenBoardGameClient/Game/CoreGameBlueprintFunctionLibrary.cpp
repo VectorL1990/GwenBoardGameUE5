@@ -69,6 +69,11 @@ int32 UCoreGameBlueprintFunctionLibrary::GetDirichletAction(const TArray<int32>&
     return stdActions[dist(randSeed)];
 }
 
+void UCoreGameBlueprintFunctionLibrary::GetActionId(int32 launchX, int32 launchY, int32 targetX, int32 targetY, ActionType actionType)
+{
+
+}
+
 TArray<FGridXY> UCoreGameBlueprintFunctionLibrary::GetAoeTargetGrids(
     TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
     TMap<int32, FBoardRow>& boardCardInfo,

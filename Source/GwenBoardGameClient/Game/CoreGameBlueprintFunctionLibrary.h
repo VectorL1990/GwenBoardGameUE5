@@ -88,6 +88,14 @@ enum class AoeType : uint8
     ObliqueCross = 5,
 };
 
+enum class ActionType : uint8
+{
+    PlayCard = 0,
+    LaunchSkill = 1,
+    Move = 2,
+    EndRound = 3
+};
+
 
 
 
@@ -107,6 +115,8 @@ public:
     static void QueryRemotePolicyValue(uint8* boardState, TMap<int32, float>& actionProbs, float& stateValue);
 
     static int32 GetDirichletAction(const TArray<int32>& actions, const TArray<float>& probs);
+
+    static int32 GetActionId(int32 launchX, int32 launchY, int32 targetX, int32 targetY, ActionType actionType);
 
     static TArray<FGridXY> GetAoeTargetGrids(
             TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
