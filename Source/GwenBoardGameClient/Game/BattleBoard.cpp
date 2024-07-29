@@ -37,84 +37,147 @@ void ABattleBoard::GetLegalMoves(TArray<int32>& legalMoves)
 												if (boardRows[row].colCardInfos[col] == -1)
 												{
 																// which means this grid is empty, we should consider about play action
+																if ((curPlayerTurn == 0 && row < UGlobalConstFunctionLibrary::maxRow / 2) ||
+																				(curPlayerTurn == 1 && row >= UGlobalConstFunctionLibrary::maxRow / 2))
+																{
+																				for (int32 playCardRow = 0; playCardRow < UGlobalConstFunctionLibrary::playCardSectionRow; playCardRow++)
+																				{
+																								for (int32 playCardCol = 0; playCardCol < UGlobalConstFunctionLibrary::maxCol; playCardCol++)
+																								{
+																												if (playSectionRows[playCardRow].colCardInfos[playCardCol] == -1)
+																												{
+																																continue;
+																												}
+
+																												int32 actionId = UCoreGameBlueprintFunctionLibrary::GetActionId(playCardCol, playCardRow, col, row, ActionType::PlayCard);
+																												legalMoves.Add(actionId);
+																								}
+																				}
+																}
+
+																
 												}
 												else
 												{
 																// which means this grid is not empty, we could launch skill or move card
 
+
 																// check possible skills
-																FEffectInfo effectInfo;
 																FInstanceCardInfo cardInfo = allInstanceCardInfo[boardRows[row].colCardInfos[col]];
-																TArray<FGridXY> possibleGrids;
-																if (effectInfo.targetGeoType.Contains("&"))
+																if ((cardInfo.curAvailableTimes == -1 || cardInfo.curAvailableTimes > 0) &&
+																				(cardInfo.curCoolDown == -1 || cardInfo.curCoolDown == 0))
 																{
-																				TArray<FString> targetGeoTypes;
-																				effectInfo.targetGeoType.ParseIntoArray(targetGeoTypes, TEXT("&"), true);
-																				possibleGrids = UCheckTargetGeoRuleLibrary::GetPossibleTargetGeoGrids(
-																								targetGeoTypes[0],
-																								allInstanceCardInfo,
-																								boardRows,
-																								effectInfo,
-																								col,
-																								row,
-																								cardInfo.originCardInfo.attackDistance);
-
-																				UCheckTargetGeoRuleLibrary::CheckPossibleTargetLocateGeoGrids(
-																								targetGeoTypes[1],
-																								allInstanceCardInfo,
-																								boardRows,
-																								possibleGrids);
-																}
-																else
-																{
-																				possibleGrids = UCheckTargetGeoRuleLibrary::GetPossibleTargetGeoGrids(
-																								effectInfo.targetGeoType,
-																								allInstanceCardInfo,
-																								boardRows,
-																								effectInfo,
-																								col,
-																								row,
-																								cardInfo.originCardInfo.attackDistance);
-																}
-
-																int32 checkGridNb = 0;
-																while (checkGridNb < possibleGrids.Num())
-																{
-																				// do prereq check first
-																				if (effectInfo.prereqType != "none")
+																				FEffectInfo effectInfo;
+																				TArray<FGridXY> possibleGrids;
+																				if (effectInfo.targetGeoType.Contains("&"))
 																				{
-																								if (!UCheckPrereqFunctionLibrary::CheckPrereqRule(
-																												effectInfo.prereqType, 
-																												col, 
-																												row, 
-																												possibleGrids[checkGridNb].x, 
-																												possibleGrids[checkGridNb].y, 
-																												cardInfo.camp, 
-																												effectInfo.prereqCampType))
-																								{
-																												possibleGrids.RemoveAt(checkGridNb);
-																												continue;
-																								}
+																								TArray<FString> targetGeoTypes;
+																								effectInfo.targetGeoType.ParseIntoArray(targetGeoTypes, TEXT("&"), true);
+																								possibleGrids = UCheckTargetGeoRuleLibrary::GetPossibleTargetGeoGrids(
+																												targetGeoTypes[0],
+																												allInstanceCardInfo,
+																												boardRows,
+																												effectInfo,
+																												col,
+																												row,
+																												cardInfo.originCardInfo.attackDistance);
+
+																								UCheckTargetGeoRuleLibrary::CheckPossibleTargetLocateGeoGrids(
+																												targetGeoTypes[1],
+																												allInstanceCardInfo,
+																												boardRows,
+																												possibleGrids);
+																				}
+																				else
+																				{
+																								possibleGrids = UCheckTargetGeoRuleLibrary::GetPossibleTargetGeoGrids(
+																												effectInfo.targetGeoType,
+																												allInstanceCardInfo,
+																												boardRows,
+																												effectInfo,
+																												col,
+																												row,
+																												cardInfo.originCardInfo.attackDistance);
 																				}
 
-																				if (effectInfo.prereqTagCondition != "none")
+																				int32 checkGridNb = 0;
+																				while (checkGridNb < possibleGrids.Num())
 																				{
-																								if (!UCheckPrereqTagFunctionLibrary::CheckPrereqTagRule(allInstanceCardInfo, boardRows, effectInfo, col, row))
+																								// do prereq check first
+																								if (effectInfo.prereqType != "none")
 																								{
-																												possibleGrids.RemoveAt(checkGridNb);
-																												continue;
+																												if (!UCheckPrereqFunctionLibrary::CheckPrereqRule(
+																																effectInfo.prereqType,
+																																col,
+																																row,
+																																possibleGrids[checkGridNb].x,
+																																possibleGrids[checkGridNb].y,
+																																cardInfo.camp,
+																																effectInfo.prereqCampType))
+																												{
+																																possibleGrids.RemoveAt(checkGridNb);
+																																continue;
+																												}
 																								}
+
+																								if (effectInfo.prereqTagCondition != "none")
+																								{
+																												if (!UCheckPrereqTagFunctionLibrary::CheckPrereqTagRule(allInstanceCardInfo, boardRows, effectInfo, col, row))
+																												{
+																																possibleGrids.RemoveAt(checkGridNb);
+																																continue;
+																												}
+																								}
+
+																								checkGridNb += 1;
 																				}
 
-																				checkGridNb += 1;
+																				for (int32 i = 0; i < possibleGrids.Num(); i++)
+																				{
+																								int32 actionId = UCoreGameBlueprintFunctionLibrary::GetActionId(row, col, possibleGrids[i].x, possibleGrids[i].y, ActionType::LaunchSkill);
+																								legalMoves.Add(actionId);
+																				}
 																}
 
-																for (int32 i = 0; i < possibleGrids.Num(); i++)
-																{
 
+																// check move action
+																TArray<FGridXY> possibleMoveGrids = UCheckTargetGeoRuleLibrary::GetPossibleMoveGrids(
+																				cardInfo.originCardInfo.moveType,
+																				allInstanceCardInfo,
+																				boardRows,
+																				col,
+																				row,
+																				cardInfo.originCardInfo.moveDistance);
+																
+																for (int32 i = 0; i < possibleMoveGrids.Num(); i++)
+																{
+																				int32 actionId = UCoreGameBlueprintFunctionLibrary::GetActionId(
+																								possibleMoveGrids[i].x,
+																								possibleMoveGrids[i].y,
+																								col,
+																								row,
+																								ActionType::Move);
+
+																				legalMoves.Add(actionId);
 																}
 												}
 								}
+				}
+}
+
+void ABattleBoard::GetLegalActionProbsBoardValue(uint8* boardState, TMap<int32, float>& legalActionProbs, float& boardValue)
+{
+				TArray<float> actionProbs;
+				float evaValue;
+				UCoreGameBlueprintFunctionLibrary::QueryRemotePolicyValue(boardState, actionProbs, evaValue);
+				boardValue = evaValue;
+
+				TArray<int32> legalActionIds;
+				GetLegalMoves(legalActionIds);
+
+				for (int32 i = 0; i < legalActionIds.Num(); i++)
+				{
+								legalActionProbs.Add(legalActionIds[i], actionProbs[legalActionIds[i]]);
 				}
 }
 

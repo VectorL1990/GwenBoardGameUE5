@@ -10,6 +10,7 @@
 #include "CoreGameBlueprintFunctionLibrary.h"
 #include "BoardGrid.h"
 #include "BattleCamera.h"
+#include "AI/MctsPlayer.h"
 #include "CoreCardGameModeBase.generated.h"
 
 /**
@@ -101,6 +102,9 @@ public:
 
     TMap<CameraType, ABattleCamera*> camerasMap;
 
+    UPROPERTY()
+    ABattleBoard* battleBoard;
+
 
 public:
     // --- Select card logic
@@ -175,6 +179,12 @@ public:
 
     UFUNCTION(BlueprintCallable)
     void MoveCard(FVector originLoc, FVector targetLoc, float midHeight);
+
+    // --- Training logic
+
+    void TrainPlayGameLoop(float dT);
+
+    AMctsPlayer* mctsPlayer;
 
     // --- Single game logic
 

@@ -125,6 +125,12 @@ public:
         int32 curHp;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int32 curCoolDown;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int32 curAvailableTimes;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
         int32 curDefence;
 };
 
@@ -256,5 +262,7 @@ public:
 
     static const int32 maxCol = 8;
     static const int32 maxRow = 8;
+    static const int32 playCardSectionRow = 2;
+    static const int32 graveCardSectionRow = 3;
     static const int32 boardStateLen = 1000;
 };

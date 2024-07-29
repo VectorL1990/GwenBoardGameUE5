@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "../GlobalConstFunctionLibrary.h"
+#include "../BattleBoard.h"
 #include "MctsTreeNode.h"
 #include "Mcts.generated.h"
 
@@ -27,13 +28,13 @@ public:
 
 				void InitMcts(int32 simulationMoves);
 
-				void DoSimulationMove(uint8* boardState);
+				void DoSimulationMove(ABattleBoard* board, uint8* boardState);
 
-				void GetMoveProbs(uint8* boardState, TArray<int32>& outActs, TArray<float>& softmaxProbs);
+				void GetMoveProbs(ABattleBoard* board, TArray<int32>& outActs, TArray<float>& softmaxProbs);
 
 				void UpdateCurSearchNode(int32 targetMove);
 
-				void GetAction(uint8* boardState, int32& targetMove, TArray<float> softmaxProbs);
+				void GetAction(ABattleBoard* board, int32& targetMove);
 
 				UPROPERTY()
 				int32 expandSimulationMoves = 200;

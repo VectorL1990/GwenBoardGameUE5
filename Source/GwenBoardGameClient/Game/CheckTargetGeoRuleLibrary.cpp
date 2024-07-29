@@ -3,6 +3,34 @@
 
 #include "Game/CheckTargetGeoRuleLibrary.h"
 
+
+TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleMoveGrids(FString rule, TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, int32 launchX, int32 launchY, int32 distance)
+{
+				TArray<FGridXY> possibleGrids;
+				return possibleGrids;
+}
+
+TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleMoveLine(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, int32 launchX, int32 launchY, int32 distance)
+{
+				TArray<FGridXY> possibleGrids;
+				return possibleGrids;
+}
+
+TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleMoveSeperate(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, int32 launchX, int32 launchY, int32 distance)
+{
+				TArray<FGridXY> possibleGrids;
+				return possibleGrids;
+}
+
+TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleMoveDiagonal(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, int32 launchX, int32 launchY, int32 distance)
+{
+				TArray<FGridXY> possibleGrids;
+				return possibleGrids;
+}
+
+
+
+
 TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleTargetGeoGrids(FString geoRule, TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 distance)
 {
 				TArray<FGridXY> possibleGrids;

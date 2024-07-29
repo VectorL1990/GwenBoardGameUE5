@@ -21,7 +21,7 @@ void UCoreGameBlueprintFunctionLibrary::Softmax(const TArray<float>& x, float te
 }
 
 
-void UCoreGameBlueprintFunctionLibrary::QueryRemotePolicyValue(uint8* boardState, TMap<int32, float>& actionProbs, float& stateValue)
+void UCoreGameBlueprintFunctionLibrary::QueryRemotePolicyValue(uint8* boardState, TArray<float>& actionProbs, float& stateValue)
 {
     
 }
@@ -69,9 +69,29 @@ int32 UCoreGameBlueprintFunctionLibrary::GetDirichletAction(const TArray<int32>&
     return stdActions[dist(randSeed)];
 }
 
-void UCoreGameBlueprintFunctionLibrary::GetActionId(int32 launchX, int32 launchY, int32 targetX, int32 targetY, ActionType actionType)
+int32 UCoreGameBlueprintFunctionLibrary::GetActionId(int32 launchX, int32 launchY, int32 targetX, int32 targetY, ActionType actionType)
 {
-
+    int32 actionId = -1;
+    int32 totalBattleBoardGrids = UGlobalConstFunctionLibrary::maxRow * UGlobalConstFunctionLibrary::maxCol;
+    if (actionType == ActionType::PlayCard)
+    {
+        int32 playGridNb = launchY * UGlobalConstFunctionLibrary::playCardSectionRow + launchX;
+        actionId = totalBattleBoardGrids * playGridNb + targetY * UGlobalConstFunctionLibrary::maxCol + targetX;
+    }
+    else if (actionType == ActionType::LaunchSkill)
+    {
+        int32 totalPlayCardActionNb = UGlobalConstFunctionLibrary::playCardSectionRow * UGlobalConstFunctionLibrary::maxCol * totalBattleBoardGrids;
+        int32 launchGridNb = launchY * UGlobalConstFunctionLibrary::maxCol + launchX;
+        actionId = totalBattleBoardGrids * launchGridNb + targetY * UGlobalConstFunctionLibrary::maxCol + targetX + totalPlayCardActionNb;
+    }
+    else if (actionType == ActionType::Move)
+    {
+        int32 totalPlayCardActionNb = UGlobalConstFunctionLibrary::playCardSectionRow * UGlobalConstFunctionLibrary::maxCol * totalBattleBoardGrids;
+        int32 totalLaunchSkillActionNb = UGlobalConstFunctionLibrary::maxRow * UGlobalConstFunctionLibrary::maxCol * UGlobalConstFunctionLibrary::maxRow * UGlobalConstFunctionLibrary::maxCol;
+        int32 moveGridNb = launchY * UGlobalConstFunctionLibrary::maxCol + launchX;
+        actionId = totalBattleBoardGrids * moveGridNb + targetY * UGlobalConstFunctionLibrary::maxCol + targetX + totalPlayCardActionNb + totalLaunchSkillActionNb;
+    }
+    return actionId;
 }
 
 TArray<FGridXY> UCoreGameBlueprintFunctionLibrary::GetAoeTargetGrids(

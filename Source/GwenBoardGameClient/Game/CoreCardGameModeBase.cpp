@@ -258,6 +258,17 @@ void ACoreCardGameModeBase::FinishCardSelection()
 				// Trigger by Select Card widget, next operation depends on single or multi players game mode
 }
 
+void ACoreCardGameModeBase::TrainPlayGameLoop(float dT)
+{
+				while (true)
+				{
+								int32 actionId = -1;
+								mctsPlayer->mcts->GetAction(battleBoard, actionId);
+
+
+				}
+}
+
 void ACoreCardGameModeBase::SinglePlayerGameLoop(float dT)
 {
 				if (singleBattleState == SingleBattleState::Default)

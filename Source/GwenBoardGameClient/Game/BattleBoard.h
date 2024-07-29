@@ -29,6 +29,8 @@ public:
 
 				void GetLegalMoves(TArray<int32>& legalMoves);
 
+				void GetLegalActionProbsBoardValue(uint8* boardState, TMap<int32, float>& legalActionProbs, float& boardValue);
+
 				void LaunchSkill(int32 launchX, int32 launchY, int32 targetX, int32 targetY, FEffectInfo& effectInfo);
 
 				uint8* StateCoding();
@@ -49,8 +51,17 @@ public:
 				uint8* GetSkillPrereqCoding(FString skillPrereq);
 				uint8* GetPassiveSkillPrereqTypeCoding(FString passiveSkillPrereq);
 
+				UPROPERTY()
+				uint8 curPlayerTurn;
+
     UPROPERTY()
     TMap<int32, FBoardRow> boardRows;
+
+				UPROPERTY()
+				TMap<int32, FBoardRow> playSectionRows;
+
+				UPROPERTY()
+				TMap<int32, FBoardRow> graveSectionRows;
 
 				UPROPERTY()
 				TMap<int32, FInstanceCardInfo> allInstanceCardInfo;
