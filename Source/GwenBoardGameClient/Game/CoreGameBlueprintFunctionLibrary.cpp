@@ -75,7 +75,7 @@ int32 UCoreGameBlueprintFunctionLibrary::GetActionId(int32 launchX, int32 launch
     int32 totalBattleBoardGrids = UGlobalConstFunctionLibrary::maxRow * UGlobalConstFunctionLibrary::maxCol;
     if (actionType == ActionType::PlayCard)
     {
-        int32 playGridNb = launchY * UGlobalConstFunctionLibrary::playCardSectionRow + launchX;
+        int32 playGridNb = launchY * UGlobalConstFunctionLibrary::maxCol + launchX;
         actionId = totalBattleBoardGrids * playGridNb + targetY * UGlobalConstFunctionLibrary::maxCol + targetX;
     }
     else if (actionType == ActionType::LaunchSkill)

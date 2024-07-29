@@ -265,7 +265,12 @@ void ACoreCardGameModeBase::TrainPlayGameLoop(float dT)
 								int32 actionId = -1;
 								mctsPlayer->mcts->GetAction(battleBoard, actionId);
 
-
+								int32 launchX;
+								int32 launchY;
+								int32 targetX;
+								int32 targetY;
+								ActionType actionType;
+								battleBoard->ActionDecoding(actionId, launchX, launchY, targetX, targetY, actionType);
 				}
 }
 

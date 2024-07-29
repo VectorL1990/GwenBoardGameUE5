@@ -35,6 +35,8 @@ public:
 
 				uint8* StateCoding();
 
+				void ActionDecoding(int32& launchX, int32& launchY, int32& targetX, int32& targetY, ActionType& actionType);
+
 				uint8* GetSkillLaunchTypeCoding(FString launchType);
 				uint8* GetSkillLaunchGeoCoding(FString launchGeoType);
 				uint8* GetSkillTargetGeoCoding(FString targetGeoType);

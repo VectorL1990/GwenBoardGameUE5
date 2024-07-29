@@ -216,6 +216,83 @@ uint8* ABattleBoard::StateCoding()
 				return skillLaunchTypeCoding;
 }
 
+
+void ABattleBoard::ActionDecoding(int32 actionId, int32& launchX, int32& launchY, int32& targetX, int32& targetY, ActionType& actionType)
+{
+				int32 totalGridNb = UGlobalConstFunctionLibrary::maxRow * UGlobalConstFunctionLibrary::maxCol;
+				int32 totalPlayCardActions = UGlobalConstFunctionLibrary::playCardSectionRow * UGlobalConstFunctionLibrary::maxCol * UGlobalConstFunctionLibrary::maxRow * UGlobalConstFunctionLibrary::maxCol;
+				int32 totalLaunchSkillActions = UGlobalConstFunctionLibrary::maxCol * UGlobalConstFunctionLibrary::maxRow;
+				int32 totalMoveActions = UGlobalConstFunctionLibrary::maxCol * UGlobalConstFunctionLibrary::maxRow;
+				if (actionId < totalPlayCardActions)
+				{
+								// which means it's play card action
+								
+								int32 playCardSectionGridNb = FMath::FloorToInt(actionId / totalGridNb);
+								int32 targetCardGridNb = actionId % totalGridNb;
+
+								int32 playCardSectionRow = FMath::FloorToInt(playCardSectionGridNb / UGlobalConstFunctionLibrary::maxCol);
+								int32 playCardSectionCol = playCardSectionGridNb % UGlobalConstFunctionLibrary::maxCol;
+
+								int32 targetSectionRow = FMath::FloorToInt(targetCardGridNb / UGlobalConstFunctionLibrary::maxCol);
+								int32 targetSectionCol = targetCardGridNb % UGlobalConstFunctionLibrary::maxCol;
+
+								launchX = playCardSectionCol;
+								launchY = playCardSectionRow;
+								targetX = targetSectionCol;
+								targetY = targetSectionRow;
+								actionType = ActionType::PlayCard;
+				}
+				else if (actionId < totalPlayCardActions + totalLaunchSkillActions)
+				{
+								// which means it's launch skill action
+								int32 launchSkillActionId = actionId - totalPlayCardActions;
+
+								int32 launchGridNb = FMath::FloorToInt(launchSkillActionId / totalGridNb);
+								int32 targetGridNb = launchSkillActionId % totalGridNb;
+
+								int32 launchRow = FMath::FloorToInt(launchGridNb / UGlobalConstFunctionLibrary::maxCol);
+								int32 launchCol = launchGridNb % UGlobalConstFunctionLibrary::maxCol;
+
+								int32 targetRow = FMath::FloorToInt(targetGridNb / UGlobalConstFunctionLibrary::maxCol);
+								int32 targetCol = targetGridNb % UGlobalConstFunctionLibrary::maxCol;
+
+								launchX = launchCol;
+								launchY = launchRow;
+								targetX = targetCol;
+								targetY = targetRow;
+								actionType = ActionType::LaunchSkill;
+				}
+				else if (actionId < totalPlayCardActions + totalLaunchSkillActions + totalMoveActions)
+				{
+								// which means it's move action
+								int32 moveActionId = actionId - totalPlayCardActions - totalLaunchSkillActions;
+
+								int32 launchGridNb = FMath::FloorToInt(moveActionId / totalGridNb);
+								int32 targetGridNb = moveActionId % totalGridNb;
+
+								int32 launchRow = FMath::FloorToInt(launchGridNb / UGlobalConstFunctionLibrary::maxCol);
+								int32 launchCol = launchGridNb % UGlobalConstFunctionLibrary::maxCol;
+
+								int32 targetRow = FMath::FloorToInt(targetGridNb / UGlobalConstFunctionLibrary::maxCol);
+								int32 targetCol = targetGridNb % UGlobalConstFunctionLibrary::maxCol;
+
+								launchX = launchCol;
+								launchY = launchRow;
+								targetX = targetCol;
+								targetY = targetRow;
+								actionType = ActionType::Move;
+				}
+				else
+				{
+								launchX = 0;
+								launchY = 0;
+								targetX = 0;
+								targetY = 0;
+								actionType = ActionType::EndRound;
+				}
+}
+
+
 uint8* ABattleBoard::GetSkillLaunchTypeCoding(FString launchType)
 {
 				uint8* coding = skillLaunchTypeCoding;
