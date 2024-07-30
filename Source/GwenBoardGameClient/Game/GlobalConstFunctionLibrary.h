@@ -230,13 +230,19 @@ struct FEffectResultDict
     GENERATED_USTRUCT_BODY()
 public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        bool success;
+    bool success;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        FString modifyType;
+    FString modifyType;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        TArray<FGridXY> modifyGrids;
+    TArray<FGridXY> modifyGrids;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TArray<int32> modifyUids;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TArray<float> modifyValues;
 };
 
 USTRUCT(BlueprintType, Blueprintable)

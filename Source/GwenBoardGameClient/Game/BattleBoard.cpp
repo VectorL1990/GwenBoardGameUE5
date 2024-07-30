@@ -4,6 +4,7 @@
 #include "Game/BattleBoard.h"
 #include "CheckTargetGeoRuleLibrary.h"
 #include "CheckPrereqTagFunctionLibrary.h"
+#include "PassiveEffectFunctionLibrary.h"
 #include "CheckPrereqFunctionLibrary.h"
 
 // Sets default values
@@ -181,9 +182,80 @@ void ABattleBoard::GetLegalActionProbsBoardValue(uint8* boardState, TMap<int32, 
 				}
 }
 
-void ABattleBoard::LaunchSkill(int32 launchX, int32 launchY, int32 targetX, int32 targetY, FEffectInfo& effectInfo)
+void ABattleBoard::TriggerSkill(int32 launchX, int32 launchY, int32 targetX, int32 targetY)
 {
-				//if (effectInfo.aoeType == "")
+				int32 launchUid = boardRows[launchY].colCardInfos[launchX];
+				FEffectInfo effectInfo;
+				effectInfo.launchType = allInstanceCardInfo[launchUid].originCardInfo.launchType;
+				effectInfo.coolDown = allInstanceCardInfo[launchUid].originCardInfo.coolDown;
+				effectInfo.availableTimes = allInstanceCardInfo[launchUid].originCardInfo.availableTimes;
+				effectInfo.launchGeoType = allInstanceCardInfo[launchUid].originCardInfo.launchGeoType;
+				effectInfo.targetGeoType = allInstanceCardInfo[launchUid].originCardInfo.targetGeoType;
+				effectInfo.aoeType = allInstanceCardInfo[launchUid].originCardInfo.aoeType;
+				effectInfo.targetCamp = allInstanceCardInfo[launchUid].originCardInfo.targetCamp;
+				effectInfo.effectType = allInstanceCardInfo[launchUid].originCardInfo.effectType;
+				effectInfo.effectAffix = allInstanceCardInfo[launchUid].originCardInfo.effectAffix;
+				effectInfo.effectAffixCamp = allInstanceCardInfo[launchUid].originCardInfo.effectAffixCamp;
+				effectInfo.prereqTagCondition = allInstanceCardInfo[launchUid].originCardInfo.prereqTagCondition;
+				effectInfo.prereqTag = allInstanceCardInfo[launchUid].originCardInfo.prereqTag;
+				effectInfo.prereqCampType = allInstanceCardInfo[launchUid].originCardInfo.prereqCampType;
+				effectInfo.prereqType = allInstanceCardInfo[launchUid].originCardInfo.prereqType;
+				effectInfo.passivePrereqType = allInstanceCardInfo[launchUid].originCardInfo.passivePrereqType;
+				effectInfo.values = allInstanceCardInfo[launchUid].originCardInfo.values;
+
+				FEffectResultDict effectResultInfo = UCoreGameBlueprintFunctionLibrary::LaunchSkillDict(allInstanceCardInfo, boardRows, effectInfo, launchX, launchY, targetX, targetY);
+				if (effectResultInfo.success)
+				{
+								TriggerPassiveEffect(effectResultInfo);
+				}
+}
+
+void ABattleBoard::TriggerPassiveEffect(FEffectResultDict effectResultDict)
+{
+				FEffectResultDict secondaryEffectResult;
+				for (int32 i = 0; i < effectResultDict.modifyUids.Num(); i++)
+				{
+								if (curRoundPassiveEffectTriggeredUids.Contains(effectResultDict.modifyUids[i]))
+								{
+												continue;
+								}
+
+								int32 modifyGridX = effectResultDict.modifyGrids[i].x;
+								int32 modifyGridY = effectResultDict.modifyGrids[i].y;
+								int32 modifyCardUid = boardRows[modifyGridY].colCardInfos[modifyGridX];
+								if (modifyCardUid != -1 && 
+												allInstanceCardInfo[modifyCardUid].originCardInfo.launchType == "passive" &&
+												effectResultDict.modifyType == allInstanceCardInfo[modifyCardUid].originCardInfo.passivePrereqType)
+								{
+												secondaryEffectResult = UPassiveEffectFunctionLibrary::GetPassiveEffect(
+																allInstanceCardInfo,
+																boardRows,
+
+												);
+
+												curRoundPassiveEffectTriggeredUids.Add(effectResultDict.modifyUids[i]);
+
+												int32 checkSecondaryEffectResultNb = 0;
+												while (checkSecondaryEffectResultNb < secondaryEffectResult.modifyUids.Num())
+												{
+																if (curRoundPassiveEffectTriggeredUids.Contains(secondaryEffectResult.modifyUids[j]))
+																{
+																				secondaryEffectResult.modifyUids.RemoveAt(checkSecondaryEffectResultNb);
+																				secondaryEffectResult.modifyValues.RemoveAt(checkSecondaryEffectResultNb);
+																}
+																else
+																{
+																				checkSecondaryEffectResultNb += 1;
+																}
+												}
+								}
+				}
+
+
+				if (secondaryEffectResult.modifyUids.Num() > 0)
+				{
+								TriggerPassiveEffect(secondaryEffectResult);
+				}
 }
 
 uint8* ABattleBoard::StateCoding()
@@ -227,13 +299,13 @@ void ABattleBoard::ActionDecoding(int32 actionId, int32& launchX, int32& launchY
 				{
 								// which means it's play card action
 								
-								int32 playCardSectionGridNb = FMath::FloorToInt(actionId / totalGridNb);
+								int32 playCardSectionGridNb = FMath::FloorToInt((float)actionId / (float)totalGridNb);
 								int32 targetCardGridNb = actionId % totalGridNb;
 
-								int32 playCardSectionRow = FMath::FloorToInt(playCardSectionGridNb / UGlobalConstFunctionLibrary::maxCol);
+								int32 playCardSectionRow = FMath::FloorToInt((float)playCardSectionGridNb / (float)UGlobalConstFunctionLibrary::maxCol);
 								int32 playCardSectionCol = playCardSectionGridNb % UGlobalConstFunctionLibrary::maxCol;
 
-								int32 targetSectionRow = FMath::FloorToInt(targetCardGridNb / UGlobalConstFunctionLibrary::maxCol);
+								int32 targetSectionRow = FMath::FloorToInt((float)targetCardGridNb / (float)UGlobalConstFunctionLibrary::maxCol);
 								int32 targetSectionCol = targetCardGridNb % UGlobalConstFunctionLibrary::maxCol;
 
 								launchX = playCardSectionCol;
@@ -247,13 +319,13 @@ void ABattleBoard::ActionDecoding(int32 actionId, int32& launchX, int32& launchY
 								// which means it's launch skill action
 								int32 launchSkillActionId = actionId - totalPlayCardActions;
 
-								int32 launchGridNb = FMath::FloorToInt(launchSkillActionId / totalGridNb);
+								int32 launchGridNb = FMath::FloorToInt((float)launchSkillActionId / (float)totalGridNb);
 								int32 targetGridNb = launchSkillActionId % totalGridNb;
 
-								int32 launchRow = FMath::FloorToInt(launchGridNb / UGlobalConstFunctionLibrary::maxCol);
+								int32 launchRow = FMath::FloorToInt((float)launchGridNb / (float)UGlobalConstFunctionLibrary::maxCol);
 								int32 launchCol = launchGridNb % UGlobalConstFunctionLibrary::maxCol;
 
-								int32 targetRow = FMath::FloorToInt(targetGridNb / UGlobalConstFunctionLibrary::maxCol);
+								int32 targetRow = FMath::FloorToInt((float)targetGridNb / (float)UGlobalConstFunctionLibrary::maxCol);
 								int32 targetCol = targetGridNb % UGlobalConstFunctionLibrary::maxCol;
 
 								launchX = launchCol;
@@ -267,13 +339,13 @@ void ABattleBoard::ActionDecoding(int32 actionId, int32& launchX, int32& launchY
 								// which means it's move action
 								int32 moveActionId = actionId - totalPlayCardActions - totalLaunchSkillActions;
 
-								int32 launchGridNb = FMath::FloorToInt(moveActionId / totalGridNb);
+								int32 launchGridNb = FMath::FloorToInt((float)moveActionId / (float)totalGridNb);
 								int32 targetGridNb = moveActionId % totalGridNb;
 
-								int32 launchRow = FMath::FloorToInt(launchGridNb / UGlobalConstFunctionLibrary::maxCol);
+								int32 launchRow = FMath::FloorToInt((float)launchGridNb / (float)UGlobalConstFunctionLibrary::maxCol);
 								int32 launchCol = launchGridNb % UGlobalConstFunctionLibrary::maxCol;
 
-								int32 targetRow = FMath::FloorToInt(targetGridNb / UGlobalConstFunctionLibrary::maxCol);
+								int32 targetRow = FMath::FloorToInt((float)targetGridNb / (float)UGlobalConstFunctionLibrary::maxCol);
 								int32 targetCol = targetGridNb % UGlobalConstFunctionLibrary::maxCol;
 
 								launchX = launchCol;

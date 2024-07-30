@@ -31,11 +31,15 @@ public:
 
 				void GetLegalActionProbsBoardValue(uint8* boardState, TMap<int32, float>& legalActionProbs, float& boardValue);
 
-				void LaunchSkill(int32 launchX, int32 launchY, int32 targetX, int32 targetY, FEffectInfo& effectInfo);
+				void TriggerSkill(int32 launchX, int32 launchY, int32 targetX, int32 targetY);
+
+				void TriggerPassiveEffect(FEffectResultDict effectResultDict);
+
+				TArray<int32> curRoundPassiveEffectTriggeredUids;
 
 				uint8* StateCoding();
 
-				void ActionDecoding(int32& launchX, int32& launchY, int32& targetX, int32& targetY, ActionType& actionType);
+				void ActionDecoding(int32 actionId, int32& launchX, int32& launchY, int32& targetX, int32& targetY, ActionType& actionType);
 
 				uint8* GetSkillLaunchTypeCoding(FString launchType);
 				uint8* GetSkillLaunchGeoCoding(FString launchGeoType);

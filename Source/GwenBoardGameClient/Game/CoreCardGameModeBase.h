@@ -153,7 +153,7 @@ public:
     // --- Main game logic
     void ReqPlayCard(int32 actionSequence, FString cardUid, int32 targetX, int32 targetY);
 
-    void ReqLaunchCardSkill();
+    void ReqLaunchCardSkill(int32 launchX, int32 launchY, int32 targetX, int32 targetY);
 
     //void LaunchSkill();
 
@@ -185,6 +185,11 @@ public:
     void TrainPlayGameLoop(float dT);
 
     AMctsPlayer* mctsPlayer;
+
+    UPROPERTY(EditDefaultsOnly)
+    float aiTrainPlayerActionInterval;
+
+    float aiTrainPlayerActionCount = 0.0;
 
     // --- Single game logic
 

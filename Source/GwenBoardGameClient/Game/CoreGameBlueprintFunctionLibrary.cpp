@@ -474,6 +474,24 @@ TArray<FGridXY> UCoreGameBlueprintFunctionLibrary::GetAoeTargetGrids(
     return modifyGrids;
 }
 
+FEffectResultDict UCoreGameBlueprintFunctionLibrary::LaunchSkillDict(
+    TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+    TMap<int32, FBoardRow>& boardCardInfo,
+    FEffectInfo& effectInfo,
+    int32 launchX,
+    int32 launchY,
+    int32 targetX,
+    int32 targetY)
+{
+    FEffectResultDict effectResultDict;
+    if (effectInfo.effectType == "IncreaseDefence")
+    {
+        effectResultDict = IncreaseDefence(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY);
+    }
+
+    return effectResultDict;
+}
+
 FEffectResultDict UCoreGameBlueprintFunctionLibrary::IncreaseDefence(
     TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
     TMap<int32, FBoardRow>& boardCardInfo,

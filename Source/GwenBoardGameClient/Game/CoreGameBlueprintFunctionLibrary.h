@@ -128,6 +128,15 @@ public:
             FString aoeType, 
             FString targetCamp);
 
+    static FEffectResultDict LaunchSkillDict(
+            TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+            TMap<int32, FBoardRow>& boardCardInfo,
+            FEffectInfo& effectInfo,
+            int32 launchX,
+            int32 launchY,
+            int32 targetX,
+            int32 targetY);
+
     static FEffectResultDict IncreaseDefence(
             TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
             TMap<int32, FBoardRow>& boardCardInfo,

@@ -260,17 +260,52 @@ void ACoreCardGameModeBase::FinishCardSelection()
 
 void ACoreCardGameModeBase::TrainPlayGameLoop(float dT)
 {
-				while (true)
+				if (singleBattleState == SingleBattleState::Default)
 				{
-								int32 actionId = -1;
-								mctsPlayer->mcts->GetAction(battleBoard, actionId);
+								return;
+				}
+				else if (singleBattleState == SingleBattleState::Battle)
+				{
+								if (curCountingTick >= battleStateTicksMap["MaxLaunchActionTimeInterval"])
+								{
+												singleBattleState = SingleBattleState::BattleInterlude;
+												curCountingTick = 0.0;
+								}
+								else
+								{
+												if (aiTrainPlayerActionCount >= aiTrainPlayerActionInterval)
+												{
+																// launch action
+																int32 actionId = -1;
+																mctsPlayer->mcts->GetAction(battleBoard, actionId);
 
-								int32 launchX;
-								int32 launchY;
-								int32 targetX;
-								int32 targetY;
-								ActionType actionType;
-								battleBoard->ActionDecoding(actionId, launchX, launchY, targetX, targetY, actionType);
+																int32 launchX;
+																int32 launchY;
+																int32 targetX;
+																int32 targetY;
+																ActionType actionType;
+																battleBoard->ActionDecoding(actionId, launchX, launchY, targetX, targetY, actionType);
+
+																if (actionType == ActionType::PlayCard)
+																{
+																				//ReqPlayCard();
+																}
+																else if (actionType == ActionType::LaunchSkill)
+																{
+																				//ReqLaunchCardSkill();
+																}
+
+																
+																aiTrainPlayerActionCount = 0.0;
+																curCountingTick = 0.0;
+																singleBattleState = SingleBattleState::BattleInterlude;
+												}
+												else
+												{
+																aiTrainPlayerActionCount += dT;
+												}
+												curCountingTick += dT;
+								}
 				}
 }
 
@@ -357,8 +392,10 @@ void ACoreCardGameModeBase::ReqPlayCard(int32 actionSequence, FString cardUid, i
 				}
 }
 
-void ACoreCardGameModeBase::ReqLaunchCardSkill()
-{}
+void ACoreCardGameModeBase::ReqLaunchCardSkill(int32 launchX, int32 launchY, int32 targetX, int32 targetY)
+{
+				
+}
 
 void ACoreCardGameModeBase::SpawnTestCards()
 {
