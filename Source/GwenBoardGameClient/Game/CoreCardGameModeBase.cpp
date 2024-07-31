@@ -60,102 +60,6 @@ void ACoreCardGameModeBase::Tick(float deltaTime)
 				{
 
 				}
-
-				if (interludeState == InterludeState::SelectCardDemoPauseInterlude)
-				{
-								// Pause for a while for final select cards demonstration
-								if (curCountingTick >= interludeStateTicksMap["SelectCardDemoPauseInterlude"])
-								{
-												// delete all demonstrated hand cards fist
-												for (TMap<FString, ACard*>::TConstIterator iter = handCardMap.CreateConstIterator(); iter; ++iter)
-												{
-																if (iter->Value->IsValidLowLevel())
-																{
-																				iter->Value->Destroy();
-																}
-												}
-												handCardMap.Empty();
-
-												// move camera to specific location
-												APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
-												AActor* targetCamera = camerasMap[CameraType::SelectCardCamera];
-												playerController->SetViewTargetWithBlend(targetCamera, 2.0);
-
-
-												// which means selected cards demonstration ends
-												curCountingTick = 0.0;
-												interludeState = InterludeState::MoveCameraCardSelectionToBattle;
-								}
-								else
-								{
-												curCountingTick += deltaTime;
-								}
-				}
-				else if (interludeState == InterludeState::MoveCameraCardSelectionToBattle)
-				{
-								if (curCountingTick >= interludeStateTicksMap["MoveCameraCardSelectionToBattle"])
-								{
-												// when camera motion done, we should demonstrate our board right now
-												for (TMap<int32, ABoardGrid*>::TConstIterator iter = boardGrids.CreateConstIterator(); iter; ++iter)
-												{
-																iter->Value->DemonstrateInitEffect();
-												}
-
-												curCountingTick = 0.0;
-												interludeState = InterludeState::DemoBoardInterlude;
-								}
-								else
-								{
-												curCountingTick += deltaTime;
-								}
-				}
-				else if (interludeState == InterludeState::DemoBoardInterlude)
-				{
-								if (curCountingTick >= interludeStateTicksMap["DemoBoardInterlude"])
-								{
-												// when battle board init effect demonstration is done, start actual battle
-
-												curCountingTick = 0.0;
-												// which means stop interlude counting, begin battle counting
-												interludeState = InterludeState::Default;
-								}
-								else
-								{
-												curCountingTick += deltaTime;
-								}
-				}
-
-				if (clientBattleState == ClientBattleState::ReqEnterRoom)
-				{
-								if (curReqEnterRoomTick >= battleStateTicksMap["ReqEnterRoom"])
-								{
-												// which means account has already entered world
-												// trigger reqEnterRoom so that server gives side gives client to avatar
-												ReqEnterRoom();
-												curReqEnterRoomTick = 0.0;
-								}
-								else
-								{
-												curReqEnterRoomTick += deltaTime;
-								}
-				}
-				else if (clientBattleState == ClientBattleState::SelectCard)
-				{
-								SpawnSelectCard();
-				}
-				else if (clientBattleState == ClientBattleState::InBattle)
-				{
-								// we should always keep sending sync information to server
-								if (curBattleStateTick >= battleStateTicksMap["SyncHeartBeatInterval"])
-								{
-												ReqSyncHeartBeat();
-								}
-
-								if (curBattleStateTick >= battleStateTicksMap["SyncBattleInterval"])
-								{
-												ReqLatestBattleInfo();
-								}
-				}
 }
 
 void ACoreCardGameModeBase::TriggerReadCardInfo_Implementation()
@@ -859,73 +763,12 @@ void ACoreCardGameModeBase::onSyncBattleResult(const UKBEventData* eventData)
 
 void ACoreCardGameModeBase::onSyncChangeHandCardSuccess(const UKBEventData* eventData)
 {
-				const UKBEventData_onSyncChangeHandCardSuccess* onSyncChangeHandCardSuccessData = Cast<UKBEventData_onSyncChangeHandCardSuccess>(eventData);
-				if (onSyncChangeHandCardSuccessData->changeSelectCardNb - curChangeSelectCardNb == 1)
-				{
-								if (handCardKeyList.Contains(onSyncChangeHandCardSuccessData->changeHandCardKey) &&
-												pileCardKeyList.Contains(onSyncChangeHandCardSuccessData->changePileCardKey))
-								{
-												// which means information is complete, nothing missed
-												curChangeSelectCardNb = onSyncChangeHandCardSuccessData->changeSelectCardNb;
-
-												// delete choosen hand card and replace it with card in card pile
-												int32 changeHandCardKeyLoc = handCardKeyList.Find(onSyncChangeHandCardSuccessData->changeHandCardKey);
-												handCardKeyList[changeHandCardKeyLoc] = onSyncChangeHandCardSuccessData->changePileCardKey;
-												// remove target pile card key from pileCardKeyList
-												pileCardKeyList.RemoveAt(0);
-												pileCardKeyList.Add(onSyncChangeHandCardSuccessData->changeHandCardKey);
-												if (!handCardMap.Contains(onSyncChangeHandCardSuccessData->changeHandCardKey))
-												{
-																// which means 3d card error, regenerate all 3d cards!
-												}
-												else
-												{
-																FVector changeHandCardLoc = handCardMap[onSyncChangeHandCardSuccessData->changeHandCardKey]->GetActorLocation();
-																FRotator changeHandCardRot = handCardMap[onSyncChangeHandCardSuccessData->changeHandCardKey]->GetActorRotation();
-																if (handCardMap[onSyncChangeHandCardSuccessData->changeHandCardKey]->IsValidLowLevel())
-																{
-																				handCardMap[onSyncChangeHandCardSuccessData->changeHandCardKey]->Destroy();
-																}
-																handCardMap.Remove(onSyncChangeHandCardSuccessData->changeHandCardKey);
-																ACard* changeHandCard = GetWorld()->SpawnActor<ACard>(cardBPClass, changeHandCardLoc, changeHandCardRot);
-																changeHandCard->cardStatus = BattleCardStatus::Select;
-																changeHandCard->InitCard(allCardInfoMap[onSyncChangeHandCardSuccessData->changeHandCardKey].cardName);
-																handCardMap.Add(onSyncChangeHandCardSuccessData->changeHandCardKey, changeHandCard);
-												}
-												if (maxChangeSelectCardNb - curChangeSelectCardNb <= 1)
-												{
-																// which means all opportunity exhausted
-																// tell server card selection done
-																ReqFinishSelectCards();
-												}
-								}
-								else
-								{
-												// which means information loss, require latest select hand cards!
-												ReqUpdateSelectedCard();
-								}
-				}
-				else
-				{
-								// which means information loss, require latest select hand cards!
-								ReqUpdateSelectedCard();
-				}
 }
 
 void ACoreCardGameModeBase::onSyncPlayerBattleInfo(const UKBEventData* eventData)
 {
 				// when client receive this message, it means avatar is ready both on server and client sides
-				const UKBEventData_onSyncPlayerBattleInfo* onSyncPlayerBattleInfoData = Cast<UKBEventData_onSyncPlayerBattleInfo>(eventData);
 
-				for (int32 i = 0; i < onSyncPlayerBattleInfoData->cardList.Num(); i++)
-				{
-								if (!onSyncPlayerBattleInfoData->handCardList.Contains(onSyncPlayerBattleInfoData->cardList[i].cardKey))
-								{
-												pileCardKeyList.Add(onSyncPlayerBattleInfoData->cardList[i].cardKey);
-								}
-								allCardInfoMap.Add(onSyncPlayerBattleInfoData->cardList[i].cardKey, onSyncPlayerBattleInfoData->cardList[i]);
-				}
-				handCardKeyList = onSyncPlayerBattleInfoData->handCardList;
 }
 
 void ACoreCardGameModeBase::onSyncReceiveEnterRoom(const UKBEventData* eventData)
@@ -969,17 +812,7 @@ void ACoreCardGameModeBase::onSyncHeartBeat(const UKBEventData* eventData)
 void ACoreCardGameModeBase::onSyncLatestBattleState(const UKBEventData* eventData)
 {
 				// Compare current operation sequence
-				const UKBEventData_onSyncLatestBattleState* latestBattleStateData = Cast<UKBEventData_onSyncLatestBattleState>(eventData);
-				if (receiveActionSequence < latestBattleStateData->curActionSequence ||
-								receiveSwitchControllerSequence != latestBattleStateData->curSwitchControllerSequence ||
-								receiveControllerNb != latestBattleStateData->curControllerNb)
-				{
-								// which means client got information latency or information loss
-								// we should use sync information for battle recovering
-								CalibrateGridInfos(latestBattleStateData->updateGridInfos);
-								CalibratePlayerCardInfos(latestBattleStateData->cardList, latestBattleStateData->handCardList);
-								CalibrateCurrentGlobalInfo(latestBattleStateData->curActionSequence, latestBattleStateData->curSwitchControllerSequence, latestBattleStateData->curControllerNb);
-				}
+
 }
 
 void ACoreCardGameModeBase::onSyncResumeBattle(const UKBEventData* eventData)
@@ -990,42 +823,7 @@ void ACoreCardGameModeBase::onSyncResumeBattle(const UKBEventData* eventData)
 
 void ACoreCardGameModeBase::onSyncUpdateSelectedCards(const UKBEventData* eventData)
 {
-				const UKBEventData_onSyncUpdateSelectedCards* onSyncUpdateSelectedCardsData = Cast<UKBEventData_onSyncUpdateSelectedCards>(eventData);
-				// delete all existing hand cards and replace them with data from server
-				for (TMap<FString, ACard*>::TConstIterator iter = handCardMap.CreateConstIterator(); iter; ++iter)
-				{
-								if (iter->Value->IsValidLowLevel())
-								{
-												iter->Value->Destroy();
-								}
-				}
-				handCardMap.Empty();
 
-				allCardInfoMap.Empty();
-				pileCardKeyList.Empty();
-				for (int32 i = 0; i < onSyncUpdateSelectedCardsData->cardList.Num(); i++)
-				{
-								if (!onSyncUpdateSelectedCardsData->handCardList.Contains(onSyncUpdateSelectedCardsData->cardList[i].cardKey))
-								{
-												pileCardKeyList.Add(onSyncUpdateSelectedCardsData->cardList[i].cardKey);
-								}
-								allCardInfoMap.Add(onSyncUpdateSelectedCardsData->cardList[i].cardKey, onSyncUpdateSelectedCardsData->cardList[i]);
-				}
-				handCardKeyList = onSyncUpdateSelectedCardsData->handCardList;
-
-				FRotator spawnRot = FRotator::ZeroRotator;
-				for (int32 i = 0; i < handCardKeyList.Num(); i++)
-				{
-								if (i >= selectCardSpawnPts.Num())
-								{
-												break;
-								}
-								FVector spawnLoc = selectCardSpawnPts[i];
-								ACard* handCard = GetWorld()->SpawnActor<ACard>(cardBPClass, spawnLoc, spawnRot);
-								handCard->cardStatus = BattleCardStatus::Select;
-								handCard->InitCard(allCardInfoMap[handCardKeyList[i]].cardName);
-								handCardMap.Add(handCardKeyList[i], handCard);
-				}
 
 }
 
@@ -1058,18 +856,6 @@ void ACoreCardGameModeBase::onSyncTimeInterval(const UKBEventData* eventData)
 
 void ACoreCardGameModeBase::SpawnSelectCard()
 {
-				FRotator spawnRot = FRotator::ZeroRotator;
-				for (int32 i = 0; i < handCardKeyList.Num(); i++)
-				{
-								if (i >= selectCardSpawnPts.Num())
-								{
-												break;
-								}
-								FVector spawnLoc = selectCardSpawnPts[i];
-								ACard* handCard = GetWorld()->SpawnActor<ACard>(cardBPClass, spawnLoc, spawnRot);
-								handCard->cardStatus = BattleCardStatus::Select;
-								handCard->InitCard(allCardInfoMap[handCardKeyList[i]].cardName);
-								handCardMap.Add(handCardKeyList[i], handCard);
-				}
+
 }
 

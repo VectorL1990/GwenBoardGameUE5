@@ -27,6 +27,8 @@ public:
 				// Called every frame
 				virtual void Tick(float DeltaTime) override;
 
+				bool CheckGameEnd();
+
 				void GetLegalMoves(TArray<int32>& legalMoves);
 
 				void GetLegalActionProbsBoardValue(uint8* boardState, TMap<int32, float>& legalActionProbs, float& boardValue);
@@ -74,6 +76,18 @@ public:
 
 				UPROPERTY()
 				TMap<int32, FString> boardCardUids;
+
+				UPROPERTY()
+				TMap<int32, ACard*> downSectionHandCards;
+
+				UPROPERTY()
+				TMap<int32, ACard*> upSectionHandCards;
+
+				UPROPERTY()
+				TMap<int32, ACard*> downSectionGraveCards;
+
+				UPROPERTY()
+				TMap<int32, ACard*> upSectionGraveCards;
 
 				uint8 skillLaunchTypeCoding[6] =								{0};
 				uint8 skillLaunchGeoCoding[10] =								{0};

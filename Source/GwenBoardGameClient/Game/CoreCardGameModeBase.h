@@ -311,13 +311,7 @@ public:
     TMap<FString, FSYNC_CARD_INFO> allCardInfoMap;
 
     UPROPERTY()
-    TArray<FString> handCardKeyList;
-
-    UPROPERTY()
-    TArray<FString> pileCardKeyList;
-
-    UPROPERTY()
-    TMap<FString, ACard*> handCardMap;
+    TArray<FString> pileCardKeyList
 
     UPROPERTY()
     TMap<FString, ACard*> allCardMap;

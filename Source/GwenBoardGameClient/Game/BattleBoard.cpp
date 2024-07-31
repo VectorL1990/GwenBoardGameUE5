@@ -29,6 +29,11 @@ void ABattleBoard::Tick(float DeltaTime)
 
 }
 
+bool ABattleBoard::CheckGameEnd()
+{
+
+}
+
 void ABattleBoard::GetLegalMoves(TArray<int32>& legalMoves)
 {
 				for (int32 row = 0; row < UGlobalConstFunctionLibrary::maxRow; row++)
