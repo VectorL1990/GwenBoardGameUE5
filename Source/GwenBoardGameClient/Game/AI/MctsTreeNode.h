@@ -13,35 +13,42 @@ UCLASS()
 class GWENBOARDGAMECLIENT_API UMctsTreeNode : public UObject
 {
     GENERATED_BODY()
-private:
+public:
+    
+    void Init(UMctsTreeNode* inParent, float inP);
+
+    float GetValue();
+
+    // Expand executes after selecting max U + Q leaf node
+    void Expand(TMap<int32, float> actionProbs);
+
+    void Select(int32& outAction, UMctsTreeNode* outNode);
+
+    void UpdateEvaluateQValue(float inQ);
+
+    void UpdateParentQValue(float leafQ);
+
+    void UpdateCurNodeQValue(float leafQ);
+	
+    bool IsLeaf();
+
+    bool IsRoot();
+
     UPROPERTY()
     UMctsTreeNode* parent;
 
     UPROPERTY()
-    TMap<int, UMctsTreeNode*> children;
+    TMap<int32, UMctsTreeNode*> children;
 
     int32 visit;
 
     float p;
 
+    float evaluateQ;
+
     float q;
-    
+
     float u;
 
-public:
-    void Init(UMctsTreeNode* inParent, float inP);
-
-    float GetValue();
-
-    void Expand(TMap<int, float> actionProbs);
-
-    void Select(int& outAction, UMctsTreeNode* outNode);
-
-    void UpdateCurNode(float inQ);
-
-    void UpdateRecursive(float inQ);
-
-    void Update(float leafQ);
-	
     static float cPuct;
 };

@@ -14,13 +14,14 @@ void UMctsTreeNode::Init(UMctsTreeNode* inParent, float inP)
 
 float UMctsTreeNode::GetValue()
 {
-				return 0.0;
-				//u = UMctsTreeNode::cPuct * 
+				//u = UMctsTreeNode::cPuct * p * FMath::Sqrt((float)parent->visit) / (1.0 + (float)parent->visit);
+				//return u;
+				return 0;
 }
 
-void UMctsTreeNode::Expand(TMap<int, float> actionProbs)
+void UMctsTreeNode::Expand(TMap<int32, float> actionProbs)
 {
-				for (TMap<int, float>::TConstIterator iter = actionProbs.CreateConstIterator(); iter; ++iter)
+				for (TMap<int32, float>::TConstIterator iter = actionProbs.CreateConstIterator(); iter; ++iter)
 				{
 								if (!children.Contains(iter->Key))
 								{
@@ -31,10 +32,10 @@ void UMctsTreeNode::Expand(TMap<int, float> actionProbs)
 				}
 }
 
-void UMctsTreeNode::Select(int& outAction, UMctsTreeNode* outNode)
+void UMctsTreeNode::Select(int32& outAction, UMctsTreeNode* outNode)
 {
 				float maxQU = 0.0;
-				int maxQUAction = 0;
+				int32 maxQUAction = 0;
 				for (TMap<int, UMctsTreeNode*>::TConstIterator iter = children.CreateConstIterator(); iter; ++iter)
 				{
 								float nodeQU = iter->Value->GetValue();
@@ -48,25 +49,51 @@ void UMctsTreeNode::Select(int& outAction, UMctsTreeNode* outNode)
 				outAction = maxQUAction;
 }
 
-void UMctsTreeNode::UpdateCurNode(float inQ)
+void UMctsTreeNode::UpdateEvaluateQValue(float inQ)
 {
-				UpdateRecursive(inQ);
-				visit += 1;
+				evaluateQ = inQ;
 				q = inQ;
+				visit += 1;
+				UpdateParentQValue(inQ);
 }
 
-void UMctsTreeNode::UpdateRecursive(float inQ)
+void UMctsTreeNode::UpdateParentQValue(float leafQ)
 {
 				if (parent)
 				{
-								parent->UpdateRecursive(inQ);
+								parent->UpdateParentQValue(leafQ);
 				}
-				Update(inQ);
+				UpdateCurNodeQValue(leafQ);
 }
 
-void UMctsTreeNode::Update(float leafQ)
+void UMctsTreeNode::UpdateCurNodeQValue(float leafQ)
 {
 				visit += 1;
-				q += (q - leafQ)/(float)visit;
+				q = (q - leafQ) / visit;
 }
+
+bool UMctsTreeNode::IsLeaf()
+{
+				if (children.Num() == 0)
+				{
+								return true;
+				}
+				else
+				{
+								return false;
+				}
+}
+
+bool UMctsTreeNode::IsRoot()
+{
+				if (!parent)
+				{
+								return true;
+				}
+				else
+				{
+								return false;
+				}
+}
+
 

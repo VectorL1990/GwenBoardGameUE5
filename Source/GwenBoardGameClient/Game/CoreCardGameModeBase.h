@@ -7,8 +7,10 @@
 #include "GameFramework/GameModeBase.h"
 
 #include "../BasicGameMode.h"
+#include "CoreGameBlueprintFunctionLibrary.h"
 #include "BoardGrid.h"
 #include "BattleCamera.h"
+#include "AI/MctsPlayer.h"
 #include "CoreCardGameModeBase.generated.h"
 
 /**
@@ -130,6 +132,9 @@ public:
     UPROPERTY()
     TMap<FString, FCardInfo> allCardInfos;
 
+    UPROPERTY()
+    TMap<FString, FInstanceCardInfo> battleCardUidMap;
+
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<ACard> cardBPClass;
 
@@ -193,6 +198,10 @@ public:
 
     TMap<CameraType, ABattleCamera*> camerasMap;
 
+    UPROPERTY()
+    ABattleBoard* battleBoard;
+
+
 public:
     // --- Select card logic
     UFUNCTION(BlueprintNativeEvent)
@@ -232,11 +241,17 @@ public:
 
     void RandSelectCards();
 
+    void FinishCardSelection();
+
     UPROPERTY(EditDefaultsOnly)
     int32 startingSelectCardNb = 10;
 
     // --- Main game logic
-    void SinglePlayerGameLoop(float dT);
+    void ReqPlayCard(int32 actionSequence, FString cardUid, int32 targetX, int32 targetY);
+
+    void ReqLaunchCardSkill(int32 launchX, int32 launchY, int32 targetX, int32 targetY);
+
+    //void LaunchSkill();
 
     UPROPERTY()
     TArray<ACard*> testCards;
@@ -261,6 +276,23 @@ public:
     UFUNCTION(BlueprintCallable)
     void MoveCard(FVector originLoc, FVector targetLoc, float midHeight);
 
+    // --- Training logic
+
+    void TrainPlayGameLoop(float dT);
+
+    AMctsPlayer* mctsPlayer;
+
+    UPROPERTY(EditDefaultsOnly)
+    float aiTrainPlayerActionInterval;
+
+    float aiTrainPlayerActionCount = 0.0;
+
+    // --- Single game logic
+
+    void SinglePlayerGameLoop(float dT);
+
+    void GetLegalLaunchSkillAction(TMap<int32, FBoardRow>& boardCardInfo, TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY);
+
     // --- Local logic functions
     void CheckEntitiesCreated();
 
@@ -278,10 +310,6 @@ public:
 
     void CalibrateCurrentGlobalInfo(int32 curActionSequence, int32 curSwitchControllerSequence, uint8 curControllerNb);
 
-    // --- Account req functions
-
-    void ReqPlayCard(int32 targetGridNb, int32 playCardUid);
-
     // --- Account sync functions
     void onEnterWorld(const UKBEventData* eventData);
 
@@ -296,9 +324,9 @@ public:
 
     void ReqLatestBattleInfo();
 
-    void ReqPlayCardAction(int32 actionSequence, FString cardUid, int32 gridNb);
+    void MultiPlayerReqPlayCardAction(int32 actionSequence, FString cardUid, int32 gridNb);
 
-    void ReqLaunchCardSkill(int32 actionSequence, FString cardUid, FString skillName, int32 launchGridNb, int32 targetGridNb);
+    void MultiPlayerReqLaunchCardSkill(int32 actionSequence, FString cardUid, FString skillName, int32 launchGridNb, int32 targetGridNb);
 
     // --- Avatar sync functions
 
@@ -379,13 +407,7 @@ public:
     TMap<FString, FSYNC_CARD_INFO> allCardInfoMap;
 
     UPROPERTY()
-    TArray<FString> handCardKeyList;
-
-    UPROPERTY()
-    TArray<FString> pileCardKeyList;
-
-    UPROPERTY()
-    TMap<FString, ACard*> handCardMap;
+    TArray<FString> pileCardKeyList
 
     UPROPERTY()
     TMap<FString, ACard*> allCardMap;
