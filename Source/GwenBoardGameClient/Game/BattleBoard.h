@@ -32,37 +32,48 @@ public:
 
 				void GetLatestSimulationBoard();
 
-				void GetLegalMoves(TArray<int32>& legalMoves);
+				void GetLegalMoves(FBoardInfo& targetBoard, TArray<int32>& legalMoves);
 
 				void GetLegalActionProbsBoardValue(uint8* boardState, TMap<int32, float>& legalActionProbs, float& boardValue);
 
 				void TriggerAction(int32 actionId, bool simulateFlag);
 
 				void TriggerPlayCard(
+								FBoardInfo& targetBoard,
 								int32 playSectionX,
 								int32 playSectionY,
 								int32 targetX,
-								int32 targetY,
-								TMap<int32, FInstanceCardInfo>& instanceCardInfo,
-								TMap<int32, FBoardRow>& modifyBoardRows);
+								int32 targetY);
 
-				void TriggerSkill(
+				void TriggerPlayCardSkill(
+								FBoardInfo& targetBoard,
+								int32 launchX,
+								int32 launchY);
+
+				void TriggerRoundEndSkill(
+								FBoardInfo& targetBoard,
 								int32 launchX,
 								int32 launchY,
 								int32 targetX,
-								int32 targetY,
-								TMap<int32, FInstanceCardInfo>& instanceCardInfo,
-								TMap<int32, FBoardRow>& modifyBoardRows);
+								int32 targetY);
 
-				void TriggerPassiveEffect(FEffectResultDict effectResultDict);
+				void TriggerManualSkill(
+								FBoardInfo& targetBoard,
+								int32 launchX,
+								int32 launchY,
+								int32 targetX,
+								int32 targetY);
+
+				void TriggerPassiveEffect(FBoardInfo& targetBoard, FEffectResultDict effectResultDict);
 
 				TArray<int32> curRoundPassiveEffectTriggeredUids;
 
-				uint8* StateCoding();
+				uint8* StateCoding(FBoardInfo& targetBoard);
 
 				void ActionDecoding(int32 actionId, int32& launchX, int32& launchY, int32& targetX, int32& targetY, ActionType& actionType);
 
 				uint8* GetSkillLaunchTypeCoding(FString launchType);
+				uint8* GetAutoSkillGeoTargetCoding(FString geoTargetType);
 				uint8* GetSkillLaunchGeoCoding(FString launchGeoType);
 				uint8* GetSkillTargetGeoCoding(FString targetGeoType);
 				uint8* GetSkillTargetLocateGeoCoding(FString targetLocateGeoType);
@@ -82,19 +93,10 @@ public:
 				uint8 curPlayerTurn;
 
 				UPROPERTY()
-				FCopyBoardInfo simulationBoard;
-
-    UPROPERTY()
-    TMap<int32, FBoardRow> boardRows;
+								FBoardInfo simulationBoard;
 
 				UPROPERTY()
-				TMap<int32, FBoardRow> playSectionRows;
-
-				UPROPERTY()
-				TMap<int32, FBoardRow> graveSectionRows;
-
-				UPROPERTY()
-				TMap<int32, FInstanceCardInfo> allInstanceCardInfo;
+								FBoardInfo realBoard;
 
 				UPROPERTY()
 				TMap<int32, FString> boardCardUids;
@@ -111,6 +113,7 @@ public:
 				UPROPERTY()
 				TMap<int32, ACard*> upSectionGraveCards;
 
+				uint8 autoSkillGeoTargetTypeCoding[17] = {0};
 				uint8 skillLaunchTypeCoding[6] =								{0};
 				uint8 skillLaunchGeoCoding[10] =								{0};
 				uint8 skillTargetGeoCoding[6] =									{0};

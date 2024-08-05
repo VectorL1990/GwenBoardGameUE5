@@ -96,10 +96,6 @@ enum class ActionType : uint8
     EndRound = 3
 };
 
-enum class TrainState : uint8
-{
-    NoAction = 0,
-};
 
 
 
@@ -132,6 +128,13 @@ public:
             int32 targetY, 
             FString aoeType, 
             FString targetCamp);
+
+    static FEffectResultDict LaunchPlayCardSkillDict(
+            TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+            TMap<int32, FBoardRow>& boardCardInfo,
+            FEffectInfo& effectInfo,
+            int32 launchX,
+            int32 launchY);
 
     static FEffectResultDict LaunchSkillDict(
             TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,

@@ -59,6 +59,9 @@ public:
         FString launchGeoType;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        FString autoSkillTargetGeoType;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
         FString targetGeoType;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -154,6 +157,9 @@ public:
         FString launchGeoType;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        FString autoSkillTargetGeoType;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
         FString targetGeoType;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -246,7 +252,7 @@ public:
 };
 
 USTRUCT(BlueprintType, Blueprintable)
-struct FCopyBoardInfo
+struct FBoardInfo
 {
     GENERATED_USTRUCT_BODY()
 public:

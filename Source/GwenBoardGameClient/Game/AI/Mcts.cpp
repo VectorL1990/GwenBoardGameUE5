@@ -33,7 +33,7 @@ void AMcts::InitMcts(int32 simulationMoves)
 
 void AMcts::TriggerSimulation(ABattleBoard* board)
 {
-				uint8* boardCoding = board->StateCoding();
+				uint8* boardCoding = board->StateCoding(board->simulationBoard);
 				board->GetLatestSimulationBoard();
 				UMctsTreeNode* curNode = treeRoot;
 				while (true)

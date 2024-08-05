@@ -98,9 +98,13 @@ void ACoreCardGameModeBase::SimulateTrainAction(float dT)
 {
 				if (aiTrainPlayerActionCount >= aiTrainPlayerActionInterval)
 				{
+								// get train simulation action and launch
+								int32 actionId = -1;
+								mctsPlayer->mcts->GetAction(battleBoard, actionId);
+
+								battleBoard->TriggerAction(actionId, true);
+
 								aiTrainPlayerActionCount = 0.0;
-								curCountingTick = 0.0;
-								singleBattleState = SingleBattleState::BattleInterlude;
 				}
 				else
 				{
@@ -108,36 +112,7 @@ void ACoreCardGameModeBase::SimulateTrainAction(float dT)
 				}
 
 
-				//if (trainState == TrainState::NoAction)
-				{
-								// launch action
-								int32 actionId = -1;
-								mctsPlayer->mcts->GetAction(battleBoard, actionId);
-
-								int32 launchX;
-								int32 launchY;
-								int32 targetX;
-								int32 targetY;
-								ActionType actionType;
-								battleBoard->ActionDecoding(actionId, launchX, launchY, targetX, targetY, actionType);
-
-								if (actionType == ActionType::PlayCard)
-								{
-												//ReqPlayCard();
-								}
-								else if (actionType == ActionType::LaunchSkill)
-								{
-												//ReqLaunchCardSkill();
-								}
-								else if (actionType == ActionType::Move)
-								{
-
-								}
-								else if (actionType == ActionType::EndRound)
-								{
-
-								}
-				}
+				
 }
 
 void ACoreCardGameModeBase::TrainPlayGameLoop(float dT)
@@ -155,7 +130,8 @@ void ACoreCardGameModeBase::TrainPlayGameLoop(float dT)
 								}
 								else
 								{
-												
+												// keep trying to trigger train action
+												SimulateTrainAction(dT);
 												curCountingTick += dT;
 								}
 				}
@@ -181,6 +157,7 @@ void ACoreCardGameModeBase::SetCardInfo(FString cardName,
 				int32 coolDown,
 				int32 availableTimes,
 				FString launchGeoType,
+				FString autoSkillTargetGeoType,
 				FString targetGeoType,
 				FString aoeType,
 				FString targetCamp,
@@ -213,6 +190,7 @@ void ACoreCardGameModeBase::SetCardInfo(FString cardName,
 				cardInfo.coolDown = coolDown;
 				cardInfo.availableTimes = availableTimes;
 				cardInfo.launchGeoType = launchGeoType;
+				cardInfo.autoSkillTargetGeoType = autoSkillTargetGeoType;
 				cardInfo.targetGeoType = targetGeoType;
 				cardInfo.aoeType = aoeType;
 				cardInfo.targetCamp = targetCamp;
@@ -303,19 +281,33 @@ void ACoreCardGameModeBase::GetLegalLaunchSkillAction(TMap<int32, FBoardRow>& bo
 				}*/
 }
 
-void ACoreCardGameModeBase::ReqPlayCard(int32 actionSequence, FString cardUid, int32 targetX, int32 targetY)
+void ACoreCardGameModeBase::ReqPlayCard(bool simulationFlag, int32 launchX, int32 launchY, int32 targetX, int32 targetY)
 {
-				FInstanceCardInfo cardInfo = battleCardUidMap[cardUid];
-				// modify board card states
-
-				// launch auto skill attached to card
-				if (cardInfo.originCardInfo.launchType == "auto")
+				if (simulationFlag)
 				{
-
+								int32 playCardUid = battleBoard->simulationBoard.playSectionRows[launchY].colCardInfos[launchX];
+								FInstanceCardInfo playCardInfo = battleBoard->simulationBoard.allInstanceCardInfo[playCardUid];
+								// launch auto skill attached to card
+								if (playCardInfo.originCardInfo.launchType == "auto")
+								{
+												
+								}
 				}
+				else
+				{
+								int32 playCardUid = battleBoard->realBoard.playSectionRows[launchY].colCardInfos[launchX];
+								FInstanceCardInfo playCardInfo = battleBoard->realBoard.allInstanceCardInfo[playCardUid];
+								// launch auto skill attached to card
+								if (playCardInfo.originCardInfo.launchType == "auto")
+								{
+
+								}
+				}
+
+				
 }
 
-void ACoreCardGameModeBase::ReqLaunchCardSkill(int32 launchX, int32 launchY, int32 targetX, int32 targetY)
+void ACoreCardGameModeBase::ReqLaunchCardSkill(bool simulationFlag, int32 launchX, int32 launchY, int32 targetX, int32 targetY)
 {
 				
 }

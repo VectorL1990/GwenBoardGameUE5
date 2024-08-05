@@ -474,6 +474,17 @@ TArray<FGridXY> UCoreGameBlueprintFunctionLibrary::GetAoeTargetGrids(
     return modifyGrids;
 }
 
+FEffectResultDict UCoreGameBlueprintFunctionLibrary::LaunchPlayCardSkillDict(
+    TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+    TMap<int32, FBoardRow>& boardCardInfo,
+    FEffectInfo& effectInfo,
+    int32 launchX,
+    int32 launchY)
+{
+    FEffectResultDict effectResultDict;
+    return effectResultDict;
+}
+
 FEffectResultDict UCoreGameBlueprintFunctionLibrary::LaunchSkillDict(
     TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
     TMap<int32, FBoardRow>& boardCardInfo,

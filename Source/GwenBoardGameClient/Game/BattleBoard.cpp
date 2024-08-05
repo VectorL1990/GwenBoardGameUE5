@@ -36,19 +36,19 @@ bool ABattleBoard::CheckGameEnd()
 
 void ABattleBoard::GetLatestSimulationBoard()
 {
-				simulationBoard.boardRows = boardRows;
-				simulationBoard.allInstanceCardInfo = allInstanceCardInfo;
-				simulationBoard.playSectionRows = playSectionRows;
-				simulationBoard.graveSectionRows = graveSectionRows;
+				simulationBoard.boardRows = realBoard.boardRows;
+				simulationBoard.allInstanceCardInfo = realBoard.allInstanceCardInfo;
+				simulationBoard.playSectionRows = realBoard.playSectionRows;
+				simulationBoard.graveSectionRows = realBoard.graveSectionRows;
 }
 
-void ABattleBoard::GetLegalMoves(TArray<int32>& legalMoves)
+void ABattleBoard::GetLegalMoves(FBoardInfo& targetBoard, TArray<int32>& legalMoves)
 {
 				for (int32 row = 0; row < UGlobalConstFunctionLibrary::maxRow; row++)
 				{
 								for (int32 col = 0; col < UGlobalConstFunctionLibrary::maxCol; col++)
 								{
-												if (simulationBoard.boardRows[row].colCardInfos[col] == -1)
+												if (targetBoard.boardRows[row].colCardInfos[col] == -1)
 												{
 																// which means this grid is empty, we should consider about play action
 																if ((curPlayerTurn == 0 && row < UGlobalConstFunctionLibrary::maxRow / 2) ||
@@ -58,7 +58,7 @@ void ABattleBoard::GetLegalMoves(TArray<int32>& legalMoves)
 																				{
 																								for (int32 playCardCol = 0; playCardCol < UGlobalConstFunctionLibrary::maxCol; playCardCol++)
 																								{
-																												if (simulationBoard.playSectionRows[playCardRow].colCardInfos[playCardCol] == -1)
+																												if (targetBoard.playSectionRows[playCardRow].colCardInfos[playCardCol] == -1)
 																												{
 																																continue;
 																												}
@@ -77,7 +77,7 @@ void ABattleBoard::GetLegalMoves(TArray<int32>& legalMoves)
 
 
 																// check possible skills
-																FInstanceCardInfo cardInfo = simulationBoard.allInstanceCardInfo[simulationBoard.boardRows[row].colCardInfos[col]];
+																FInstanceCardInfo cardInfo = targetBoard.allInstanceCardInfo[targetBoard.boardRows[row].colCardInfos[col]];
 																if ((cardInfo.curAvailableTimes == -1 || cardInfo.curAvailableTimes > 0) &&
 																				(cardInfo.curCoolDown == -1 || cardInfo.curCoolDown == 0))
 																{
@@ -89,8 +89,8 @@ void ABattleBoard::GetLegalMoves(TArray<int32>& legalMoves)
 																								effectInfo.targetGeoType.ParseIntoArray(targetGeoTypes, TEXT("&"), true);
 																								possibleGrids = UCheckTargetGeoRuleLibrary::GetPossibleTargetGeoGrids(
 																												targetGeoTypes[0],
-																												simulationBoard.allInstanceCardInfo,
-																												simulationBoard.boardRows,
+																												targetBoard.allInstanceCardInfo,
+																												targetBoard.boardRows,
 																												effectInfo,
 																												col,
 																												row,
@@ -98,16 +98,16 @@ void ABattleBoard::GetLegalMoves(TArray<int32>& legalMoves)
 
 																								UCheckTargetGeoRuleLibrary::CheckPossibleTargetLocateGeoGrids(
 																												targetGeoTypes[1],
-																												simulationBoard.allInstanceCardInfo,
-																												simulationBoard.boardRows,
+																												targetBoard.allInstanceCardInfo,
+																												targetBoard.boardRows,
 																												possibleGrids);
 																				}
 																				else
 																				{
 																								possibleGrids = UCheckTargetGeoRuleLibrary::GetPossibleTargetGeoGrids(
 																												effectInfo.targetGeoType,
-																												simulationBoard.allInstanceCardInfo,
-																												simulationBoard.boardRows,
+																												targetBoard.allInstanceCardInfo,
+																												targetBoard.boardRows,
 																												effectInfo,
 																												col,
 																												row,
@@ -136,7 +136,7 @@ void ABattleBoard::GetLegalMoves(TArray<int32>& legalMoves)
 
 																								if (effectInfo.prereqTagCondition != "none")
 																								{
-																												if (!UCheckPrereqTagFunctionLibrary::CheckPrereqTagRule(simulationBoard.allInstanceCardInfo, simulationBoard.boardRows, effectInfo, col, row))
+																												if (!UCheckPrereqTagFunctionLibrary::CheckPrereqTagRule(targetBoard.allInstanceCardInfo, targetBoard.boardRows, effectInfo, col, row))
 																												{
 																																possibleGrids.RemoveAt(checkGridNb);
 																																continue;
@@ -157,8 +157,8 @@ void ABattleBoard::GetLegalMoves(TArray<int32>& legalMoves)
 																// check move action
 																TArray<FGridXY> possibleMoveGrids = UCheckTargetGeoRuleLibrary::GetPossibleMoveGrids(
 																				cardInfo.originCardInfo.moveType,
-																				simulationBoard.allInstanceCardInfo,
-																				simulationBoard.boardRows,
+																				targetBoard.allInstanceCardInfo,
+																				targetBoard.boardRows,
 																				col,
 																				row,
 																				cardInfo.originCardInfo.moveDistance);
@@ -187,7 +187,7 @@ void ABattleBoard::GetLegalActionProbsBoardValue(uint8* boardState, TMap<int32, 
 				boardValue = evaValue;
 
 				TArray<int32> legalActionIds;
-				GetLegalMoves(legalActionIds);
+				GetLegalMoves(simulationBoard, legalActionIds);
 
 				for (int32 i = 0; i < legalActionIds.Num(); i++)
 				{
@@ -208,71 +208,140 @@ void ABattleBoard::TriggerAction(int32 actionId, bool simulateFlag)
 								// which means it's only simulation, modify simulated board info instead of true board
 								if (actionType == ActionType::LaunchSkill)
 								{
-												TriggerSkill(launchX,
+												TriggerManualSkill(
+																simulationBoard,
+																launchX,
 																launchY,
 																targetX,
-																targetY,
-																simulationBoard.allInstanceCardInfo,
-																simulationBoard.boardRows);
+																targetY);
 								}
 								else if (actionType == ActionType::PlayCard)
 								{
-												TriggerPlayCard(launchX,
+												TriggerPlayCard(
+																simulationBoard,
+																launchX,
 																launchY,
 																targetX,
-																targetY,
-																simulationBoard.allInstanceCardInfo,
-																simulationBoard.boardRows);
+																targetY);
+								}
+				}
+				else
+				{
+								if (actionType == ActionType::PlayCard)
+								{
+												TriggerPlayCard(
+																realBoard,
+																launchX,
+																launchY,
+																targetX,
+																targetY);
+								}
+								else if (actionType == ActionType::LaunchSkill)
+								{
+												TriggerManualSkill(
+																realBoard,
+																launchX,
+																launchY,
+																targetX,
+																targetY);
 								}
 				}
 }
 
 void ABattleBoard::TriggerPlayCard(
+				FBoardInfo& targetBoard,
 				int32 playSectionX,
 				int32 playSectionY,
 				int32 targetX,
-				int32 targetY,
-				TMap<int32, FInstanceCardInfo>& instanceCardInfo,
-				TMap<int32, FBoardRow>& modifyBoardRows)
+				int32 targetY)
 {
-
-}
-
-void ABattleBoard::TriggerSkill(
-				int32 launchX, 
-				int32 launchY, 
-				int32 targetX, 
-				int32 targetY, 
-				TMap<int32, FInstanceCardInfo>& instanceCardInfo,
-				TMap<int32, FBoardRow>& modifyBoardRows)
-{
-				int32 launchUid = boardRows[launchY].colCardInfos[launchX];
-				FEffectInfo effectInfo;
-				effectInfo.launchType = allInstanceCardInfo[launchUid].originCardInfo.launchType;
-				effectInfo.coolDown = allInstanceCardInfo[launchUid].originCardInfo.coolDown;
-				effectInfo.availableTimes = allInstanceCardInfo[launchUid].originCardInfo.availableTimes;
-				effectInfo.launchGeoType = allInstanceCardInfo[launchUid].originCardInfo.launchGeoType;
-				effectInfo.targetGeoType = allInstanceCardInfo[launchUid].originCardInfo.targetGeoType;
-				effectInfo.aoeType = allInstanceCardInfo[launchUid].originCardInfo.aoeType;
-				effectInfo.targetCamp = allInstanceCardInfo[launchUid].originCardInfo.targetCamp;
-				effectInfo.effectType = allInstanceCardInfo[launchUid].originCardInfo.effectType;
-				effectInfo.effectAffix = allInstanceCardInfo[launchUid].originCardInfo.effectAffix;
-				effectInfo.effectAffixCamp = allInstanceCardInfo[launchUid].originCardInfo.effectAffixCamp;
-				effectInfo.prereqTagCondition = allInstanceCardInfo[launchUid].originCardInfo.prereqTagCondition;
-				effectInfo.prereqTag = allInstanceCardInfo[launchUid].originCardInfo.prereqTag;
-				effectInfo.prereqCampType = allInstanceCardInfo[launchUid].originCardInfo.prereqCampType;
-				effectInfo.prereqType = allInstanceCardInfo[launchUid].originCardInfo.prereqType;
-				effectInfo.passivePrereqType = allInstanceCardInfo[launchUid].originCardInfo.passivePrereqType;
-				effectInfo.values = allInstanceCardInfo[launchUid].originCardInfo.values;
-
-				FEffectResultDict effectResultInfo = UCoreGameBlueprintFunctionLibrary::LaunchSkillDict(instanceCardInfo, modifyBoardRows, effectInfo, launchX, launchY, targetX, targetY);
-				if (effectResultInfo.success)
+				int32 playCardUid = targetBoard.playSectionRows[playSectionY].colCardInfos[playSectionX];
+				targetBoard.boardRows[targetY].colCardInfos[targetX] = playCardUid;
+				targetBoard.playSectionRows[playSectionY].colCardInfos[playSectionX] = -1;
+				// Trigger play card skill
+				if (targetBoard.allInstanceCardInfo[playCardUid].originCardInfo.launchType == "auto")
 				{
-								TriggerPassiveEffect(effectResultInfo);
+								TriggerPlayCardSkill(targetBoard, targetX, targetY);
 				}
 }
 
-void ABattleBoard::TriggerPassiveEffect(FEffectResultDict effectResultDict)
+void ABattleBoard::TriggerPlayCardSkill(
+				FBoardInfo& targetBoard,
+				int32 launchX,
+				int32 launchY)
+{
+				int32 launchUid = targetBoard.boardRows[launchY].colCardInfos[launchX];
+				FEffectInfo effectInfo;
+				effectInfo.launchType = targetBoard.allInstanceCardInfo[launchUid].originCardInfo.launchType;
+				effectInfo.coolDown = targetBoard.allInstanceCardInfo[launchUid].originCardInfo.coolDown;
+				effectInfo.availableTimes = targetBoard.allInstanceCardInfo[launchUid].originCardInfo.availableTimes;
+				effectInfo.launchGeoType = targetBoard.allInstanceCardInfo[launchUid].originCardInfo.launchGeoType;
+				effectInfo.autoSkillTargetGeoType = targetBoard.allInstanceCardInfo[launchUid].originCardInfo.autoSkillTargetGeoType;
+				effectInfo.targetGeoType = targetBoard.allInstanceCardInfo[launchUid].originCardInfo.targetGeoType;
+				effectInfo.aoeType = targetBoard.allInstanceCardInfo[launchUid].originCardInfo.aoeType;
+				effectInfo.targetCamp = targetBoard.allInstanceCardInfo[launchUid].originCardInfo.targetCamp;
+				effectInfo.effectType = targetBoard.allInstanceCardInfo[launchUid].originCardInfo.effectType;
+				effectInfo.effectAffix = targetBoard.allInstanceCardInfo[launchUid].originCardInfo.effectAffix;
+				effectInfo.effectAffixCamp = targetBoard.allInstanceCardInfo[launchUid].originCardInfo.effectAffixCamp;
+				effectInfo.prereqTagCondition = targetBoard.allInstanceCardInfo[launchUid].originCardInfo.prereqTagCondition;
+				effectInfo.prereqTag = targetBoard.allInstanceCardInfo[launchUid].originCardInfo.prereqTag;
+				effectInfo.prereqCampType = targetBoard.allInstanceCardInfo[launchUid].originCardInfo.prereqCampType;
+				effectInfo.prereqType = targetBoard.allInstanceCardInfo[launchUid].originCardInfo.prereqType;
+				effectInfo.passivePrereqType = targetBoard.allInstanceCardInfo[launchUid].originCardInfo.passivePrereqType;
+				effectInfo.values = targetBoard.allInstanceCardInfo[launchUid].originCardInfo.values;
+
+				FEffectResultDict effectResultInfo = UCoreGameBlueprintFunctionLibrary::LaunchPlayCardSkillDict(targetBoard.allInstanceCardInfo, targetBoard.boardRows, effectInfo, launchX, launchY);
+				if (effectResultInfo.success)
+				{
+								TriggerPassiveEffect(targetBoard, effectResultInfo);
+				}
+}
+
+void ABattleBoard::TriggerRoundEndSkill(
+				FBoardInfo& targetBoard,
+				int32 launchX,
+				int32 launchY,
+				int32 targetX,
+				int32 targetY)
+{
+
+}
+
+void ABattleBoard::TriggerManualSkill(
+				FBoardInfo& targetBoard,
+				int32 launchX, 
+				int32 launchY, 
+				int32 targetX, 
+				int32 targetY)
+{
+				int32 launchUid = targetBoard.boardRows[launchY].colCardInfos[launchX];
+				FEffectInfo effectInfo;
+				effectInfo.launchType = targetBoard.allInstanceCardInfo[launchUid].originCardInfo.launchType;
+				effectInfo.coolDown = targetBoard.allInstanceCardInfo[launchUid].originCardInfo.coolDown;
+				effectInfo.availableTimes = targetBoard.allInstanceCardInfo[launchUid].originCardInfo.availableTimes;
+				effectInfo.launchGeoType = targetBoard.allInstanceCardInfo[launchUid].originCardInfo.launchGeoType;
+				effectInfo.autoSkillTargetGeoType = targetBoard.allInstanceCardInfo[launchUid].originCardInfo.autoSkillTargetGeoType;
+				effectInfo.targetGeoType = targetBoard.allInstanceCardInfo[launchUid].originCardInfo.targetGeoType;
+				effectInfo.aoeType = targetBoard.allInstanceCardInfo[launchUid].originCardInfo.aoeType;
+				effectInfo.targetCamp = targetBoard.allInstanceCardInfo[launchUid].originCardInfo.targetCamp;
+				effectInfo.effectType = targetBoard.allInstanceCardInfo[launchUid].originCardInfo.effectType;
+				effectInfo.effectAffix = targetBoard.allInstanceCardInfo[launchUid].originCardInfo.effectAffix;
+				effectInfo.effectAffixCamp = targetBoard.allInstanceCardInfo[launchUid].originCardInfo.effectAffixCamp;
+				effectInfo.prereqTagCondition = targetBoard.allInstanceCardInfo[launchUid].originCardInfo.prereqTagCondition;
+				effectInfo.prereqTag = targetBoard.allInstanceCardInfo[launchUid].originCardInfo.prereqTag;
+				effectInfo.prereqCampType = targetBoard.allInstanceCardInfo[launchUid].originCardInfo.prereqCampType;
+				effectInfo.prereqType = targetBoard.allInstanceCardInfo[launchUid].originCardInfo.prereqType;
+				effectInfo.passivePrereqType = targetBoard.allInstanceCardInfo[launchUid].originCardInfo.passivePrereqType;
+				effectInfo.values = targetBoard.allInstanceCardInfo[launchUid].originCardInfo.values;
+
+				FEffectResultDict effectResultInfo = UCoreGameBlueprintFunctionLibrary::LaunchSkillDict(targetBoard.allInstanceCardInfo, targetBoard.boardRows, effectInfo, launchX, launchY, targetX, targetY);
+				if (effectResultInfo.success)
+				{
+								TriggerPassiveEffect(targetBoard, effectResultInfo);
+				}
+}
+
+void ABattleBoard::TriggerPassiveEffect(FBoardInfo& targetBoard, FEffectResultDict effectResultDict)
 {
 				FEffectResultDict secondaryEffectResult;
 				for (int32 i = 0; i < effectResultDict.modifyUids.Num(); i++)
@@ -284,10 +353,10 @@ void ABattleBoard::TriggerPassiveEffect(FEffectResultDict effectResultDict)
 
 								int32 modifyGridX = effectResultDict.modifyGrids[i].x;
 								int32 modifyGridY = effectResultDict.modifyGrids[i].y;
-								int32 modifyCardUid = boardRows[modifyGridY].colCardInfos[modifyGridX];
+								int32 modifyCardUid = targetBoard.boardRows[modifyGridY].colCardInfos[modifyGridX];
 								if (modifyCardUid != -1 && 
-												allInstanceCardInfo[modifyCardUid].originCardInfo.launchType == "passive" &&
-												effectResultDict.modifyType == allInstanceCardInfo[modifyCardUid].originCardInfo.passivePrereqType)
+												targetBoard.allInstanceCardInfo[modifyCardUid].originCardInfo.launchType == "passive" &&
+												effectResultDict.modifyType == targetBoard.allInstanceCardInfo[modifyCardUid].originCardInfo.passivePrereqType)
 								{
 												/*
 												secondaryEffectResult = UPassiveEffectFunctionLibrary::GetPassiveEffect(
@@ -317,13 +386,13 @@ void ABattleBoard::TriggerPassiveEffect(FEffectResultDict effectResultDict)
 
 				if (secondaryEffectResult.modifyUids.Num() > 0)
 				{
-								TriggerPassiveEffect(secondaryEffectResult);
+								TriggerPassiveEffect(targetBoard, secondaryEffectResult);
 				}
 }
 
-uint8* ABattleBoard::StateCoding()
+uint8* ABattleBoard::StateCoding(FBoardInfo& targetBoard)
 {
-				for (TMap<int32, FBoardRow>::TConstIterator rowIter = boardRows.CreateConstIterator(); rowIter; ++rowIter)
+				for (TMap<int32, FBoardRow>::TConstIterator rowIter = targetBoard.boardRows.CreateConstIterator(); rowIter; ++rowIter)
 				{
 								for (TMap<int32, int32>::TConstIterator colIter = rowIter->Value.colCardInfos.CreateConstIterator(); colIter; ++colIter)
 								{
@@ -333,15 +402,15 @@ uint8* ABattleBoard::StateCoding()
 												
 												uint8 coding[200] = { 0 };
 												// 6
-												uint8* skillLaunchTypeCoding = GetSkillLaunchTypeCoding(allInstanceCardInfo[uid].originCardInfo.launchType);
+												uint8* skillLaunchTypeCoding = GetSkillLaunchTypeCoding(targetBoard.allInstanceCardInfo[uid].originCardInfo.launchType);
 												// 10
-												uint8* skillLaunchGeoCoding = GetSkillLaunchGeoCoding(allInstanceCardInfo[uid].originCardInfo.launchGeoType);
+												uint8* skillLaunchGeoCoding = GetSkillLaunchGeoCoding(targetBoard.allInstanceCardInfo[uid].originCardInfo.launchGeoType);
 												// 6
-												uint8* skillTargetGeoCoding = GetSkillTargetGeoCoding(allInstanceCardInfo[uid].originCardInfo.targetGeoType);
+												uint8* skillTargetGeoCoding = GetSkillTargetGeoCoding(targetBoard.allInstanceCardInfo[uid].originCardInfo.targetGeoType);
 												// 9
 												//uint8* skillTargetLocateGeoCoding = GetSkillTargetLocateGeoCoding(allInstanceCardInfo[uid].originCardInfo.target);
 												// 6
-												uint8* skillAoeCoding = GetSkillAoeCoding(allInstanceCardInfo[uid].originCardInfo.aoeType);
+												uint8* skillAoeCoding = GetSkillAoeCoding(targetBoard.allInstanceCardInfo[uid].originCardInfo.aoeType);
 												// 3
 
 												
@@ -437,6 +506,29 @@ uint8* ABattleBoard::GetSkillLaunchTypeCoding(FString launchType)
 				else if (launchType == "manualImmediate")			coding[3] = 1;
 				else if (launchType == "passive")											coding[4] = 1;
 				else if (launchType == "playCard")										coding[5] = 1;
+				return coding;
+}
+
+uint8* ABattleBoard::GetAutoSkillGeoTargetCoding(FString geoTargetType)
+{
+				uint8* coding = autoSkillGeoTargetTypeCoding;
+				if (geoTargetType == "self")																																coding[0] = 1;
+				else if (geoTargetType == "left")																											coding[1] = 1;
+				else if (geoTargetType == "right")																										coding[2] = 1;
+				else if (geoTargetType == "up")																													coding[3] = 1;
+				else if (geoTargetType == "down")																											coding[4] = 1;
+				else if (geoTargetType == "leftLine")																							coding[5] = 1;
+				else if (geoTargetType == "rightLine")																						coding[6] = 1;
+				else if (geoTargetType == "upLine")																									coding[7] = 1;
+				else if (geoTargetType == "downLine")																							coding[8] = 1;
+				else if (geoTargetType == "upLeft")																									coding[9] = 1;
+				else if (geoTargetType == "upRight")																								coding[10] = 1;
+				else if (geoTargetType == "downLeft")																							coding[11] = 1;
+				else if (geoTargetType == "downRight")																						coding[12] = 1;
+				else if (geoTargetType == "upLeftDiagonal")																	coding[13] = 1;
+				else if (geoTargetType == "upRightDiagonal")																coding[14] = 1;
+				else if (geoTargetType == "downLeftDiagonal")															coding[15] = 1;
+				else if (geoTargetType == "downRightDiagonal")														coding[16] = 1;
 				return coding;
 }
 

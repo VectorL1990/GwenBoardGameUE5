@@ -37,9 +37,6 @@ public:
     UPROPERTY()
     TMap<FString, FCardInfo> allCardInfos;
 
-    UPROPERTY()
-    TMap<FString, FInstanceCardInfo> battleCardUidMap;
-
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<ACard> cardBPClass;
 
@@ -128,6 +125,7 @@ public:
         int32 coolDown,
         int32 availableTimes,
         FString launchGeoType,
+        FString autoSkillTargetGeoType,
         FString targetGeoType,
         FString aoeType,
         FString targetCamp,
@@ -152,9 +150,9 @@ public:
     int32 startingSelectCardNb = 10;
 
     // --- Main game logic
-    void ReqPlayCard(int32 actionSequence, FString cardUid, int32 targetX, int32 targetY);
+    void ReqPlayCard(bool simulationFlag, int32 launchX, int32 launchY, int32 targetX, int32 targetY);
 
-    void ReqLaunchCardSkill(int32 launchX, int32 launchY, int32 targetX, int32 targetY);
+    void ReqLaunchCardSkill(bool simulationFlag, int32 launchX, int32 launchY, int32 targetX, int32 targetY);
 
     //void LaunchSkill();
 
