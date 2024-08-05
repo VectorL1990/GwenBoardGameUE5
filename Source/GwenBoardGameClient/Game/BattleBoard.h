@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "CoreGameBlueprintFunctionLibrary.h"
+#include "Card.h"
 #include "BattleBoard.generated.h"
 
 
@@ -29,11 +30,29 @@ public:
 
 				bool CheckGameEnd();
 
+				void GetLatestSimulationBoard();
+
 				void GetLegalMoves(TArray<int32>& legalMoves);
 
 				void GetLegalActionProbsBoardValue(uint8* boardState, TMap<int32, float>& legalActionProbs, float& boardValue);
 
-				void TriggerSkill(int32 launchX, int32 launchY, int32 targetX, int32 targetY);
+				void TriggerAction(int32 actionId, bool simulateFlag);
+
+				void TriggerPlayCard(
+								int32 playSectionX,
+								int32 playSectionY,
+								int32 targetX,
+								int32 targetY,
+								TMap<int32, FInstanceCardInfo>& instanceCardInfo,
+								TMap<int32, FBoardRow>& modifyBoardRows);
+
+				void TriggerSkill(
+								int32 launchX,
+								int32 launchY,
+								int32 targetX,
+								int32 targetY,
+								TMap<int32, FInstanceCardInfo>& instanceCardInfo,
+								TMap<int32, FBoardRow>& modifyBoardRows);
 
 				void TriggerPassiveEffect(FEffectResultDict effectResultDict);
 
@@ -61,6 +80,9 @@ public:
 
 				UPROPERTY()
 				uint8 curPlayerTurn;
+
+				UPROPERTY()
+				FCopyBoardInfo simulationBoard;
 
     UPROPERTY()
     TMap<int32, FBoardRow> boardRows;

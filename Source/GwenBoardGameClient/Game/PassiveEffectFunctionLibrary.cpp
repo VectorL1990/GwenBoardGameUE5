@@ -3,7 +3,7 @@
 
 #include "Game/PassiveEffectFunctionLibrary.h"
 
-UPassiveEffectFunctionLibrary::FEffectResultDict GetPassiveEffect(
+FEffectResultDict UPassiveEffectFunctionLibrary::GetPassiveEffect(
     TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
     TMap<int32, FBoardRow>& boardCardInfo,
     FEffectInfo& effectInfo,

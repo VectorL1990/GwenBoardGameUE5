@@ -31,7 +31,15 @@ void ABattleBoard::Tick(float DeltaTime)
 
 bool ABattleBoard::CheckGameEnd()
 {
+				return false;
+}
 
+void ABattleBoard::GetLatestSimulationBoard()
+{
+				simulationBoard.boardRows = boardRows;
+				simulationBoard.allInstanceCardInfo = allInstanceCardInfo;
+				simulationBoard.playSectionRows = playSectionRows;
+				simulationBoard.graveSectionRows = graveSectionRows;
 }
 
 void ABattleBoard::GetLegalMoves(TArray<int32>& legalMoves)
@@ -40,7 +48,7 @@ void ABattleBoard::GetLegalMoves(TArray<int32>& legalMoves)
 				{
 								for (int32 col = 0; col < UGlobalConstFunctionLibrary::maxCol; col++)
 								{
-												if (boardRows[row].colCardInfos[col] == -1)
+												if (simulationBoard.boardRows[row].colCardInfos[col] == -1)
 												{
 																// which means this grid is empty, we should consider about play action
 																if ((curPlayerTurn == 0 && row < UGlobalConstFunctionLibrary::maxRow / 2) ||
@@ -50,7 +58,7 @@ void ABattleBoard::GetLegalMoves(TArray<int32>& legalMoves)
 																				{
 																								for (int32 playCardCol = 0; playCardCol < UGlobalConstFunctionLibrary::maxCol; playCardCol++)
 																								{
-																												if (playSectionRows[playCardRow].colCardInfos[playCardCol] == -1)
+																												if (simulationBoard.playSectionRows[playCardRow].colCardInfos[playCardCol] == -1)
 																												{
 																																continue;
 																												}
@@ -69,7 +77,7 @@ void ABattleBoard::GetLegalMoves(TArray<int32>& legalMoves)
 
 
 																// check possible skills
-																FInstanceCardInfo cardInfo = allInstanceCardInfo[boardRows[row].colCardInfos[col]];
+																FInstanceCardInfo cardInfo = simulationBoard.allInstanceCardInfo[simulationBoard.boardRows[row].colCardInfos[col]];
 																if ((cardInfo.curAvailableTimes == -1 || cardInfo.curAvailableTimes > 0) &&
 																				(cardInfo.curCoolDown == -1 || cardInfo.curCoolDown == 0))
 																{
@@ -81,8 +89,8 @@ void ABattleBoard::GetLegalMoves(TArray<int32>& legalMoves)
 																								effectInfo.targetGeoType.ParseIntoArray(targetGeoTypes, TEXT("&"), true);
 																								possibleGrids = UCheckTargetGeoRuleLibrary::GetPossibleTargetGeoGrids(
 																												targetGeoTypes[0],
-																												allInstanceCardInfo,
-																												boardRows,
+																												simulationBoard.allInstanceCardInfo,
+																												simulationBoard.boardRows,
 																												effectInfo,
 																												col,
 																												row,
@@ -90,16 +98,16 @@ void ABattleBoard::GetLegalMoves(TArray<int32>& legalMoves)
 
 																								UCheckTargetGeoRuleLibrary::CheckPossibleTargetLocateGeoGrids(
 																												targetGeoTypes[1],
-																												allInstanceCardInfo,
-																												boardRows,
+																												simulationBoard.allInstanceCardInfo,
+																												simulationBoard.boardRows,
 																												possibleGrids);
 																				}
 																				else
 																				{
 																								possibleGrids = UCheckTargetGeoRuleLibrary::GetPossibleTargetGeoGrids(
 																												effectInfo.targetGeoType,
-																												allInstanceCardInfo,
-																												boardRows,
+																												simulationBoard.allInstanceCardInfo,
+																												simulationBoard.boardRows,
 																												effectInfo,
 																												col,
 																												row,
@@ -128,7 +136,7 @@ void ABattleBoard::GetLegalMoves(TArray<int32>& legalMoves)
 
 																								if (effectInfo.prereqTagCondition != "none")
 																								{
-																												if (!UCheckPrereqTagFunctionLibrary::CheckPrereqTagRule(allInstanceCardInfo, boardRows, effectInfo, col, row))
+																												if (!UCheckPrereqTagFunctionLibrary::CheckPrereqTagRule(simulationBoard.allInstanceCardInfo, simulationBoard.boardRows, effectInfo, col, row))
 																												{
 																																possibleGrids.RemoveAt(checkGridNb);
 																																continue;
@@ -149,8 +157,8 @@ void ABattleBoard::GetLegalMoves(TArray<int32>& legalMoves)
 																// check move action
 																TArray<FGridXY> possibleMoveGrids = UCheckTargetGeoRuleLibrary::GetPossibleMoveGrids(
 																				cardInfo.originCardInfo.moveType,
-																				allInstanceCardInfo,
-																				boardRows,
+																				simulationBoard.allInstanceCardInfo,
+																				simulationBoard.boardRows,
 																				col,
 																				row,
 																				cardInfo.originCardInfo.moveDistance);
@@ -187,7 +195,56 @@ void ABattleBoard::GetLegalActionProbsBoardValue(uint8* boardState, TMap<int32, 
 				}
 }
 
-void ABattleBoard::TriggerSkill(int32 launchX, int32 launchY, int32 targetX, int32 targetY)
+void ABattleBoard::TriggerAction(int32 actionId, bool simulateFlag)
+{
+				int32 launchX = 0;
+				int32 launchY = 0;
+				int32 targetX = 0;
+				int32 targetY = 0;
+				ActionType actionType = ActionType::EndRound;
+				ActionDecoding(actionId, launchX, launchY, targetX, targetY, actionType);
+				if (simulateFlag)
+				{
+								// which means it's only simulation, modify simulated board info instead of true board
+								if (actionType == ActionType::LaunchSkill)
+								{
+												TriggerSkill(launchX,
+																launchY,
+																targetX,
+																targetY,
+																simulationBoard.allInstanceCardInfo,
+																simulationBoard.boardRows);
+								}
+								else if (actionType == ActionType::PlayCard)
+								{
+												TriggerPlayCard(launchX,
+																launchY,
+																targetX,
+																targetY,
+																simulationBoard.allInstanceCardInfo,
+																simulationBoard.boardRows);
+								}
+				}
+}
+
+void ABattleBoard::TriggerPlayCard(
+				int32 playSectionX,
+				int32 playSectionY,
+				int32 targetX,
+				int32 targetY,
+				TMap<int32, FInstanceCardInfo>& instanceCardInfo,
+				TMap<int32, FBoardRow>& modifyBoardRows)
+{
+
+}
+
+void ABattleBoard::TriggerSkill(
+				int32 launchX, 
+				int32 launchY, 
+				int32 targetX, 
+				int32 targetY, 
+				TMap<int32, FInstanceCardInfo>& instanceCardInfo,
+				TMap<int32, FBoardRow>& modifyBoardRows)
 {
 				int32 launchUid = boardRows[launchY].colCardInfos[launchX];
 				FEffectInfo effectInfo;
@@ -208,7 +265,7 @@ void ABattleBoard::TriggerSkill(int32 launchX, int32 launchY, int32 targetX, int
 				effectInfo.passivePrereqType = allInstanceCardInfo[launchUid].originCardInfo.passivePrereqType;
 				effectInfo.values = allInstanceCardInfo[launchUid].originCardInfo.values;
 
-				FEffectResultDict effectResultInfo = UCoreGameBlueprintFunctionLibrary::LaunchSkillDict(allInstanceCardInfo, boardRows, effectInfo, launchX, launchY, targetX, targetY);
+				FEffectResultDict effectResultInfo = UCoreGameBlueprintFunctionLibrary::LaunchSkillDict(instanceCardInfo, modifyBoardRows, effectInfo, launchX, launchY, targetX, targetY);
 				if (effectResultInfo.success)
 				{
 								TriggerPassiveEffect(effectResultInfo);
@@ -232,18 +289,19 @@ void ABattleBoard::TriggerPassiveEffect(FEffectResultDict effectResultDict)
 												allInstanceCardInfo[modifyCardUid].originCardInfo.launchType == "passive" &&
 												effectResultDict.modifyType == allInstanceCardInfo[modifyCardUid].originCardInfo.passivePrereqType)
 								{
+												/*
 												secondaryEffectResult = UPassiveEffectFunctionLibrary::GetPassiveEffect(
 																allInstanceCardInfo,
 																boardRows,
 
-												);
+												);*/
 
 												curRoundPassiveEffectTriggeredUids.Add(effectResultDict.modifyUids[i]);
 
 												int32 checkSecondaryEffectResultNb = 0;
 												while (checkSecondaryEffectResultNb < secondaryEffectResult.modifyUids.Num())
 												{
-																if (curRoundPassiveEffectTriggeredUids.Contains(secondaryEffectResult.modifyUids[j]))
+																if (curRoundPassiveEffectTriggeredUids.Contains(secondaryEffectResult.modifyUids[checkSecondaryEffectResultNb]))
 																{
 																				secondaryEffectResult.modifyUids.RemoveAt(checkSecondaryEffectResultNb);
 																				secondaryEffectResult.modifyValues.RemoveAt(checkSecondaryEffectResultNb);

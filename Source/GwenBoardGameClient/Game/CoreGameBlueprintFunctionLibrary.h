@@ -96,6 +96,11 @@ enum class ActionType : uint8
     EndRound = 3
 };
 
+enum class TrainState : uint8
+{
+    NoAction = 0,
+};
+
 
 
 

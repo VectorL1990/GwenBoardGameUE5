@@ -28,7 +28,7 @@ public:
 
 				void InitMcts(int32 simulationMoves);
 
-				void DoSimulationMove(ABattleBoard* board, uint8* boardState);
+				void TriggerSimulation(ABattleBoard* board);
 
 				void GetMoveProbs(ABattleBoard* board, TArray<int32>& outActs, TArray<float>& softmaxProbs);
 

@@ -253,8 +253,14 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TMap<int32, FBoardRow> boardRows;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TMap<int32, FString> boardCardUids;
+    UPROPERTY()
+    TMap<int32, FBoardRow> playSectionRows;
+
+    UPROPERTY()
+    TMap<int32, FBoardRow> graveSectionRows;
+
+    UPROPERTY()
+    TMap<int32, FInstanceCardInfo> allInstanceCardInfo;
 };
 
 /**

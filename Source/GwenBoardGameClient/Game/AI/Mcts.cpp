@@ -31,8 +31,10 @@ void AMcts::InitMcts(int32 simulationMoves)
 				expandSimulationMoves = simulationMoves;
 }
 
-void AMcts::DoSimulationMove(ABattleBoard* board, uint8* boardState)
+void AMcts::TriggerSimulation(ABattleBoard* board)
 {
+				uint8* boardCoding = board->StateCoding();
+				board->GetLatestSimulationBoard();
 				UMctsTreeNode* curNode = treeRoot;
 				while (true)
 				{
@@ -44,11 +46,13 @@ void AMcts::DoSimulationMove(ABattleBoard* board, uint8* boardState)
 								UMctsTreeNode* selectNode = NULL;
 								curNode->Select(action, selectNode);
 								curNode = selectNode;
+								// we should do move here! So that we can predict next action probs
+								board->TriggerAction(action, true);
 				}
 
 				TMap<int32, float> predictActionProbs;
 				float simulationStateValue;
-				board->GetLegalActionProbsBoardValue(boardState, predictActionProbs, simulationStateValue);
+				board->GetLegalActionProbsBoardValue(boardCoding, predictActionProbs, simulationStateValue);
 
 				// Tell whether game is end
 				bool isGameEnd = false;
@@ -68,12 +72,10 @@ void AMcts::DoSimulationMove(ABattleBoard* board, uint8* boardState)
 
 void AMcts::GetMoveProbs(ABattleBoard* board, TArray<int32>& outActs, TArray<float>& softmaxProbs)
 {
-				uint8* boardState = board->StateCoding();
+				
 				for (int32 i = 0; i < expandSimulationMoves; i++)
 				{
-								uint8 copyBoard[UGlobalConstFunctionLibrary::boardStateLen];
-								memcpy(copyBoard, boardState, UGlobalConstFunctionLibrary::boardStateLen*sizeof(uint8));
-								DoSimulationMove(board, copyBoard);
+								TriggerSimulation(board);
 				}
 
 				TArray<float> logVisits;
