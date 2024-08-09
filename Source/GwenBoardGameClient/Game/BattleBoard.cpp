@@ -344,6 +344,7 @@ void ABattleBoard::TriggerManualSkill(
 void ABattleBoard::TriggerPassiveEffect(FBoardInfo& targetBoard, FEffectResultDict effectResultDict)
 {
 				FEffectResultDict secondaryEffectResult;
+				// Traverse all cards that are modified, try to trigger their passive effects
 				for (int32 i = 0; i < effectResultDict.modifyUids.Num(); i++)
 				{
 								if (curRoundPassiveEffectTriggeredUids.Contains(effectResultDict.modifyUids[i]))
@@ -353,17 +354,21 @@ void ABattleBoard::TriggerPassiveEffect(FBoardInfo& targetBoard, FEffectResultDi
 
 								int32 modifyGridX = effectResultDict.modifyGrids[i].x;
 								int32 modifyGridY = effectResultDict.modifyGrids[i].y;
-								int32 modifyCardUid = targetBoard.boardRows[modifyGridY].colCardInfos[modifyGridX];
-								if (modifyCardUid != -1 && 
-												targetBoard.allInstanceCardInfo[modifyCardUid].originCardInfo.launchType == "passive" &&
-												effectResultDict.modifyType == targetBoard.allInstanceCardInfo[modifyCardUid].originCardInfo.passivePrereqType)
+								if (effectResultDict.modifyUids[i] != -1 &&
+												targetBoard.allInstanceCardInfo[effectResultDict.modifyUids[i]].originCardInfo.launchType == "passive" &&
+												effectResultDict.modifyType == targetBoard.allInstanceCardInfo[effectResultDict.modifyUids[i]].originCardInfo.passivePrereqType)
 								{
-												/*
+												FEffectInfo secondaryEffectInfo;
 												secondaryEffectResult = UPassiveEffectFunctionLibrary::GetPassiveEffect(
-																allInstanceCardInfo,
-																boardRows,
-
-												);*/
+																targetBoard.allInstanceCardInfo,
+																targetBoard.boardRows,
+																secondaryEffectInfo,
+																modifyGridX,
+																modifyGridY,
+																effectResultDict.triggerGridX,
+																effectResultDict.triggerGridY,
+																curRoundPassiveEffectTriggeredUids
+												);
 
 												curRoundPassiveEffectTriggeredUids.Add(effectResultDict.modifyUids[i]);
 

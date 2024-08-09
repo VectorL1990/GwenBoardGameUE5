@@ -103,6 +103,7 @@ void ACoreCardGameModeBase::SimulateTrainAction(float dT)
 								mctsPlayer->mcts->GetAction(battleBoard, actionId);
 
 								battleBoard->TriggerAction(actionId, true);
+								singleBattleState = SingleBattleState::ActionInterlude;
 
 								aiTrainPlayerActionCount = 0.0;
 				}
@@ -132,6 +133,18 @@ void ACoreCardGameModeBase::TrainPlayGameLoop(float dT)
 								{
 												// keep trying to trigger train action
 												SimulateTrainAction(dT);
+												curCountingTick += dT;
+								}
+				}
+				else if (singleBattleState == SingleBattleState::ActionInterlude)
+				{
+								if (curCountingTick >= battleStateTicksMap["ActionInterlude"])
+								{
+												singleBattleState = SingleBattleState::Battle;
+												curCountingTick = 0.0;
+								}
+								else
+								{
 												curCountingTick += dT;
 								}
 				}

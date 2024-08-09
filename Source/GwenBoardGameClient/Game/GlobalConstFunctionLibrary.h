@@ -242,6 +242,12 @@ public:
     FString modifyType;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int32 triggerGridX;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int32 triggerGridY;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TArray<FGridXY> modifyGrids;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -267,6 +273,30 @@ public:
 
     UPROPERTY()
     TMap<int32, FInstanceCardInfo> allInstanceCardInfo;
+};
+
+USTRUCT(BlueprintType, Blueprintable)
+struct FActionDemonstrationInfo
+{
+    GENERATED_USTRUCT_BODY()
+public:
+    UPROPERTY()
+    int32 launchX;
+
+    UPROPERTY()
+    int32 launchY;
+
+    UPROPERTY()
+    int32 targetX;
+
+    UPROPERTY()
+    int32 targetY;
+
+    UPROPERTY()
+    FString actionType;
+
+    UPROPERTY()
+    FString effectDemoType;
 };
 
 /**

@@ -184,8 +184,6 @@ public:
 
     void TrainPlayGameLoop(float dT);
 
-    TrainState trainState = TrainState::NoAction;
-
     AMctsPlayer* mctsPlayer;
 
     UPROPERTY(EditDefaultsOnly)

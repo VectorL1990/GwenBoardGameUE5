@@ -9,8 +9,8 @@ FEffectResultDict UPassiveEffectFunctionLibrary::GetPassiveEffect(
     FEffectInfo& effectInfo,
     int32 launchX,
     int32 launchY,
-    int32 targetX,
-    int32 targetY,
+    int32 triggerX,
+    int32 triggerY,
     TArray<int32>& triggeredUids)
 {
     FEffectResultDict effectResultDict;
