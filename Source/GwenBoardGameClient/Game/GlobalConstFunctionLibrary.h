@@ -194,6 +194,9 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
         TArray<int32> values;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        FString renderEffectType;
 };
 
 
@@ -255,6 +258,50 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TArray<float> modifyValues;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int32 triggerRound;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FString renderEffectType;
+};
+
+struct FRenderEffectDict
+{
+    GENERATED_USTRUCT_BODY()
+public:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int32 renderRound;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FString renderEffectType;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int32 triggerGridX;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int32 triggerGridY;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TArray<int32> modifyUids;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TArray<float> modifyValues;
+
+    /*FRenderEffectDict()
+    {
+
+    }
+
+    FRenderEffectDict(const FEffectResultDict& effectResultDict)
+    {
+        renderRound = effectResultDict.triggerRound;
+        renderEffectType = effectResultDict.renderEffectType;
+        triggerGridX = effectResultDict.triggerGridX;
+        triggerGridY = effectResultDict.triggerGridY;
+        modifyUids = effectResultDict.modifyUids;
+        modifyValues = effectResultDict.modifyValues;
+    }*/
 };
 
 USTRUCT(BlueprintType, Blueprintable)

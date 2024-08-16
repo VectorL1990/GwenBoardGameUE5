@@ -343,7 +343,6 @@ void ABattleBoard::TriggerManualSkill(
 
 void ABattleBoard::TriggerPassiveEffect(FBoardInfo& targetBoard, FEffectResultDict effectResultDict)
 {
-				FEffectResultDict secondaryEffectResult;
 				// Traverse all cards that are modified, try to trigger their passive effects
 				for (int32 i = 0; i < effectResultDict.modifyUids.Num(); i++)
 				{
@@ -359,7 +358,7 @@ void ABattleBoard::TriggerPassiveEffect(FBoardInfo& targetBoard, FEffectResultDi
 												effectResultDict.modifyType == targetBoard.allInstanceCardInfo[effectResultDict.modifyUids[i]].originCardInfo.passivePrereqType)
 								{
 												FEffectInfo secondaryEffectInfo;
-												secondaryEffectResult = UPassiveEffectFunctionLibrary::GetPassiveEffect(
+												FEffectResultDict secondaryEffectResult = UPassiveEffectFunctionLibrary::GetPassiveEffect(
 																targetBoard.allInstanceCardInfo,
 																targetBoard.boardRows,
 																secondaryEffectInfo,
@@ -369,29 +368,17 @@ void ABattleBoard::TriggerPassiveEffect(FBoardInfo& targetBoard, FEffectResultDi
 																effectResultDict.triggerGridY,
 																curRoundPassiveEffectTriggeredUids
 												);
+												secondaryEffectResult.triggerRound = effectResultDict.triggerRound + 1;
+
+												//FRenderEffectDict renderEffectDict(secondaryEffectResult);
 
 												curRoundPassiveEffectTriggeredUids.Add(effectResultDict.modifyUids[i]);
 
-												int32 checkSecondaryEffectResultNb = 0;
-												while (checkSecondaryEffectResultNb < secondaryEffectResult.modifyUids.Num())
+												if (secondaryEffectResult.modifyUids.Num() > 0)
 												{
-																if (curRoundPassiveEffectTriggeredUids.Contains(secondaryEffectResult.modifyUids[checkSecondaryEffectResultNb]))
-																{
-																				secondaryEffectResult.modifyUids.RemoveAt(checkSecondaryEffectResultNb);
-																				secondaryEffectResult.modifyValues.RemoveAt(checkSecondaryEffectResultNb);
-																}
-																else
-																{
-																				checkSecondaryEffectResultNb += 1;
-																}
+																TriggerPassiveEffect(targetBoard, secondaryEffectResult);
 												}
 								}
-				}
-
-
-				if (secondaryEffectResult.modifyUids.Num() > 0)
-				{
-								TriggerPassiveEffect(targetBoard, secondaryEffectResult);
 				}
 }
 
