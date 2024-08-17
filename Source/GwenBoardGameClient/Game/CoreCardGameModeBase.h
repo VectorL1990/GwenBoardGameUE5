@@ -150,6 +150,10 @@ public:
     int32 startingSelectCardNb = 10;
 
     // --- Main game logic
+    int32 curActionEffectRound = 0;
+
+    TArray<FRenderEffectDict> curActionRenderEffectList;
+
     void ReqPlayCard(bool simulationFlag, int32 launchX, int32 launchY, int32 targetX, int32 targetY);
 
     void ReqLaunchCardSkill(bool simulationFlag, int32 launchX, int32 launchY, int32 targetX, int32 targetY);

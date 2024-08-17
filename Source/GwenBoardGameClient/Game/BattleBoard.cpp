@@ -195,7 +195,7 @@ void ABattleBoard::GetLegalActionProbsBoardValue(uint8* boardState, TMap<int32, 
 				}
 }
 
-void ABattleBoard::TriggerAction(int32 actionId, bool simulateFlag)
+void ABattleBoard::TriggerAction(int32 actionId, bool simulateFlag, TArray<FRenderEffectDict>& renderEffectList, int32& maxEffectRound)
 {
 				int32 launchX = 0;
 				int32 launchY = 0;
@@ -213,7 +213,9 @@ void ABattleBoard::TriggerAction(int32 actionId, bool simulateFlag)
 																launchX,
 																launchY,
 																targetX,
-																targetY);
+																targetY,
+																renderEffectList,
+																maxEffectRound);
 								}
 								else if (actionType == ActionType::PlayCard)
 								{
@@ -222,7 +224,9 @@ void ABattleBoard::TriggerAction(int32 actionId, bool simulateFlag)
 																launchX,
 																launchY,
 																targetX,
-																targetY);
+																targetY,
+																renderEffectList,
+																maxEffectRound);
 								}
 				}
 				else
@@ -234,7 +238,9 @@ void ABattleBoard::TriggerAction(int32 actionId, bool simulateFlag)
 																launchX,
 																launchY,
 																targetX,
-																targetY);
+																targetY,
+																renderEffectList,
+																maxEffectRound);
 								}
 								else if (actionType == ActionType::LaunchSkill)
 								{
@@ -243,7 +249,9 @@ void ABattleBoard::TriggerAction(int32 actionId, bool simulateFlag)
 																launchX,
 																launchY,
 																targetX,
-																targetY);
+																targetY,
+																renderEffectList,
+																maxEffectRound);
 								}
 				}
 }
@@ -253,7 +261,9 @@ void ABattleBoard::TriggerPlayCard(
 				int32 playSectionX,
 				int32 playSectionY,
 				int32 targetX,
-				int32 targetY)
+				int32 targetY,
+				TArray<FRenderEffectDict>& renderEffectList,
+				int32& maxEffectRound)
 {
 				int32 playCardUid = targetBoard.playSectionRows[playSectionY].colCardInfos[playSectionX];
 				targetBoard.boardRows[targetY].colCardInfos[targetX] = playCardUid;
@@ -261,14 +271,16 @@ void ABattleBoard::TriggerPlayCard(
 				// Trigger play card skill
 				if (targetBoard.allInstanceCardInfo[playCardUid].originCardInfo.launchType == "auto")
 				{
-								TriggerPlayCardSkill(targetBoard, targetX, targetY);
+								TriggerPlayCardSkill(targetBoard, targetX, targetY, renderEffectList, maxEffectRound);
 				}
 }
 
 void ABattleBoard::TriggerPlayCardSkill(
 				FBoardInfo& targetBoard,
 				int32 launchX,
-				int32 launchY)
+				int32 launchY,
+				TArray<FRenderEffectDict>& renderEffectList,
+				int32& maxEffectRound)
 {
 				int32 launchUid = targetBoard.boardRows[launchY].colCardInfos[launchX];
 				FEffectInfo effectInfo;
@@ -293,7 +305,8 @@ void ABattleBoard::TriggerPlayCardSkill(
 				FEffectResultDict effectResultInfo = UCoreGameBlueprintFunctionLibrary::LaunchPlayCardSkillDict(targetBoard.allInstanceCardInfo, targetBoard.boardRows, effectInfo, launchX, launchY);
 				if (effectResultInfo.success)
 				{
-								TriggerPassiveEffect(targetBoard, effectResultInfo);
+								effectResultInfo.triggerRound = 0;
+								TriggerPassiveEffect(targetBoard, renderEffectList, effectResultInfo, maxEffectRound);
 				}
 }
 
@@ -302,7 +315,9 @@ void ABattleBoard::TriggerRoundEndSkill(
 				int32 launchX,
 				int32 launchY,
 				int32 targetX,
-				int32 targetY)
+				int32 targetY,
+				TArray<FRenderEffectDict>& renderEffectList,
+				int32& maxEffectRound)
 {
 
 }
@@ -312,7 +327,9 @@ void ABattleBoard::TriggerManualSkill(
 				int32 launchX, 
 				int32 launchY, 
 				int32 targetX, 
-				int32 targetY)
+				int32 targetY,
+				TArray<FRenderEffectDict>& renderEffectList,
+				int32& maxEffectRound)
 {
 				int32 launchUid = targetBoard.boardRows[launchY].colCardInfos[launchX];
 				FEffectInfo effectInfo;
@@ -337,11 +354,12 @@ void ABattleBoard::TriggerManualSkill(
 				FEffectResultDict effectResultInfo = UCoreGameBlueprintFunctionLibrary::LaunchSkillDict(targetBoard.allInstanceCardInfo, targetBoard.boardRows, effectInfo, launchX, launchY, targetX, targetY);
 				if (effectResultInfo.success)
 				{
-								TriggerPassiveEffect(targetBoard, effectResultInfo);
+								effectResultInfo.triggerRound = 0;
+								TriggerPassiveEffect(targetBoard, renderEffectList, effectResultInfo, maxEffectRound);
 				}
 }
 
-void ABattleBoard::TriggerPassiveEffect(FBoardInfo& targetBoard, FEffectResultDict effectResultDict)
+void ABattleBoard::TriggerPassiveEffect(FBoardInfo& targetBoard, TArray<FRenderEffectDict>& renderEffectList, FEffectResultDict effectResultDict, int32& maxEffectRound)
 {
 				// Traverse all cards that are modified, try to trigger their passive effects
 				for (int32 i = 0; i < effectResultDict.modifyUids.Num(); i++)
@@ -369,14 +387,19 @@ void ABattleBoard::TriggerPassiveEffect(FBoardInfo& targetBoard, FEffectResultDi
 																curRoundPassiveEffectTriggeredUids
 												);
 												secondaryEffectResult.triggerRound = effectResultDict.triggerRound + 1;
+												if (secondaryEffectResult.triggerRound > maxEffectRound)
+												{
+																maxEffectRound = secondaryEffectResult.triggerRound;
+												}
 
-												//FRenderEffectDict renderEffectDict(secondaryEffectResult);
+												FRenderEffectDict renderEffectDict(secondaryEffectResult);
+												renderEffectList.Add(renderEffectDict);
 
 												curRoundPassiveEffectTriggeredUids.Add(effectResultDict.modifyUids[i]);
 
 												if (secondaryEffectResult.modifyUids.Num() > 0)
 												{
-																TriggerPassiveEffect(targetBoard, secondaryEffectResult);
+																TriggerPassiveEffect(targetBoard, renderEffectList, secondaryEffectResult, maxEffectRound);
 												}
 								}
 				}

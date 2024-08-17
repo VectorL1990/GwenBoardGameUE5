@@ -102,7 +102,7 @@ void ACoreCardGameModeBase::SimulateTrainAction(float dT)
 								int32 actionId = -1;
 								mctsPlayer->mcts->GetAction(battleBoard, actionId);
 
-								battleBoard->TriggerAction(actionId, true);
+								battleBoard->TriggerAction(actionId, true, curActionRenderEffectList, curActionEffectRound);
 								singleBattleState = SingleBattleState::ActionInterlude;
 
 								aiTrainPlayerActionCount = 0.0;

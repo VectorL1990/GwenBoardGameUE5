@@ -266,6 +266,7 @@ public:
     FString renderEffectType;
 };
 
+USTRUCT(BlueprintType, Blueprintable)
 struct FRenderEffectDict
 {
     GENERATED_USTRUCT_BODY()
@@ -288,7 +289,7 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TArray<float> modifyValues;
 
-    /*FRenderEffectDict()
+    FRenderEffectDict()
     {
 
     }
@@ -301,7 +302,7 @@ public:
         triggerGridY = effectResultDict.triggerGridY;
         modifyUids = effectResultDict.modifyUids;
         modifyValues = effectResultDict.modifyValues;
-    }*/
+    }
 };
 
 USTRUCT(BlueprintType, Blueprintable)
