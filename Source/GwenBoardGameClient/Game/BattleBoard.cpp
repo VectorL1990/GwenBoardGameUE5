@@ -359,7 +359,7 @@ void ABattleBoard::TriggerManualSkill(
 				}
 }
 
-void ABattleBoard::TriggerPassiveEffect(FBoardInfo& targetBoard, TArray<FRenderEffectDict>& renderEffectList, FEffectResultDict effectResultDict, int32& maxEffectRound)
+void ABattleBoard::TriggerPassiveEffect(FBoardInfo& targetBoard, FEffectResultDict effectResultDict, TArray<FRenderEffectRound>& renderEffectRoundList)
 {
 				// Traverse all cards that are modified, try to trigger their passive effects
 				for (int32 i = 0; i < effectResultDict.modifyUids.Num(); i++)
@@ -387,12 +387,14 @@ void ABattleBoard::TriggerPassiveEffect(FBoardInfo& targetBoard, TArray<FRenderE
 																curRoundPassiveEffectTriggeredUids
 												);
 												secondaryEffectResult.triggerRound = effectResultDict.triggerRound + 1;
-												if (secondaryEffectResult.triggerRound > maxEffectRound)
-												{
-																maxEffectRound = secondaryEffectResult.triggerRound;
-												}
 
 												FRenderEffectDict renderEffectDict(secondaryEffectResult);
+												if (secondaryEffectResult.triggerRound >= renderEffectRoundList.Num())
+												{
+																FRenderEffectRound renderEffectRound;
+																renderEffectRound.renderEffectList.Add()
+												}
+
 												renderEffectList.Add(renderEffectDict);
 
 												curRoundPassiveEffectTriggeredUids.Add(effectResultDict.modifyUids[i]);

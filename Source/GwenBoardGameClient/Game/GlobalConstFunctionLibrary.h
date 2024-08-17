@@ -197,6 +197,9 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
         FString renderEffectType;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        float renderEffectTime;
 };
 
 
@@ -303,6 +306,21 @@ public:
         modifyUids = effectResultDict.modifyUids;
         modifyValues = effectResultDict.modifyValues;
     }
+};
+
+USTRUCT(BlueprintType, Blueprintable)
+struct FRenderEffectRound
+{
+    GENERATED_USTRUCT_BODY()
+public:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TArray<FRenderEffectDict> renderEffectList;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int32 renderRound;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    float renderTime;
 };
 
 USTRUCT(BlueprintType, Blueprintable)
