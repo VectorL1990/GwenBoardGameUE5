@@ -54,7 +54,8 @@ enum class SingleBattleState : uint8
     SelectCardInterlude = 2,
     Battle = 3,
     BattleInterlude = 4,
-    ActionInterlude,
+    ActionInterlude = 5,
+    RenderEffectInterlude = 6
 };
 
 UENUM(BLueprintType)

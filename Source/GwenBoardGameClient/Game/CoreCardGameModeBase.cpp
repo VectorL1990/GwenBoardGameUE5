@@ -102,7 +102,7 @@ void ACoreCardGameModeBase::SimulateTrainAction(float dT)
 								int32 actionId = -1;
 								mctsPlayer->mcts->GetAction(battleBoard, actionId);
 
-								battleBoard->TriggerAction(actionId, true, curActionRenderEffectList, curActionEffectRound);
+								curActionType = battleBoard->TriggerAction(actionId, true, curActionRenderEffectRoundList);
 								singleBattleState = SingleBattleState::ActionInterlude;
 
 								aiTrainPlayerActionCount = 0.0;
@@ -111,9 +111,6 @@ void ACoreCardGameModeBase::SimulateTrainAction(float dT)
 				{
 								aiTrainPlayerActionCount += dT;
 				}
-
-
-				
 }
 
 void ACoreCardGameModeBase::TrainPlayGameLoop(float dT)
@@ -138,9 +135,51 @@ void ACoreCardGameModeBase::TrainPlayGameLoop(float dT)
 				}
 				else if (singleBattleState == SingleBattleState::ActionInterlude)
 				{
-								if (curCountingTick >= battleStateTicksMap["ActionInterlude"])
+								float actionInterlude = 0.0;
+								if (curActionType == ActionType::PlayCard)
 								{
+												actionInterlude = battleStateTicksMap["PlayCardInterlude"];
+								}
+								else if (curActionType == ActionType::LaunchSkill)
+								{
+												actionInterlude = battleStateTicksMap["LaunchSkillInterlude"];
+								}
+								else if (curActionType == ActionType::Move)
+								{
+												actionInterlude = battleStateTicksMap["MoveInterlude"];
+								}
+								else if (curActionType == ActionType::EndRound)
+								{
+												actionInterlude = battleStateTicksMap["EndRoundInterlude"];
+								}
+
+								if (curCountingTick >= actionInterlude)
+								{
+												singleBattleState = SingleBattleState::RenderEffectInterlude;
+												curCountingTick = 0.0;
+								}
+								else
+								{
+												curCountingTick += dT;
+								}
+				}
+				else if (singleBattleState == SingleBattleState::RenderEffectInterlude)
+				{
+								float curRenderEffectInterval = 0.0;
+								if (curActionEffectRound < curActionRenderEffectRoundList.Num())
+								{
+												curRenderEffectInterval = curActionRenderEffectRoundList[curActionEffectRound].renderTime;
+								}
+								else
+								{
+												// which means rendering is finished
 												singleBattleState = SingleBattleState::Battle;
+								}
+								
+								if (curCountingTick >= curRenderEffectInterval)
+								{
+												// let's switch to next effect rendering round
+												curActionEffectRound += 1;
 												curCountingTick = 0.0;
 								}
 								else

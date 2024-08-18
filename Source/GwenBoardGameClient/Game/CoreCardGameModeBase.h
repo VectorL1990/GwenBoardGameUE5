@@ -152,7 +152,9 @@ public:
     // --- Main game logic
     int32 curActionEffectRound = 0;
 
-    TArray<FRenderEffectDict> curActionRenderEffectList;
+    TArray<FRenderEffectRound> curActionRenderEffectRoundList;
+
+    ActionType curActionType;
 
     void ReqPlayCard(bool simulationFlag, int32 launchX, int32 launchY, int32 targetX, int32 targetY);
 

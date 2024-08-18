@@ -36,7 +36,7 @@ public:
 
 				void GetLegalActionProbsBoardValue(uint8* boardState, TMap<int32, float>& legalActionProbs, float& boardValue);
 
-				void TriggerAction(int32 actionId, bool simulateFlag, TArray<FRenderEffectDict>& renderEffectList, int32& maxEffectRound);
+				ActionType TriggerAction(int32 actionId, bool simulateFlag, TArray<FRenderEffectRound>& renderEffectRoundList);
 
 				void TriggerPlayCard(
 								FBoardInfo& targetBoard,
@@ -44,15 +44,13 @@ public:
 								int32 playSectionY,
 								int32 targetX,
 								int32 targetY,
-								TArray<FRenderEffectDict>& renderEffectList,
-								int32& maxEffectRound);
+								TArray<FRenderEffectRound>& renderEffectRoundList);
 
 				void TriggerPlayCardSkill(
 								FBoardInfo& targetBoard,
 								int32 launchX,
 								int32 launchY,
-								TArray<FRenderEffectDict>& renderEffectList,
-								int32& maxEffectRound);
+								TArray<FRenderEffectRound>& renderEffectRoundList);
 
 				void TriggerRoundEndSkill(
 								FBoardInfo& targetBoard,
@@ -60,8 +58,7 @@ public:
 								int32 launchY,
 								int32 targetX,
 								int32 targetY,
-								TArray<FRenderEffectDict>& renderEffectList,
-								int32& maxEffectRound);
+								TArray<FRenderEffectRound>& renderEffectRoundList);
 
 				void TriggerManualSkill(
 								FBoardInfo& targetBoard,
@@ -69,10 +66,11 @@ public:
 								int32 launchY,
 								int32 targetX,
 								int32 targetY,
-								TArray<FRenderEffectDict>& renderEffectList,
-								int32& maxEffectRound);
+								TArray<FRenderEffectRound>& renderEffectRoundList);
 
-				void TriggerPassiveEffect(FBoardInfo& targetBoard, TArray<FRenderEffectDict>& renderEffectList, FEffectResultDict effectResultDict, int32& maxEffectRound);
+				void TriggerPassiveEffect(FBoardInfo& targetBoard, 
+								FEffectResultDict effectResultDict, 
+								TArray<FRenderEffectRound>& renderEffectRoundList);
 
 				TArray<int32> curRoundPassiveEffectTriggeredUids;
 

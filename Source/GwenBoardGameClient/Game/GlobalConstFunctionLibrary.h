@@ -267,6 +267,9 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FString renderEffectType;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    float renderTime;
 };
 
 USTRUCT(BlueprintType, Blueprintable)
@@ -279,6 +282,10 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FString renderEffectType;
+
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    float renderTime;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     int32 triggerGridX;
@@ -300,6 +307,7 @@ public:
     FRenderEffectDict(const FEffectResultDict& effectResultDict)
     {
         renderRound = effectResultDict.triggerRound;
+        renderTime = effectResultDict.renderTime;
         renderEffectType = effectResultDict.renderEffectType;
         triggerGridX = effectResultDict.triggerGridX;
         triggerGridY = effectResultDict.triggerGridY;
