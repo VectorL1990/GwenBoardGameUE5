@@ -364,6 +364,15 @@ void ACoreCardGameModeBase::ReqLaunchCardSkill(bool simulationFlag, int32 launch
 				
 }
 
+void ACoreCardGameModeBase::TriggerRenderEffect()
+{
+				FRenderEffectRound renderEffectRound = curActionRenderEffectRoundList[curActionEffectRound];
+				for (int32 i = 0; i < renderEffectRound.renderEffectList.Num(); i++)
+				{
+								//renderEffectRound.renderEffectList[i].renderEffectType
+				}
+}
+
 void ACoreCardGameModeBase::SpawnTestCards()
 {
 				FVector spawnTestLoc = FVector(0.0, 0.0, 0.0);

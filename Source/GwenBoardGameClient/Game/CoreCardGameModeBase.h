@@ -160,6 +160,8 @@ public:
 
     void ReqLaunchCardSkill(bool simulationFlag, int32 launchX, int32 launchY, int32 targetX, int32 targetY);
 
+    void TriggerRenderEffect();
+
     //void LaunchSkill();
 
     UPROPERTY()

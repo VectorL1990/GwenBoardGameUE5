@@ -47,7 +47,8 @@ void AMcts::TriggerSimulation(ABattleBoard* board)
 								curNode->Select(action, selectNode);
 								curNode = selectNode;
 								// we should do move here! So that we can predict next action probs
-								board->TriggerAction(action, true);
+								TArray<FRenderEffectRound> renderEffectRoundList;
+								board->TriggerAction(action, true, renderEffectRoundList);
 				}
 
 				TMap<int32, float> predictActionProbs;
