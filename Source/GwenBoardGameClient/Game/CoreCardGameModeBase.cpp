@@ -157,6 +157,7 @@ void ACoreCardGameModeBase::TrainPlayGameLoop(float dT)
 								{
 												singleBattleState = SingleBattleState::RenderEffectInterlude;
 												curCountingTick = 0.0;
+												TriggerRenderEffect();
 								}
 								else
 								{
@@ -181,6 +182,7 @@ void ACoreCardGameModeBase::TrainPlayGameLoop(float dT)
 												// let's switch to next effect rendering round
 												curActionEffectRound += 1;
 												curCountingTick = 0.0;
+												TriggerRenderEffect();
 								}
 								else
 								{
@@ -369,7 +371,12 @@ void ACoreCardGameModeBase::TriggerRenderEffect()
 				FRenderEffectRound renderEffectRound = curActionRenderEffectRoundList[curActionEffectRound];
 				for (int32 i = 0; i < renderEffectRound.renderEffectList.Num(); i++)
 				{
-								//renderEffectRound.renderEffectList[i].renderEffectType
+								for (int32 j = 0; j < renderEffectRound.renderEffectList[i].modifyUids.Num(); j++)
+								{
+												TSubclassOf<AActor> particleActorClass = effectParticleActorMap[renderEffectRound.renderEffectList[i].renderEffectType];
+												battleBoard->realBoard.
+												GetWorld()->SpawnActor<AActor>(particleActorClass, renderEffectRound.renderEffectList[i].)
+								}
 				}
 }
 

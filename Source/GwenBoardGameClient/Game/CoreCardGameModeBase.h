@@ -100,6 +100,9 @@ public:
 
     TMap<CameraType, ABattleCamera*> camerasMap;
 
+    UPROPERTY(EditAnywhere)
+    TMap<FString, TSubclassOf<AActor>> effectParticleActorMap;
+
     UPROPERTY()
     ABattleBoard* battleBoard;
 
