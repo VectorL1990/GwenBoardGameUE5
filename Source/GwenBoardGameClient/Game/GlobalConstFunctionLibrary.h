@@ -135,6 +135,12 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
         int32 curDefence;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int32 curRow;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int32 curCol;
 };
 
 

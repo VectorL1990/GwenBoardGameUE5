@@ -281,6 +281,8 @@ void ABattleBoard::TriggerPlayCard(
 				int32 playCardUid = targetBoard.playSectionRows[playSectionY].colCardInfos[playSectionX];
 				targetBoard.boardRows[targetY].colCardInfos[targetX] = playCardUid;
 				targetBoard.playSectionRows[playSectionY].colCardInfos[playSectionX] = -1;
+				targetBoard.allInstanceCardInfo[playCardUid].curCol = targetX;
+				targetBoard.allInstanceCardInfo[playCardUid].curRow = targetY;
 				// Trigger play card skill
 				if (targetBoard.allInstanceCardInfo[playCardUid].originCardInfo.launchType == "auto")
 				{

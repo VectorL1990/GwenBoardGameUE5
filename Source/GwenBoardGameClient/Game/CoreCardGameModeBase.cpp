@@ -374,7 +374,8 @@ void ACoreCardGameModeBase::TriggerRenderEffect()
 								for (int32 j = 0; j < renderEffectRound.renderEffectList[i].modifyUids.Num(); j++)
 								{
 												TSubclassOf<AActor> particleActorClass = effectParticleActorMap[renderEffectRound.renderEffectList[i].renderEffectType];
-												battleBoard->realBoard.
+												int32 targetX = battleBoard->realBoard.allInstanceCardInfo[renderEffectRound.renderEffectList[i].modifyUids[j]].curCol;
+												int32 targetY = battleBoard->realBoard.allInstanceCardInfo[renderEffectRound.renderEffectList[i].modifyUids[j]].curRow;
 												GetWorld()->SpawnActor<AActor>(particleActorClass, renderEffectRound.renderEffectList[i].)
 								}
 				}

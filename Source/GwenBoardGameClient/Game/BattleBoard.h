@@ -99,25 +99,11 @@ public:
 				uint8 curPlayerTurn;
 
 				UPROPERTY()
-								FBoardInfo simulationBoard;
+				FBoardInfo simulationBoard;
 
 				UPROPERTY()
-								FBoardInfo realBoard;
+				FBoardInfo realBoard;
 
-				UPROPERTY()
-				TMap<int32, FString> boardCardUids;
-
-				UPROPERTY()
-				TMap<int32, ACard*> downSectionHandCards;
-
-				UPROPERTY()
-				TMap<int32, ACard*> upSectionHandCards;
-
-				UPROPERTY()
-				TMap<int32, ACard*> downSectionGraveCards;
-
-				UPROPERTY()
-				TMap<int32, ACard*> upSectionGraveCards;
 
 				uint8 autoSkillGeoTargetTypeCoding[17] = {0};
 				uint8 skillLaunchTypeCoding[6] =								{0};
