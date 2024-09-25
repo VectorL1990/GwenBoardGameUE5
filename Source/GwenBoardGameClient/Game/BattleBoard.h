@@ -104,6 +104,8 @@ public:
 				UPROPERTY()
 				FBoardInfo realBoard;
 
+				TMap<int32, ACard*> allCards;
+
 
 				uint8 autoSkillGeoTargetTypeCoding[17] = {0};
 				uint8 skillLaunchTypeCoding[6] =								{0};

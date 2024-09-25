@@ -371,12 +371,20 @@ void ACoreCardGameModeBase::TriggerRenderEffect()
 				FRenderEffectRound renderEffectRound = curActionRenderEffectRoundList[curActionEffectRound];
 				for (int32 i = 0; i < renderEffectRound.renderEffectList.Num(); i++)
 				{
+								int32 launchX = renderEffectRound.renderEffectList[i].triggerGridX;
+								int32 launchY = renderEffectRound.renderEffectList[i].triggerGridY;
+								int32 launchUid = battleBoard->realBoard.boardRows[launchY].colCardInfos[launchX];
 								for (int32 j = 0; j < renderEffectRound.renderEffectList[i].modifyUids.Num(); j++)
 								{
 												TSubclassOf<AActor> particleActorClass = effectParticleActorMap[renderEffectRound.renderEffectList[i].renderEffectType];
 												int32 targetX = battleBoard->realBoard.allInstanceCardInfo[renderEffectRound.renderEffectList[i].modifyUids[j]].curCol;
 												int32 targetY = battleBoard->realBoard.allInstanceCardInfo[renderEffectRound.renderEffectList[i].modifyUids[j]].curRow;
-												GetWorld()->SpawnActor<AActor>(particleActorClass, renderEffectRound.renderEffectList[i].)
+												int32 targetUid = battleBoard->realBoard.boardRows[targetY].colCardInfos[targetX];
+												
+												FVector targetLaunchOffset = battleBoard->allCards[targetUid]->GetActorLocation() - battleBoard->allCards[launchUid]->GetActorLocation();
+												targetLaunchOffset.Normalize();
+												FRotator targetRot = targetLaunchOffset.Rotation();
+												AActor* particleActor = GetWorld()->SpawnActor<AActor>(particleActorClass, battleBoard->allCards[launchUid]->GetActorLocation(), targetRot);
 								}
 				}
 }
