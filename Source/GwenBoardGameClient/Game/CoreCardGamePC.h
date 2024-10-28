@@ -11,11 +11,14 @@
 /**
  * 
  */
+
+
 UCLASS()
 class GWENBOARDGAMECLIENT_API ACoreCardGamePC : public ABasicPlayerController
 {
     GENERATED_BODY()
 public:
+    static FString curMenuName;
 
     UFUNCTION(BlueprintCallable)
     void DealHover();
@@ -28,6 +31,8 @@ public:
     void ShowBattleWidget();
 
     void ReceiveFinishCardSelection();
+
+    static void SwitchMenu(FString menuName);
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
     ACoreCardGameManager* coreCardGameManager;

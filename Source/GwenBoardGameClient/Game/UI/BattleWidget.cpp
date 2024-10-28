@@ -4,6 +4,16 @@
 #include "Game/UI/BattleWidget.h"
 #include "Game/CoreCardGameModeBase.h"
 
+void UBattleWidget::ShowMenu()
+{
+
+}
+
+void UBattleWidget::HideMenu()
+{
+
+}
+
 void UBattleWidget::SetupCardDetail()
 {
 

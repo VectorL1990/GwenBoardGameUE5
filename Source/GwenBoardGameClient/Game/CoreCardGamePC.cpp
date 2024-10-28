@@ -10,6 +10,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "../Base/GwenBoardGameInstance.h"
 
+FString ACoreCardGamePC::curMenuName = "";
+
 void ACoreCardGamePC::BeginPlay()
 {
     SetShowMouseCursor(true);
@@ -105,5 +107,13 @@ void ACoreCardGamePC::ShowBattleWidget()
 void ACoreCardGamePC::ReceiveFinishCardSelection()
 {
     battleWidget->SetFinishCardSelectionText();
+}
+
+void ACoreCardGamePC::SwitchMenu(FString menuName)
+{
+    if (ACoreCardGamePC::curMenuName == "BattleMenu")
+    {
+        
+    }
 }
 

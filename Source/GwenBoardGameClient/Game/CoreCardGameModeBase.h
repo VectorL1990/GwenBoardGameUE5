@@ -34,9 +34,6 @@ public:
     UFUNCTION(BlueprintNativeEvent)
     void InitDone();
 
-    UPROPERTY()
-    TMap<FString, FCardInfo> allCardInfos;
-
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<ACard> cardBPClass;
 
@@ -111,39 +108,6 @@ public:
     // --- Select card logic
     UFUNCTION(BlueprintNativeEvent)
     void TriggerReadCardInfo();
-
-    UFUNCTION(BlueprintCallable)
-    void SetCardInfo(FString cardName,
-        FString aliasCN,
-        FString aliasEN,
-        FString cardFunctionCN,
-        FString cardFunctionEN,
-        FString despCN,
-        FString despEN,
-        int32 hp,
-        int32 defence,
-        int32 agility,
-        TArray<FString> cardTags,
-        FString launchType,
-        int32 coolDown,
-        int32 availableTimes,
-        FString launchGeoType,
-        FString autoSkillTargetGeoType,
-        FString targetGeoType,
-        FString aoeType,
-        FString targetCamp,
-        FString effectType,
-        FString effectAffix,
-        FString effectAffixCamp,
-        FString prereqTagCondition,
-        FString prereqTag,
-        FString prereqCampType,
-        FString prereqType,
-        FString passivePrereqType,
-        TArray<int32> values,
-        UTexture* texture,
-        FString moveType,
-        FString cardCategory);
 
     void RandSelectCards();
 

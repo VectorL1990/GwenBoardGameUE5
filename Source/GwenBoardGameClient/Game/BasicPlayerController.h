@@ -12,8 +12,7 @@
 UCLASS()
 class GWENBOARDGAMECLIENT_API ABasicPlayerController : public APlayerController
 {
-	GENERATED_BODY()
+GENERATED_BODY()
 public:
-	
 	
 };

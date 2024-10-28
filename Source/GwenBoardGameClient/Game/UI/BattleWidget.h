@@ -17,6 +17,10 @@ class GWENBOARDGAMECLIENT_API UBattleWidget : public UUserWidget
 {
     GENERATED_BODY()
 public:
+    static void ShowMenu();
+
+    static void HideMenu();
+
     void SetupCardDetail();
 
     UFUNCTION(BlueprintCallable)
