@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "TextBlock.h"
 #include "BattleCardWidget.h"
+#include "CardDetailWidget.h"
 #include "SelectCardWidget.generated.h"
 
 /**
@@ -17,8 +18,14 @@ class GWENBOARDGAMECLIENT_API USelectCardWidget : public UUserWidget
     GENERATED_BODY()
 public:
     UFUNCTION(BlueprintCallable)
+    void Init(UCardDetailWidget* inCardDetailWidget);
+
+    UFUNCTION(BlueprintCallable)
     void ClickButton(FString buttonName);
 
     UPROPERTY(EditDefaultsOnly)
     TArray<UBattleCardWidget*> initSeletableCardWidgetList;
+
+    UPROPERTY(EditAnywhere)
+    UCardDetailWidget* cardDetailWidget;
 };

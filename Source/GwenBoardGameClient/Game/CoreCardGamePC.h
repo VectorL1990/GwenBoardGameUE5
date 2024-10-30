@@ -5,7 +5,9 @@
 #include "CoreMinimal.h"
 #include "BasicPlayerController.h"
 #include "CoreCardGameManager.h"
+
 #include "UI/BattleWidget.h"
+#include "UI/SelectCardWidget.h"
 #include "CoreCardGamePC.generated.h"
 
 /**
@@ -18,7 +20,7 @@ class GWENBOARDGAMECLIENT_API ACoreCardGamePC : public ABasicPlayerController
 {
     GENERATED_BODY()
 public:
-    static FString curMenuName;
+    FString curMenuName;
 
     UFUNCTION(BlueprintCallable)
     void DealHover();
@@ -28,20 +30,27 @@ public:
 
     void InitSelectCardCamera();
 
-    void ShowBattleWidget();
-
     void ReceiveFinishCardSelection();
 
-    static void SwitchMenu(FString menuName);
+    void InitMenu();
+
+    void SwitchMenu(FString menuName);
+
+    virtual void ShowCardDetail(UCardWidget* cardWidget) override;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
     ACoreCardGameManager* coreCardGameManager;
 
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<UUserWidget> battleWidgetBPClass;
+    UPROPERTY(EditDefaultsOnly)
+    TSubclassOf<UUserWidget> selectCardWidgetBPClass;
 
     UPROPERTY()
     UBattleWidget* battleWidget;
+    UPROPERTY()
+    USelectCardWidget* selectCardWidget;
+    
 
 protected:
     virtual void BeginPlay() override;

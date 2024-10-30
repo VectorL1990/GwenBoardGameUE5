@@ -262,6 +262,7 @@ public:
 
     TMap<FString, float> interludeStateTicksMap;
 
+    UPROPERTY(EditDefaultsOnly)
     TMap<FString, float> battleStateTicksMap;
 
     float curBattleStateTick = 0.0;

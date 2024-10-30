@@ -7,7 +7,7 @@
 
 void UGwenBoardGameInstance::Init()
 {
-				ConnectServer("192.168.19.57", 5678, 1);
+				//ConnectServer("192.168.19.57", 5678, 1);
 }
 
 void UGwenBoardGameInstance::Shutdown()

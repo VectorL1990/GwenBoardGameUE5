@@ -3,3 +3,8 @@
 
 #include "Game/BasicPlayerController.h"
 
+void ABasicPlayerController::ShowCardDetail(UCardWidget* cardWidget)
+{
+
+}
+

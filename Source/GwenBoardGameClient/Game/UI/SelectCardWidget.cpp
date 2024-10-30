@@ -3,6 +3,11 @@
 
 #include "Game/UI/SelectCardWidget.h"
 
+void USelectCardWidget::Init(UCardDetailWidget* inCardDetailWidget)
+{
+				cardDetailWidget = inCardDetailWidget;
+}
+
 void USelectCardWidget::ClickButton(FString buttonName)
 {
 

@@ -8,14 +8,14 @@
 #include "BoardGrid.h"
 #include "CoreGameBlueprintFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "CanvasPanelSlot.h"
 #include "../Base/GwenBoardGameInstance.h"
 
-FString ACoreCardGamePC::curMenuName = "";
 
 void ACoreCardGamePC::BeginPlay()
 {
     SetShowMouseCursor(true);
-    //ShowBattleWidget();
+    InitMenu();
 }
 
 void ACoreCardGamePC::Tick(float DeltaTime)
@@ -97,23 +97,55 @@ void ACoreCardGamePC::InitSelectCardCamera()
     SetViewTarget(selectCardCamera);
 }
 
-void ACoreCardGamePC::ShowBattleWidget()
-{
-    UUserWidget* widget = CreateWidget(this, battleWidgetBPClass);
-    widget->AddToPlayerScreen(-1);
-    //battleWidget = Cast<UBattleWidget>(widget);
-}
 
 void ACoreCardGamePC::ReceiveFinishCardSelection()
 {
     battleWidget->SetFinishCardSelectionText();
 }
 
+void ACoreCardGamePC::InitMenu()
+{
+    UUserWidget* initBattleWidget = CreateWidget(this, battleWidgetBPClass);
+    battleWidget = Cast<UBattleWidget>(initBattleWidget);
+
+    UUserWidget* initSelectCardWidget = CreateWidget(this, selectCardWidgetBPClass);
+    selectCardWidget = Cast<USelectCardWidget>(initSelectCardWidget);
+}
+
 void ACoreCardGamePC::SwitchMenu(FString menuName)
 {
-    if (ACoreCardGamePC::curMenuName == "BattleMenu")
+    if (curMenuName == "BattleMenu")
     {
+        battleWidget->RemoveFromParent();
+    }
+    else if (curMenuName == "SelectCardMenu")
+    {
+        selectCardWidget->RemoveFromParent();
+    }
+
+    if (menuName == "BattleMenu")
+    {
+        battleWidget->AddToViewport();
+    }
+    else if (menuName == "SelectCardMenu")
+    {
+        selectCardWidget->AddToViewport();
+    }
+
+    curMenuName = menuName;
+}
+
+void ACoreCardGamePC::ShowCardDetail(UCardWidget* cardWidget)
+{
+    if (cardWidget->battleCardWidgetType == BattleCardWidgetType::BattleSelectCard)
+    {
+        UCanvasPanelSlot* canvasPanelSlot = Cast<UCanvasPanelSlot>(cardWidget->Slot);
+        FVector2D slotPosition = canvasPanelSlot->GetPosition();
+        FVector2D detailPanelPosition = slotPosition + cardWidget->detailPanelOffset;
         
+        UCanvasPanelSlot* detailWidgetSlot = Cast<UCanvasPanelSlot>(selectCardWidget->cardDetailWidget->Slot);
+        detailWidgetSlot->SetPosition(detailPanelPosition);
+        selectCardWidget->cardDetailWidget->TriggerShowWidget();
     }
 }
 

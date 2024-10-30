@@ -12,12 +12,12 @@
 
 void ACoreCardGameModeBase::BeginPlay()
 {
-				InitEvents();
-				InitKBEMain();
+				//InitEvents();
+				//InitKBEMain();
 				InitDone();
 				GetAllPresetObjects();
 				InitPreBattle();
-				CheckEntitiesCreated();
+				//CheckEntitiesCreated();
 
 				SpawnTestCards();
 				CalculateCardSpread();
@@ -123,7 +123,18 @@ void ACoreCardGameModeBase::TrainPlayGameLoop(float dT)
 {
 				if (singleBattleState == SingleBattleState::Default)
 				{
-								return;
+								if (curCountingTick >= battleStateTicksMap["BeforeSelectCard"])
+								{
+												singleBattleState = SingleBattleState::SelectCard;
+												APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
+												ACoreCardGamePC* coreCardPC = Cast<ACoreCardGamePC>(playerController);
+												coreCardPC->SwitchMenu("SelectCardMenu");
+												curCountingTick = 0.0;
+								}
+								else
+								{
+												curCountingTick += dT;
+								}
 				}
 				else if (singleBattleState == SingleBattleState::SelectCard)
 				{
@@ -140,7 +151,7 @@ void ACoreCardGameModeBase::TrainPlayGameLoop(float dT)
 				}
 				else if (singleBattleState == SingleBattleState::SelectCardInterlude)
 				{
-								if (curCountingTick >= battleStateTicksMap["MaxSelectCardInterludeInterval"])
+								if (curCountingTick >= battleStateTicksMap["AfterSelectCardInterludeInterval"])
 								{
 												singleBattleState = SingleBattleState::Battle;
 												curCountingTick = 0.0;

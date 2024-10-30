@@ -2,6 +2,7 @@
 
 
 #include "Game/CoreGameBlueprintFunctionLibrary.h"
+#include "CoreCardGamePC.h"
 #include "EffectAffixFunctionLibrary.h"
 
 
