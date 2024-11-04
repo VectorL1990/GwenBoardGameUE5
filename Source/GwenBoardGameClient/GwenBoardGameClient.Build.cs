@@ -15,6 +15,8 @@ public class GwenBoardGameClient : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "UnLua", "Lua",  "Networking", "Slate", "SlateCore" });
 
+		PublicIncludePaths.Add(Path.Combine("Game"));
+
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
 		

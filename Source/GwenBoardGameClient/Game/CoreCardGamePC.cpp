@@ -120,7 +120,7 @@ void ACoreCardGamePC::SwitchMenu(FString menuName)
     }
     else if (curMenuName == "SelectCardMenu")
     {
-        selectCardWidget->RemoveFromParent();
+        selectCardWidget->TriggerClose();
     }
 
     if (menuName == "BattleMenu")

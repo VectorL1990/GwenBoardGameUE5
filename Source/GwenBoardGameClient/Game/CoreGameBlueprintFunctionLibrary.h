@@ -51,7 +51,8 @@ enum class SingleBattleState : uint8
 {
     Default = 0,
     SelectCard = 1,
-    SelectCardInterlude = 2,
+    AfterSelectCardInterlude = 2,
+    SelectCardAnimInterlude = 3,
     Battle = 3,
     BattleInterlude = 4,
     ActionInterlude = 5,
@@ -96,6 +97,13 @@ enum class ActionType : uint8
     LaunchSkill = 1,
     Move = 2,
     EndRound = 3
+};
+
+UENUM(BlueprintType)
+enum class EGamingType : uint8
+{
+    Training = 0,
+    SinglePlay = 1,
 };
 
 

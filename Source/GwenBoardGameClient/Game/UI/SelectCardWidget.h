@@ -23,6 +23,9 @@ public:
     UFUNCTION(BlueprintCallable)
     void ClickButton(FString buttonName);
 
+    UFUNCTION(BlueprintNativeEvent)
+    void TriggerClose();
+
     UPROPERTY(EditDefaultsOnly)
     TArray<UBattleCardWidget*> initSeletableCardWidgetList;
 

@@ -12,3 +12,8 @@ void USelectCardWidget::ClickButton(FString buttonName)
 {
 
 }
+
+void USelectCardWidget::TriggerClose_Implementation()
+{
+
+}

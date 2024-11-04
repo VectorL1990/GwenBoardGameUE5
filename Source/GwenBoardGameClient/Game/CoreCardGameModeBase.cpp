@@ -138,10 +138,44 @@ void ACoreCardGameModeBase::TrainPlayGameLoop(float dT)
 				}
 				else if (singleBattleState == SingleBattleState::SelectCard)
 				{
-								if (curCountingTick >= battleStateTicksMap["MaxSelectCardInterval"])
+								if (gamingType == EGamingType::Training)
 								{
-												// switch to select card interlude
-												singleBattleState = SingleBattleState::SelectCardInterlude;
+												if (curCountingTick >= battleStateTicksMap["TrainSelectCardInterval"])
+												{
+																// switch to select card interlude
+																singleBattleState = SingleBattleState::AfterSelectCardInterlude;
+																APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
+																ACoreCardGamePC* coreCardPC = Cast<ACoreCardGamePC>(playerController);
+																coreCardPC->SwitchMenu("BattleMenu");
+																curCountingTick = 0.0;
+												}
+												else
+												{
+																curCountingTick += dT;
+												}
+								}
+								else
+								{
+												if (curCountingTick >= battleStateTicksMap["MaxSelectCardInterval"])
+												{
+																// switch to select card interlude
+																singleBattleState = SingleBattleState::AfterSelectCardInterlude;
+																APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
+																ACoreCardGamePC* coreCardPC = Cast<ACoreCardGamePC>(playerController);
+																coreCardPC->SwitchMenu("BattleMenu");
+																curCountingTick = 0.0;
+												}
+												else
+												{
+																curCountingTick += dT;
+												}
+								}
+				}
+				else if (singleBattleState == SingleBattleState::AfterSelectCardInterlude)
+				{
+								if (curCountingTick >= battleStateTicksMap["AfterSelectCardInterludeInterval"])
+								{
+												singleBattleState = SingleBattleState::SelectCardAnimInterlude;
 												curCountingTick = 0.0;
 								}
 								else
@@ -149,9 +183,9 @@ void ACoreCardGameModeBase::TrainPlayGameLoop(float dT)
 												curCountingTick += dT;
 								}
 				}
-				else if (singleBattleState == SingleBattleState::SelectCardInterlude)
+				else if (singleBattleState == SingleBattleState::SelectCardAnimInterlude)
 				{
-								if (curCountingTick >= battleStateTicksMap["AfterSelectCardInterludeInterval"])
+								if (curCountingTick >= battleStateTicksMap["SelectCardAnimInterval"])
 								{
 												singleBattleState = SingleBattleState::Battle;
 												curCountingTick = 0.0;
@@ -252,7 +286,7 @@ void ACoreCardGameModeBase::SinglePlayerGameLoop(float dT)
 								if (curCountingTick >= battleStateTicksMap["MaxSelectCardInterval"])
 								{
 												// switch to select card interlude
-												singleBattleState = SingleBattleState::SelectCardInterlude;
+												singleBattleState = SingleBattleState::AfterSelectCardInterlude;
 												curCountingTick = 0.0;
 								}
 								else
@@ -260,9 +294,9 @@ void ACoreCardGameModeBase::SinglePlayerGameLoop(float dT)
 												curCountingTick += dT;
 								}
 				}
-				else if (singleBattleState == SingleBattleState::SelectCardInterlude)
+				else if (singleBattleState == SingleBattleState::AfterSelectCardInterlude)
 				{
-								if (curCountingTick >= battleStateTicksMap["MaxSelectCardInterludeInterval"])
+								if (curCountingTick >= battleStateTicksMap["MaxAfterSelectCardInterludeInterval"])
 								{
 												singleBattleState = SingleBattleState::Battle;
 												curCountingTick = 0.0;

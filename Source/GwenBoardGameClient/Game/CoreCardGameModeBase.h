@@ -103,7 +103,8 @@ public:
     UPROPERTY()
     ABattleBoard* battleBoard;
 
-
+    UPROPERTY(EditDefaultsOnly)
+    EGamingType gamingType = EGamingType::Training;
 public:
     // --- Select card logic
     UFUNCTION(BlueprintNativeEvent)
