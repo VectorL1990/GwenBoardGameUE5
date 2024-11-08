@@ -7,6 +7,7 @@
 #include "Button.h"
 #include "TextBlock.h"
 #include "../CoreGameBlueprintFunctionLibrary.h"
+#include "CardDetailWidget.h"
 #include "BattleWidget.generated.h"
 
 /**
@@ -17,14 +18,20 @@ class GWENBOARDGAMECLIENT_API UBattleWidget : public UUserWidget
 {
     GENERATED_BODY()
 public:
+    UFUNCTION(BlueprintCallable)
+    void Init(UCardDetailWidget* inCardDetailWidget);
 
+    void SetupCardDetail(FVector cardWorldPose);
 
-    void SetupCardDetail();
+    void HideCardDetail();
 
     UFUNCTION(BlueprintCallable)
     void ClickButton(FString buttonName);
 
     void SetFinishCardSelectionText();
+
+    UPROPERTY()
+    UCardDetailWidget* cardDetailWidget;
 
     UPROPERTY(BlueprintReadWrite)
     UButton* finishSelectCardButton;

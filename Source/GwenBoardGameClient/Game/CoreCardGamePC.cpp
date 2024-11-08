@@ -9,6 +9,7 @@
 #include "CoreGameBlueprintFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "CanvasPanelSlot.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
 #include "../Base/GwenBoardGameInstance.h"
 
 
@@ -23,22 +24,40 @@ void ACoreCardGamePC::Tick(float DeltaTime)
     DealHover();
 }
 
+void ACoreCardGamePC::GetRaycastObj(FHitResult& outHitResult)
+{
+    FVector2D mouseViewportPos = UWidgetLayoutLibrary::GetMousePositionOnViewport(this);
+    float viewportScale = UWidgetLayoutLibrary::GetViewportScale(this);
+    FVector worldPosition = FVector::ZeroVector;
+    FVector worldDirection = FVector::UpVector;
+    UGameplayStatics::DeprojectScreenToWorld(UGameplayStatics::GetPlayerController(this, 0), mouseViewportPos * viewportScale, worldPosition, worldDirection);
+    FHitResult visibleChannelHitResult;
+    TArray<AActor*> ignoreActorList;
+    UKismetSystemLibrary::LineTraceSingle(this, worldPosition, worldPosition + worldDirection * 100000000, TraceTypeQuery1,
+        true, ignoreActorList, EDrawDebugTrace::None, visibleChannelHitResult, true);
+
+    outHitResult = visibleChannelHitResult;
+}
+
 void ACoreCardGamePC::DealHover()
 {
     FHitResult hitResult;
-    bool hitSomething = GetHitResultUnderCursorByChannel(TraceTypeQuery1, false, hitResult);
-    if (hitSomething && hitResult.bBlockingHit)
+    GetRaycastObj(hitResult);
+    if (hitResult.bBlockingHit)
     {
-        if (hitResult.GetComponent() && hitResult.GetComponent()->ComponentHasTag(FName(TEXT("CardPlane"))))
+        if (hitResult.GetComponent() && hitResult.GetComponent()->ComponentHasTag(FName(TEXT("BattleCard"))))
         {
             AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
             ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
-            coreCardGameMode->RecoverCardLocations();
-            for (int32 i = 0; i < coreCardGameMode->testCards.Num(); i++)
+            coreCardGameMode->RecoverHoverCardLocations();
+            for (int32 i = 0; i < coreCardGameMode->battleCards.Num(); i++)
             {
-                if (coreCardGameMode->testCards[i] == hitResult.GetComponent()->GetOwner())
+                if (coreCardGameMode->battleCards[i] == hitResult.GetComponent()->GetOwner())
                 {
-                    coreCardGameMode->RearrangeCardLocations(i);
+                    coreCardGameMode->curHighlightCard = coreCardGameMode->battleCards[i];
+                    coreCardGameMode->battleCards[i]->Highlight();
+                    battleWidget->SetupCardDetail(coreCardGameMode->curHighlightCard->GetActorLocation());
+                    coreCardGameMode->CalculateHoverCardLocations(i);
                     break;
                 }
             }
@@ -47,45 +66,70 @@ void ACoreCardGamePC::DealHover()
         {
             AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
             ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
-            coreCardGameMode->RecoverCardLocations();
+            if (coreCardGameMode->curHighlightCard)
+            {
+                coreCardGameMode->curHighlightCard->DeHighlight();
+                battleWidget->HideCardDetail();
+                coreCardGameMode->curHighlightCard = NULL;
+            }
+            coreCardGameMode->RecoverHoverCardLocations();
         }
     }
     else
     {
         AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
         ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
-        coreCardGameMode->RecoverCardLocations();
+        if (coreCardGameMode->curHighlightCard)
+        {
+            coreCardGameMode->curHighlightCard->DeHighlight();
+            battleWidget->HideCardDetail();
+            coreCardGameMode->curHighlightCard = NULL;
+        }
+        coreCardGameMode->RecoverHoverCardLocations();
     }
 }
 
 void ACoreCardGamePC::DealLeftClick()
 {
     FHitResult hitResult;
-    bool hitSomething = GetHitResultUnderCursorByChannel(TraceTypeQuery1, false, hitResult);
-    if (hitSomething && hitResult.bBlockingHit)
+    GetRaycastObj(hitResult);
+    if (hitResult.bBlockingHit)
     {
         if (hitResult.GetComponent() && hitResult.GetComponent()->ComponentHasTag(FName(TEXT("BattleCard"))))
         {
             ACard* card = Cast<ACard>(hitResult.GetActor());
-            if (card)
+            if (card->cardStatus == BattleCardStatus::Standby)
             {
-                if (card->cardStatus == BattleCardStatus::Select)
-                {
-                    AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
-                    ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
-                }
-                else if (card->cardStatus == BattleCardStatus::Standby)
-                {
-                    // which means player wants to look into the detail of this card
-                    // show detail in battle widget
-                }
+                // highlight edge of card and keep high space
+                AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
+                ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
+                coreCardGameMode->selectPlayCard = card;
+                coreCardGameMode->SetSelectPlayCard(card);
             }
         }
         else if (hitResult.GetComponent() && hitResult.GetComponent()->ComponentHasTag(FName(TEXT("BoardGrid"))))
         {
-            ABoardGrid* boardGrid = Cast<ABoardGrid>(hitResult.GetActor());
-            // send message to server to update battle
+            AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
+            ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
+            if (coreCardGameMode->selectPlayCard)
+            {
+                
+            }
         }
+        else
+        {
+            AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
+            ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
+            coreCardGameMode->selectPlayCard = NULL;
+            coreCardGameMode->RecoverSelectPlayCard();
+        }
+    }
+    else
+    {
+        AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
+        ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
+        coreCardGameMode->selectPlayCard = NULL;
+        coreCardGameMode->RecoverSelectPlayCard();
     }
 }
 
@@ -101,6 +145,12 @@ void ACoreCardGamePC::InitSelectCardCamera()
 void ACoreCardGamePC::ReceiveFinishCardSelection()
 {
     battleWidget->SetFinishCardSelectionText();
+}
+
+void ACoreCardGamePC::GetCursorScreenPose()
+{
+    FVector2D mouseViewportPos = UWidgetLayoutLibrary::GetMousePositionOnViewport(this);
+    float viewportScale = UWidgetLayoutLibrary::GetViewportScale(this);
 }
 
 void ACoreCardGamePC::InitMenu()
@@ -143,9 +193,23 @@ void ACoreCardGamePC::ShowCardDetail(UCardWidget* cardWidget)
         FVector2D slotPosition = canvasPanelSlot->GetPosition();
         FVector2D detailPanelPosition = slotPosition + cardWidget->detailPanelOffset;
         
+        selectCardWidget->cardDetailWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
         UCanvasPanelSlot* detailWidgetSlot = Cast<UCanvasPanelSlot>(selectCardWidget->cardDetailWidget->Slot);
         detailWidgetSlot->SetPosition(detailPanelPosition);
         selectCardWidget->cardDetailWidget->TriggerShowWidget();
     }
+}
+
+void ACoreCardGamePC::HideCardDetail(UCardWidget* cardWidget)
+{
+    if (cardWidget->battleCardWidgetType == BattleCardWidgetType::BattleSelectCard)
+    {
+        selectCardWidget->cardDetailWidget->SetVisibility(ESlateVisibility::Hidden);
+    }
+}
+
+void ACoreCardGamePC::ShowCardDetailInBattle(ACard* card)
+{
+
 }
 

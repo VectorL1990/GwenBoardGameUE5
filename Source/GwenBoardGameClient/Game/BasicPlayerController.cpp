@@ -8,3 +8,8 @@ void ABasicPlayerController::ShowCardDetail(UCardWidget* cardWidget)
 
 }
 
+void ABasicPlayerController::HideCardDetail(UCardWidget* cardWidget)
+{
+
+}
+

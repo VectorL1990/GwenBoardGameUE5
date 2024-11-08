@@ -21,10 +21,10 @@ void ACoreCardGameModeBase::BeginPlay()
 
 				SpawnTestCards();
 				CalculateCardSpread();
-				for (int32 i = 0; i < testCards.Num(); i++)
+				for (int32 i = 0; i < battleCards.Num(); i++)
 				{
-								testCards[i]->SetActorLocation(testCardLocations[i]);
-								testCards[i]->SetActorRotation(testCardRots[i]);
+								battleCards[i]->SetActorLocation(testCardLocations[i]);
+								battleCards[i]->SetActorRotation(testCardRots[i]);
 				}
 }
 
@@ -90,7 +90,14 @@ void ACoreCardGameModeBase::RandSelectCards()
 								FString selectCardName = gwenGI->selectCardList[selectCardNbList[i]];
 								if (allCardInfos.Contains(selectCardName))
 								{
-												
+												FVector spawnTestLoc = FVector(0.0, 0.0, 0.0);
+												testMoveCard = GetWorld()->SpawnActor<ACard>(cardBPClass, spawnTestLoc, FRotator::ZeroRotator);
+												for (int32 i = 0; i < 10; i++)
+												{
+																FVector spawnLoc = FVector(0.0, 0.0, 0.0);
+																ACard* card = GetWorld()->SpawnActor<ACard>(cardBPClass, spawnLoc, FRotator::ZeroRotator);
+																battleCards.Add(card);
+												}
 								}
 				}
 }
@@ -408,29 +415,74 @@ void ACoreCardGameModeBase::SpawnTestCards()
 				{
 								FVector spawnLoc = FVector(0.0, 0.0, 0.0);
 								ACard* card = GetWorld()->SpawnActor<ACard>(cardBPClass, spawnLoc, FRotator::ZeroRotator);
-								testCards.Add(card);
+								battleCards.Add(card);
 				}
 }
 
-void ACoreCardGameModeBase::RearrangeCardLocations(int32 hoverCardNb)
+void ACoreCardGameModeBase::CalculateHoverCardLocations(int32 hoverCardNb)
 {
-				if (hoverCardNb >= testCards.Num())
+				if (hoverCardNb >= battleCards.Num())
 				{
 								return;
 				}
 
 				// Move cards on the right side of hovered card
-				for (int32 i = hoverCardNb; i < testCards.Num(); i++)
+				for (int32 i = hoverCardNb; i < battleCards.Num(); i++)
 				{
 								FVector cardOffset = FVector(hoverMoveRightCardsOffset, 0.0, 0.0);
-								testCardTempLocations[i] = testCardLocations[i] + cardOffset;
+								if (battleCards[i] == selectPlayCard)
+								{
+												testCardTempLocations[i] = testCardLocations[i] + FVector(0.0, -hoverCardUpOffset, 0.0) + cardOffset;
+								}
+								else
+								{
+												testCardTempLocations[i] = testCardLocations[i] + cardOffset;
+								}
 				}
 
 				FVector hoverCardOffset = FVector(0.0, -hoverCardUpOffset, 0.0);
 				testCardTempLocations[hoverCardNb] = testCardLocations[hoverCardNb] + hoverCardOffset;
 }
 
-void ACoreCardGameModeBase::RecoverCardLocations()
+void ACoreCardGameModeBase::RecoverHoverCardLocations()
+{
+				for (int32 i = 0; i < battleCards.Num(); i++)
+				{
+								if (selectPlayCard == battleCards[i])
+								{
+												testCardTempLocations[i] = testCardLocations[i] + FVector(0.0, -hoverCardUpOffset, 0.0);
+								}
+								else
+								{
+												testCardTempLocations[i] = testCardLocations[i];
+								}
+				}
+}
+
+void ACoreCardGameModeBase::SetSelectPlayCard(ACard* inSelectCard)
+{
+				int32 selectCardNb = -1;
+				battleCards.Find(inSelectCard, selectCardNb);
+				if (selectCardNb >= battleCards.Num() || selectCardNb == -1)
+				{
+								return;
+				}
+
+				for (int32 i = selectCardNb; i < battleCards.Num(); i++)
+				{
+								FVector cardOffset = FVector(hoverMoveRightCardsOffset, 0.0, 0.0);
+								if (i == selectCardNb)
+								{
+												testCardTempLocations[i] = testCardLocations[i] + FVector(0.0, -hoverCardUpOffset, 0.0);
+								}
+								else
+								{
+												testCardTempLocations[i] = testCardLocations[i] + cardOffset;
+								}
+				}
+}
+
+void ACoreCardGameModeBase::RecoverSelectPlayCard()
 {
 				testCardTempLocations = testCardLocations;
 }
@@ -438,14 +490,14 @@ void ACoreCardGameModeBase::RecoverCardLocations()
 void ACoreCardGameModeBase::CalculateCardSpread()
 {
 				TArray<float> handCardYawList;
-				for (int32 i = 0; i < testCards.Num(); i++)
+				for (int32 i = 0; i < battleCards.Num(); i++)
 				{
 								float cardSelfRot = 0.0;
 								float spreadCardRot = 0.0;
 								float spreadCardPositionY = 0.0;
-								if (testCards.Num() % 2 == 0)
+								if (battleCards.Num() % 2 == 0)
 								{
-												int32 halfCardNum = testCards.Num() / 2;
+												int32 halfCardNum = battleCards.Num() / 2;
 												if (i <= halfCardNum)
 												{
 																cardSelfRot = -((float)halfCardNum - (float)i - 0.5) * cardSelfRotInterval;
@@ -461,7 +513,7 @@ void ACoreCardGameModeBase::CalculateCardSpread()
 								}
 								else
 								{
-												int32 halfCardNum = testCards.Num() / 2;
+												int32 halfCardNum = battleCards.Num() / 2;
 												if (i <= halfCardNum)
 												{
 																cardSelfRot = -((float)halfCardNum - (float)i) * cardSelfRotInterval;
@@ -489,11 +541,11 @@ void ACoreCardGameModeBase::CalculateCardSpread()
 
 void ACoreCardGameModeBase::MoveRearrangeCards()
 {
-				for (int32 i = 0; i < testCards.Num(); i++)
+				for (int32 i = 0; i < battleCards.Num(); i++)
 				{
-								FVector cardCurLocation = testCards[i]->GetActorLocation();
+								FVector cardCurLocation = battleCards[i]->GetActorLocation();
 								FVector interpLocation = FMath::VInterpTo(cardCurLocation, testCardTempLocations[i], hoverMoveCardInterpDeltaTime, hoverMoveCardInterpSpeed);
-								testCards[i]->SetActorLocation(interpLocation);
+								battleCards[i]->SetActorLocation(interpLocation);
 				}
 }
 
@@ -552,149 +604,6 @@ void ACoreCardGameModeBase::InitPreBattle()
 				coreCardGamePC->InitSelectCardCamera();
 }
 
-void ACoreCardGameModeBase::CalibrateGridInfos(TArray<FBATTLE_GRID_INFO> gridInfos)
-{
-				for (TMap<int32, ABoardGrid*>::TConstIterator iter = boardGrids.CreateConstIterator(); iter; ++iter)
-				{
-								iter->Value->DemonstrateInitEffect();
-				}
-				for (int32 i = 0; i < gridInfos.Num(); i++)
-				{
-								if (!boardGrids[gridInfos[i].gridNb]->card)
-								{
-												// which means card is missed in this grid, we should spawn a brand new card corresponding to supplement information from server
-												FVector spawnLoc = boardGrids[gridInfos[i].gridNb]->GetActorLocation();
-												spawnLoc.Z += gridSpawnCardOffset;
-												FRotator spawnRot = FRotator::ZeroRotator;
-												ACard* suplementCard = GetWorld()->SpawnActor<ACard>(cardBPClass, spawnLoc, spawnRot);
-												suplementCard->InitCard(allCardInfoMap[gridInfos[i].cardUid].cardName);
-												suplementCard->hp = gridInfos[i].hp;
-												suplementCard->defence = gridInfos[i].defence;
-												suplementCard->agility = gridInfos[i].agility;
-												suplementCard->inherentTags = gridInfos[i].tags;
-												suplementCard->stateTags = gridInfos[i].stateTags;
-												allCardMap.Add(gridInfos[i].cardUid, suplementCard);
-
-												boardGrids[gridInfos[i].gridNb]->card = suplementCard;
-								}
-								else
-								{
-												if (boardGrids[gridInfos[i].gridNb]->card->cardUid != gridInfos[i].cardUid)
-												{
-																// which means a wrong card is placed in this grid
-																// delete occupied card first
-																FString cardUid = boardGrids[gridInfos[i].gridNb]->card->cardUid;
-																if (boardGrids[gridInfos[i].gridNb]->card->IsValidLowLevel())
-																{
-																				boardGrids[gridInfos[i].gridNb]->card->ConditionalBeginDestroy();
-																}
-																allCardMap.Remove(cardUid);
-
-																// replace or spawn sync card for this grid
-																if (allCardMap.Contains(gridInfos[i].cardUid))
-																{
-																				// which means a existing card which should be placed in this grid is located somewhere else
-																				// in this case we should delete that card, it doesn't matter because that "cavity" will be make up
-																				if (allCardMap[gridInfos[i].cardUid]->IsValidLowLevel())
-																				{
-																								allCardMap[gridInfos[i].cardUid]->Destroy();
-																				}
-																				allCardMap.Remove(gridInfos[i].cardUid);
-
-																				for (TMap<int32, ABoardGrid*>::TConstIterator iter = boardGrids.CreateConstIterator(); iter; ++iter)
-																				{
-																								if (iter->Value->card && iter->Value->card->cardUid == gridInfos[i].cardUid)
-																								{
-																												iter->Value->card = NULL;
-																												break;
-																								}
-																				}
-																}
-
-																FVector spawnLoc = boardGrids[gridInfos[i].gridNb]->GetActorLocation();
-																spawnLoc.Z += gridSpawnCardOffset;
-																FRotator spawnRot = FRotator::ZeroRotator;
-																ACard* replacedCard = GetWorld()->SpawnActor<ACard>(cardBPClass, spawnLoc, spawnRot);
-																replacedCard->InitCard(allCardInfoMap[gridInfos[i].cardUid].cardName);
-																replacedCard->hp = gridInfos[i].hp;
-																replacedCard->defence = gridInfos[i].defence;
-																replacedCard->agility = gridInfos[i].agility;
-																replacedCard->inherentTags = gridInfos[i].tags;
-																replacedCard->stateTags = gridInfos[i].stateTags;
-																allCardMap.Add(gridInfos[i].cardUid, replacedCard);
-
-																boardGrids[gridInfos[i].gridNb]->card = replacedCard;
-
-												}
-												else
-												{
-																// which means card id is correct, calibrate card information
-																if (boardGrids[gridInfos[i].gridNb]->card->hp != gridInfos[i].hp)
-																{
-																				boardGrids[gridInfos[i].gridNb]->card->hp = gridInfos[i].hp;
-																}
-																if (boardGrids[gridInfos[i].gridNb]->card->defence != gridInfos[i].defence)
-																{
-																				boardGrids[gridInfos[i].gridNb]->card->defence = gridInfos[i].defence;
-																}
-																if (boardGrids[gridInfos[i].gridNb]->card->agility != gridInfos[i].agility)
-																{
-																				boardGrids[gridInfos[i].gridNb]->card->agility = gridInfos[i].agility;
-																}
-																if (boardGrids[gridInfos[i].gridNb]->card->inherentTags.Num() != gridInfos[i].tags.Num())
-																{
-																				boardGrids[gridInfos[i].gridNb]->card->inherentTags = gridInfos[i].tags;
-																}
-																else
-																{
-																				for (int32 j = 0; j < gridInfos[j].tags.Num(); j++)
-																				{
-																								if (!boardGrids[gridInfos[i].gridNb]->card->inherentTags.Contains(gridInfos[i].tags[j]))
-																								{
-																												boardGrids[gridInfos[i].gridNb]->card->inherentTags.Add(gridInfos[i].tags[j]);
-																												// let's replace all tags to board grid
-																												boardGrids[gridInfos[i].gridNb]->card->inherentTags = gridInfos[i].tags;
-																												// update actor demonstration and ui
-																												break;
-
-																								}
-																				}
-																}
-
-																if (boardGrids[gridInfos[i].gridNb]->card->stateTags.Num() != gridInfos[i].stateTags.Num())
-																{
-																				boardGrids[gridInfos[i].gridNb]->card->stateTags = gridInfos[i].stateTags;
-																}
-																else
-																{
-																				bool reqCorrection = false;
-																				for (int32 j = 0; j < gridInfos[i].stateTags.Num(); j++)
-																				{
-																								bool findCorrespondStateTag = false;
-																								for (int32 k = 0; k < boardGrids[gridInfos[i].gridNb]->card->stateTags.Num(); k++)
-																								{
-																												if (gridInfos[i].stateTags[j].stateName == boardGrids[gridInfos[i].gridNb]->card->stateTags[k].stateName)
-																												{
-																																findCorrespondStateTag = true;
-																																if (gridInfos[i].stateTags[j].curCount != boardGrids[gridInfos[i].gridNb]->card->stateTags[k].curCount ||
-																																				gridInfos[i].stateTags[j].stipulation != boardGrids[gridInfos[i].gridNb]->card->stateTags[k].stipulation)
-																																{
-																																				boardGrids[gridInfos[i].gridNb]->card->stateTags = gridInfos[i].stateTags;
-																																				reqCorrection = true;
-																																				break;
-																																}
-																												}
-																								}
-																								if (reqCorrection)
-																								{
-																												break;
-																								}
-																				}
-																}
-												}
-								}
-				}
-}
 
 void ACoreCardGameModeBase::CalibratePlayerCardInfos(TArray<FSYNC_CARD_INFO> allCardInfoList, TArray<FString> handCardUidList)
 {

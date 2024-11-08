@@ -38,6 +38,10 @@ public:
 
     void Discard();
 
+    void Highlight();
+
+    void DeHighlight();
+
     CardAnimationStatus cardAnimationStatus = CardAnimationStatus::Default;
     BattleCardStatus cardStatus = BattleCardStatus::Standby;
 
@@ -62,4 +66,8 @@ public:
 
     UPROPERTY(BlueprintReadWrite)
     float curMoveCardTime = 0.0;
+
+    int32 gridX;
+
+    int32 gridY;
 };

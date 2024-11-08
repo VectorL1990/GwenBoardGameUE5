@@ -28,4 +28,6 @@ public:
     float hoverAmplify = 1.1;
 
     virtual void ShowCardDetail(UCardWidget* cardWidget);
+
+    virtual void HideCardDetail(UCardWidget* cardWidget);
 };

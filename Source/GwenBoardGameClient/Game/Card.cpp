@@ -60,3 +60,13 @@ void ACard::MoveCard()
     //float test = ACoreCardGameModeBase::cardMoveTime;
 }
 
+void ACard::Highlight()
+{
+
+}
+
+void ACard::DeHighlight()
+{
+
+}
+

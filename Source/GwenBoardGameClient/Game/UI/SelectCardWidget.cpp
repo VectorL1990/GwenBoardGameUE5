@@ -6,6 +6,7 @@
 void USelectCardWidget::Init(UCardDetailWidget* inCardDetailWidget)
 {
 				cardDetailWidget = inCardDetailWidget;
+				cardDetailWidget->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void USelectCardWidget::ClickButton(FString buttonName)

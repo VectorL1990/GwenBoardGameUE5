@@ -94,6 +94,7 @@ public:
     UPROPERTY(EditDefaultsOnly)
     float hoverMoveCardInterpSpeed;
 
+    ACard* selectPlayCard;
 
     TMap<CameraType, ABattleCamera*> camerasMap;
 
@@ -133,7 +134,9 @@ public:
     //void LaunchSkill();
 
     UPROPERTY()
-    TArray<ACard*> testCards;
+    TArray<ACard*> battleCards;
+
+    ACard* curHighlightCard;
 
     TArray<FRotator> testCardRots;
     TArray<FVector> testCardLocations;
@@ -144,9 +147,13 @@ public:
 
     void SpawnTestCards();
 
-    void RearrangeCardLocations(int32 hoverCardNb);
+    void CalculateHoverCardLocations(int32 hoverCardNb);
 
-    void RecoverCardLocations();
+    void RecoverHoverCardLocations();
+
+    void SetSelectPlayCard(ACard* inSelectCard);
+
+    void RecoverSelectPlayCard();
 
     void CalculateCardSpread();
 
@@ -184,7 +191,6 @@ public:
 
     //void TriggerBattlePreparation();
 
-    void CalibrateGridInfos(TArray<FBATTLE_GRID_INFO> gridInfos);
 
     void CalibratePlayerCardInfos(TArray<FSYNC_CARD_INFO> allCardInfoList, TArray<FString> handCardUidList);
 

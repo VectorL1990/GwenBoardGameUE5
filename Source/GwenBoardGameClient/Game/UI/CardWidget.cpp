@@ -66,4 +66,6 @@ void UCardWidget::UnHover()
 				FWidgetTransform widgetTransform;
 				widgetTransform.Scale = FVector2D(1.0, 1.0);
 				SetRenderTransform(widgetTransform);
+
+				basicPlayerController->HideCardDetail(this);
 }
