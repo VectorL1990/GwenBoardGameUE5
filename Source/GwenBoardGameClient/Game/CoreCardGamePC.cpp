@@ -162,6 +162,11 @@ void ACoreCardGamePC::InitMenu()
     selectCardWidget = Cast<USelectCardWidget>(initSelectCardWidget);
 }
 
+void ACoreCardGamePC::RegisterSelectCardWidget(UCardWidget* cardWidget)
+{
+    selectCardWidget->RegisterSelectCard(cardWidget);
+}
+
 void ACoreCardGamePC::SwitchMenu(FString menuName)
 {
     if (curMenuName == "BattleMenu")
@@ -179,6 +184,7 @@ void ACoreCardGamePC::SwitchMenu(FString menuName)
     }
     else if (menuName == "SelectCardMenu")
     {
+        selectCardWidget->GenerateSelectCards();
         selectCardWidget->AddToViewport();
     }
 

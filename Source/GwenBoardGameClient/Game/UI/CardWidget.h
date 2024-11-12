@@ -36,8 +36,21 @@ public:
     UPROPERTY(EditDefaultsOnly)
     FVector2D detailPanelOffset = FVector2D(100.0, -170.0);
 
+    FString chDescription;
+
+    FString enDescription;
+
+    int32 hp;
+
+    int32 defence;
+
+    UTexture* texture;
+
     UFUNCTION(BlueprintCallable)
     void Init(UButton* inButton, UCanvasPanel* inCanvas);
+
+
+    void SetupCardInfo(const FCardInfo& cardInfo);
 
     UFUNCTION(BlueprintCallable)
     void ClickButton(FString buttonName);

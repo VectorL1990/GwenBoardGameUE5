@@ -7,6 +7,7 @@
 #include "CoreCardGameManager.h"
 #include "Card.h"
 #include "UI/BattleWidget.h"
+#include "UI/CardWidget.h"
 #include "UI/SelectCardWidget.h"
 #include "CoreCardGamePC.generated.h"
 
@@ -37,6 +38,8 @@ public:
     void GetCursorScreenPose();
 
     void InitMenu();
+
+    void RegisterSelectCardWidget(UCardWidget* cardWidget);
 
     void SwitchMenu(FString menuName);
 

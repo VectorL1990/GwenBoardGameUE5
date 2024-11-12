@@ -8,6 +8,8 @@
 void UGwenBoardGameInstance::Init()
 {
 				//ConnectServer("192.168.19.57", 5678, 1);
+				TriggerReadCardInfos();
+
 }
 
 void UGwenBoardGameInstance::Shutdown()
@@ -149,3 +151,77 @@ void UGwenBoardGameInstance::ExecuteOnMessageReceived(int32 connectionId, TWeakO
 
 				TArray<uint8> msg = workers[connectionId]->ReadFromInbox();
 }
+
+void UGwenBoardGameInstance::TriggerReadCardInfos_Implementation()
+{
+
+}
+
+void UGwenBoardGameInstance::SetCardInfo(FString cardName,
+				FString aliasCN,
+				FString aliasEN,
+				FString cardFunctionCN,
+				FString cardFunctionEN,
+				FString despCN,
+				FString despEN,
+				int32 hp,
+				int32 defence,
+				int32 agility,
+				TArray<FString> cardTags,
+				FString launchType,
+				int32 coolDown,
+				int32 availableTimes,
+				FString launchGeoType,
+				FString autoSkillTargetGeoType,
+				FString targetGeoType,
+				FString aoeType,
+				FString targetCamp,
+				FString effectType,
+				FString effectAffix,
+				FString effectAffixCamp,
+				FString prereqTagCondition,
+				FString prereqTag,
+				FString prereqCampType,
+				FString prereqType,
+				FString passivePrereqType,
+				TArray<int32> values,
+				UTexture* texture,
+				FString moveType,
+				FString cardCategory)
+{
+				FCardInfo cardInfo;
+				cardInfo.cardName = cardName;
+				cardInfo.aliasCN = aliasCN;
+				cardInfo.aliasEN = aliasEN;
+				cardInfo.cardFunctionCN = cardFunctionCN;
+				cardInfo.cardFunctionEN = cardFunctionEN;
+				cardInfo.despCN = despCN;
+				cardInfo.despEN = despEN;
+				cardInfo.hp = hp;
+				cardInfo.defence = defence;
+				cardInfo.agility = agility;
+				cardInfo.cardTags = cardTags;
+				cardInfo.launchType = launchType;
+				cardInfo.coolDown = coolDown;
+				cardInfo.availableTimes = availableTimes;
+				cardInfo.launchGeoType = launchGeoType;
+				cardInfo.autoSkillTargetGeoType = autoSkillTargetGeoType;
+				cardInfo.targetGeoType = targetGeoType;
+				cardInfo.aoeType = aoeType;
+				cardInfo.targetCamp = targetCamp;
+				cardInfo.effectType = effectType;
+				cardInfo.effectAffix = effectAffix;
+				cardInfo.effectAffixCamp = effectAffixCamp;
+				cardInfo.prereqTagCondition = prereqTagCondition;
+				cardInfo.prereqTag = prereqTag;
+				cardInfo.prereqCampType = prereqCampType;
+				cardInfo.prereqType = prereqType;
+				cardInfo.passivePrereqType = passivePrereqType;
+				cardInfo.values = values;
+				cardInfo.texture = texture;
+				cardInfo.moveType = moveType;
+				cardInfo.cardCategory = cardCategory;
+				allCardInfos.Add(cardName, cardInfo);
+}
+
+

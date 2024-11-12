@@ -5,6 +5,7 @@
 #include "CanvasPanelSlot.h"
 #include "Kismet/GameplayStatics.h"
 #include "../BasicPlayerController.h"
+#include "Game/CoreCardGamePC.h"
 #include "Kismet/KismetMaterialLibrary.h"
 
 
@@ -35,6 +36,21 @@ void UCardWidget::Init(UButton* inButton, UCanvasPanel* inCanvas)
 								cardButton->WidgetStyle.Pressed = pressBrush;
 				}
 				
+				if (battleCardWidgetType == BattleCardWidgetType::BattleSelectCard)
+				{
+								APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
+								ACoreCardGamePC* coreCardGamePC = Cast<ACoreCardGamePC>(playerController);
+								coreCardGamePC->RegisterSelectCardWidget(this);
+				}
+}
+
+void UCardWidget::SetupCardInfo(const FCardInfo& cardInfo)
+{
+				chDescription = cardInfo.despCN;
+				enDescription = cardInfo.despEN;
+				texture = cardInfo.texture;
+
+				//cardButton->
 }
 
 void UCardWidget::ClickButton(FString buttonName)

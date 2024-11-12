@@ -111,12 +111,7 @@ public:
     UFUNCTION(BlueprintNativeEvent)
     void TriggerReadCardInfo();
 
-    void RandSelectCards();
-
     void FinishCardSelection();
-
-    UPROPERTY(EditDefaultsOnly)
-    int32 startingSelectCardNb = 10;
 
     // --- Main game logic
     int32 curActionEffectRound = 0;

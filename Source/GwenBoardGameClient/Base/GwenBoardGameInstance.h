@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+#include "Game/GlobalConstFunctionLibrary.h"
 #include "GwenBoardGameInstance.generated.h"
 
 /**
@@ -40,6 +41,42 @@ class GWENBOARDGAMECLIENT_API UGwenBoardGameInstance : public UGameInstance
 
 				void ExecuteOnMessageReceived(int32 connectionId, TWeakObjectPtr<UGwenBoardGameInstance> thisObj);
 
+    UFUNCTION(BlueprintCallable)
+        void SetCardInfo(FString cardName,
+            FString aliasCN,
+            FString aliasEN,
+            FString cardFunctionCN,
+            FString cardFunctionEN,
+            FString despCN,
+            FString despEN,
+            int32 hp,
+            int32 defence,
+            int32 agility,
+            TArray<FString> cardTags,
+            FString launchType,
+            int32 coolDown,
+            int32 availableTimes,
+            FString launchGeoType,
+            FString autoSkillTargetGeoType,
+            FString targetGeoType,
+            FString aoeType,
+            FString targetCamp,
+            FString effectType,
+            FString effectAffix,
+            FString effectAffixCamp,
+            FString prereqTagCondition,
+            FString prereqTag,
+            FString prereqCampType,
+            FString prereqType,
+            FString passivePrereqType,
+            TArray<int32> values,
+            UTexture* texture,
+            FString moveType,
+            FString cardCategory);
+
+    UFUNCTION(BlueprintNativeEvent)
+    void TriggerReadCardInfos();
+
 				FRunnableThread* skynetRunnableThread;
 
 				TMap<int32, TSharedRef<class FSkynetRunnable>> workers;
@@ -52,7 +89,15 @@ class GWENBOARDGAMECLIENT_API UGwenBoardGameInstance : public UGameInstance
 				/* Time between ticks. Please account for the fact that it takes 1ms to wake up on a modern PC, so 0.01f would effectively be 0.011f */
 				float timeBetweenTicks = 0.008f;
 
+
+				UPROPERTY()
+				TMap<FString, FCardInfo> allCardInfos;
+
 				FString curRoomKey;
 
+    UPROPERTY(EditAnywhere)
 				TArray<FString> selectCardList;
+
+    UPROPERTY(EditAnywhere)
+    TArray<FString> sectionOneSelectCardList;
 };
