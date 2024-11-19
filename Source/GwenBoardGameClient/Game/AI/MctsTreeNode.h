@@ -15,7 +15,7 @@ class GWENBOARDGAMECLIENT_API UMctsTreeNode : public UObject
     GENERATED_BODY()
 public:
     
-    void Init(UMctsTreeNode* inParent, float inP, int32 inHirachy);
+    void Init(UMctsTreeNode* inParent, int32 inActionId, float inP, int32 inHirachy);
 
     float GetValue();
 
@@ -39,6 +39,8 @@ public:
 
     UPROPERTY()
     TMap<int32, UMctsTreeNode*> children;
+
+    int32 actionId = -1;
 
     int32 visit;
 

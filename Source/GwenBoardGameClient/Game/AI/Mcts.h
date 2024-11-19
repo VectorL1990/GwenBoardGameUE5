@@ -22,21 +22,9 @@ protected:
 	// Called when the game starts or when spawned
 				virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-				virtual void Tick(float DeltaTime) override;
-
-				void InitMcts(int32 simulationMoves);
-
-				void TriggerSimulation(ABattleBoard* board);
-
-				void RecordSimulationTree(int32 actionId, UMctsTreeNode* node);
-
-				void GetMoveProbs(ABattleBoard* board, TArray<int32>& outActs, TArray<float>& softmaxProbs);
-
-				void UpdateCurSearchNode(int32 targetMove);
-
-				void GetAction(ABattleBoard* board, int32& targetMove);
+public:
+				UPROPERTY(EditAnywhere)
+				bool isTraining = false;
 
 				UPROPERTY()
 				int32 expandSimulationMoves = 200;
@@ -46,4 +34,20 @@ public:
 
 				UPROPERTY()
 				UMctsTreeNode* curSearchNode;
+
+
+	// Called every frame
+				virtual void Tick(float DeltaTime) override;
+
+				void InitMcts(int32 simulationMoves);
+
+				void TriggerSimulation(int32 simulationNb, ABattleBoard* board);
+
+
+				void GetMoveProbs(ABattleBoard* board, TArray<int32>& outActs, TArray<float>& softmaxProbs);
+
+				void UpdateCurSearchNode(int32 targetMove);
+
+				void GetAction(ABattleBoard* board, int32& targetMove);
+
 };

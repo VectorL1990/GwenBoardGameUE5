@@ -3,3 +3,8 @@
 
 #include "Game/UI/MctReplayMenuWidget.h"
 
+void UMctReplayMenuWidget::RefreshSimulationButton(int32 simulationNb)
+{
+				UUserWidget*  CreateWidget(this, mctSimulationButtonBPClass);
+}
+

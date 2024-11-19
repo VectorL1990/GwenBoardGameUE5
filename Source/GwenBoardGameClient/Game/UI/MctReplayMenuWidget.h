@@ -14,6 +14,9 @@ class GWENBOARDGAMECLIENT_API UMctReplayMenuWidget : public UUserWidget
 {
 GENERATED_BODY()
 public:
-    
+    UPROPERTY(EditDefaultsOnly)
+    TSubclassOf<UUserWidget> mctSimulationButtonBPClass;
+
+    void RefreshSimulationButton(int32 simulationNb);
 	
 };

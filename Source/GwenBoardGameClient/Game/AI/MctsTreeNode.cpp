@@ -3,9 +3,10 @@
 
 #include "Game/AI/MctsTreeNode.h"
 
-void UMctsTreeNode::Init(UMctsTreeNode* inParent, float inP, int32 inHirachy)
+void UMctsTreeNode::Init(UMctsTreeNode* inParent, int32 inActionId, float inP, int32 inHirachy)
 {
 				parent = inParent;
+				actionId = inActionId;
 				visit = 0;
 				p = inP;
 				q = 0.0;
@@ -27,7 +28,7 @@ void UMctsTreeNode::Expand(int32 parentHirachy, TMap<int32, float> actionProbs)
 								if (!children.Contains(iter->Key))
 								{
 												UMctsTreeNode* child = NewObject<UMctsTreeNode>();
-												child->Init(this, iter->Value, hirachy + 1);
+												child->Init(this, iter->Key, iter->Value, hirachy + 1);
 												children.Add(iter->Key, child);
 								}
 				}

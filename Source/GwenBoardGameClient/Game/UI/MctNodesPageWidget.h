@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "ScrollBox.h"
+#include "MctNodeButton.h"
 #include "MctNodesPageWidget.generated.h"
 
 /**
@@ -18,6 +19,9 @@ public:
 
     UPROPERTY()
     UScrollBox* scrollBox;
+
+    UPROPERTY()
+    TMap<int32, UMctNodeButton*> mctNodeButtons;
 
     UFUNCTION(BlueprintCallable)
     void Init(UScrollBox* inScrollBox);

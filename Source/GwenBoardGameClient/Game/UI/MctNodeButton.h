@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "../AI/MctsTreeNode.h"
 #include "MctNodeButton.generated.h"
 
 /**
@@ -12,6 +13,11 @@
 UCLASS()
 class GWENBOARDGAMECLIENT_API UMctNodeButton : public UUserWidget
 {
-	GENERATED_BODY()
-	
+GENERATED_BODY()
+public:
+    UPROPERTY()
+    UMctsTreeNode* mctsTreeNode;
+
+    UFUNCTION(BlueprintCallable)
+    void Init(UMctsTreeNode* inMctsTreeNode);
 };

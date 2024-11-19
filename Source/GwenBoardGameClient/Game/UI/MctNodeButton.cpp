@@ -3,3 +3,8 @@
 
 #include "Game/UI/MctNodeButton.h"
 
+void UMctNodeButton::Init(UMctsTreeNode* inMctsTreeNode)
+{
+				mctsTreeNode = inMctsTreeNode;
+}
+

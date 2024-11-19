@@ -10,6 +10,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "CanvasPanelSlot.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
+#include "UI/MctNodeButton.h"
 #include "../Base/GwenBoardGameInstance.h"
 
 
@@ -222,5 +223,25 @@ void ACoreCardGamePC::ShowCardDetailInBattle(ACard* card)
 void ACoreCardGamePC::TestSaveString(FString testString)
 {
     UCoreGameBlueprintFunctionLibrary::WriteStringToFile("test.json", "", testString);
+}
+
+void ACoreCardGamePC::RefreshMctReplayMenu(int32 simulationNb)
+{
+    
+    
+}
+
+void ACoreCardGamePC::ConstructMctNodesTreeWidget(UMctsTreeNode* mctsNode)
+{
+    UUserWidget* newButton = CreateWidget(this, mctNodeButtonBPClass);
+    UMctNodeButton* mctNodeButton = Cast<UMctNodeButton>(newButton);
+    mctNodeButton->Init(mctsNode);
+
+    //if ()
+}
+
+void ACoreCardGamePC::RefreshMctSimulationNbPage(int simulationNb)
+{
+    
 }
 

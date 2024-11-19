@@ -2,6 +2,8 @@
 
 
 #include "Game/AI/Mcts.h"
+#include "Kismet/GameplayStatics.h"
+#include "../CoreCardGamePC.h"
 #include "../CoreGameBlueprintFunctionLibrary.h"
 
 // Sets default values
@@ -29,35 +31,14 @@ void AMcts::Tick(float DeltaTime)
 void AMcts::InitMcts(int32 simulationMoves)
 {
 				expandSimulationMoves = simulationMoves;
+
+				treeRoot = NewObject<UMctsTreeNode>();
 }
 
-void AMcts::RecordSimulationTree(int32 actionId, UMctsTreeNode* node)
-{
-				int32 launchX, launchY, targetX, targetY;
-				ActionType actionType;
-				UCoreGameBlueprintFunctionLibrary::GetActionDetailFromId(actionId, launchX, launchY, targetX, targetY, actionType);
-				if (node->children.Num() > 0)
-				{
-								for (TMap<int32, UMctsTreeNode*>::TConstIterator iter = node->children.CreateConstIterator(); iter; ++iter)
-								{
-												RecordSimulationTree(iter->Key, iter->Value);
-								}
-				}
-}
 
-void AMcts::TriggerSimulation(ABattleBoard* board)
+void AMcts::TriggerSimulation(int32 simulationNb, ABattleBoard* board)
 {
 				UMctsTreeNode* curNode = treeRoot;
-
-				// Record all nodes
-				for (TMap<int32, UMctsTreeNode*>::TConstIterator iter = curNode->children.CreateConstIterator(); iter; ++iter)
-				{
-								int32 actionId = iter->Key;
-								int32 launchX, launchY, targetX, targetY;
-								ActionType actionType;
-								UCoreGameBlueprintFunctionLibrary::GetActionDetailFromId(actionId, launchX, launchY, targetX, targetY, actionType);
-								// construct visulization tree
-				}
 
 
 
@@ -99,6 +80,10 @@ void AMcts::TriggerSimulation(ABattleBoard* board)
 				}
 
 				curNode->UpdateEvaluateQValue(simulationStateValue);
+
+				APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
+				ACoreCardGamePC* coreCardGamePC = Cast<ACoreCardGamePC>(playerController);
+				coreCardGamePC->RefreshMctReplayMenu(simulationNb);
 }
 
 void AMcts::GetMoveProbs(ABattleBoard* board, TArray<int32>& outActs, TArray<float>& softmaxProbs)
@@ -106,7 +91,7 @@ void AMcts::GetMoveProbs(ABattleBoard* board, TArray<int32>& outActs, TArray<flo
 				
 				for (int32 i = 0; i < expandSimulationMoves; i++)
 				{
-								TriggerSimulation(board);
+								TriggerSimulation(i, board);
 				}
 
 				TArray<float> logVisits;
@@ -139,6 +124,16 @@ void AMcts::GetAction(ABattleBoard* board, int32& targetMove)
 				TArray<float> softmaxProbs;
 				GetMoveProbs(board, moves, softmaxProbs);
 				targetMove = UCoreGameBlueprintFunctionLibrary::GetDirichletAction(moves, softmaxProbs);
-				UpdateCurSearchNode(targetMove);
+
+				if (isTraining)
+				{
+								UpdateCurSearchNode(targetMove);
+				}
+				else
+				{
+								// reset search tree in real battle case
+								UpdateCurSearchNode(-1);
+				}
 }
+
 
