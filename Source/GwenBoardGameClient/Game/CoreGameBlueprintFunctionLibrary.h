@@ -131,6 +131,8 @@ public:
 
     static int32 GetActionId(int32 launchX, int32 launchY, int32 targetX, int32 targetY, ActionType actionType);
 
+    static void GetActionDetailFromId(int32 actionId, int32& launchX, int32& launchY, int32& targetX, int32& targetY, ActionType& actionType);
+
     static TArray<FGridXY> GetAoeTargetGrids(
             TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
             TMap<int32, FBoardRow>& boardCardInfo, 
@@ -174,4 +176,10 @@ public:
         int32 launchY,
         int32 targetX,
         int32 targetY);
+
+    static void ConvertStateToJson(const TArray<FString>& stateArray,
+        const int32 col,
+        const int32 row);
+
+    static bool WriteStringToFile(const FString& fileName, const FString& relativePath, const FString& writeString);
 };

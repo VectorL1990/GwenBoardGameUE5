@@ -15,12 +15,12 @@ class GWENBOARDGAMECLIENT_API UMctsTreeNode : public UObject
     GENERATED_BODY()
 public:
     
-    void Init(UMctsTreeNode* inParent, float inP);
+    void Init(UMctsTreeNode* inParent, float inP, int32 inHirachy);
 
     float GetValue();
 
     // Expand executes after selecting max U + Q leaf node
-    void Expand(TMap<int32, float> actionProbs);
+    void Expand(int32 parentHirachy, TMap<int32, float> actionProbs);
 
     void Select(int32& outAction, UMctsTreeNode* outNode);
 
@@ -51,4 +51,12 @@ public:
     float u;
 
     static float cPuct;
+
+    int32 hirachy;
+
+    int32 step;
+
+    int32 simulationNb;
+
+    TArray<FString> stateStrings;
 };

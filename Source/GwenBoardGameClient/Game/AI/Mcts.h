@@ -30,6 +30,8 @@ public:
 
 				void TriggerSimulation(ABattleBoard* board);
 
+				void RecordSimulationTree(int32 actionId, UMctsTreeNode* node);
+
 				void GetMoveProbs(ABattleBoard* board, TArray<int32>& outActs, TArray<float>& softmaxProbs);
 
 				void UpdateCurSearchNode(int32 targetMove);

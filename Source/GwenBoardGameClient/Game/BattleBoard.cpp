@@ -458,6 +458,12 @@ uint8* ABattleBoard::StateCoding(FBoardInfo& targetBoard)
 				return skillLaunchTypeCoding;
 }
 
+TArray<FString> ABattleBoard::StateStringCoding(FBoardInfo& targetBoard)
+{
+				TArray<FString> boardState;
+				return boardState;
+}
+
 
 void ABattleBoard::ActionDecoding(int32 actionId, int32& launchX, int32& launchY, int32& targetX, int32& targetY, ActionType& actionType)
 {

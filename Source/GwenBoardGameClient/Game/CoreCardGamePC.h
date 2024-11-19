@@ -49,6 +49,9 @@ public:
 
     void ShowCardDetailInBattle(ACard* card);
 
+    UFUNCTION(BlueprintCallable)
+    void TestSaveString(FString testString);
+
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
     ACoreCardGameManager* coreCardGameManager;
 

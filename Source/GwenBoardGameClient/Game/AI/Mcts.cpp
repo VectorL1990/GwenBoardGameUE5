@@ -31,11 +31,36 @@ void AMcts::InitMcts(int32 simulationMoves)
 				expandSimulationMoves = simulationMoves;
 }
 
+void AMcts::RecordSimulationTree(int32 actionId, UMctsTreeNode* node)
+{
+				int32 launchX, launchY, targetX, targetY;
+				ActionType actionType;
+				UCoreGameBlueprintFunctionLibrary::GetActionDetailFromId(actionId, launchX, launchY, targetX, targetY, actionType);
+				if (node->children.Num() > 0)
+				{
+								for (TMap<int32, UMctsTreeNode*>::TConstIterator iter = node->children.CreateConstIterator(); iter; ++iter)
+								{
+												RecordSimulationTree(iter->Key, iter->Value);
+								}
+				}
+}
+
 void AMcts::TriggerSimulation(ABattleBoard* board)
 {
-				uint8* boardCoding = board->StateCoding(board->simulationBoard);
-				board->GetLatestSimulationBoard();
 				UMctsTreeNode* curNode = treeRoot;
+
+				// Record all nodes
+				for (TMap<int32, UMctsTreeNode*>::TConstIterator iter = curNode->children.CreateConstIterator(); iter; ++iter)
+				{
+								int32 actionId = iter->Key;
+								int32 launchX, launchY, targetX, targetY;
+								ActionType actionType;
+								UCoreGameBlueprintFunctionLibrary::GetActionDetailFromId(actionId, launchX, launchY, targetX, targetY, actionType);
+								// construct visulization tree
+				}
+
+
+
 				while (true)
 				{
 								if (curNode->IsLeaf())
@@ -49,7 +74,12 @@ void AMcts::TriggerSimulation(ABattleBoard* board)
 								// we should do move here! So that we can predict next action probs
 								TArray<FRenderEffectRound> renderEffectRoundList;
 								board->TriggerAction(action, true, renderEffectRoundList);
+
+								curNode->stateStrings = board->StateStringCoding(board->simulationBoard);
 				}
+
+				uint8* boardCoding = board->StateCoding(board->simulationBoard);
+				board->GetLatestSimulationBoard();
 
 				TMap<int32, float> predictActionProbs;
 				float simulationStateValue;
@@ -61,7 +91,7 @@ void AMcts::TriggerSimulation(ABattleBoard* board)
 				// expand the tree and update P, U for each node
 				if (!isGameEnd)
 				{
-								curNode->Expand(predictActionProbs);
+								curNode->Expand(curNode->hirachy, predictActionProbs);
 				}
 				else
 				{

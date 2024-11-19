@@ -76,6 +76,8 @@ public:
 
 				uint8* StateCoding(FBoardInfo& targetBoard);
 
+				TArray<FString> StateStringCoding(FBoardInfo& targetBoard);
+
 				void ActionDecoding(int32 actionId, int32& launchX, int32& launchY, int32& targetX, int32& targetY, ActionType& actionType);
 
 				uint8* GetSkillLaunchTypeCoding(FString launchType);

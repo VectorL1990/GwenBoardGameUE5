@@ -95,6 +95,11 @@ int32 UCoreGameBlueprintFunctionLibrary::GetActionId(int32 launchX, int32 launch
     return actionId;
 }
 
+void UCoreGameBlueprintFunctionLibrary::GetActionDetailFromId(int32 actionId, int32& launchX, int32& launchY, int32& targetX, int32& targetY, ActionType& actionType)
+{
+
+}
+
 TArray<FGridXY> UCoreGameBlueprintFunctionLibrary::GetAoeTargetGrids(
     TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
     TMap<int32, FBoardRow>& boardCardInfo,
@@ -602,5 +607,37 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::ReplaceDefence(
         effectResultDict.modifyGrids.Add(targetGrids[i]);
     }
     return effectResultDict;
+}
+
+void UCoreGameBlueprintFunctionLibrary::ConvertStateToJson(
+    const TArray<FString>& stateArray,
+    const int32 col,
+    const int32 row)
+{
+    TSharedRef<FJsonObject> jsonObj = MakeShareable(new FJsonObject);
+
+    TArray<TSharedPtr<FJsonValue>> stateJsonStrings;
+    for (int32 i = 0; i < stateArray.Num(); i++)
+    {
+        stateJsonStrings.Add(MakeShareable(new FJsonValueString(stateArray[i])));
+    }
+
+    jsonObj->SetArrayField("state", stateJsonStrings);
+    jsonObj->SetNumberField("col", col);
+    jsonObj->SetNumberField("row", row);
+}
+
+bool UCoreGameBlueprintFunctionLibrary::WriteStringToFile(const FString& fileName, const FString& relativePath, const FString& writeString)
+{
+    FString absolutePath = FPaths::ProjectContentDir() + relativePath + fileName;
+
+    if (FFileHelper::SaveStringToFile(writeString, *absolutePath, FFileHelper::EEncodingOptions::ForceUTF8, &IFileManager::Get(), EFileWrite::FILEWRITE_Append))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 

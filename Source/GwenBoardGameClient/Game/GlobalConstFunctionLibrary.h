@@ -379,6 +379,7 @@ public:
     FString effectDemoType;
 };
 
+
 /**
  * 
  */

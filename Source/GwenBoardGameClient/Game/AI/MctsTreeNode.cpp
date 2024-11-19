@@ -3,13 +3,14 @@
 
 #include "Game/AI/MctsTreeNode.h"
 
-void UMctsTreeNode::Init(UMctsTreeNode* inParent, float inP)
+void UMctsTreeNode::Init(UMctsTreeNode* inParent, float inP, int32 inHirachy)
 {
 				parent = inParent;
 				visit = 0;
 				p = inP;
 				q = 0.0;
 				u = 0.0;
+				hirachy = inHirachy;
 }
 
 float UMctsTreeNode::GetValue()
@@ -19,14 +20,14 @@ float UMctsTreeNode::GetValue()
 				return 0;
 }
 
-void UMctsTreeNode::Expand(TMap<int32, float> actionProbs)
+void UMctsTreeNode::Expand(int32 parentHirachy, TMap<int32, float> actionProbs)
 {
 				for (TMap<int32, float>::TConstIterator iter = actionProbs.CreateConstIterator(); iter; ++iter)
 				{
 								if (!children.Contains(iter->Key))
 								{
 												UMctsTreeNode* child = NewObject<UMctsTreeNode>();
-												child->Init(this, iter->Value);
+												child->Init(this, iter->Value, hirachy + 1);
 												children.Add(iter->Key, child);
 								}
 				}

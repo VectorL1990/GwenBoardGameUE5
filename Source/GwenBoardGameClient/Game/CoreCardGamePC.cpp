@@ -219,3 +219,8 @@ void ACoreCardGamePC::ShowCardDetailInBattle(ACard* card)
 
 }
 
+void ACoreCardGamePC::TestSaveString(FString testString)
+{
+    UCoreGameBlueprintFunctionLibrary::WriteStringToFile("test.json", "", testString);
+}
+
