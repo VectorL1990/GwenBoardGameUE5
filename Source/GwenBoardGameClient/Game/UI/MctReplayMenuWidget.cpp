@@ -5,6 +5,6 @@
 
 void UMctReplayMenuWidget::RefreshSimulationButton(int32 simulationNb)
 {
-				UUserWidget*  CreateWidget(this, mctSimulationButtonBPClass);
+				UUserWidget* newSimulateButton = CreateWidget(this, mctSimulationButtonBPClass);
 }
 
