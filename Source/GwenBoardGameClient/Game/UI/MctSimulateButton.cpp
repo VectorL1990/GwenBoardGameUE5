@@ -3,3 +3,12 @@
 
 #include "Game/UI/MctSimulateButton.h"
 
+void UMctSimulateButton::RecordMctsTreeNodeInfo(UMctsTreeNode* mctsTreeNode)
+{
+				rootTreeNode = mctsTreeNode;
+}
+
+void UMctSimulateButton::ClickButton()
+{
+
+}

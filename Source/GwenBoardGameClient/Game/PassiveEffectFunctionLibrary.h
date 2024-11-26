@@ -17,7 +17,7 @@ class GWENBOARDGAMECLIENT_API UPassiveEffectFunctionLibrary : public UBlueprintF
 public:
     static FEffectResultDict GetPassiveEffect(
         TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
-        TMap<int32, FBoardRow>& boardCardInfo,
+        TArray<FBoardRow>& boardCardInfo,
         FEffectInfo& effectInfo,
         int32 launchX,
         int32 launchY,

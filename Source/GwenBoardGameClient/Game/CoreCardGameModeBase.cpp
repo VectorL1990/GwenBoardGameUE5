@@ -78,9 +78,16 @@ void ACoreCardGameModeBase::SimulateTrainAction(float dT)
 				{
 								// get train simulation action and launch
 								int32 actionId = -1;
-								mctsPlayer->mcts->GetAction(battleBoard, actionId);
+								if (curSectionNb == 0)
+								{
+												sectionZeroMctsPlayer->mcts->GetAction(sectionZeroMctsPlayer->sectionNb, battleBoard, actionId);
+								}
+								else
+								{
+												sectionOneMctsPlayer->mcts->GetAction(sectionOneMctsPlayer->sectionNb, battleBoard, actionId);
+								}
 
-								curActionType = battleBoard->TriggerAction(actionId, true, curActionRenderEffectRoundList);
+								//curActionType = battleBoard->TriggerAction(actionId, true, curActionRenderEffectRoundList);
 								singleBattleState = SingleBattleState::ActionInterlude;
 
 								aiTrainPlayerActionCount = 0.0;
@@ -93,7 +100,29 @@ void ACoreCardGameModeBase::SimulateTrainAction(float dT)
 
 void ACoreCardGameModeBase::TrainPlayGameLoop(float dT)
 {
-				if (singleBattleState == SingleBattleState::Default)
+				if (singleBattleState == SingleBattleState::Battle)
+				{
+								if (curCountingTick >= battleStateTicksMap["MaxLaunchActionTimeInterval"])
+								{
+												singleBattleState = SingleBattleState::BattleInterlude;
+												curCountingTick = 0.0;
+								}
+								else
+								{
+												// keep trying to trigger train action
+												SimulateTrainAction(dT);
+												if (curSectionNb == 0)
+												{
+																curSectionNb = 1;
+												}
+												else
+												{
+																curSectionNb = 0;
+												}
+												curCountingTick += dT;
+								}
+				}
+				else if (singleBattleState == SingleBattleState::Default)
 				{
 								if (curCountingTick >= battleStateTicksMap["BeforeSelectCard"])
 								{
@@ -167,20 +196,6 @@ void ACoreCardGameModeBase::TrainPlayGameLoop(float dT)
 												curCountingTick += dT;
 								}
 				}
-				else if (singleBattleState == SingleBattleState::Battle)
-				{
-								if (curCountingTick >= battleStateTicksMap["MaxLaunchActionTimeInterval"])
-								{
-												singleBattleState = SingleBattleState::BattleInterlude;
-												curCountingTick = 0.0;
-								}
-								else
-								{
-												// keep trying to trigger train action
-												SimulateTrainAction(dT);
-												curCountingTick += dT;
-								}
-				}
 				else if (singleBattleState == SingleBattleState::ActionInterlude)
 				{
 								float actionInterlude = 0.0;
@@ -247,55 +262,6 @@ void ACoreCardGameModeBase::TriggerReadCardInfo_Implementation()
 
 
 
-void ACoreCardGameModeBase::SinglePlayerGameLoop(float dT)
-{
-				if (singleBattleState == SingleBattleState::Default)
-				{
-								return;
-				}
-				else if (singleBattleState == SingleBattleState::SelectCard)
-				{
-								if (curCountingTick >= battleStateTicksMap["MaxSelectCardInterval"])
-								{
-												// switch to select card interlude
-												singleBattleState = SingleBattleState::AfterSelectCardInterlude;
-												curCountingTick = 0.0;
-								}
-								else
-								{
-												curCountingTick += dT;
-								}
-				}
-				else if (singleBattleState == SingleBattleState::AfterSelectCardInterlude)
-				{
-								if (curCountingTick >= battleStateTicksMap["MaxAfterSelectCardInterludeInterval"])
-								{
-												singleBattleState = SingleBattleState::Battle;
-												curCountingTick = 0.0;
-								}
-								else
-								{
-												curCountingTick += dT;
-								}
-				}
-				else if (singleBattleState == SingleBattleState::Battle)
-				{
-								if (curCountingTick >= battleStateTicksMap["MaxLaunchActionTimeInterval"])
-								{
-												singleBattleState = SingleBattleState::BattleInterlude;
-												curCountingTick = 0.0;
-								}
-								else
-								{
-												if (!isHumanTurn)
-												{
-																// Get action from neural network
-
-												}
-												curCountingTick += dT;
-								}
-				}
-}
 
 void ACoreCardGameModeBase::GetLegalLaunchSkillAction(TMap<int32, FBoardRow>& boardCardInfo, TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY)
 {
@@ -318,31 +284,6 @@ void ACoreCardGameModeBase::GetLegalLaunchSkillAction(TMap<int32, FBoardRow>& bo
 				}*/
 }
 
-void ACoreCardGameModeBase::ReqPlayCard(bool simulationFlag, int32 launchX, int32 launchY, int32 targetX, int32 targetY)
-{
-				if (simulationFlag)
-				{
-								int32 playCardUid = battleBoard->simulationBoard.playSectionRows[launchY].colCardInfos[launchX];
-								FInstanceCardInfo playCardInfo = battleBoard->simulationBoard.allInstanceCardInfo[playCardUid];
-								// launch auto skill attached to card
-								if (playCardInfo.originCardInfo.launchType == "auto")
-								{
-												
-								}
-				}
-				else
-				{
-								int32 playCardUid = battleBoard->realBoard.playSectionRows[launchY].colCardInfos[launchX];
-								FInstanceCardInfo playCardInfo = battleBoard->realBoard.allInstanceCardInfo[playCardUid];
-								// launch auto skill attached to card
-								if (playCardInfo.originCardInfo.launchType == "auto")
-								{
-
-								}
-				}
-
-				
-}
 
 void ACoreCardGameModeBase::ReqLaunchCardSkill(bool simulationFlag, int32 launchX, int32 launchY, int32 targetX, int32 targetY)
 {
@@ -567,6 +508,30 @@ void ACoreCardGameModeBase::InitPreBattle()
 				APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
 				ACoreCardGamePC* coreCardGamePC = Cast<ACoreCardGamePC>(playerController);
 				coreCardGamePC->InitSelectCardCamera();
+
+				if (isTrain)
+				{
+								sectionZeroMctsPlayer = GetWorld()->SpawnActor<AMctsPlayer>(mctsPlayerBPClass,
+												FVector::Zero(), FRotator::ZeroRotator);
+
+								sectionZeroMctsPlayer->InitMctsPlayer(0);
+
+								sectionOneMctsPlayer = GetWorld()->SpawnActor<AMctsPlayer>(mctsPlayerBPClass,
+												FVector::Zero(), FRotator::ZeroRotator);
+
+								sectionOneMctsPlayer->InitMctsPlayer(1);
+				}
+				else
+				{
+								sectionOneMctsPlayer = GetWorld()->SpawnActor<AMctsPlayer>(mctsPlayerBPClass,
+												FVector::Zero(), FRotator::ZeroRotator);
+
+								sectionOneMctsPlayer->InitMctsPlayer(1);
+				}
+
+				battleBoard = GetWorld()->SpawnActor<ABattleBoard>(battleBoardBPClass,
+								FVector::Zero(), FRotator::ZeroRotator);
+				battleBoard->InitBattleBoard();
 }
 
 

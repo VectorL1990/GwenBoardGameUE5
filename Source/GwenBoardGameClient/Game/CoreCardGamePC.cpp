@@ -161,6 +161,9 @@ void ACoreCardGamePC::InitMenu()
 
     UUserWidget* initSelectCardWidget = CreateWidget(this, selectCardWidgetBPClass);
     selectCardWidget = Cast<USelectCardWidget>(initSelectCardWidget);
+
+    UUserWidget* initReplayMenu = CreateWidget(this, replayMenuBPClass);
+    mctReplayMenu = Cast<UMctReplayMenuWidget>(initReplayMenu);
 }
 
 void ACoreCardGamePC::RegisterSelectCardWidget(UCardWidget* cardWidget)
@@ -225,9 +228,9 @@ void ACoreCardGamePC::TestSaveString(FString testString)
     UCoreGameBlueprintFunctionLibrary::WriteStringToFile("test.json", "", testString);
 }
 
-void ACoreCardGamePC::RefreshMctReplayMenu(int32 simulationNb)
+void ACoreCardGamePC::RefreshMctReplayMenu(UMctsTreeNode* rootNode, int32 simulationNb)
 {
-    
+    mctReplayMenu->RefreshSimulationButton(rootNode, simulationNb);
     
 }
 
@@ -244,4 +247,5 @@ void ACoreCardGamePC::RefreshMctSimulationNbPage(int simulationNb)
 {
     
 }
+
 

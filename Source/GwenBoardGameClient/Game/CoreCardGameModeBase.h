@@ -11,6 +11,7 @@
 #include "BoardGrid.h"
 #include "BattleCamera.h"
 #include "AI/MctsPlayer.h"
+#include "ReplayBoard.h"
 #include "CoreCardGameModeBase.generated.h"
 
 /**
@@ -120,7 +121,6 @@ public:
 
     ActionType curActionType;
 
-    void ReqPlayCard(bool simulationFlag, int32 launchX, int32 launchY, int32 targetX, int32 targetY);
 
     void ReqLaunchCardSkill(bool simulationFlag, int32 launchX, int32 launchY, int32 targetX, int32 targetY);
 
@@ -162,7 +162,17 @@ public:
 
     void TrainPlayGameLoop(float dT);
 
-    AMctsPlayer* mctsPlayer;
+    AReplayBoard* replayBoard;
+
+    UPROPERTY(EditDefaultsOnly)
+    TSubclassOf<AMctsPlayer> mctsPlayerBPClass;
+
+    UPROPERTY(EditDefaultsOnly)
+    TSubclassOf<ABattleBoard> battleBoardBPClass;
+
+    AMctsPlayer* sectionZeroMctsPlayer;
+
+    AMctsPlayer* sectionOneMctsPlayer;
 
     UPROPERTY(EditDefaultsOnly)
     float aiTrainPlayerActionInterval;
@@ -170,8 +180,9 @@ public:
     float aiTrainPlayerActionCount = 0.0;
 
     // --- Single game logic
+    bool isTrain = true;
 
-    void SinglePlayerGameLoop(float dT);
+    uint8 curSectionNb = 0;
 
     void GetLegalLaunchSkillAction(TMap<int32, FBoardRow>& boardCardInfo, TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY);
 
@@ -249,8 +260,6 @@ public:
     virtual void SpawnSelectCard() override;
 
     bool isSinglePlay = true;
-
-    bool isHumanTurn = true;
 
     bool hasReqEnterRoom = false;
 

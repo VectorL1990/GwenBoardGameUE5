@@ -28,20 +28,26 @@ public:
 				// Called every frame
 				virtual void Tick(float DeltaTime) override;
 
+				void InitBattleBoard();
+
 				bool CheckGameEnd();
 
 				void GetLatestSimulationBoard();
 
-				void GetLegalMoves(FBoardInfo& targetBoard, TArray<int32>& legalMoves);
+				void GetLegalMoves(uint8 sectionNb, FBoardInfo& targetBoard, TArray<int32>& legalMoves);
 
-				void GetLegalActionProbsBoardValue(uint8* boardState, TMap<int32, float>& legalActionProbs, float& boardValue);
+				void GetLegalActionProbsBoardValue(uint8 sectionNb, uint8* boardState, TMap<int32, float>& legalActionProbs, float& boardValue);
 
-				ActionType TriggerAction(int32 actionId, bool simulateFlag, TArray<FRenderEffectRound>& renderEffectRoundList);
+				ActionType TriggerAction(
+								uint8 sectionNb, 
+								int32 actionId, 
+								bool simulateFlag, 
+								TArray<FRenderEffectRound>& renderEffectRoundList);
 
 				void TriggerPlayCard(
 								FBoardInfo& targetBoard,
-								int32 playSectionX,
-								int32 playSectionY,
+								int32 launchX,
+								int32 launchY,
 								int32 targetX,
 								int32 targetY,
 								TArray<FRenderEffectRound>& renderEffectRoundList);
@@ -77,6 +83,8 @@ public:
 				uint8* StateCoding(FBoardInfo& targetBoard);
 
 				TArray<FString> StateStringCoding(FBoardInfo& targetBoard);
+
+				int32 ActionCoding(int32 launchX, int32 launchY, int32 targetX, int32 targetY, ActionType actionType);
 
 				void ActionDecoding(int32 actionId, int32& launchX, int32& launchY, int32& targetX, int32& targetY, ActionType& actionType);
 

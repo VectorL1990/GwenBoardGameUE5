@@ -41,13 +41,13 @@ public:
 
 				void InitMcts(int32 simulationMoves);
 
-				void TriggerSimulation(int32 simulationNb, ABattleBoard* board);
+				void TriggerSimulation(uint8 sectionNb, int32 simulationNb, ABattleBoard* board);
 
 
-				void GetMoveProbs(ABattleBoard* board, TArray<int32>& outActs, TArray<float>& softmaxProbs);
+				void GetMoveProbs(uint8 sectionNb, ABattleBoard* board, TArray<int32>& outActs, TArray<float>& softmaxProbs);
 
 				void UpdateCurSearchNode(int32 targetMove);
 
-				void GetAction(ABattleBoard* board, int32& targetMove);
+				void GetAction(uint8 sectionNb, ABattleBoard* board, int32& targetMove);
 
 };

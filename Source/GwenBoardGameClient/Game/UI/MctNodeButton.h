@@ -18,6 +18,12 @@ public:
     UPROPERTY()
     UMctsTreeNode* mctsTreeNode;
 
+    UPROPERTY(EditDefaultsOnly)
+    TSubclassOf<UMctNodeButton> mctNodeButtonBPClass;
+
     UFUNCTION(BlueprintCallable)
     void Init(UMctsTreeNode* inMctsTreeNode);
+
+    UFUNCTION(BlueprintCallable)
+    void ClickButton();
 };

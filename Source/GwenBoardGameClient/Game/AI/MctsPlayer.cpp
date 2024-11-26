@@ -25,3 +25,9 @@ void AMctsPlayer::Tick(float DeltaTime)
 
 }
 
+void AMctsPlayer::InitMctsPlayer(uint8 inSectionNb)
+{
+				sectionNb = inSectionNb;
+				mcts = GetWorld()->SpawnActor<AMcts>(AMcts::StaticClass(), GetActorLocation(), FRotator::ZeroRotator);
+}
+

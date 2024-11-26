@@ -9,7 +9,10 @@
 #include "UI/BattleWidget.h"
 #include "UI/CardWidget.h"
 #include "UI/SelectCardWidget.h"
+#include "UI/MctReplayMenuWidget.h"
 #include "UI/MctNodesPageWidget.h"
+#include "UI/MctNodeButton.h"
+#include "AI/MctsTreeNode.h"
 #include "CoreCardGamePC.generated.h"
 
 /**
@@ -53,11 +56,12 @@ public:
     UFUNCTION(BlueprintCallable)
     void TestSaveString(FString testString);
 
-    void RefreshMctReplayMenu(int32 simulationNb);
+    void RefreshMctReplayMenu(UMctsTreeNode* rootNode, int32 simulationNb);
 
     void ConstructMctNodesTreeWidget(UMctsTreeNode* mctsNode);
 
     void RefreshMctSimulationNbPage(int simulationNb);
+
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
     ACoreCardGameManager* coreCardGameManager;
@@ -66,6 +70,8 @@ public:
     TSubclassOf<UUserWidget> battleWidgetBPClass;
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<UUserWidget> selectCardWidgetBPClass;
+    UPROPERTY(EditDefaultsOnly)
+    TSubclassOf<UUserWidget> replayMenuBPClass;
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<UUserWidget> mctNodeButtonBPClass;
     
@@ -76,6 +82,8 @@ public:
     UBattleWidget* battleWidget;
     UPROPERTY()
     USelectCardWidget* selectCardWidget;
+    UPROPERTY()
+    UMctReplayMenuWidget* mctReplayMenu;
     UPROPERTY()
     UMctNodesPageWidget* mctNodesPage;
     

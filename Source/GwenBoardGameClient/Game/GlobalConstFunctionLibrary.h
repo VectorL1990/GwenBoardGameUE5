@@ -215,7 +215,7 @@ struct FBoardRow
     GENERATED_USTRUCT_BODY()
 public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        TMap<int32, int32> colCardInfos;
+        TArray<int32> colCardInfos;
 };
 
 USTRUCT(BlueprintType, Blueprintable)
@@ -343,13 +343,7 @@ struct FBoardInfo
     GENERATED_USTRUCT_BODY()
 public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TMap<int32, FBoardRow> boardRows;
-
-    UPROPERTY()
-    TMap<int32, FBoardRow> playSectionRows;
-
-    UPROPERTY()
-    TMap<int32, FBoardRow> graveSectionRows;
+    TArray<FBoardRow> boardRows;
 
     UPROPERTY()
     TMap<int32, FInstanceCardInfo> allInstanceCardInfo;
@@ -390,7 +384,7 @@ class GWENBOARDGAMECLIENT_API UGlobalConstFunctionLibrary : public UBlueprintFun
 public:
 
     static const int32 maxCol = 8;
-    static const int32 maxRow = 8;
+    static const int32 boardSectionRow = 8;
     static const int32 playCardSectionRow = 2;
     static const int32 graveCardSectionRow = 3;
     static const int32 boardStateLen = 1000;

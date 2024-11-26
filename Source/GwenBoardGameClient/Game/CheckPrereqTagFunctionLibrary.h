@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "GlobalConstFunctionLibrary.h"
 #include "CheckPrereqTagFunctionLibrary.generated.h"
 
 /**
@@ -14,5 +15,5 @@ class GWENBOARDGAMECLIENT_API UCheckPrereqTagFunctionLibrary : public UBlueprint
 {
     GENERATED_BODY()
 public:
-    static bool CheckPrereqTagRule(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY);
+    static bool CheckPrereqTagRule(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TArray<FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY);
 };

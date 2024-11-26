@@ -4,29 +4,25 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Mcts.h"
-#include "MctsPlayer.generated.h"
+#include "ReplayCard.generated.h"
 
 UCLASS()
-class GWENBOARDGAMECLIENT_API AMctsPlayer : public AActor
+class GWENBOARDGAMECLIENT_API AReplayCard : public AActor
 {
 				GENERATED_BODY()
 	
 public:	
 				// Sets default values for this actor's properties
-				AMctsPlayer();
+				AReplayCard();
 
 protected:
 				// Called when the game starts or when spawned
 				virtual void BeginPlay() override;
 
 public:	
+
+
 				// Called every frame
 				virtual void Tick(float DeltaTime) override;
 
-				void InitMctsPlayer(uint8 inSectionNb);
-
-				AMcts* mcts;
-
-				uint8 sectionNb;
 };

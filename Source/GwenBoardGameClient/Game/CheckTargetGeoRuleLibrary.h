@@ -15,7 +15,7 @@ class GWENBOARDGAMECLIENT_API UCheckTargetGeoRuleLibrary : public UBlueprintFunc
 {
 				GENERATED_BODY()
 public:
-				static TArray<FGridXY> GetPossibleMoveGrids(FString rule, TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, int32 launchX, int32 launchY, int32 distance);
+				static TArray<FGridXY> GetPossibleMoveGrids(FString rule, TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TArray<FBoardRow>& boardCardInfo, int32 launchX, int32 launchY, int32 distance);
 
 				static TArray<FGridXY> GetPossibleMoveLine(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, int32 launchX, int32 launchY, int32 distance);
 
@@ -24,7 +24,7 @@ public:
 				static TArray<FGridXY> GetPossibleMoveDiagonal(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, int32 launchX, int32 launchY, int32 distance);
 
 
-				static TArray<FGridXY> GetPossibleTargetGeoGrids(FString geoRule, TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 distance);
+				static TArray<FGridXY> GetPossibleTargetGeoGrids(FString geoRule, TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TArray<FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 distance);
 
 				static TArray<FGridXY> GetPossibleLine(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 distance);
 
@@ -35,7 +35,8 @@ public:
 
 
 
-				static void CheckPossibleTargetLocateGeoGrids(FString locateGeoRule, TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, TArray<FGridXY>& checkGrids);
+				static void CheckPossibleTargetLocateGeoGrids(FString locateGeoRule, TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TArray<FBoardRow>& boardCardInfo, TArray<FGridXY>& checkGrids);
 
-				static void CheckPossibleTargetLocateThree(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, TArray<FGridXY>& checkGrids);
+				static void CheckPossibleTargetLocateThree(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, 
+								TArray<FBoardRow>& boardCardInfo, TArray<FGridXY>& checkGrids);
 };

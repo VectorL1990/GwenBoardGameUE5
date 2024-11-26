@@ -11,7 +11,7 @@ AMcts::AMcts()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 				PrimaryActorTick.bCanEverTick = true;
-
+				InitMcts(10);
 }
 
 // Called when the game starts or when spawned
@@ -36,7 +36,7 @@ void AMcts::InitMcts(int32 simulationMoves)
 }
 
 
-void AMcts::TriggerSimulation(int32 simulationNb, ABattleBoard* board)
+void AMcts::TriggerSimulation(uint8 sectionNb, int32 simulationNb, ABattleBoard* board)
 {
 				UMctsTreeNode* curNode = treeRoot;
 
@@ -54,7 +54,7 @@ void AMcts::TriggerSimulation(int32 simulationNb, ABattleBoard* board)
 								curNode = selectNode;
 								// we should do move here! So that we can predict next action probs
 								TArray<FRenderEffectRound> renderEffectRoundList;
-								board->TriggerAction(action, true, renderEffectRoundList);
+								board->TriggerAction(sectionNb, action, true, renderEffectRoundList);
 
 								curNode->stateStrings = board->StateStringCoding(board->simulationBoard);
 				}
@@ -64,7 +64,7 @@ void AMcts::TriggerSimulation(int32 simulationNb, ABattleBoard* board)
 
 				TMap<int32, float> predictActionProbs;
 				float simulationStateValue;
-				board->GetLegalActionProbsBoardValue(boardCoding, predictActionProbs, simulationStateValue);
+				board->GetLegalActionProbsBoardValue(sectionNb, boardCoding, predictActionProbs, simulationStateValue);
 
 				// Tell whether game is end
 				bool isGameEnd = false;
@@ -83,15 +83,15 @@ void AMcts::TriggerSimulation(int32 simulationNb, ABattleBoard* board)
 
 				APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
 				ACoreCardGamePC* coreCardGamePC = Cast<ACoreCardGamePC>(playerController);
-				coreCardGamePC->RefreshMctReplayMenu(simulationNb);
+				coreCardGamePC->RefreshMctReplayMenu(curSearchNode, simulationNb);
 }
 
-void AMcts::GetMoveProbs(ABattleBoard* board, TArray<int32>& outActs, TArray<float>& softmaxProbs)
+void AMcts::GetMoveProbs(uint8 sectionNb, ABattleBoard* board, TArray<int32>& outActs, TArray<float>& softmaxProbs)
 {
 				
 				for (int32 i = 0; i < expandSimulationMoves; i++)
 				{
-								TriggerSimulation(i, board);
+								TriggerSimulation(sectionNb, i, board);
 				}
 
 				TArray<float> logVisits;
@@ -118,11 +118,11 @@ void AMcts::UpdateCurSearchNode(int32 targetMove)
 				}
 }
 
-void AMcts::GetAction(ABattleBoard* board, int32& targetMove)
+void AMcts::GetAction(uint8 sectionNb, ABattleBoard* board, int32& targetMove)
 {
 				TArray<int32> moves;
 				TArray<float> softmaxProbs;
-				GetMoveProbs(board, moves, softmaxProbs);
+				GetMoveProbs(sectionNb, board, moves, softmaxProbs);
 				targetMove = UCoreGameBlueprintFunctionLibrary::GetDirichletAction(moves, softmaxProbs);
 
 				if (isTraining)

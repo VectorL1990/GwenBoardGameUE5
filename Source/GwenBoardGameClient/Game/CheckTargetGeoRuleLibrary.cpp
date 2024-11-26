@@ -4,7 +4,7 @@
 #include "Game/CheckTargetGeoRuleLibrary.h"
 
 
-TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleMoveGrids(FString rule, TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, int32 launchX, int32 launchY, int32 distance)
+TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleMoveGrids(FString rule, TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TArray<FBoardRow>& boardCardInfo, int32 launchX, int32 launchY, int32 distance)
 {
 				TArray<FGridXY> possibleGrids;
 				return possibleGrids;
@@ -31,7 +31,7 @@ TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleMoveDiagonal(TMap<int32, 
 
 
 
-TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleTargetGeoGrids(FString geoRule, TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 distance)
+TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleTargetGeoGrids(FString geoRule, TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TArray<FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 distance)
 {
 				TArray<FGridXY> possibleGrids;
 				return possibleGrids;
@@ -92,7 +92,10 @@ TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleLine(TMap<int32, FInstanc
 								}
 
 
-								if (!isUpBlock && launchY + i + 1 <= UGlobalConstFunctionLibrary::maxRow - 1)
+								if (!isUpBlock && launchY + i + 1 <= 
+												UGlobalConstFunctionLibrary::graveCardSectionRow + 
+												UGlobalConstFunctionLibrary::playCardSectionRow + 
+												UGlobalConstFunctionLibrary::boardSectionRow - 1)
 								{
 												int32 uid = boardCardInfo[launchY + i + 1].colCardInfos[launchX];
 												if (uid != -1)
@@ -115,7 +118,9 @@ TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleLine(TMap<int32, FInstanc
 								}
 
 
-								if (!isDownBlock && launchY - i - 1 >= 0)
+								if (!isDownBlock && launchY - i - 1 >= 
+												UGlobalConstFunctionLibrary::graveCardSectionRow +
+												UGlobalConstFunctionLibrary::playCardSectionRow)
 								{
 												int32 uid = boardCardInfo[launchY - i - 1].colCardInfos[launchX];
 												if (uid != -1)
@@ -177,7 +182,7 @@ TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleSeperate(TMap<int32, FIns
 								}
 				}
 
-				for (int32 i = launchX - 1; i > 0; i--)
+				for (int32 i = launchX - 1; i >= 0; i--)
 				{
 								int32 uid = boardCardInfo[launchY].colCardInfos[i];
 								if (!isLeftBarbetteSet)
@@ -200,7 +205,8 @@ TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleSeperate(TMap<int32, FIns
 								}
 				}
 
-				for (int32 i = launchY + 1; i < UGlobalConstFunctionLibrary::maxRow; i++)
+				for (int32 i = launchY + 1; i < UGlobalConstFunctionLibrary::graveCardSectionRow +
+								UGlobalConstFunctionLibrary::playCardSectionRow + UGlobalConstFunctionLibrary::boardSectionRow; i++)
 				{
 								int32 uid = boardCardInfo[i].colCardInfos[launchY];
 								if (!isUpBarbetteSet)
@@ -223,14 +229,15 @@ TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleSeperate(TMap<int32, FIns
 								}
 				}
 
-				for (int32 i = launchY - 1; i > 0; i--)
+				for (int32 i = launchY - 1; i >= UGlobalConstFunctionLibrary::graveCardSectionRow +
+								UGlobalConstFunctionLibrary::playCardSectionRow; i--)
 				{
 								int32 uid = boardCardInfo[i].colCardInfos[launchY];
-								if (!isUpBarbetteSet)
+								if (!isDownBarbetteSet)
 								{
 												if (uid != -1)
 												{
-																isUpBarbetteSet = true;
+																isDownBarbetteSet = true;
 												}
 								}
 								else
@@ -259,7 +266,10 @@ TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleDiagonal(TMap<int32, FIns
 				bool isRightDownBlock = false;
 				for (int32 i = 0; i < distance; i++)
 				{
-								if (!isLeftUpBlock && launchX - i - 1 >= 0 && launchY + i + 1 <= UGlobalConstFunctionLibrary::maxCol - 1)
+								if (!isLeftUpBlock && launchX - i - 1 >= 0 && 
+												launchY + i + 1 <= UGlobalConstFunctionLibrary::graveCardSectionRow +
+												UGlobalConstFunctionLibrary::playCardSectionRow +
+												UGlobalConstFunctionLibrary::boardSectionRow - 1)
 								{
 												int32 uid = boardCardInfo[launchY + i + 1].colCardInfos[launchX - i - 1];
 												if (uid != -1)
@@ -278,7 +288,9 @@ TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleDiagonal(TMap<int32, FIns
 
 								if (!isRightUpBlock &&
 												launchX + i + 1 <= UGlobalConstFunctionLibrary::maxCol - 1 &&
-												launchY + i + 1 <= UGlobalConstFunctionLibrary::maxRow - 1)
+												launchY + i + 1 <= UGlobalConstFunctionLibrary::graveCardSectionRow +
+												UGlobalConstFunctionLibrary::playCardSectionRow +
+												UGlobalConstFunctionLibrary::boardSectionRow - 1)
 								{
 												int32 uid = boardCardInfo[launchY + i + 1].colCardInfos[launchX + i + 1];
 												if (uid != -1)
@@ -297,7 +309,8 @@ TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleDiagonal(TMap<int32, FIns
 
 								if (!isLeftDownBlock &&
 												launchX - i - 1 >= 0 &&
-												launchY - i - 1 >= 0)
+												launchY - i - 1 >= UGlobalConstFunctionLibrary::graveCardSectionRow +
+												UGlobalConstFunctionLibrary::playCardSectionRow)
 								{
 												int32 uid = boardCardInfo[launchY - i - 1].colCardInfos[launchX - i - 1];
 												if (uid != -1)
@@ -316,7 +329,8 @@ TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleDiagonal(TMap<int32, FIns
 
 								if (!isRightDownBlock &&
 												launchX + i + 1 <= UGlobalConstFunctionLibrary::maxCol - 1 &&
-												launchY - i - 1 >= 0)
+												launchY - i - 1 >= UGlobalConstFunctionLibrary::graveCardSectionRow +
+												UGlobalConstFunctionLibrary::playCardSectionRow)
 								{
 												int32 uid = boardCardInfo[launchY - i - 1].colCardInfos[launchX + i + 1];
 												if (uid != -1)
@@ -343,7 +357,7 @@ TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleDiagonal(TMap<int32, FIns
 
 
 
-void UCheckTargetGeoRuleLibrary::CheckPossibleTargetLocateGeoGrids(FString locateGeoRule, TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, TArray<FGridXY>& checkGrids)
+void UCheckTargetGeoRuleLibrary::CheckPossibleTargetLocateGeoGrids(FString locateGeoRule, TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TArray<FBoardRow>& boardCardInfo, TArray<FGridXY>& checkGrids)
 {
 				if (locateGeoRule == "three")
 				{
@@ -351,7 +365,8 @@ void UCheckTargetGeoRuleLibrary::CheckPossibleTargetLocateGeoGrids(FString locat
 				}
 }
 
-void UCheckTargetGeoRuleLibrary::CheckPossibleTargetLocateThree(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, TArray<FGridXY>& checkGrids)
+void UCheckTargetGeoRuleLibrary::CheckPossibleTargetLocateThree(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, 
+				TArray<FBoardRow>& boardCardInfo, TArray<FGridXY>& checkGrids)
 {
 				int32 checkGridNb = 0;
 				while (checkGridNb < checkGrids.Num())
@@ -361,7 +376,9 @@ void UCheckTargetGeoRuleLibrary::CheckPossibleTargetLocateThree(TMap<int32, FIns
 								if (targetX == 0 || targetX == UGlobalConstFunctionLibrary::maxCol - 1)
 								{
 												// which means we only need to check vertical direction
-												if (targetY != 0 && targetY != UGlobalConstFunctionLibrary::maxRow - 1)
+												if (targetY != 0 && targetY != UGlobalConstFunctionLibrary::graveCardSectionRow +
+																UGlobalConstFunctionLibrary::playCardSectionRow + 
+																UGlobalConstFunctionLibrary::boardSectionRow - 1)
 												{
 																if (boardCardInfo[targetY - 1].colCardInfos[targetX] != -1 && boardCardInfo[targetY + 1].colCardInfos[targetX] != -1)
 																{
@@ -380,7 +397,9 @@ void UCheckTargetGeoRuleLibrary::CheckPossibleTargetLocateThree(TMap<int32, FIns
 								}
 								else
 								{
-												if (targetY == 0 || targetY == UGlobalConstFunctionLibrary::maxRow - 1)
+												if (targetY == 0 || targetY == UGlobalConstFunctionLibrary::graveCardSectionRow +
+																UGlobalConstFunctionLibrary::playCardSectionRow + 
+																UGlobalConstFunctionLibrary::boardSectionRow - 1)
 												{
 																// which means we only need to check horizontal direction
 																if (boardCardInfo[targetY].colCardInfos[targetX - 1] != -1 && boardCardInfo[targetY].colCardInfos[targetX + 1] != -1)
