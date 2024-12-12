@@ -384,8 +384,9 @@ class GWENBOARDGAMECLIENT_API UGlobalConstFunctionLibrary : public UBlueprintFun
 public:
 
     static const int32 maxCol = 8;
-    static const int32 boardSectionRow = 8;
+    static const int32 boardSectionRow = 6;
     static const int32 playCardSectionRow = 2;
     static const int32 graveCardSectionRow = 3;
     static const int32 boardStateLen = 1000;
+    static const int32 totalActionNb = 6144;
 };

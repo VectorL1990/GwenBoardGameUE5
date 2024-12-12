@@ -22,9 +22,18 @@ void UCoreGameBlueprintFunctionLibrary::Softmax(const TArray<float>& x, float te
 }
 
 
-void UCoreGameBlueprintFunctionLibrary::QueryRemotePolicyValue(uint8* boardState, TArray<float>& actionProbs, float& stateValue)
+void UCoreGameBlueprintFunctionLibrary::QueryRemotePolicyValue(bool simulateFlag, uint8* boardState, TArray<float>& actionProbs, float& stateValue)
 {
-    
+    if (simulateFlag)
+    {
+        float aveProb = 1.0f / (float)UGlobalConstFunctionLibrary::totalActionNb;
+        actionProbs.Init(aveProb, UGlobalConstFunctionLibrary::totalActionNb);
+        stateValue = 1.0f;
+    }
+    else
+    {
+
+    }
 }
 
 int32 UCoreGameBlueprintFunctionLibrary::GetDirichletAction(const TArray<int32>& actions, const TArray<float>& probs)

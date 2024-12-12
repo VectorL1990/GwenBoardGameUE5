@@ -33,6 +33,8 @@ void AMcts::InitMcts(int32 simulationMoves)
 				expandSimulationMoves = simulationMoves;
 
 				treeRoot = NewObject<UMctsTreeNode>();
+
+				curSearchNode = treeRoot;
 }
 
 

@@ -114,6 +114,18 @@ public:
 				UPROPERTY()
 				FBoardInfo realBoard;
 
+				UPROPERTY()
+				TArray<int32> sectionZeroHandCards;
+
+				UPROPERTY()
+				TArray<int32> sectionOneHandCards;
+
+				UPROPERTY()
+				TArray<int32> sectionZeroGraveCards;
+
+				UPROPERTY()
+				TArray<int32> sectionOneGraveCards;
+
 				TMap<int32, ACard*> allCards;
 
 

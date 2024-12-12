@@ -125,7 +125,7 @@ public:
 
     static void Softmax(const TArray<float>& x, float temp, TArray<float>& softmax);
 
-    static void QueryRemotePolicyValue(uint8* boardState, TArray<float>& actionProbs, float& stateValue);
+    static void QueryRemotePolicyValue(bool simulateFlag, uint8* boardState, TArray<float>& actionProbs, float& stateValue);
 
     static int32 GetDirichletAction(const TArray<int32>& actions, const TArray<float>& probs);
 

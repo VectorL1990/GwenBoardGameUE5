@@ -39,6 +39,28 @@ void ABattleBoard::InitBattleBoard()
 				{
 								realBoard.boardRows[i].colCardInfos.Init(-1, UGlobalConstFunctionLibrary::maxCol);
 				}
+
+				int32 curInitHandCardRow = 0;
+				int32 curInitHandCardCol = 0;
+				for (int32 i = 0; i < sectionZeroHandCards.Num(); i++)
+				{
+								realBoard.boardRows[UGlobalConstFunctionLibrary::graveCardSectionRow + curInitHandCardRow].
+												colCardInfos[curInitHandCardCol] = sectionZeroHandCards[i];
+								if (curInitHandCardCol > UGlobalConstFunctionLibrary::maxCol)
+								{
+												curInitHandCardRow += 1;
+												curInitHandCardCol = 0;
+								}
+								else
+								{
+												curInitHandCardCol += 1;
+								}
+				}
+
+				for (int32 i = 0; i < sectionOneHandCards.Num(); i++)
+				{
+
+				}
 }
 
 bool ABattleBoard::CheckGameEnd()
@@ -69,17 +91,12 @@ void ABattleBoard::GetLegalMoves(uint8 sectionNb, FBoardInfo& targetBoard, TArra
 																								if (sectionNb == 0 && row < UGlobalConstFunctionLibrary::boardSectionRow / 2)
 																								{
 																												if (targetBoard.boardRows[playSectionBoardRow + 
-																																UGlobalConstFunctionLibrary::graveCardSectionRow].colCardInfos[playCardCol] == -1)
+																																UGlobalConstFunctionLibrary::graveCardSectionRow].colCardInfos[playCardCol] != -1)
 																												{
 																																continue;
 																												}
 
-																												int32 actionId = ActionCoding(
-																																playCardCol,
-																																playSectionBoardRow + UGlobalConstFunctionLibrary::graveCardSectionRow,
-																																col,
-																																checkRow,
-																																ActionType::PlayCard);
+																												int32 actionId = ActionCoding(playCardCol, playSectionBoardRow + UGlobalConstFunctionLibrary::graveCardSectionRow, col, checkRow, ActionType::PlayCard);
 																												legalMoves.Add(actionId);
 																								}
 																								else if (sectionNb == 1 && row > UGlobalConstFunctionLibrary::boardSectionRow / 2)
@@ -227,7 +244,7 @@ void ABattleBoard::GetLegalActionProbsBoardValue(uint8 sectionNb, uint8* boardSt
 {
 				TArray<float> actionProbs;
 				float evaValue;
-				UCoreGameBlueprintFunctionLibrary::QueryRemotePolicyValue(boardState, actionProbs, evaValue);
+				UCoreGameBlueprintFunctionLibrary::QueryRemotePolicyValue(true, boardState, actionProbs, evaValue);
 				boardValue = evaValue;
 
 				TArray<int32> legalActionIds;
@@ -483,6 +500,11 @@ uint8* ABattleBoard::StateCoding(FBoardInfo& targetBoard)
 								for (int32 j=0; j<targetBoard.boardRows[i].colCardInfos.Num(); j++)
 								{
 												int32 uid = targetBoard.boardRows[i].colCardInfos[j];
+
+												if (uid == -1)
+												{
+																continue;
+												}
 												
 												uint8 coding[200] = { 0 };
 												// 6
@@ -533,6 +555,8 @@ TArray<FString> ABattleBoard::StateStringCoding(FBoardInfo& targetBoard)
 
 				return boardState;
 }
+
+
 
 int32 ABattleBoard::ActionCoding(int32 launchX, int32 launchY, int32 targetX, int32 targetY, ActionType actionType)
 {
