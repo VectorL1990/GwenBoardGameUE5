@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "CoreGameBlueprintFunctionLibrary.h"
+//#include "CoreGameBlueprintFunctionLibrary.h"
 #include "Card.h"
 #include "BattleBoard.generated.h"
 
@@ -32,117 +32,9 @@ public:
 
 				bool CheckGameEnd();
 
-				void GetLatestSimulationBoard();
-
-				void GetLegalMoves(uint8 sectionNb, FBoardInfo& targetBoard, TArray<int32>& legalMoves);
-
-				void GetLegalActionProbsBoardValue(uint8 sectionNb, uint8* boardState, TMap<int32, float>& legalActionProbs, float& boardValue);
-
-				ActionType TriggerAction(
-								uint8 sectionNb, 
-								int32 actionId, 
-								bool simulateFlag, 
-								TArray<FRenderEffectRound>& renderEffectRoundList);
-
-				void TriggerPlayCard(
-								FBoardInfo& targetBoard,
-								int32 launchX,
-								int32 launchY,
-								int32 targetX,
-								int32 targetY,
-								TArray<FRenderEffectRound>& renderEffectRoundList);
-
-				void TriggerPlayCardSkill(
-								FBoardInfo& targetBoard,
-								int32 launchX,
-								int32 launchY,
-								TArray<FRenderEffectRound>& renderEffectRoundList);
-
-				void TriggerRoundEndSkill(
-								FBoardInfo& targetBoard,
-								int32 launchX,
-								int32 launchY,
-								int32 targetX,
-								int32 targetY,
-								TArray<FRenderEffectRound>& renderEffectRoundList);
-
-				void TriggerManualSkill(
-								FBoardInfo& targetBoard,
-								int32 launchX,
-								int32 launchY,
-								int32 targetX,
-								int32 targetY,
-								TArray<FRenderEffectRound>& renderEffectRoundList);
-
-				void TriggerPassiveEffect(FBoardInfo& targetBoard, 
-								FEffectResultDict effectResultDict, 
-								TArray<FRenderEffectRound>& renderEffectRoundList);
-
-				TArray<int32> curRoundPassiveEffectTriggeredUids;
-
-				uint8* StateCoding(FBoardInfo& targetBoard);
-
-				TArray<FString> StateStringCoding(FBoardInfo& targetBoard);
-
-				int32 ActionCoding(int32 launchX, int32 launchY, int32 targetX, int32 targetY, ActionType actionType);
-
-				void ActionDecoding(int32 actionId, int32& launchX, int32& launchY, int32& targetX, int32& targetY, ActionType& actionType);
-
-				uint8* GetSkillLaunchTypeCoding(FString launchType);
-				uint8* GetAutoSkillGeoTargetCoding(FString geoTargetType);
-				uint8* GetSkillLaunchGeoCoding(FString launchGeoType);
-				uint8* GetSkillTargetGeoCoding(FString targetGeoType);
-				uint8* GetSkillTargetLocateGeoCoding(FString targetLocateGeoType);
-				uint8* GetSkillAoeCoding(FString aoeType);
-				uint8* GetSkillTargetCampCoding(FString targetCampType);
-				uint8* GetSkillEffectCoding(FString effectType);
-				uint8* GetSkillAffixCampCoding(FString affixCampType);
-				uint8* GetSkillAffixCoding(FString affixType);
-				uint8* GetSkillTagConditionCoding(FString tagCondition);
-				uint8* GetCardTagCoding(FString tag);
-				uint8* GetPrereqTagCoding(FString prereqTag);
-				uint8* GetPrereqCampCoding(FString prereqCampType);
-				uint8* GetSkillPrereqCoding(FString skillPrereq);
-				uint8* GetPassiveSkillPrereqTypeCoding(FString passiveSkillPrereq);
-
 				UPROPERTY()
 				uint8 curPlayerTurn;
 
-				UPROPERTY()
-				FBoardInfo simulationBoard;
-
-				UPROPERTY()
-				FBoardInfo realBoard;
-
-				UPROPERTY()
-				TArray<int32> sectionZeroHandCards;
-
-				UPROPERTY()
-				TArray<int32> sectionOneHandCards;
-
-				UPROPERTY()
-				TArray<int32> sectionZeroGraveCards;
-
-				UPROPERTY()
-				TArray<int32> sectionOneGraveCards;
 
 				TMap<int32, ACard*> allCards;
-
-
-				uint8 autoSkillGeoTargetTypeCoding[17] = {0};
-				uint8 skillLaunchTypeCoding[6] =								{0};
-				uint8 skillLaunchGeoCoding[10] =								{0};
-				uint8 skillTargetGeoCoding[6] =									{0};
-				uint8 skillTargetLocateGeoCoding[9] =			{0};
-				uint8 skillAoeCoding[6] =															{0};
-				uint8 skillTargetCampCoding[3] =								{0};
-				uint8 skillEffectCoding[86] =											{0};
-				uint8 skillAffixCampCoding[3] =									{0};
-				uint8 skillAffixCoding[84] =												{0};
-				uint8 skillTagConditionCoding[5] =						{0};
-				uint8 cardTagCoding[42] =															{0};
-				uint8 skillPrereqTagCoding[42] =								{0};
-				uint8 skillPrereqCampCoding[3] =								{0};
-				uint8 skillPrereqCoding[126] =										{0};
-				uint8 passiveSkillPrereqCoding[11] =				{0};
 };

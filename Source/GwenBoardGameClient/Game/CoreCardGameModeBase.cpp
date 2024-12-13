@@ -64,6 +64,15 @@ void ACoreCardGameModeBase::Tick(float deltaTime)
 				}
 }
 
+void ACoreCardGameModeBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+				if (aiRunnable)
+				{
+								aiRunnable->Stop();
+				}
+}
+
+
 
 
 
@@ -80,11 +89,13 @@ void ACoreCardGameModeBase::SimulateTrainAction(float dT)
 								int32 actionId = -1;
 								if (curSectionNb == 0)
 								{
-												sectionZeroMctsPlayer->mcts->GetAction(sectionZeroMctsPlayer->sectionNb, battleBoard, actionId);
+												aiRunnable->TriggerMctsGetAction(0);
+												//sectionZeroMctsPlayer->mcts->GetAction(sectionZeroMctsPlayer->sectionNb, battleBoard, actionId);
 								}
 								else
 								{
-												sectionOneMctsPlayer->mcts->GetAction(sectionOneMctsPlayer->sectionNb, battleBoard, actionId);
+												aiRunnable->TriggerMctsGetAction(1);
+												//sectionOneMctsPlayer->mcts->GetAction(sectionOneMctsPlayer->sectionNb, battleBoard, actionId);
 								}
 
 								//curActionType = battleBoard->TriggerAction(actionId, true, curActionRenderEffectRoundList);
@@ -148,6 +159,7 @@ void ACoreCardGameModeBase::TrainPlayGameLoop(float dT)
 																APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
 																ACoreCardGamePC* coreCardPC = Cast<ACoreCardGamePC>(playerController);
 																coreCardPC->SwitchMenu("BattleMenu");
+																battleBoard->InitBattleBoard();
 																curCountingTick = 0.0;
 												}
 												else
@@ -164,6 +176,7 @@ void ACoreCardGameModeBase::TrainPlayGameLoop(float dT)
 																APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
 																ACoreCardGamePC* coreCardPC = Cast<ACoreCardGamePC>(playerController);
 																coreCardPC->SwitchMenu("BattleMenu");
+																battleBoard->InitBattleBoard();
 																curCountingTick = 0.0;
 												}
 												else
@@ -292,6 +305,7 @@ void ACoreCardGameModeBase::ReqLaunchCardSkill(bool simulationFlag, int32 launch
 
 void ACoreCardGameModeBase::TriggerRenderEffect()
 {
+				/*
 				FRenderEffectRound renderEffectRound = curActionRenderEffectRoundList[curActionEffectRound];
 				for (int32 i = 0; i < renderEffectRound.renderEffectList.Num(); i++)
 				{
@@ -310,7 +324,7 @@ void ACoreCardGameModeBase::TriggerRenderEffect()
 												FRotator targetRot = targetLaunchOffset.Rotation();
 												AActor* particleActor = GetWorld()->SpawnActor<AActor>(particleActorClass, battleBoard->allCards[launchUid]->GetActorLocation(), targetRot);
 								}
-				}
+				}*/
 }
 
 void ACoreCardGameModeBase::SpawnTestCards()
@@ -531,7 +545,11 @@ void ACoreCardGameModeBase::InitPreBattle()
 
 				battleBoard = GetWorld()->SpawnActor<ABattleBoard>(battleBoardBPClass,
 								FVector::Zero(), FRotator::ZeroRotator);
-				battleBoard->InitBattleBoard();
+
+				mcts = NewObject<UMcts>(this);
+				mcts->InitMcts(10);
+				aiRunnable = new FAIRunnable(this);
+				aiRunnable->Start(mcts);
 }
 
 

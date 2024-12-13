@@ -22,7 +22,7 @@ public:
     // Expand executes after selecting max U + Q leaf node
     void Expand(int32 parentHirachy, TMap<int32, float> actionProbs);
 
-    void Select(int32& outAction, UMctsTreeNode* outNode);
+    UMctsTreeNode* Select(int32& outAction);
 
     void UpdateEvaluateQValue(float inQ);
 
@@ -45,8 +45,6 @@ public:
     int32 visit;
 
     float p;
-
-    float evaluateQ;
 
     float q;
 

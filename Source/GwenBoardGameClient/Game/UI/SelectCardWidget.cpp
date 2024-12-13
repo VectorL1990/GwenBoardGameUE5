@@ -4,6 +4,7 @@
 #include "Game/UI/SelectCardWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Base/GwenBoardGameInstance.h"
+#include "../CoreCardGameModeBase.h"
 #include "Game/GlobalConstFunctionLibrary.h"
 
 void USelectCardWidget::Init(UCardDetailWidget* inCardDetailWidget)
@@ -35,11 +36,25 @@ void USelectCardWidget::GenerateSelectCards()
 				UGameInstance* gi = UGameplayStatics::GetGameInstance(this);
 				UGwenBoardGameInstance* gwenGI = Cast<UGwenBoardGameInstance>(gi);
 
+				AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
+				ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
+
 				TArray<int32> cardNbList;
-				for (int32 i = 0; i < gwenGI->selectCardList.Num(); i++)
+				if (gwenGI->playerSectionNb == 0)
 				{
-								cardNbList.Add(i);
+								for (int32 i = 0; i < gwenGI->sectionZeroPileCards.Num(); i++)
+								{
+												cardNbList.Add(i);
+								}
 				}
+				else
+				{
+								for (int32 i = 0; i < gwenGI->sectionOnePileCards.Num(); i++)
+								{
+												cardNbList.Add(i);
+								}
+				}
+				
 
 				TArray<int32> selectCardNbList;
 				for (int32 i = 0; i < selectedCards.Num(); i++)
@@ -51,7 +66,15 @@ void USelectCardWidget::GenerateSelectCards()
 
 				for (int32 i = 0; i < selectCardNbList.Num(); i++)
 				{
-								FString selectCardName = gwenGI->selectCardList[selectCardNbList[i]];
+								FString selectCardName;
+								if (gwenGI->playerSectionNb == 0)
+								{
+												selectCardName = gwenGI->sectionZeroPileCards[selectCardNbList[i]];
+								}
+								else
+								{
+												selectCardName = gwenGI->sectionOnePileCards[selectCardNbList[i]];
+								}
 								if (gwenGI->allCardInfos.Contains(selectCardName))
 								{
 												if (selectedCards[i]->texture)
@@ -60,7 +83,7 @@ void USelectCardWidget::GenerateSelectCards()
 																UMaterialInstanceDynamic* mi = Cast<UMaterialInstanceDynamic>(selectedCards[i]->cardButton->WidgetStyle.Normal.GetResourceObject());
 																mi->SetTextureParameterValue("", selectedCards[i]->texture);
 												}
-												
 								}
 				}
 }
+

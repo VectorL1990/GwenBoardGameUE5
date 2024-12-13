@@ -16,9 +16,9 @@ void UMctsTreeNode::Init(UMctsTreeNode* inParent, int32 inActionId, float inP, i
 
 float UMctsTreeNode::GetValue()
 {
-				//u = UMctsTreeNode::cPuct * p * FMath::Sqrt((float)parent->visit) / (1.0 + (float)parent->visit);
-				//return u;
-				return 0;
+				u = 5.0 * p * FMath::Sqrt((float)parent->visit) / (1.0 + (float)visit);
+				return u;
+				//return 0;
 }
 
 void UMctsTreeNode::Expand(int32 parentHirachy, TMap<int32, float> actionProbs)
@@ -34,10 +34,11 @@ void UMctsTreeNode::Expand(int32 parentHirachy, TMap<int32, float> actionProbs)
 				}
 }
 
-void UMctsTreeNode::Select(int32& outAction, UMctsTreeNode* outNode)
+UMctsTreeNode* UMctsTreeNode::Select(int32& outAction)
 {
 				float maxQU = 0.0;
 				int32 maxQUAction = 0;
+				UMctsTreeNode* outNode = NULL;
 				for (TMap<int, UMctsTreeNode*>::TConstIterator iter = children.CreateConstIterator(); iter; ++iter)
 				{
 								float nodeQU = iter->Value->GetValue();
@@ -49,14 +50,13 @@ void UMctsTreeNode::Select(int32& outAction, UMctsTreeNode* outNode)
 								}
 				}
 				outAction = maxQUAction;
+				return outNode;
 }
 
 void UMctsTreeNode::UpdateEvaluateQValue(float inQ)
 {
-				evaluateQ = inQ;
-				q = inQ;
-				visit += 1;
 				UpdateParentQValue(inQ);
+				q = inQ;
 }
 
 void UMctsTreeNode::UpdateParentQValue(float leafQ)

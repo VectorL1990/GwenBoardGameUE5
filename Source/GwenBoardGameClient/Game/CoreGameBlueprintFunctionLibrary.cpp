@@ -15,6 +15,7 @@ void UCoreGameBlueprintFunctionLibrary::Softmax(const TArray<float>& x, float te
         expSum += exp;
     }
 
+    softmax.Init(0.0, x.Num());
     for (int32 i = 0; i < x.Num(); i++)
     {
         softmax[i] = x[i] / expSum;

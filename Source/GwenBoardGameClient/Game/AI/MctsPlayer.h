@@ -26,7 +26,5 @@ public:
 
 				void InitMctsPlayer(uint8 inSectionNb);
 
-				AMcts* mcts;
-
 				uint8 sectionNb;
 };

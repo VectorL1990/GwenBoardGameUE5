@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/GameModeBase.h"
-
+#include "AI/AIRunnable.h"
 #include "../BasicGameMode.h"
 #include "CoreGameBlueprintFunctionLibrary.h"
 #include "BoardGrid.h"
@@ -31,6 +31,9 @@ public:
     virtual void InitEvents() override;
 
     virtual void Tick(float deltaTime) override;
+
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
 
     UFUNCTION(BlueprintNativeEvent)
     void InitDone();
@@ -115,6 +118,12 @@ public:
     void FinishCardSelection();
 
     // --- Main game logic
+    class FAIRunnable* aiRunnable;
+
+    UPROPERTY()
+    UMcts* mcts;
+
+
     int32 curActionEffectRound = 0;
 
     TArray<FRenderEffectRound> curActionRenderEffectRoundList;

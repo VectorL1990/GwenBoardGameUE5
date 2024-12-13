@@ -54,6 +54,7 @@ class GWENBOARDGAMECLIENT_API UGwenBoardGameInstance : public UGameInstance
             int32 agility,
             TArray<FString> cardTags,
             FString launchType,
+            int32 initCoolDown,
             int32 coolDown,
             int32 availableTimes,
             FString launchGeoType,
@@ -96,8 +97,11 @@ class GWENBOARDGAMECLIENT_API UGwenBoardGameInstance : public UGameInstance
 				FString curRoomKey;
 
     UPROPERTY(EditAnywhere)
-				TArray<FString> selectCardList;
+				TArray<FString> sectionZeroPileCards;
 
     UPROPERTY(EditAnywhere)
-    TArray<FString> sectionOneSelectCardList;
+    TArray<FString> sectionOnePileCards;
+
+    UPROPERTY(EditAnywhere)
+    uint8 playerSectionNb;
 };

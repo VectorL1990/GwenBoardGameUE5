@@ -50,6 +50,9 @@ public:
         FString launchType;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        int32 initCoolDown;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
         int32 coolDown;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -337,17 +340,6 @@ public:
     float renderTime;
 };
 
-USTRUCT(BlueprintType, Blueprintable)
-struct FBoardInfo
-{
-    GENERATED_USTRUCT_BODY()
-public:
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TArray<FBoardRow> boardRows;
-
-    UPROPERTY()
-    TMap<int32, FInstanceCardInfo> allInstanceCardInfo;
-};
 
 USTRUCT(BlueprintType, Blueprintable)
 struct FActionDemonstrationInfo
@@ -373,6 +365,13 @@ public:
     FString effectDemoType;
 };
 
+enum class EAIRunnableState
+{
+    Default,
+    NewTask,
+    Working,
+};
+
 
 /**
  * 
@@ -382,11 +381,28 @@ class GWENBOARDGAMECLIENT_API UGlobalConstFunctionLibrary : public UBlueprintFun
 {
 				GENERATED_BODY()
 public:
-
+    static const int32 handCardNb = 10;
     static const int32 maxCol = 8;
     static const int32 boardSectionRow = 6;
     static const int32 playCardSectionRow = 2;
     static const int32 graveCardSectionRow = 3;
     static const int32 boardStateLen = 1000;
     static const int32 totalActionNb = 6144;
+
+    uint8 autoSkillGeoTargetTypeCoding[17] = { 0 };
+    uint8 skillLaunchTypeCoding[6] = { 0 };
+    uint8 skillLaunchGeoCoding[10] = { 0 };
+    uint8 skillTargetGeoCoding[6] = { 0 };
+    uint8 skillTargetLocateGeoCoding[9] = { 0 };
+    uint8 skillAoeCoding[6] = { 0 };
+    uint8 skillTargetCampCoding[3] = { 0 };
+    uint8 skillEffectCoding[86] = { 0 };
+    uint8 skillAffixCampCoding[3] = { 0 };
+    uint8 skillAffixCoding[84] = { 0 };
+    uint8 skillTagConditionCoding[5] = { 0 };
+    uint8 cardTagCoding[42] = { 0 };
+    uint8 skillPrereqTagCoding[42] = { 0 };
+    uint8 skillPrereqCampCoding[3] = { 0 };
+    uint8 skillPrereqCoding[126] = { 0 };
+    uint8 passiveSkillPrereqCoding[11] = { 0 };
 };

@@ -8,6 +8,10 @@
 #include "Scripts/BattleEvents.h"
 #include <vector>
 #include <random>
+#include "CheckTargetGeoRuleLibrary.h"
+#include "CheckPrereqFunctionLibrary.h"
+#include "CheckPrereqTagFunctionLibrary.h"
+#include "PassiveEffectFunctionLibrary.h"
 #include "CoreGameBlueprintFunctionLibrary.generated.h"
 
 UENUM(BlueprintType)
@@ -105,6 +109,7 @@ enum class EGamingType : uint8
     Training = 0,
     SinglePlay = 1,
 };
+
 
 
 

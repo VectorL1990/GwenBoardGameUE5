@@ -4,12 +4,12 @@
 #include "GwenBoardGameInstance.h"
 #include "UnLua.h"
 #include "SkynetRunnable.h"
+#include "../Game/AI/AIRunnable.h"
 
 void UGwenBoardGameInstance::Init()
 {
 				//ConnectServer("192.168.19.57", 5678, 1);
 				TriggerReadCardInfos();
-
 }
 
 void UGwenBoardGameInstance::Shutdown()
@@ -169,6 +169,7 @@ void UGwenBoardGameInstance::SetCardInfo(FString cardName,
 				int32 agility,
 				TArray<FString> cardTags,
 				FString launchType,
+				int32 initCoolDown,
 				int32 coolDown,
 				int32 availableTimes,
 				FString launchGeoType,
@@ -202,6 +203,7 @@ void UGwenBoardGameInstance::SetCardInfo(FString cardName,
 				cardInfo.agility = agility;
 				cardInfo.cardTags = cardTags;
 				cardInfo.launchType = launchType;
+				cardInfo.coolDown = initCoolDown;
 				cardInfo.coolDown = coolDown;
 				cardInfo.availableTimes = availableTimes;
 				cardInfo.launchGeoType = launchGeoType;

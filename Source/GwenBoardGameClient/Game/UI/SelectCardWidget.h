@@ -36,6 +36,8 @@ public:
     UFUNCTION(BlueprintCallable)
     void GenerateSelectCards();
 
+    void ConfirmSelectCards();
+
     UPROPERTY(EditDefaultsOnly)
     TArray<UBattleCardWidget*> initSeletableCardWidgetList;
 
