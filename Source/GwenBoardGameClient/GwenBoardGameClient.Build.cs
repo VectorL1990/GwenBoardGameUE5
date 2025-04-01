@@ -13,7 +13,7 @@ public class GwenBoardGameClient : ModuleRules
 
         PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "Sockets", "KBEnginePlugins" });
 
-		PrivateDependencyModuleNames.AddRange(new string[] { "UnLua", "Lua",  "Networking", "Slate", "SlateCore" });
+		PrivateDependencyModuleNames.AddRange(new string[] {  "Networking", "Slate", "SlateCore" });
 
         //PublicDependencyModuleNames.AddRange(new string[] { "HTTP" });
 

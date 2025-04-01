@@ -6,7 +6,7 @@
 #include "Scripts/BattleEvents.h"
 #include "Engine/KBEngine.h"
 #include "Engine/KBEMain.h"
-#include "UnLua.h"
+//#include "UnLua.h"
 
 void ALoginGameModeBase::BeginPlay()
 {

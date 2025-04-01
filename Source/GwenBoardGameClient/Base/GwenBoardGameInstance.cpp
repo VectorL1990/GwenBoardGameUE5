@@ -2,7 +2,7 @@
 
 
 #include "GwenBoardGameInstance.h"
-#include "UnLua.h"
+//#include "UnLua.h"
 #include "SkynetRunnable.h"
 #include "../Game/AI/AIRunnable.h"
 
@@ -71,18 +71,14 @@ bool UGwenBoardGameInstance::SendData(int32 workerId, TArray<uint8> dataSend)
 
 void UGwenBoardGameInstance::CallLuaRead()
 {
-
+	/*
 				UnLua::FLuaEnv luaEnv;
 
 				const auto Require = UnLua::FLuaFunction(&luaEnv, "_G", "require");
 				const auto RetValues = Require.Call("BP_GwenBoardGI_Lua");
-				//const auto successFlag = luaEnv.DoString("G_BP_GwenBoardGI_Lua = require 'BP_GwenBoardGI_Lua'");
-				//check(successFlag);
-
-				//UnLua::CallTableFunc(luaEnv.GetMainState(), "G_BP_GwenBoardGI_Lua", "SecondThreadCallLua");
 				const auto RetValue = RetValues[0];
 				const auto LuaTable = UnLua::FLuaTable(&luaEnv, RetValue);
-				const auto RetValues2 = LuaTable.Call("SecondThreadCallLua");
+				const auto RetValues2 = LuaTable.Call("SecondThreadCallLua");*/
 }
 
 FString UGwenBoardGameInstance::Message_ReadString(TArray<uint8>& message, int32 bytesLength)
