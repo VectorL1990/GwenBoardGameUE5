@@ -6,6 +6,18 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "GlobalConstFunctionLibrary.generated.h"
 
+#define TotalCHW 560
+#define TotalActionNb 767
+#define TotalPlayCardActionNb 256
+#define TotalMoveActionNb 255
+#define TotalTriggerSkillActionNb 256
+
+UENUM(BlueprintType)
+enum class EAtkDistanceType : uint8
+{
+    Closed = 0,
+    Far = 1,
+};
 
 
 USTRUCT(BlueprintType, Blueprintable)
@@ -104,7 +116,7 @@ public:
         int32 moveDistance;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        int32 attackDistance;
+        EAtkDistanceType attackDistanceType;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
         UTexture* texture;
@@ -370,6 +382,9 @@ enum class EAIRunnableState
     Default,
     NewTask,
     Working,
+    TestGetAction,
+    FinishTestGetAction,
+    NewState,
 };
 
 
@@ -381,13 +396,11 @@ class GWENBOARDGAMECLIENT_API UGlobalConstFunctionLibrary : public UBlueprintFun
 {
 				GENERATED_BODY()
 public:
-    static const int32 handCardNb = 10;
-    static const int32 maxCol = 8;
-    static const int32 boardSectionRow = 6;
+    static const int32 handCardNb = 5;
+    static const int32 maxCol = 4;
+    static const int32 boardSectionRow = 4;
     static const int32 playCardSectionRow = 2;
     static const int32 graveCardSectionRow = 3;
-    static const int32 boardStateLen = 1000;
-    static const int32 totalActionNb = 6144;
 
     uint8 autoSkillGeoTargetTypeCoding[17] = { 0 };
     uint8 skillLaunchTypeCoding[6] = { 0 };

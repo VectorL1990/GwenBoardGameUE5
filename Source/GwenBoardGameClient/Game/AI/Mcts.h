@@ -9,946 +9,1082 @@
 #include "MctsTreeNode.h"
 #include "Mcts.generated.h"
 
+
 USTRUCT(BlueprintType, Blueprintable)
 struct FBoardInfo
 {
-    GENERATED_USTRUCT_BODY()
+	GENERATED_USTRUCT_BODY()
 public:
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        TArray<FBoardRow> boardRows;
-
-    UPROPERTY()
-        TMap<int32, FInstanceCardInfo> allInstanceCardInfo;
-
-    TArray<int32> curRoundPassiveEffectTriggeredUids;
-
-
-    UPROPERTY()
-        TArray<int32> sectionZeroHandCards;
-
-    UPROPERTY()
-        TArray<int32> sectionOneHandCards;
-
-    UPROPERTY()
-        TArray<int32> sectionZeroGraveCards;
-
-    UPROPERTY()
-        TArray<int32> sectionOneGraveCards;
-
-    void StateCoding(int32* boardCoding)
-    {
-        for (int32 i = 0; i < boardRows.Num(); i++)
-        {
-            for (int32 j = 0; j < boardRows[i].colCardInfos.Num(); j++)
-            {
-                int32 uid = boardRows[i].colCardInfos[j];
-
-                if (uid == -1)
-                {
-                    continue;
-                }
-
-                int32 autoSkillGeoTargetTypeCoding[17] = { 0 };
-                int32 skillLaunchTypeCoding[6] = { 0 };
-                int32 skillLaunchGeoCoding[10] = { 0 };
-                int32 skillTargetGeoCoding[6] = { 0 };
-                int32 skillTargetLocateGeoCoding[9] = { 0 };
-                int32 skillAoeCoding[6] = { 0 };
-                int32 skillTargetCampCoding[3] = { 0 };
-                int32 skillEffectCoding[86] = { 0 };
-                int32 skillAffixCampCoding[3] = { 0 };
-                int32 skillAffixCoding[84] = { 0 };
-                int32 skillTagConditionCoding[5] = { 0 };
-                int32 cardTagCoding[42] = { 0 };
-                int32 skillPrereqTagCoding[42] = { 0 };
-                int32 skillPrereqCampCoding[3] = { 0 };
-                int32 skillPrereqCoding[126] = { 0 };
-                int32 passiveSkillPrereqCoding[11] = { 0 };
-                // 6
-                GetSkillLaunchTypeCoding(allInstanceCardInfo[uid].originCardInfo.launchType, skillLaunchTypeCoding);
-                // 10
-                GetSkillLaunchGeoCoding(allInstanceCardInfo[uid].originCardInfo.launchGeoType, skillLaunchGeoCoding);
-                // 6
-                GetSkillTargetGeoCoding(allInstanceCardInfo[uid].originCardInfo.targetGeoType, skillTargetGeoCoding);
-                // 9
-                //uint8* skillTargetLocateGeoCoding = GetSkillTargetLocateGeoCoding(allInstanceCardInfo[uid].originCardInfo.target);
-                // 6
-                GetSkillAoeCoding(allInstanceCardInfo[uid].originCardInfo.aoeType, skillAoeCoding);
-                // 3
-
-
-            }
-        }
-    }
-
-    TArray<FString> StateStringCoding()
-    {
-        TArray<FString> boardState;
-        int32 totalGrids = UGlobalConstFunctionLibrary::maxCol * (UGlobalConstFunctionLibrary::boardSectionRow +
-            2 * UGlobalConstFunctionLibrary::playCardSectionRow +
-            2 * UGlobalConstFunctionLibrary::graveCardSectionRow);
-        boardState.Init("None", totalGrids);
-
-        for (int32 i = 0; i < boardRows.Num(); i++)
-        {
-            for (int32 j = 0; j < boardRows[i].colCardInfos.Num(); j++)
-            {
-                FString cardStateString = "None";
-                if (allInstanceCardInfo.Contains(boardRows[i].colCardInfos[j]))
-                {
-                    int32 cardKey = boardRows[i].colCardInfos[j];
-                    cardStateString = allInstanceCardInfo[cardKey].originCardInfo.cardName + "/";
-                    cardStateString += FString::FromInt(allInstanceCardInfo[cardKey].curHp) + "/";
-                    cardStateString += FString::FromInt(allInstanceCardInfo[cardKey].curDefence) + "/";
-                    cardStateString += FString::FromInt(allInstanceCardInfo[cardKey].curCoolDown) + "/";
-                    cardStateString += FString::FromInt(allInstanceCardInfo[cardKey].curAvailableTimes);
-                }
-                boardState.Add(cardStateString);
-            }
-        }
-
-        return boardState;
-    }
-
-    int32 ActionCoding(int32 launchX, int32 launchY, int32 targetX, int32 targetY, ActionType actionType)
-    {
-        int32 actionId = -1;
-        int32 totalBattleBoardGrids = UGlobalConstFunctionLibrary::boardSectionRow * UGlobalConstFunctionLibrary::maxCol;
-        if (actionType == ActionType::PlayCard)
-        {
-            bool sectionOnePlay = false;
-            int32 launchPlaySectionBoardY = launchY - UGlobalConstFunctionLibrary::graveCardSectionRow;
-            if (launchY > UGlobalConstFunctionLibrary::graveCardSectionRow + UGlobalConstFunctionLibrary::playCardSectionRow)
-            {
-                launchPlaySectionBoardY = launchY -
-                    UGlobalConstFunctionLibrary::graveCardSectionRow -
-                    UGlobalConstFunctionLibrary::playCardSectionRow -
-                    UGlobalConstFunctionLibrary::boardSectionRow;
-                sectionOnePlay = true;
-            }
-            int32 launchGridNb = launchPlaySectionBoardY * UGlobalConstFunctionLibrary::maxCol + launchX;
-
-            int32 targetPlayBoardY = targetY -
-                UGlobalConstFunctionLibrary::graveCardSectionRow -
-                UGlobalConstFunctionLibrary::playCardSectionRow;
-
-            if (!sectionOnePlay)
-            {
-                actionId = totalBattleBoardGrids * launchGridNb +
-                    targetPlayBoardY * UGlobalConstFunctionLibrary::maxCol + targetX;
-            }
-            else
-            {
-                actionId = UGlobalConstFunctionLibrary::playCardSectionRow *
-                    UGlobalConstFunctionLibrary::maxCol *
-                    totalBattleBoardGrids +
-                    totalBattleBoardGrids * launchGridNb +
-                    targetPlayBoardY * UGlobalConstFunctionLibrary::maxCol + targetX;
-            }
-        }
-        else if (actionType == ActionType::LaunchSkill)
-        {
-            int32 totalPlayCardActionNb = UGlobalConstFunctionLibrary::playCardSectionRow *
-                UGlobalConstFunctionLibrary::maxCol *
-                totalBattleBoardGrids * 2;
-
-            int32 launchPlayBoardY = launchY -
-                UGlobalConstFunctionLibrary::playCardSectionRow -
-                UGlobalConstFunctionLibrary::graveCardSectionRow;
-
-            int32 launchGridNb = launchPlayBoardY * UGlobalConstFunctionLibrary::maxCol + launchX;
-
-            int32 targetPlayBoardY = targetY -
-                UGlobalConstFunctionLibrary::playCardSectionRow -
-                UGlobalConstFunctionLibrary::graveCardSectionRow;
-
-            actionId = totalBattleBoardGrids * launchGridNb +
-                targetPlayBoardY * UGlobalConstFunctionLibrary::maxCol + targetX +
-                totalPlayCardActionNb;
-        }
-        else if (actionType == ActionType::Move)
-        {
-            int32 totalPlayCardActionNb = UGlobalConstFunctionLibrary::playCardSectionRow *
-                UGlobalConstFunctionLibrary::maxCol *
-                totalBattleBoardGrids * 2;
-
-            int32 totalLaunchSkillActionNb = UGlobalConstFunctionLibrary::boardSectionRow *
-                UGlobalConstFunctionLibrary::maxCol *
-                UGlobalConstFunctionLibrary::boardSectionRow *
-                UGlobalConstFunctionLibrary::maxCol;
-
-            int32 launchPlayBoardY = launchY -
-                UGlobalConstFunctionLibrary::playCardSectionRow -
-                UGlobalConstFunctionLibrary::graveCardSectionRow;
-
-            int32 targetPlayBoardY = targetY -
-                UGlobalConstFunctionLibrary::graveCardSectionRow -
-                UGlobalConstFunctionLibrary::playCardSectionRow;
-
-            int32 launchGridNb = launchPlayBoardY * UGlobalConstFunctionLibrary::maxCol + launchX;
-
-            actionId = totalBattleBoardGrids * launchGridNb +
-                targetPlayBoardY * UGlobalConstFunctionLibrary::maxCol + targetX +
-                totalPlayCardActionNb + totalLaunchSkillActionNb;
-        }
-        return actionId;
-    }
-
-    void ActionDecoding(int32 actionId, int32& launchX, int32& launchY, int32& targetX, int32& targetY, ActionType& actionType)
-    {
-        int32 totalPlayBoardGridNb = UGlobalConstFunctionLibrary::boardSectionRow * UGlobalConstFunctionLibrary::maxCol;
-
-        int32 totalPlayCardActions = UGlobalConstFunctionLibrary::playCardSectionRow * UGlobalConstFunctionLibrary::maxCol *
-            UGlobalConstFunctionLibrary::boardSectionRow * UGlobalConstFunctionLibrary::maxCol * 2;
-
-        int32 totalLaunchSkillActions = UGlobalConstFunctionLibrary::maxCol * UGlobalConstFunctionLibrary::boardSectionRow *
-            UGlobalConstFunctionLibrary::maxCol * UGlobalConstFunctionLibrary::boardSectionRow;
-
-        int32 totalMoveActions = UGlobalConstFunctionLibrary::maxCol * UGlobalConstFunctionLibrary::boardSectionRow *
-            UGlobalConstFunctionLibrary::maxCol * UGlobalConstFunctionLibrary::boardSectionRow -
-            UGlobalConstFunctionLibrary::maxCol * UGlobalConstFunctionLibrary::boardSectionRow;
-        if (actionId < totalPlayCardActions)
-        {
-            // which means it's play card action
-            int32 playCardSectionGridNb = FMath::FloorToInt((float)actionId / (float)totalPlayBoardGridNb);
-            bool sectionOnePlay = false;
-            if (playCardSectionGridNb > UGlobalConstFunctionLibrary::playCardSectionRow * UGlobalConstFunctionLibrary::maxCol)
-            {
-                // which means this action is launched by section one
-                playCardSectionGridNb -= UGlobalConstFunctionLibrary::playCardSectionRow * UGlobalConstFunctionLibrary::maxCol;
-                sectionOnePlay = true;
-            }
-            int32 targetPlayBoardGridNb = actionId % totalPlayBoardGridNb;
-
-            int32 launchPlaySectionBoardRow = FMath::FloorToInt((float)playCardSectionGridNb / (float)UGlobalConstFunctionLibrary::maxCol);
-            int32 launchPlaySectionBoardCol = playCardSectionGridNb % UGlobalConstFunctionLibrary::maxCol;
-
-            int32 targetPlayBoardRow = FMath::FloorToInt((float)targetPlayBoardGridNb / (float)UGlobalConstFunctionLibrary::maxCol);
-            int32 targetPlayBoardCol = targetPlayBoardGridNb % UGlobalConstFunctionLibrary::maxCol;
-
-            launchX = launchPlaySectionBoardCol;
-            if (!sectionOnePlay)
-            {
-                launchY = launchPlaySectionBoardRow + UGlobalConstFunctionLibrary::graveCardSectionRow;
-            }
-            else
-            {
-                launchY = UGlobalConstFunctionLibrary::graveCardSectionRow +
-                    UGlobalConstFunctionLibrary::playCardSectionRow +
-                    UGlobalConstFunctionLibrary::boardSectionRow +
-                    launchPlaySectionBoardRow;
-            }
-            targetX = targetPlayBoardCol;
-
-            targetY = targetPlayBoardRow +
-                UGlobalConstFunctionLibrary::graveCardSectionRow +
-                UGlobalConstFunctionLibrary::playCardSectionRow;
-
-            actionType = ActionType::PlayCard;
-        }
-        else if (actionId < totalPlayCardActions + totalLaunchSkillActions)
-        {
-            // which means it's launch skill action
-            int32 launchSkillActionId = actionId - totalPlayCardActions;
-
-            int32 launchPlayBoardGridNb = FMath::FloorToInt((float)launchSkillActionId / (float)totalPlayBoardGridNb);
-            int32 targetPlayBoardGridNb = launchSkillActionId % totalPlayBoardGridNb;
-
-            int32 launchPlayBoardRow = FMath::FloorToInt((float)launchPlayBoardGridNb / (float)UGlobalConstFunctionLibrary::maxCol);
-            int32 launchPlayBoardCol = launchPlayBoardGridNb % UGlobalConstFunctionLibrary::maxCol;
-
-            int32 targetPlayBoardRow = FMath::FloorToInt((float)targetPlayBoardGridNb / (float)UGlobalConstFunctionLibrary::maxCol);
-            int32 targetPlayBoardCol = targetPlayBoardGridNb % UGlobalConstFunctionLibrary::maxCol;
-
-            launchX = launchPlayBoardCol;
-
-            launchY = launchPlayBoardRow +
-                UGlobalConstFunctionLibrary::graveCardSectionRow +
-                UGlobalConstFunctionLibrary::playCardSectionRow;
-
-            targetX = targetPlayBoardCol;
-
-            targetY = targetPlayBoardRow +
-                UGlobalConstFunctionLibrary::graveCardSectionRow +
-                UGlobalConstFunctionLibrary::playCardSectionRow;
-
-            actionType = ActionType::LaunchSkill;
-        }
-        else if (actionId < totalPlayCardActions + totalLaunchSkillActions + totalMoveActions)
-        {
-            // which means it's move action
-            int32 moveActionId = actionId - totalPlayCardActions - totalLaunchSkillActions;
-
-            int32 launchPlayBoardGridNb = FMath::FloorToInt((float)moveActionId / (float)totalPlayBoardGridNb);
-            int32 targetPlayBoardGridNb = moveActionId % totalPlayBoardGridNb;
-
-            int32 launchPlayBoardRow = FMath::FloorToInt((float)launchPlayBoardGridNb / (float)UGlobalConstFunctionLibrary::maxCol);
-            int32 launchPlayBoardCol = launchPlayBoardGridNb % UGlobalConstFunctionLibrary::maxCol;
-
-            int32 targetPlayBoardRow = FMath::FloorToInt((float)targetPlayBoardGridNb / (float)UGlobalConstFunctionLibrary::maxCol);
-            int32 targetPlayBoardCol = targetPlayBoardGridNb % UGlobalConstFunctionLibrary::maxCol;
-
-            launchX = launchPlayBoardCol;
-
-            launchY = launchPlayBoardRow +
-                UGlobalConstFunctionLibrary::graveCardSectionRow +
-                UGlobalConstFunctionLibrary::playCardSectionRow;
-
-            targetX = targetPlayBoardCol;
-            targetY = targetPlayBoardRow +
-                UGlobalConstFunctionLibrary::graveCardSectionRow +
-                UGlobalConstFunctionLibrary::playCardSectionRow;
-
-            actionType = ActionType::Move;
-        }
-        else
-        {
-            launchX = 0;
-            launchY = 0;
-            targetX = 0;
-            targetY = 0;
-            actionType = ActionType::EndRound;
-        }
-    }
-
-    void GetLegalMoves(uint8 sectionNb, TArray<int32>& legalMoves)
-    {
-        for (int32 row = 0; row < UGlobalConstFunctionLibrary::boardSectionRow; row++)
-        {
-            for (int32 col = 0; col < UGlobalConstFunctionLibrary::maxCol; col++)
-            {
-                int32 checkRow = UGlobalConstFunctionLibrary::graveCardSectionRow +
-                    UGlobalConstFunctionLibrary::playCardSectionRow + row;
-                if (boardRows[checkRow].colCardInfos[col] == -1)
-                {
-                    // which means target grid is empty, we can play card at that grid
-                    for (int32 playSectionBoardRow = 0; playSectionBoardRow < UGlobalConstFunctionLibrary::playCardSectionRow; playSectionBoardRow++)
-                    {
-                        for (int32 playCardCol = 0; playCardCol < UGlobalConstFunctionLibrary::maxCol; playCardCol++)
-                        {
-                            if (sectionNb == 0 && row < UGlobalConstFunctionLibrary::boardSectionRow / 2)
-                            {
-                                if (boardRows[playSectionBoardRow +
-                                    UGlobalConstFunctionLibrary::graveCardSectionRow].colCardInfos[playCardCol] == -1)
-                                {
-                                    continue;
-                                }
-
-                                int32 actionId = ActionCoding(playCardCol, playSectionBoardRow + UGlobalConstFunctionLibrary::graveCardSectionRow, col, checkRow, ActionType::PlayCard);
-                                legalMoves.Add(actionId);
-                            }
-                            else if (sectionNb == 1 && row > UGlobalConstFunctionLibrary::boardSectionRow / 2)
-                            {
-                                if (boardRows[playSectionBoardRow +
-                                    UGlobalConstFunctionLibrary::graveCardSectionRow +
-                                    UGlobalConstFunctionLibrary::playCardSectionRow +
-                                    UGlobalConstFunctionLibrary::boardSectionRow].colCardInfos[playCardCol] == -1)
-                                {
-                                    continue;
-                                }
-
-                                int32 launchRow = UGlobalConstFunctionLibrary::graveCardSectionRow +
-                                    UGlobalConstFunctionLibrary::playCardSectionRow +
-                                    UGlobalConstFunctionLibrary::boardSectionRow +
-                                    playSectionBoardRow;
-                                int32 actionId = ActionCoding(
-                                    playCardCol,
-                                    launchRow,
-                                    col,
-                                    checkRow,
-                                    ActionType::PlayCard);
-                                legalMoves.Add(actionId);
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    // which means this grid is not empty, we could launch skill or move card
-                    // check possible skills
-                    FInstanceCardInfo cardInfo = allInstanceCardInfo[boardRows[checkRow].colCardInfos[col]];
-                    if ((cardInfo.curAvailableTimes == -1 || cardInfo.curAvailableTimes > 0) &&
-                        (cardInfo.curCoolDown == -1 || cardInfo.curCoolDown == 0))
-                    {
-                        FEffectInfo effectInfo;
-                        TArray<FGridXY> possibleGrids;
-                        if (effectInfo.targetGeoType.Contains("&"))
-                        {
-                            TArray<FString> targetGeoTypes;
-                            effectInfo.targetGeoType.ParseIntoArray(targetGeoTypes, TEXT("&"), true);
-                            possibleGrids = UCheckTargetGeoRuleLibrary::GetPossibleTargetGeoGrids(
-                                targetGeoTypes[0],
-                                allInstanceCardInfo,
-                                boardRows,
-                                effectInfo,
-                                col,
-                                checkRow,
-                                cardInfo.originCardInfo.attackDistance);
-
-                            UCheckTargetGeoRuleLibrary::CheckPossibleTargetLocateGeoGrids(
-                                targetGeoTypes[1],
-                                allInstanceCardInfo,
-                                boardRows,
-                                possibleGrids);
-                        }
-                        else
-                        {
-                            possibleGrids = UCheckTargetGeoRuleLibrary::GetPossibleTargetGeoGrids(
-                                effectInfo.targetGeoType,
-                                allInstanceCardInfo,
-                                boardRows,
-                                effectInfo,
-                                col,
-                                checkRow,
-                                cardInfo.originCardInfo.attackDistance);
-                        }
-
-                        int32 checkGridNb = 0;
-                        while (checkGridNb < possibleGrids.Num())
-                        {
-                            // do prereq check first
-                            if (effectInfo.prereqType != "none")
-                            {
-                                if (!UCheckPrereqFunctionLibrary::CheckPrereqRule(
-                                    effectInfo.prereqType,
-                                    col,
-                                    checkRow,
-                                    possibleGrids[checkGridNb].x,
-                                    possibleGrids[checkGridNb].y,
-                                    cardInfo.camp,
-                                    effectInfo.prereqCampType))
-                                {
-                                    possibleGrids.RemoveAt(checkGridNb);
-                                    continue;
-                                }
-                            }
-
-                            if (effectInfo.prereqTagCondition != "none")
-                            {
-                                if (!UCheckPrereqTagFunctionLibrary::CheckPrereqTagRule(
-                                    allInstanceCardInfo,
-                                    boardRows,
-                                    effectInfo,
-                                    col,
-                                    checkRow))
-                                {
-                                    possibleGrids.RemoveAt(checkGridNb);
-                                    continue;
-                                }
-                            }
-
-                            checkGridNb += 1;
-                        }
-
-                        for (int32 i = 0; i < possibleGrids.Num(); i++)
-                        {
-                            int32 actionId = ActionCoding(
-                                col,
-                                checkRow,
-                                possibleGrids[i].x,
-                                possibleGrids[i].y,
-                                ActionType::LaunchSkill);
-                            legalMoves.Add(actionId);
-                        }
-                    }
-
-
-                    // check move action
-                    TArray<FGridXY> possibleMoveGrids = UCheckTargetGeoRuleLibrary::GetPossibleMoveGrids(
-                        cardInfo.originCardInfo.moveType,
-                        allInstanceCardInfo,
-                        boardRows,
-                        col,
-                        checkRow,
-                        cardInfo.originCardInfo.moveDistance);
-
-                    for (int32 i = 0; i < possibleMoveGrids.Num(); i++)
-                    {
-                        int32 actionId = ActionCoding(
-                            col,
-                            checkRow,
-                            possibleMoveGrids[i].x,
-                            possibleMoveGrids[i].y,
-                            ActionType::Move);
-
-                        legalMoves.Add(actionId);
-                    }
-                }
-            }
-        }
-    }
-
-    void GetLegalActionProbsBoardValue(bool simulateFlag, uint8 sectionNb, int32* boardState, TMap<int32, float>& legalActionProbs, float& boardValue)
-    {
-        TArray<float> actionProbs;
-        if (simulateFlag)
-        {
-            float aveProb = 1.0f / (float)UGlobalConstFunctionLibrary::totalActionNb;
-            actionProbs.Init(aveProb, UGlobalConstFunctionLibrary::totalActionNb);
-            boardValue = 1.0f;
-        }
-        else
-        {
-
-        }
-
-        TArray<int32> legalActionIds;
-        GetLegalMoves(sectionNb, legalActionIds);
-
-        for (int32 i = 0; i < legalActionIds.Num(); i++)
-        {
-            legalActionProbs.Add(legalActionIds[i], actionProbs[legalActionIds[i]]);
-        }
-    }
-
-
-
-    ActionType TriggerAction(
-        uint8 sectionNb,
-        int32 actionId,
-        TArray<FRenderEffectRound>& renderEffectRoundList)
-    {
-        int32 launchX = 0;
-        int32 launchY = 0;
-        int32 targetX = 0;
-        int32 targetY = 0;
-        ActionType actionType = ActionType::EndRound;
-        ActionDecoding(actionId, launchX, launchY, targetX, targetY, actionType);
-        if (actionType == ActionType::LaunchSkill)
-        {
-            TriggerManualSkill(
-                launchX,
-                launchY,
-                targetX,
-                targetY,
-                renderEffectRoundList);
-        }
-        else if (actionType == ActionType::PlayCard)
-        {
-            TriggerPlayCard(
-                launchX,
-                launchY,
-                targetX,
-                targetY,
-                renderEffectRoundList);
-        }
-        else if (actionType == ActionType::Move)
-        {
-
-        }
-        else if (actionType == ActionType::EndRound)
-        {
-
-        }
-
-        return actionType;
-    }
-
-
-
-    void TriggerPlayCard(
-        int32 launchX,
-        int32 launchY,
-        int32 targetX,
-        int32 targetY,
-        TArray<FRenderEffectRound>& renderEffectRoundList)
-    {
-        int32 playCardUid = boardRows[launchY].colCardInfos[launchX];
-        boardRows[targetY].colCardInfos[targetX] = playCardUid;
-        boardRows[launchY].colCardInfos[launchX] = -1;
-        allInstanceCardInfo[playCardUid].curCol = targetX;
-        allInstanceCardInfo[playCardUid].curRow = targetY;
-        // Trigger play card skill
-        if (allInstanceCardInfo[playCardUid].originCardInfo.launchType == "auto")
-        {
-            TriggerPlayCardSkill(targetX, targetY, renderEffectRoundList);
-        }
-    }
-
-    void TriggerPlayCardSkill(
-        int32 launchX,
-        int32 launchY,
-        TArray<FRenderEffectRound>& renderEffectRoundList)
-    {
-        int32 launchUid = boardRows[launchY].colCardInfos[launchX];
-        FEffectInfo effectInfo;
-        effectInfo.launchType = allInstanceCardInfo[launchUid].originCardInfo.launchType;
-        effectInfo.coolDown = allInstanceCardInfo[launchUid].originCardInfo.coolDown;
-        effectInfo.availableTimes = allInstanceCardInfo[launchUid].originCardInfo.availableTimes;
-        effectInfo.launchGeoType = allInstanceCardInfo[launchUid].originCardInfo.launchGeoType;
-        effectInfo.autoSkillTargetGeoType = allInstanceCardInfo[launchUid].originCardInfo.autoSkillTargetGeoType;
-        effectInfo.targetGeoType = allInstanceCardInfo[launchUid].originCardInfo.targetGeoType;
-        effectInfo.aoeType = allInstanceCardInfo[launchUid].originCardInfo.aoeType;
-        effectInfo.targetCamp = allInstanceCardInfo[launchUid].originCardInfo.targetCamp;
-        effectInfo.effectType = allInstanceCardInfo[launchUid].originCardInfo.effectType;
-        effectInfo.effectAffix = allInstanceCardInfo[launchUid].originCardInfo.effectAffix;
-        effectInfo.effectAffixCamp = allInstanceCardInfo[launchUid].originCardInfo.effectAffixCamp;
-        effectInfo.prereqTagCondition = allInstanceCardInfo[launchUid].originCardInfo.prereqTagCondition;
-        effectInfo.prereqTag = allInstanceCardInfo[launchUid].originCardInfo.prereqTag;
-        effectInfo.prereqCampType = allInstanceCardInfo[launchUid].originCardInfo.prereqCampType;
-        effectInfo.prereqType = allInstanceCardInfo[launchUid].originCardInfo.prereqType;
-        effectInfo.passivePrereqType = allInstanceCardInfo[launchUid].originCardInfo.passivePrereqType;
-        effectInfo.values = allInstanceCardInfo[launchUid].originCardInfo.values;
-
-        FEffectResultDict effectResultInfo = UCoreGameBlueprintFunctionLibrary::LaunchPlayCardSkillDict(allInstanceCardInfo, boardRows, effectInfo, launchX, launchY);
-        if (effectResultInfo.success)
-        {
-            effectResultInfo.triggerRound = 0;
-            TriggerPassiveEffect(effectResultInfo, renderEffectRoundList);
-        }
-    }
-
-    void TriggerRoundEndSkill(
-        int32 launchX,
-        int32 launchY,
-        int32 targetX,
-        int32 targetY,
-        TArray<FRenderEffectRound>& renderEffectRoundList)
-    {
-
-    }
-
-    void TriggerManualSkill(
-        int32 launchX,
-        int32 launchY,
-        int32 targetX,
-        int32 targetY,
-        TArray<FRenderEffectRound>& renderEffectRoundList)
-    {
-        int32 launchUid = boardRows[launchY].colCardInfos[launchX];
-        FEffectInfo effectInfo;
-        effectInfo.launchType = allInstanceCardInfo[launchUid].originCardInfo.launchType;
-        effectInfo.coolDown = allInstanceCardInfo[launchUid].originCardInfo.coolDown;
-        effectInfo.availableTimes = allInstanceCardInfo[launchUid].originCardInfo.availableTimes;
-        effectInfo.launchGeoType = allInstanceCardInfo[launchUid].originCardInfo.launchGeoType;
-        effectInfo.autoSkillTargetGeoType = allInstanceCardInfo[launchUid].originCardInfo.autoSkillTargetGeoType;
-        effectInfo.targetGeoType = allInstanceCardInfo[launchUid].originCardInfo.targetGeoType;
-        effectInfo.aoeType = allInstanceCardInfo[launchUid].originCardInfo.aoeType;
-        effectInfo.targetCamp = allInstanceCardInfo[launchUid].originCardInfo.targetCamp;
-        effectInfo.effectType = allInstanceCardInfo[launchUid].originCardInfo.effectType;
-        effectInfo.effectAffix = allInstanceCardInfo[launchUid].originCardInfo.effectAffix;
-        effectInfo.effectAffixCamp = allInstanceCardInfo[launchUid].originCardInfo.effectAffixCamp;
-        effectInfo.prereqTagCondition = allInstanceCardInfo[launchUid].originCardInfo.prereqTagCondition;
-        effectInfo.prereqTag = allInstanceCardInfo[launchUid].originCardInfo.prereqTag;
-        effectInfo.prereqCampType = allInstanceCardInfo[launchUid].originCardInfo.prereqCampType;
-        effectInfo.prereqType = allInstanceCardInfo[launchUid].originCardInfo.prereqType;
-        effectInfo.passivePrereqType = allInstanceCardInfo[launchUid].originCardInfo.passivePrereqType;
-        effectInfo.values = allInstanceCardInfo[launchUid].originCardInfo.values;
-
-        FEffectResultDict effectResultInfo = UCoreGameBlueprintFunctionLibrary::LaunchSkillDict(allInstanceCardInfo, boardRows, effectInfo, launchX, launchY, targetX, targetY);
-        if (effectResultInfo.success)
-        {
-            effectResultInfo.triggerRound = 0;
-            TriggerPassiveEffect(effectResultInfo, renderEffectRoundList);
-        }
-    }
-
-    void TriggerPassiveEffect(
-        FEffectResultDict effectResultDict,
-        TArray<FRenderEffectRound>& renderEffectRoundList)
-    {
-        // Traverse all cards that are modified, try to trigger their passive effects
-        for (int32 i = 0; i < effectResultDict.modifyUids.Num(); i++)
-        {
-            if (curRoundPassiveEffectTriggeredUids.Contains(effectResultDict.modifyUids[i]))
-            {
-                continue;
-            }
-
-            int32 modifyGridX = effectResultDict.modifyGrids[i].x;
-            int32 modifyGridY = effectResultDict.modifyGrids[i].y;
-            if (effectResultDict.modifyUids[i] != -1 &&
-                allInstanceCardInfo[effectResultDict.modifyUids[i]].originCardInfo.launchType == "passive" &&
-                effectResultDict.modifyType == allInstanceCardInfo[effectResultDict.modifyUids[i]].originCardInfo.passivePrereqType)
-            {
-                FEffectInfo secondaryEffectInfo;
-                FEffectResultDict secondaryEffectResult = UPassiveEffectFunctionLibrary::GetPassiveEffect(
-                    allInstanceCardInfo,
-                    boardRows,
-                    secondaryEffectInfo,
-                    modifyGridX,
-                    modifyGridY,
-                    effectResultDict.triggerGridX,
-                    effectResultDict.triggerGridY,
-                    curRoundPassiveEffectTriggeredUids
-                );
-                secondaryEffectResult.triggerRound = effectResultDict.triggerRound + 1;
-
-                FRenderEffectDict renderEffectDict(secondaryEffectResult);
-                if (secondaryEffectResult.triggerRound >= renderEffectRoundList.Num())
-                {
-                    FRenderEffectRound renderEffectRound;
-                    renderEffectRound.renderEffectList.Add(renderEffectDict);
-                    renderEffectRoundList.Add(renderEffectRound);
-                }
-                else
-                {
-                    // which means there's already an equal RenderEffectRound exist
-                    if (renderEffectRoundList[secondaryEffectResult.triggerRound].renderTime < secondaryEffectResult.renderTime)
-                    {
-                        renderEffectRoundList[secondaryEffectResult.triggerRound].renderTime = secondaryEffectResult.renderTime;
-                    }
-                    renderEffectRoundList[secondaryEffectResult.triggerRound].renderEffectList.Add(renderEffectDict);
-                }
-
-
-                curRoundPassiveEffectTriggeredUids.Add(effectResultDict.modifyUids[i]);
-
-                if (secondaryEffectResult.modifyUids.Num() > 0)
-                {
-                    TriggerPassiveEffect(secondaryEffectResult, renderEffectRoundList);
-                }
-            }
-        }
-    }
-
-
-
-
-    void GetSkillLaunchTypeCoding(FString launchType, int32* coding)
-    {
-        if (launchType == "auto")																			coding[0] = 1;
-        else if (launchType == "autoRoundEnd")						coding[1] = 1;
-        else if (launchType == "manual")												coding[2] = 1;
-        else if (launchType == "manualImmediate")			coding[3] = 1;
-        else if (launchType == "passive")											coding[4] = 1;
-        else if (launchType == "playCard")										coding[5] = 1;
-    }
-    void GetAutoSkillGeoTargetCoding(FString geoTargetType, int32* coding)
-    {
-        if (geoTargetType == "self")																																coding[0] = 1;
-        else if (geoTargetType == "left")																											coding[1] = 1;
-        else if (geoTargetType == "right")																										coding[2] = 1;
-        else if (geoTargetType == "up")																													coding[3] = 1;
-        else if (geoTargetType == "down")																											coding[4] = 1;
-        else if (geoTargetType == "leftLine")																							coding[5] = 1;
-        else if (geoTargetType == "rightLine")																						coding[6] = 1;
-        else if (geoTargetType == "upLine")																									coding[7] = 1;
-        else if (geoTargetType == "downLine")																							coding[8] = 1;
-        else if (geoTargetType == "upLeft")																									coding[9] = 1;
-        else if (geoTargetType == "upRight")																								coding[10] = 1;
-        else if (geoTargetType == "downLeft")																							coding[11] = 1;
-        else if (geoTargetType == "downRight")																						coding[12] = 1;
-        else if (geoTargetType == "upLeftDiagonal")																	coding[13] = 1;
-        else if (geoTargetType == "upRightDiagonal")																coding[14] = 1;
-        else if (geoTargetType == "downLeftDiagonal")															coding[15] = 1;
-        else if (geoTargetType == "downRightDiagonal")														coding[16] = 1;
-    }
-    void GetSkillLaunchGeoCoding(FString launchGeoType, int32* coding)
-    {
-        if (launchGeoType == "point")															coding[0] = 1;
-        else if (launchGeoType == "three")										coding[1] = 1;
-        else if (launchGeoType == "horn")											coding[2] = 1;
-        else if (launchGeoType == "triangle")							coding[3] = 1;
-        else if (launchGeoType == "obliqueCross")			coding[4] = 1;
-        else if (launchGeoType == "normalCross")				coding[5] = 1;
-        else if (launchGeoType == "selfSection")				coding[6] = 1;
-        else if (launchGeoType == "selfFrontLine")		coding[7] = 1;
-        else if (launchGeoType == "oppoSection")				coding[8] = 1;
-        else if (launchGeoType == "oppoFrontLine")		coding[9] = 1;
-    }
-    void GetSkillTargetGeoCoding(FString targetGeoType, int32* coding)
-    {
-        if (targetGeoType == "line")																			coding[0] = 1;
-        else if (targetGeoType == "seperated")									coding[1] = 1;
-        else if (targetGeoType == "diagonal")										coding[2] = 1;
-        else if (targetGeoType == "diagonalSeperated") coding[3] = 1;
-        else if (targetGeoType == "connect")											coding[4] = 1;
-        else if (targetGeoType == "arbitrary")									coding[5] = 1;
-    }
-    void GetSkillTargetLocateGeoCoding(FString targetLocateGeoType, int32* coding)
-    {
-        if (targetLocateGeoType == "three")																	coding[0] = 1;
-        else if (targetLocateGeoType == "horn")													coding[1] = 1;
-        else if (targetLocateGeoType == "triangle")									coding[2] = 1;
-        else if (targetLocateGeoType == "obliqueCross")					coding[3] = 1;
-        else if (targetLocateGeoType == "normalCross")						coding[4] = 1;
-        else if (targetLocateGeoType == "selfSection")						coding[5] = 1;
-        else if (targetLocateGeoType == "selfFrontLine")				coding[6] = 1;
-        else if (targetLocateGeoType == "oppoSection")						coding[7] = 1;
-        else if (targetLocateGeoType == "oppoFrontLine")				coding[8] = 1;
-    }
-    void GetSkillAoeCoding(FString aoeType, int32* coding)
-    {
-        if (aoeType == "point")																	coding[0] = 1;
-        else if (aoeType == "sweep")												coding[1] = 1;
-        else if (aoeType == "H3")															coding[2] = 1;
-        else if (aoeType == "V3")															coding[3] = 1;
-        else if (aoeType == "normalCross")						coding[4] = 1;
-        else if (aoeType == "obliqueCross")					coding[5] = 1;
-    }
-    void GetSkillTargetCampCoding(FString targetCampType, int32* coding)
-    {
-        if (targetCampType == "self")							coding[0] = 1;
-        else if (targetCampType == "oppo")		coding[1] = 1;
-        else if (targetCampType == "none")		coding[2] = 1;
-    }
-    void GetSkillEffectCoding(FString effectType, int32* coding)
-    {
-        if (effectType == "hurt")																											coding[0] = 1;
-        else if (effectType == "heal")																						coding[1] = 1;
-        else if (effectType == "increaseDefence")											coding[2] = 1;
-        else if (effectType == "replaceDefence")												coding[3] = 1;
-        else if (effectType == "increaseSelfDefence")							coding[4] = 1;
-        else if (effectType == "giveTempArmor")													coding[5] = 1;
-        else if (effectType == "giveArmor")																	coding[6] = 1;
-        else if (effectType == "tempArmor")																	coding[7] = 1;
-        else if (effectType == "defenceHurt")															coding[8] = 1;
-        else if (effectType == "defenceHeal")															coding[9] = 1;
-        else if (effectType == "defenceDetonate")											coding[10] = 1;
-        else if (effectType == "useArmorHurt")														coding[11] = 1;
-        else if (effectType == "useArmorHeal")														coding[12] = 1;
-        else if (effectType == "armorDetonate")													coding[13] = 1;
-        else if (effectType == "armorDetonateSilence")						coding[14] = 1;
-        else if (effectType == "armorDetonateWound")								coding[15] = 1;
-        else if (effectType == "armorDetonatePoison")							coding[16] = 1;
-        else if (effectType == "armorDetonateSublime")						coding[17] = 1;
-        else if (effectType == "switchCamp")																coding[18] = 1;
-        else if (effectType == "capture")																			coding[19] = 1;
-        else if (effectType == "hurtTransfer")														coding[20] = 1;
-        else if (effectType == "hurtLink")																		coding[21] = 1;
-        else if (effectType == "healTransfer")														coding[22] = 1;
-        else if (effectType == "healLink")																		coding[23] = 1;
-        else if (effectType == "sublimeTransfer")											coding[24] = 1;
-        else if (effectType == "silenceTransfer")											coding[25] = 1;
-        else if (effectType == "woundTransfer")													coding[26] = 1;
-        else if (effectType == "wound")																					coding[27] = 1;
-        else if (effectType == "convertSublimeToWound")					coding[28] = 1;
-        else if (effectType == "transferWound")													coding[29] = 1;
-        else if (effectType == "revenge")																			coding[30] = 1;
-        else if (effectType == "revengeWound")														coding[31] = 1;
-        else if (effectType == "repayHeal")																	coding[32] = 1;
-        else if (effectType == "repaySublime")														coding[33] = 1;
-        else if (effectType == "devour")																				coding[34] = 1;
-        else if (effectType == "devourSublime")													coding[35] = 1;
-        else if (effectType == "devourButWound")												coding[36] = 1;
-        else if (effectType == "deadWishConvert")											coding[37] = 1;
-        else if (effectType == "deadWishHurt")														coding[38] = 1;
-        else if (effectType == "deadWishSpawnUp")											coding[39] = 1;
-        else if (effectType == "deadWishSpawnDown")									coding[40] = 1;
-        else if (effectType == "deadWishSpawnRight")								coding[41] = 1;
-        else if (effectType == "deadWishSpawnLeft")									coding[42] = 1;
-        else if (effectType == "deadWishDestroyUp")									coding[43] = 1;
-        else if (effectType == "deadWishDestroyDown")							coding[44] = 1;
-        else if (effectType == "deadWishDestroyRight")						coding[45] = 1;
-        else if (effectType == "deadWishDestroyLeft")							coding[46] = 1;
-        else if (effectType == "deadWishHeal")														coding[47] = 1;
-        else if (effectType == "deadWishHealUp")												coding[48] = 1;
-        else if (effectType == "deadWishHealDown")										coding[49] = 1;
-        else if (effectType == "deadWishHealRight")									coding[50] = 1;
-        else if (effectType == "deadWishHealLeft")										coding[51] = 1;
-        else if (effectType == "deadWishSublime")											coding[52] = 1;
-        else if (effectType == "deadWishTackle")												coding[53] = 1;
-        else if (effectType == "deadWishWound")													coding[54] = 1;
-        else if (effectType == "explode")																			coding[55] = 1;
-        else if (effectType == "explodeToPoison")											coding[56] = 1;
-        else if (effectType == "explodeToWound")												coding[57] = 1;
-        else if (effectType == "exchange")																		coding[58] = 1;
-        else if (effectType == "drag")																						coding[59] = 1;
-        else if (effectType == "push") coding[60] = 1;
-        else if (effectType == "sublime") coding[61] = 1;
-        else if (effectType == "lock") coding[62] = 1;
-        else if (effectType == "tempLock") coding[63] = 1;
-        else if (effectType == "purify") coding[64] = 1;
-        else if (effectType == "spawn") coding[65] = 1;
-        else if (effectType == "cloneUp") coding[66] = 1;
-        else if (effectType == "cloneDown") coding[67] = 1;
-        else if (effectType == "cloneRight") coding[68] = 1;
-        else if (effectType == "cloneLeft") coding[69] = 1;
-        else if (effectType == "silence") coding[70] = 1;
-        else if (effectType == "tempSilence") coding[71] = 1;
-        else if (effectType == "copyHp") coding[72] = 1;
-        else if (effectType == "summonFirstDeath") coding[73] = 1;
-        else if (effectType == "exchangeFirstDeath") coding[74] = 1;
-        else if (effectType == "tackle") coding[75] = 1;
-        else if (effectType == "summonFirstPile") coding[76] = 1;
-        else if (effectType == "exchangeFirstPile") coding[77] = 1;
-        else if (effectType == "duel") coding[78] = 1;
-        else if (effectType == "recover") coding[79] = 1;
-        else if (effectType == "assignHp") coding[80] = 1;
-        else if (effectType == "copyGraveFirstHp") coding[81] = 1;
-        else if (effectType == "healFromWound") coding[82] = 1;
-        else if (effectType == "copyFirstGraveHp") coding[83] = 1;
-        else if (effectType == "increaseFirstDeathHpDefence") coding[84] = 1;
-        else if (effectType == "increaseFirstPileHp") coding[85] = 1;
-
-    }
-    void GetSkillAffixCampCoding(FString affixCampType, int32* coding)
-    {
-        if (affixCampType == "self") coding[0] = 1;
-        else if (affixCampType == "oppo") coding[1] = 1;
-        else if (affixCampType == "none") coding[2] = 1;
-    }
-    void GetSkillAffixCoding(FString affixType, int32* coding)
-    {
-        
-    }
-    void GetSkillTagConditionCoding(FString tagCondition, int32* coding)
-    {
-        
-    }
-    void GetCardTagCoding(FString tag, int32* coding)
-    {
-        
-    }
-    void GetPrereqTagCoding(FString prereqTag, int32* coding)
-    {
-        
-    }
-    void GetPrereqCampCoding(FString prereqCampType, int32* coding)
-    {
-        
-    }
-    void GetSkillPrereqCoding(FString skillPrereq, int32* coding)
-    {
-        
-    }
-    void GetPassiveSkillPrereqTypeCoding(FString passiveSkillPrereq, int32* coding)
-    {
-        
-    }
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TArray<FBoardRow> boardRows;
+
+	UPROPERTY()
+		TMap<int32, FInstanceCardInfo> allInstanceCardInfo;
+
+	TArray<int32> curRoundPassiveEffectTriggeredUids;
+
+
+	UPROPERTY()
+		TArray<int32> sectionZeroHandCards;
+
+	UPROPERTY()
+		TArray<int32> sectionOneHandCards;
+
+	UPROPERTY()
+		TArray<int32> sectionZeroGraveCards;
+
+	UPROPERTY()
+		TArray<int32> sectionOneGraveCards;
+
+	void StateCoding(int32* boardCoding)
+	{
+		int32 channelLen = UGlobalConstFunctionLibrary::maxCol *
+			(UGlobalConstFunctionLibrary::playCardSectionRow * 2 +
+				UGlobalConstFunctionLibrary::graveCardSectionRow * 2 +
+				UGlobalConstFunctionLibrary::boardSectionRow);
+		for (int32 i = 0; i < boardRows.Num(); i++)
+		{
+			for (int32 j = 0; j < boardRows[i].colCardInfos.Num(); j++)
+			{
+				int32 uid = boardRows[i].colCardInfos[j];
+
+				if (uid == -1)
+				{
+					continue;
+				}
+
+				// For testing, only contains:
+				// skillLaunchType: auto manual
+				// targetGeoType: line, seperate
+				// targetCampType: self, oppo
+				// effectType: hurt
+				// launchGeoType: point, three
+				int32 testSkillLaunchTypeCoding[2] = { 0 };
+				int32 testAutoSkillTargetGeoTypeCoding[2] = { 0 };
+				int32 testTargetCampTypeCoding[2] = { 0 };
+				int32 testEffectTypeCoding[2] = { 0 };
+				int32 testLaunchGeoType[2] = { 0 };
+
+				GetTestSkillLaunchTypeCoding(allInstanceCardInfo[uid].originCardInfo.launchType, testSkillLaunchTypeCoding);
+				GetTestAutoSkillGeoTargetCoding(allInstanceCardInfo[uid].originCardInfo.autoSkillTargetGeoType, testAutoSkillTargetGeoTypeCoding);
+				GetSkillTargetCampCoding(allInstanceCardInfo[uid].originCardInfo.targetCamp, testTargetCampTypeCoding);
+				GetTestSkillEffectCoding(allInstanceCardInfo[uid].originCardInfo.effectType, testEffectTypeCoding);
+				GetTestSkillLaunchGeoCoding(allInstanceCardInfo[uid].originCardInfo.launchGeoType, testLaunchGeoType);
+
+				/*
+				int32 autoSkillGeoTargetTypeCoding[17] = { 0 };
+				int32 skillLaunchTypeCoding[6] = { 0 };
+				int32 skillLaunchGeoCoding[10] = { 0 };
+				int32 skillTargetGeoCoding[6] = { 0 };
+				int32 skillTargetLocateGeoCoding[9] = { 0 };
+				int32 skillAoeCoding[6] = { 0 };
+				int32 skillTargetCampCoding[3] = { 0 };
+				int32 skillEffectCoding[86] = { 0 };
+				int32 skillAffixCampCoding[3] = { 0 };
+				int32 skillAffixCoding[84] = { 0 };
+				int32 skillTagConditionCoding[5] = { 0 };
+				int32 cardTagCoding[42] = { 0 };
+				int32 skillPrereqTagCoding[42] = { 0 };
+				int32 skillPrereqCampCoding[3] = { 0 };
+				int32 skillPrereqCoding[126] = { 0 };
+				int32 passiveSkillPrereqCoding[11] = { 0 };
+				// 6
+				GetSkillLaunchTypeCoding(allInstanceCardInfo[uid].originCardInfo.launchType, skillLaunchTypeCoding);
+				GetAutoSkillGeoTargetCoding(allInstanceCardInfo[uid].originCardInfo.autoSkillTargetGeoType, autoSkillGeoTargetTypeCoding);
+				// 10
+				GetSkillLaunchGeoCoding(allInstanceCardInfo[uid].originCardInfo.launchGeoType, skillLaunchGeoCoding);
+				// 6
+				GetSkillTargetGeoCoding(allInstanceCardInfo[uid].originCardInfo.targetGeoType, skillTargetGeoCoding);
+				// 9
+				//uint8* skillTargetLocateGeoCoding = GetSkillTargetLocateGeoCoding(allInstanceCardInfo[uid].originCardInfo.target);
+				// 6
+				GetSkillAoeCoding(allInstanceCardInfo[uid].originCardInfo.aoeType, skillAoeCoding);
+				// 3
+
+				*/
+
+				// There are 10 channels, which means there are 10 images
+				// Every image size is W x H
+				int32 posInChannel = i * UGlobalConstFunctionLibrary::maxCol + j;
+				int32 skillLaunchTypeStartChannelNb = 0;
+				for (int32 k = 0; k < 2; k++)
+				{
+					boardCoding[channelLen * (k + skillLaunchTypeStartChannelNb) + posInChannel] = testSkillLaunchTypeCoding[k];
+				}
+
+				int32 autoSkillTargetGeoTypeStartChannelNb = 2;
+				for (int32 k = 0; k < 2; k++)
+				{
+					boardCoding[channelLen * (k + autoSkillTargetGeoTypeStartChannelNb) + posInChannel] = testAutoSkillTargetGeoTypeCoding[k];
+				}
+
+				int32 targetCampTypeStartChannelNb = 4;
+				for (int32 k = 0; k < 2; k++)
+				{
+					boardCoding[channelLen * (k + targetCampTypeStartChannelNb) + posInChannel] = testTargetCampTypeCoding[k];
+				}
+
+				int32 effectTypeStartChannelNb = 6;
+				for (int32 k = 0; k < 2; k++)
+				{
+					boardCoding[channelLen * (k + effectTypeStartChannelNb) + posInChannel] = testEffectTypeCoding[k];
+				}
+
+				int32 launchGeoTypeStartChannelNb = 8;
+				for (int32 k = 0; k < 2; k++)
+				{
+					boardCoding[channelLen * (k + launchGeoTypeStartChannelNb) + posInChannel] = testLaunchGeoType[k];
+				}
+			}
+		}
+	}
+
+	TArray<FString> StateStringCoding()
+	{
+		TArray<FString> boardState;
+		int32 totalGrids = UGlobalConstFunctionLibrary::maxCol * (UGlobalConstFunctionLibrary::boardSectionRow +
+			2 * UGlobalConstFunctionLibrary::playCardSectionRow +
+			2 * UGlobalConstFunctionLibrary::graveCardSectionRow);
+		boardState.Init("None", totalGrids);
+
+		for (int32 i = 0; i < boardRows.Num(); i++)
+		{
+			for (int32 j = 0; j < boardRows[i].colCardInfos.Num(); j++)
+			{
+				FString cardStateString = "None";
+				if (allInstanceCardInfo.Contains(boardRows[i].colCardInfos[j]))
+				{
+					int32 cardKey = boardRows[i].colCardInfos[j];
+					cardStateString = allInstanceCardInfo[cardKey].originCardInfo.cardName + "/";
+					cardStateString += FString::FromInt(allInstanceCardInfo[cardKey].curHp) + "/";
+					cardStateString += FString::FromInt(allInstanceCardInfo[cardKey].curDefence) + "/";
+					cardStateString += FString::FromInt(allInstanceCardInfo[cardKey].curCoolDown) + "/";
+					cardStateString += FString::FromInt(allInstanceCardInfo[cardKey].curAvailableTimes);
+				}
+				boardState.Add(cardStateString);
+			}
+		}
+
+		return boardState;
+	}
+
+	int32 ActionCoding(int32 launchX, int32 launchY, int32 targetX, int32 targetY, ActionType actionType)
+	{
+		int32 actionId = -1;
+		int32 totalBattleBoardGrids = UGlobalConstFunctionLibrary::boardSectionRow * UGlobalConstFunctionLibrary::maxCol;
+		if (actionType == ActionType::PlayCard)
+		{
+			bool sectionOnePlay = false;
+			int32 launchPlaySectionBoardY = launchY - UGlobalConstFunctionLibrary::graveCardSectionRow;
+			if (launchY > UGlobalConstFunctionLibrary::graveCardSectionRow + UGlobalConstFunctionLibrary::playCardSectionRow)
+			{
+				launchPlaySectionBoardY = launchY -
+					UGlobalConstFunctionLibrary::graveCardSectionRow -
+					UGlobalConstFunctionLibrary::playCardSectionRow -
+					UGlobalConstFunctionLibrary::boardSectionRow;
+				sectionOnePlay = true;
+			}
+			int32 launchGridNb = launchPlaySectionBoardY * UGlobalConstFunctionLibrary::maxCol + launchX;
+
+			int32 targetPlayBoardY = targetY -
+				UGlobalConstFunctionLibrary::graveCardSectionRow -
+				UGlobalConstFunctionLibrary::playCardSectionRow;
+
+			if (!sectionOnePlay)
+			{
+				actionId = totalBattleBoardGrids * launchGridNb +
+					targetPlayBoardY * UGlobalConstFunctionLibrary::maxCol + targetX;
+			}
+			else
+			{
+				actionId = UGlobalConstFunctionLibrary::playCardSectionRow *
+					UGlobalConstFunctionLibrary::maxCol *
+					totalBattleBoardGrids +
+					totalBattleBoardGrids * launchGridNb +
+					targetPlayBoardY * UGlobalConstFunctionLibrary::maxCol + targetX;
+			}
+		}
+		else if (actionType == ActionType::LaunchSkill)
+		{
+			int32 totalPlayCardActionNb = UGlobalConstFunctionLibrary::playCardSectionRow *
+				UGlobalConstFunctionLibrary::maxCol *
+				totalBattleBoardGrids * 2;
+
+			int32 launchPlayBoardY = launchY -
+				UGlobalConstFunctionLibrary::playCardSectionRow -
+				UGlobalConstFunctionLibrary::graveCardSectionRow;
+
+			int32 launchGridNb = launchPlayBoardY * UGlobalConstFunctionLibrary::maxCol + launchX;
+
+			int32 targetPlayBoardY = targetY -
+				UGlobalConstFunctionLibrary::playCardSectionRow -
+				UGlobalConstFunctionLibrary::graveCardSectionRow;
+
+			actionId = totalBattleBoardGrids * launchGridNb +
+				targetPlayBoardY * UGlobalConstFunctionLibrary::maxCol + targetX +
+				totalPlayCardActionNb;
+		}
+		else if (actionType == ActionType::Move)
+		{
+			int32 totalPlayCardActionNb = UGlobalConstFunctionLibrary::playCardSectionRow *
+				UGlobalConstFunctionLibrary::maxCol *
+				totalBattleBoardGrids * 2;
+
+			int32 totalLaunchSkillActionNb = UGlobalConstFunctionLibrary::boardSectionRow *
+				UGlobalConstFunctionLibrary::maxCol *
+				UGlobalConstFunctionLibrary::boardSectionRow *
+				UGlobalConstFunctionLibrary::maxCol;
+
+			int32 launchPlayBoardY = launchY -
+				UGlobalConstFunctionLibrary::playCardSectionRow -
+				UGlobalConstFunctionLibrary::graveCardSectionRow;
+
+			int32 targetPlayBoardY = targetY -
+				UGlobalConstFunctionLibrary::graveCardSectionRow -
+				UGlobalConstFunctionLibrary::playCardSectionRow;
+
+			int32 launchGridNb = launchPlayBoardY * UGlobalConstFunctionLibrary::maxCol + launchX;
+
+			actionId = totalBattleBoardGrids * launchGridNb +
+				targetPlayBoardY * UGlobalConstFunctionLibrary::maxCol + targetX +
+				totalPlayCardActionNb + totalLaunchSkillActionNb;
+		}
+		return actionId;
+	}
+
+	void ActionDecoding(int32 actionId, int32& launchX, int32& launchY, int32& targetX, int32& targetY, ActionType& actionType)
+	{
+		int32 totalPlayBoardGridNb = UGlobalConstFunctionLibrary::boardSectionRow * UGlobalConstFunctionLibrary::maxCol;
+
+		int32 totalPlayCardActions = UGlobalConstFunctionLibrary::playCardSectionRow * UGlobalConstFunctionLibrary::maxCol *
+			UGlobalConstFunctionLibrary::boardSectionRow * UGlobalConstFunctionLibrary::maxCol * 2;
+
+		int32 totalLaunchSkillActions = UGlobalConstFunctionLibrary::maxCol * UGlobalConstFunctionLibrary::boardSectionRow *
+			UGlobalConstFunctionLibrary::maxCol * UGlobalConstFunctionLibrary::boardSectionRow;
+
+		int32 totalMoveActions = UGlobalConstFunctionLibrary::maxCol * UGlobalConstFunctionLibrary::boardSectionRow *
+			UGlobalConstFunctionLibrary::maxCol * UGlobalConstFunctionLibrary::boardSectionRow -
+			UGlobalConstFunctionLibrary::maxCol * UGlobalConstFunctionLibrary::boardSectionRow;
+		if (actionId < totalPlayCardActions)
+		{
+			// which means it's play card action
+			int32 playCardSectionGridNb = FMath::FloorToInt((float)actionId / (float)totalPlayBoardGridNb);
+			bool sectionOnePlay = false;
+			if (playCardSectionGridNb >= UGlobalConstFunctionLibrary::playCardSectionRow * UGlobalConstFunctionLibrary::maxCol)
+			{
+				// which means this action is launched by section one
+				playCardSectionGridNb -= UGlobalConstFunctionLibrary::playCardSectionRow * UGlobalConstFunctionLibrary::maxCol;
+				sectionOnePlay = true;
+			}
+			int32 targetPlayBoardGridNb = actionId % totalPlayBoardGridNb;
+
+			int32 launchPlaySectionBoardRow = FMath::FloorToInt((float)playCardSectionGridNb / (float)UGlobalConstFunctionLibrary::maxCol);
+			int32 launchPlaySectionBoardCol = playCardSectionGridNb % UGlobalConstFunctionLibrary::maxCol;
+
+			int32 targetPlayBoardRow = FMath::FloorToInt((float)targetPlayBoardGridNb / (float)UGlobalConstFunctionLibrary::maxCol);
+			int32 targetPlayBoardCol = targetPlayBoardGridNb % UGlobalConstFunctionLibrary::maxCol;
+
+			launchX = launchPlaySectionBoardCol;
+			if (!sectionOnePlay)
+			{
+				launchY = launchPlaySectionBoardRow + UGlobalConstFunctionLibrary::graveCardSectionRow;
+			}
+			else
+			{
+				launchY = UGlobalConstFunctionLibrary::graveCardSectionRow +
+					UGlobalConstFunctionLibrary::playCardSectionRow +
+					UGlobalConstFunctionLibrary::boardSectionRow +
+					launchPlaySectionBoardRow;
+			}
+			targetX = targetPlayBoardCol;
+
+			targetY = targetPlayBoardRow +
+				UGlobalConstFunctionLibrary::graveCardSectionRow +
+				UGlobalConstFunctionLibrary::playCardSectionRow;
+
+			actionType = ActionType::PlayCard;
+		}
+		else if (actionId < totalPlayCardActions + totalLaunchSkillActions)
+		{
+			// which means it's launch skill action
+			int32 launchSkillActionId = actionId - totalPlayCardActions;
+
+			int32 launchPlayBoardGridNb = FMath::FloorToInt((float)launchSkillActionId / (float)totalPlayBoardGridNb);
+			int32 targetPlayBoardGridNb = launchSkillActionId % totalPlayBoardGridNb;
+
+			int32 launchPlayBoardRow = FMath::FloorToInt((float)launchPlayBoardGridNb / (float)UGlobalConstFunctionLibrary::maxCol);
+			int32 launchPlayBoardCol = launchPlayBoardGridNb % UGlobalConstFunctionLibrary::maxCol;
+
+			int32 targetPlayBoardRow = FMath::FloorToInt((float)targetPlayBoardGridNb / (float)UGlobalConstFunctionLibrary::maxCol);
+			int32 targetPlayBoardCol = targetPlayBoardGridNb % UGlobalConstFunctionLibrary::maxCol;
+
+			launchX = launchPlayBoardCol;
+
+			launchY = launchPlayBoardRow +
+				UGlobalConstFunctionLibrary::graveCardSectionRow +
+				UGlobalConstFunctionLibrary::playCardSectionRow;
+
+			targetX = targetPlayBoardCol;
+
+			targetY = targetPlayBoardRow +
+				UGlobalConstFunctionLibrary::graveCardSectionRow +
+				UGlobalConstFunctionLibrary::playCardSectionRow;
+
+			actionType = ActionType::LaunchSkill;
+		}
+		else if (actionId < totalPlayCardActions + totalLaunchSkillActions + totalMoveActions)
+		{
+			// which means it's move action
+			int32 moveActionId = actionId - totalPlayCardActions - totalLaunchSkillActions;
+
+			int32 launchPlayBoardGridNb = FMath::FloorToInt((float)moveActionId / (float)totalPlayBoardGridNb);
+			int32 targetPlayBoardGridNb = moveActionId % totalPlayBoardGridNb;
+
+			int32 launchPlayBoardRow = FMath::FloorToInt((float)launchPlayBoardGridNb / (float)UGlobalConstFunctionLibrary::maxCol);
+			int32 launchPlayBoardCol = launchPlayBoardGridNb % UGlobalConstFunctionLibrary::maxCol;
+
+			int32 targetPlayBoardRow = FMath::FloorToInt((float)targetPlayBoardGridNb / (float)UGlobalConstFunctionLibrary::maxCol);
+			int32 targetPlayBoardCol = targetPlayBoardGridNb % UGlobalConstFunctionLibrary::maxCol;
+
+			launchX = launchPlayBoardCol;
+
+			launchY = launchPlayBoardRow +
+				UGlobalConstFunctionLibrary::graveCardSectionRow +
+				UGlobalConstFunctionLibrary::playCardSectionRow;
+
+			targetX = targetPlayBoardCol;
+			targetY = targetPlayBoardRow +
+				UGlobalConstFunctionLibrary::graveCardSectionRow +
+				UGlobalConstFunctionLibrary::playCardSectionRow;
+
+			actionType = ActionType::Move;
+		}
+		else
+		{
+			launchX = 0;
+			launchY = 0;
+			targetX = 0;
+			targetY = 0;
+			actionType = ActionType::EndRound;
+		}
+	}
+
+	void GetLegalMoves(uint8 sectionNb, TArray<int32>& legalMoves)
+	{
+		for (int32 row = 0; row < UGlobalConstFunctionLibrary::boardSectionRow; row++)
+		{
+			for (int32 col = 0; col < UGlobalConstFunctionLibrary::maxCol; col++)
+			{
+				int32 checkRow = UGlobalConstFunctionLibrary::graveCardSectionRow +
+					UGlobalConstFunctionLibrary::playCardSectionRow + row;
+				if (boardRows[checkRow].colCardInfos[col] == -1)
+				{
+					// which means target grid is empty, we can play card at that grid
+					for (int32 playSectionBoardRow = 0; playSectionBoardRow < UGlobalConstFunctionLibrary::playCardSectionRow; playSectionBoardRow++)
+					{
+						for (int32 playCardCol = 0; playCardCol < UGlobalConstFunctionLibrary::maxCol; playCardCol++)
+						{
+							if (sectionNb == 0 && row < UGlobalConstFunctionLibrary::boardSectionRow / 2)
+							{
+								if (boardRows[playSectionBoardRow + UGlobalConstFunctionLibrary::graveCardSectionRow].colCardInfos[playCardCol] == -1)
+								{
+									continue;
+								}
+
+								int32 actionId = ActionCoding(playCardCol, playSectionBoardRow + UGlobalConstFunctionLibrary::graveCardSectionRow, col, checkRow, ActionType::PlayCard);
+								legalMoves.Add(actionId);
+							}
+							else if (sectionNb == 1 && row > UGlobalConstFunctionLibrary::boardSectionRow / 2)
+							{
+								if (boardRows[playSectionBoardRow +
+									UGlobalConstFunctionLibrary::graveCardSectionRow +
+									UGlobalConstFunctionLibrary::playCardSectionRow +
+									UGlobalConstFunctionLibrary::boardSectionRow].colCardInfos[playCardCol] == -1)
+								{
+									continue;
+								}
+
+								int32 launchRow = UGlobalConstFunctionLibrary::graveCardSectionRow +
+									UGlobalConstFunctionLibrary::playCardSectionRow +
+									UGlobalConstFunctionLibrary::boardSectionRow +
+									playSectionBoardRow;
+								int32 actionId = ActionCoding(
+									playCardCol,
+									launchRow,
+									col,
+									checkRow,
+									ActionType::PlayCard);
+								legalMoves.Add(actionId);
+							}
+						}
+					}
+				}
+				else
+				{
+					// which means this grid is not empty, we could launch skill or move card
+					// check possible skills
+					FInstanceCardInfo cardInfo = allInstanceCardInfo[boardRows[checkRow].colCardInfos[col]];
+					if (cardInfo.originCardInfo.launchType == "manual" &&
+						(cardInfo.curAvailableTimes == -1 || cardInfo.curAvailableTimes > 0) &&
+						(cardInfo.curCoolDown == -1 || cardInfo.curCoolDown == 0))
+					{
+						FEffectInfo effectInfo;
+						effectInfo.aoeType = cardInfo.originCardInfo.aoeType;
+						effectInfo.autoSkillTargetGeoType = cardInfo.originCardInfo.autoSkillTargetGeoType;
+						effectInfo.availableTimes = cardInfo.originCardInfo.availableTimes;
+						effectInfo.coolDown = cardInfo.originCardInfo.coolDown;
+						effectInfo.effectAffix = cardInfo.originCardInfo.effectAffix;
+						effectInfo.effectAffixCamp = cardInfo.originCardInfo.effectAffixCamp;
+						effectInfo.effectType = cardInfo.originCardInfo.effectType;
+						effectInfo.launchGeoType = cardInfo.originCardInfo.launchGeoType;
+						effectInfo.launchType = cardInfo.originCardInfo.launchType;
+						effectInfo.passivePrereqType = cardInfo.originCardInfo.passivePrereqType;
+						effectInfo.prereqCampType = cardInfo.originCardInfo.prereqCampType;
+						effectInfo.prereqTag = cardInfo.originCardInfo.prereqTag;
+						effectInfo.prereqTagCondition = cardInfo.originCardInfo.prereqTagCondition;
+						effectInfo.prereqType = cardInfo.originCardInfo.prereqType;
+						effectInfo.targetCamp = cardInfo.originCardInfo.targetCamp;
+						effectInfo.targetGeoType = cardInfo.originCardInfo.targetGeoType;
+						effectInfo.values = cardInfo.originCardInfo.values;
+						TArray<FGridXY> possibleGrids;
+						if (effectInfo.targetGeoType.Contains("&"))
+						{
+							TArray<FString> targetGeoTypes;
+							effectInfo.targetGeoType.ParseIntoArray(targetGeoTypes, TEXT("&"), true);
+							possibleGrids = UCheckTargetGeoRuleLibrary::GetPossibleTargetGeoGrids(
+								targetGeoTypes[0],
+								allInstanceCardInfo,
+								boardRows,
+								effectInfo,
+								col,
+								checkRow,
+								cardInfo.originCardInfo.attackDistanceType);
+
+							UCheckTargetGeoRuleLibrary::CheckPossibleTargetLocateGeoGrids(
+								targetGeoTypes[1],
+								allInstanceCardInfo,
+								boardRows,
+								possibleGrids);
+						}
+						else
+						{
+							possibleGrids = UCheckTargetGeoRuleLibrary::GetPossibleTargetGeoGrids(
+								effectInfo.targetGeoType,
+								allInstanceCardInfo,
+								boardRows,
+								effectInfo,
+								col,
+								checkRow,
+								cardInfo.originCardInfo.attackDistanceType);
+						}
+
+						int32 checkGridNb = 0;
+						while (checkGridNb < possibleGrids.Num())
+						{
+							// do prereq check first
+							if (effectInfo.prereqType != "none")
+							{
+								if (!UCheckPrereqFunctionLibrary::CheckPrereqRule(
+									effectInfo.prereqType,
+									col,
+									checkRow,
+									possibleGrids[checkGridNb].x,
+									possibleGrids[checkGridNb].y,
+									cardInfo.camp,
+									effectInfo.prereqCampType))
+								{
+									possibleGrids.RemoveAt(checkGridNb);
+									continue;
+								}
+							}
+
+							if (effectInfo.prereqTagCondition != "none")
+							{
+								if (!UCheckPrereqTagFunctionLibrary::CheckPrereqTagRule(
+									allInstanceCardInfo,
+									boardRows,
+									effectInfo,
+									col,
+									checkRow))
+								{
+									possibleGrids.RemoveAt(checkGridNb);
+									continue;
+								}
+							}
+
+							checkGridNb += 1;
+						}
+
+						for (int32 i = 0; i < possibleGrids.Num(); i++)
+						{
+							int32 actionId = ActionCoding(
+								col,
+								checkRow,
+								possibleGrids[i].x,
+								possibleGrids[i].y,
+								ActionType::LaunchSkill);
+							legalMoves.Add(actionId);
+						}
+					}
+
+
+					// check move action
+					TArray<FGridXY> possibleMoveGrids = UCheckTargetGeoRuleLibrary::GetPossibleMoveGrids(
+						cardInfo.originCardInfo.moveType,
+						allInstanceCardInfo,
+						boardRows,
+						col,
+						checkRow,
+						cardInfo.originCardInfo.moveDistance);
+
+					for (int32 i = 0; i < possibleMoveGrids.Num(); i++)
+					{
+						int32 actionId = ActionCoding(
+							col,
+							checkRow,
+							possibleMoveGrids[i].x,
+							possibleMoveGrids[i].y,
+							ActionType::Move);
+
+						legalMoves.Add(actionId);
+					}
+				}
+			}
+		}
+	}
+
+	void GetLegalActionProbsBoardValue(bool simulateFlag, uint8 sectionNb, int32* boardState, TMap<int32, float>& legalActionProbs, float& boardValue)
+	{
+		TArray<float> actionProbs;
+		if (simulateFlag)
+		{
+			float aveProb = 1.0f / (float)TotalActionNb;
+			actionProbs.Init(aveProb, TotalActionNb);
+			boardValue = 1.0f;
+		}
+		else
+		{
+			float aveProb = 1.0f / (float)TotalActionNb;
+			actionProbs.Init(aveProb, TotalActionNb);
+			boardValue = 1.0f;
+		}
+
+		TArray<int32> legalActionIds;
+		GetLegalMoves(sectionNb, legalActionIds);
+
+		for (int32 i = 0; i < legalActionIds.Num(); i++)
+		{
+			legalActionProbs.Add(legalActionIds[i], actionProbs[legalActionIds[i]]);
+		}
+	}
+
+
+
+	ActionType TriggerAction(
+		uint8 campNb,
+		int32 actionId,
+		TArray<FRenderEffectRound>& renderEffectRoundList)
+	{
+		int32 launchX = 0;
+		int32 launchY = 0;
+		int32 targetX = 0;
+		int32 targetY = 0;
+		ActionType actionType = ActionType::EndRound;
+		ActionDecoding(actionId, launchX, launchY, targetX, targetY, actionType);
+		if (actionType == ActionType::LaunchSkill)
+		{
+			TriggerManualSkill(
+				campNb,
+				launchX,
+				launchY,
+				targetX,
+				targetY,
+				renderEffectRoundList);
+		}
+		else if (actionType == ActionType::PlayCard)
+		{
+			TriggerPlayCard(
+				campNb,
+				launchX,
+				launchY,
+				targetX,
+				targetY,
+				renderEffectRoundList);
+		}
+		else if (actionType == ActionType::Move)
+		{
+
+		}
+		else if (actionType == ActionType::EndRound)
+		{
+
+		}
+
+		return actionType;
+	}
+
+
+
+	void TriggerPlayCard(
+		uint8 launchCampNb,
+		int32 launchX,
+		int32 launchY,
+		int32 targetX,
+		int32 targetY,
+		TArray<FRenderEffectRound>& renderEffectRoundList)
+	{
+		int32 playCardUid = boardRows[launchY].colCardInfos[launchX];
+		// Trigger play card skill
+		if (allInstanceCardInfo[playCardUid].originCardInfo.launchType == "auto")
+		{
+			TriggerPlayCardSkill(launchCampNb, launchX, launchY, targetX, targetY, renderEffectRoundList);
+		}
+		boardRows[targetY].colCardInfos[targetX] = playCardUid;
+		boardRows[launchY].colCardInfos[launchX] = -1;
+		allInstanceCardInfo[playCardUid].curCol = targetX;
+		allInstanceCardInfo[playCardUid].curRow = targetY;
+		
+	}
+
+	void TriggerPlayCardSkill(
+		uint8 launchCamp,
+		int32 launchX,
+		int32 launchY,
+		int32 targetX,
+		int32 targetY,
+		TArray<FRenderEffectRound>& renderEffectRoundList)
+	{
+		int32 launchUid = boardRows[launchY].colCardInfos[launchX];
+		FEffectInfo effectInfo;
+		effectInfo.launchType = allInstanceCardInfo[launchUid].originCardInfo.launchType;
+		effectInfo.coolDown = allInstanceCardInfo[launchUid].originCardInfo.coolDown;
+		effectInfo.availableTimes = allInstanceCardInfo[launchUid].originCardInfo.availableTimes;
+		effectInfo.launchGeoType = allInstanceCardInfo[launchUid].originCardInfo.launchGeoType;
+		effectInfo.autoSkillTargetGeoType = allInstanceCardInfo[launchUid].originCardInfo.autoSkillTargetGeoType;
+		effectInfo.targetGeoType = allInstanceCardInfo[launchUid].originCardInfo.targetGeoType;
+		effectInfo.aoeType = allInstanceCardInfo[launchUid].originCardInfo.aoeType;
+		effectInfo.targetCamp = allInstanceCardInfo[launchUid].originCardInfo.targetCamp;
+		effectInfo.effectType = allInstanceCardInfo[launchUid].originCardInfo.effectType;
+		effectInfo.effectAffix = allInstanceCardInfo[launchUid].originCardInfo.effectAffix;
+		effectInfo.effectAffixCamp = allInstanceCardInfo[launchUid].originCardInfo.effectAffixCamp;
+		effectInfo.prereqTagCondition = allInstanceCardInfo[launchUid].originCardInfo.prereqTagCondition;
+		effectInfo.prereqTag = allInstanceCardInfo[launchUid].originCardInfo.prereqTag;
+		effectInfo.prereqCampType = allInstanceCardInfo[launchUid].originCardInfo.prereqCampType;
+		effectInfo.prereqType = allInstanceCardInfo[launchUid].originCardInfo.prereqType;
+		effectInfo.passivePrereqType = allInstanceCardInfo[launchUid].originCardInfo.passivePrereqType;
+		effectInfo.values = allInstanceCardInfo[launchUid].originCardInfo.values;
+
+		FEffectResultDict effectResultInfo = UCoreGameBlueprintFunctionLibrary::LaunchPlayCardSkillDict(
+			launchCamp, allInstanceCardInfo, boardRows, effectInfo, launchX, launchY, targetX, targetY);
+		if (effectResultInfo.success)
+		{
+			effectResultInfo.triggerRound = 0;
+			TriggerPassiveEffect(effectResultInfo, renderEffectRoundList);
+		}
+	}
+
+	void TriggerRoundEndSkill(
+		int32 launchX,
+		int32 launchY,
+		int32 targetX,
+		int32 targetY,
+		TArray<FRenderEffectRound>& renderEffectRoundList)
+	{
+
+	}
+
+	void TriggerManualSkill(
+		uint8 launchCampNb,
+		int32 launchX,
+		int32 launchY,
+		int32 targetX,
+		int32 targetY,
+		TArray<FRenderEffectRound>& renderEffectRoundList)
+	{
+		int32 launchUid = boardRows[launchY].colCardInfos[launchX];
+		FEffectInfo effectInfo;
+		effectInfo.launchType = allInstanceCardInfo[launchUid].originCardInfo.launchType;
+		effectInfo.coolDown = allInstanceCardInfo[launchUid].originCardInfo.coolDown;
+		effectInfo.availableTimes = allInstanceCardInfo[launchUid].originCardInfo.availableTimes;
+		effectInfo.launchGeoType = allInstanceCardInfo[launchUid].originCardInfo.launchGeoType;
+		effectInfo.autoSkillTargetGeoType = allInstanceCardInfo[launchUid].originCardInfo.autoSkillTargetGeoType;
+		effectInfo.targetGeoType = allInstanceCardInfo[launchUid].originCardInfo.targetGeoType;
+		effectInfo.aoeType = allInstanceCardInfo[launchUid].originCardInfo.aoeType;
+		effectInfo.targetCamp = allInstanceCardInfo[launchUid].originCardInfo.targetCamp;
+		effectInfo.effectType = allInstanceCardInfo[launchUid].originCardInfo.effectType;
+		effectInfo.effectAffix = allInstanceCardInfo[launchUid].originCardInfo.effectAffix;
+		effectInfo.effectAffixCamp = allInstanceCardInfo[launchUid].originCardInfo.effectAffixCamp;
+		effectInfo.prereqTagCondition = allInstanceCardInfo[launchUid].originCardInfo.prereqTagCondition;
+		effectInfo.prereqTag = allInstanceCardInfo[launchUid].originCardInfo.prereqTag;
+		effectInfo.prereqCampType = allInstanceCardInfo[launchUid].originCardInfo.prereqCampType;
+		effectInfo.prereqType = allInstanceCardInfo[launchUid].originCardInfo.prereqType;
+		effectInfo.passivePrereqType = allInstanceCardInfo[launchUid].originCardInfo.passivePrereqType;
+		effectInfo.values = allInstanceCardInfo[launchUid].originCardInfo.values;
+
+		FEffectResultDict effectResultInfo = UCoreGameBlueprintFunctionLibrary::LaunchSkillDict(allInstanceCardInfo, boardRows, effectInfo, launchX, launchY, targetX, targetY);
+		if (effectResultInfo.success)
+		{
+			effectResultInfo.triggerRound = 0;
+			TriggerPassiveEffect(effectResultInfo, renderEffectRoundList);
+		}
+	}
+
+	void TriggerPassiveEffect(
+		FEffectResultDict effectResultDict,
+		TArray<FRenderEffectRound>& renderEffectRoundList)
+	{
+		// Traverse all cards that are modified, try to trigger their passive effects
+		for (int32 i = 0; i < effectResultDict.modifyUids.Num(); i++)
+		{
+			if (curRoundPassiveEffectTriggeredUids.Contains(effectResultDict.modifyUids[i]))
+			{
+				continue;
+			}
+
+			int32 modifyGridX = effectResultDict.modifyGrids[i].x;
+			int32 modifyGridY = effectResultDict.modifyGrids[i].y;
+			if (effectResultDict.modifyUids[i] != -1 &&
+				allInstanceCardInfo[effectResultDict.modifyUids[i]].originCardInfo.launchType == "passive" &&
+				effectResultDict.modifyType == allInstanceCardInfo[effectResultDict.modifyUids[i]].originCardInfo.passivePrereqType)
+			{
+				FEffectInfo secondaryEffectInfo;
+				FEffectResultDict secondaryEffectResult = UPassiveEffectFunctionLibrary::GetPassiveEffect(
+					allInstanceCardInfo,
+					boardRows,
+					secondaryEffectInfo,
+					modifyGridX,
+					modifyGridY,
+					effectResultDict.triggerGridX,
+					effectResultDict.triggerGridY,
+					curRoundPassiveEffectTriggeredUids
+				);
+				secondaryEffectResult.triggerRound = effectResultDict.triggerRound + 1;
+
+				FRenderEffectDict renderEffectDict(secondaryEffectResult);
+				if (secondaryEffectResult.triggerRound >= renderEffectRoundList.Num())
+				{
+					FRenderEffectRound renderEffectRound;
+					renderEffectRound.renderEffectList.Add(renderEffectDict);
+					renderEffectRoundList.Add(renderEffectRound);
+				}
+				else
+				{
+					// which means there's already an equal RenderEffectRound exist
+					if (renderEffectRoundList[secondaryEffectResult.triggerRound].renderTime < secondaryEffectResult.renderTime)
+					{
+						renderEffectRoundList[secondaryEffectResult.triggerRound].renderTime = secondaryEffectResult.renderTime;
+					}
+					renderEffectRoundList[secondaryEffectResult.triggerRound].renderEffectList.Add(renderEffectDict);
+				}
+
+
+				curRoundPassiveEffectTriggeredUids.Add(effectResultDict.modifyUids[i]);
+
+				if (secondaryEffectResult.modifyUids.Num() > 0)
+				{
+					TriggerPassiveEffect(secondaryEffectResult, renderEffectRoundList);
+				}
+			}
+		}
+	}
+
+	void TriggerMove(
+		int32 launchX,
+		int32 launchY,
+		int32 targetX,
+		int32 targetY)
+	{
+		int32 moveCardUid = boardRows[launchY].colCardInfos[launchX];
+		boardRows[targetY].colCardInfos[targetX] = moveCardUid;
+		boardRows[launchY].colCardInfos[launchX] = -1;
+		allInstanceCardInfo[moveCardUid].curCol = targetX;
+		allInstanceCardInfo[moveCardUid].curRow = targetY;
+	}
+
+
+	void GetTestSkillLaunchTypeCoding(FString launchType, int32* coding)
+	{
+		if (launchType == "auto") coding[0] = 1;
+		else if (launchType == "manual") coding[1] = 1;
+	}
+
+	void GetSkillLaunchTypeCoding(FString launchType, int32* coding)
+	{
+		if (launchType == "auto")							coding[0] = 1;
+		else if (launchType == "autoRoundEnd")			coding[1] = 1;
+		else if (launchType == "manual")			coding[2] = 1;
+		else if (launchType == "manualImmediate")			coding[3] = 1;
+		else if (launchType == "passive")					coding[4] = 1;
+		else if (launchType == "playCard")				coding[5] = 1;
+	}
+
+	void GetTestAutoSkillGeoTargetCoding(FString geoTargetType, int32* coding)
+	{
+		if (geoTargetType == "left") coding[0] = 1;
+		else if (geoTargetType == "forward") coding[1] = 1;
+	}
+
+	void GetAutoSkillGeoTargetCoding(FString geoTargetType, int32* coding)
+	{
+		if (geoTargetType == "self")								coding[0] = 1;
+		else if (geoTargetType == "left")									coding[1] = 1;
+		else if (geoTargetType == "right")								coding[2] = 1;
+		else if (geoTargetType == "forward")								coding[3] = 1;
+		else if (geoTargetType == "backward")									coding[4] = 1;
+		else if (geoTargetType == "leftLine")								coding[5] = 1;
+		else if (geoTargetType == "rightLine")							coding[6] = 1;
+		else if (geoTargetType == "upLine")							coding[7] = 1;
+		else if (geoTargetType == "downLine")								coding[8] = 1;
+		else if (geoTargetType == "upLeft")							coding[9] = 1;
+		else if (geoTargetType == "upRight")						coding[10] = 1;
+		else if (geoTargetType == "downLeft")								coding[11] = 1;
+		else if (geoTargetType == "downRight")							coding[12] = 1;
+		else if (geoTargetType == "upLeftDiagonal")					coding[13] = 1;
+		else if (geoTargetType == "upRightDiagonal")				coding[14] = 1;
+		else if (geoTargetType == "downLeftDiagonal")						coding[15] = 1;
+		else if (geoTargetType == "downRightDiagonal")					coding[16] = 1;
+	}
+
+	void GetTestSkillLaunchGeoCoding(FString launchGeoType, int32* coding)
+	{
+		if (launchGeoType == "point") coding[0] = 1;
+		else if (launchGeoType == "three") coding[1] = 1;
+	}
+
+	void GetSkillLaunchGeoCoding(FString launchGeoType, int32* coding)
+	{
+		if (launchGeoType == "point")						coding[0] = 1;
+		else if (launchGeoType == "three")				coding[1] = 1;
+		else if (launchGeoType == "horn")					coding[2] = 1;
+		else if (launchGeoType == "triangle")				coding[3] = 1;
+		else if (launchGeoType == "obliqueCross")			coding[4] = 1;
+		else if (launchGeoType == "normalCross")	coding[5] = 1;
+		else if (launchGeoType == "selfSection")	coding[6] = 1;
+		else if (launchGeoType == "selfFrontLine")		coding[7] = 1;
+		else if (launchGeoType == "oppoSection")	coding[8] = 1;
+		else if (launchGeoType == "oppoFrontLine")		coding[9] = 1;
+	}
+	void GetSkillTargetGeoCoding(FString targetGeoType, int32* coding)
+	{
+		if (targetGeoType == "line")							coding[0] = 1;
+		else if (targetGeoType == "seperated")			coding[1] = 1;
+		else if (targetGeoType == "diagonal")				coding[2] = 1;
+		else if (targetGeoType == "diagonalSeperated") coding[3] = 1;
+		else if (targetGeoType == "connect")					coding[4] = 1;
+		else if (targetGeoType == "arbitrary")			coding[5] = 1;
+	}
+	void GetSkillTargetLocateGeoCoding(FString targetLocateGeoType, int32* coding)
+	{
+		if (targetLocateGeoType == "three")					coding[0] = 1;
+		else if (targetLocateGeoType == "horn")				coding[1] = 1;
+		else if (targetLocateGeoType == "triangle")			coding[2] = 1;
+		else if (targetLocateGeoType == "obliqueCross")		coding[3] = 1;
+		else if (targetLocateGeoType == "normalCross")			coding[4] = 1;
+		else if (targetLocateGeoType == "selfSection")			coding[5] = 1;
+		else if (targetLocateGeoType == "selfFrontLine")	coding[6] = 1;
+		else if (targetLocateGeoType == "oppoSection")			coding[7] = 1;
+		else if (targetLocateGeoType == "oppoFrontLine")	coding[8] = 1;
+	}
+	void GetSkillAoeCoding(FString aoeType, int32* coding)
+	{
+		if (aoeType == "point")					coding[0] = 1;
+		else if (aoeType == "sweep")			coding[1] = 1;
+		else if (aoeType == "H3")						coding[2] = 1;
+		else if (aoeType == "V3")						coding[3] = 1;
+		else if (aoeType == "normalCross")			coding[4] = 1;
+		else if (aoeType == "obliqueCross")		coding[5] = 1;
+	}
+	void GetSkillTargetCampCoding(FString targetCampType, int32* coding)
+	{
+		if (targetCampType == "self")				coding[0] = 1;
+		else if (targetCampType == "oppo")		coding[1] = 1;
+	}
+
+	void GetTestSkillEffectCoding(FString effectType, int32* coding)
+	{
+		if (effectType == "hurt") coding[0] = 1;
+		else if (effectType == "heal") coding[1] = 1;
+	}
+	void GetSkillEffectCoding(FString effectType, int32* coding)
+	{
+		if (effectType == "hurt")									coding[0] = 1;
+		else if (effectType == "heal")							coding[1] = 1;
+		else if (effectType == "increaseDefence")					coding[2] = 1;
+		else if (effectType == "replaceDefence")			coding[3] = 1;
+		else if (effectType == "increaseSelfDefence")				coding[4] = 1;
+		else if (effectType == "giveTempArmor")				coding[5] = 1;
+		else if (effectType == "giveArmor")					coding[6] = 1;
+		else if (effectType == "tempArmor")					coding[7] = 1;
+		else if (effectType == "defenceHurt")						coding[8] = 1;
+		else if (effectType == "defenceHeal")						coding[9] = 1;
+		else if (effectType == "defenceDetonate")					coding[10] = 1;
+		else if (effectType == "useArmorHurt")					coding[11] = 1;
+		else if (effectType == "useArmorHeal")					coding[12] = 1;
+		else if (effectType == "armorDetonate")				coding[13] = 1;
+		else if (effectType == "armorDetonateSilence")			coding[14] = 1;
+		else if (effectType == "armorDetonateWound")		coding[15] = 1;
+		else if (effectType == "armorDetonatePoison")				coding[16] = 1;
+		else if (effectType == "armorDetonateSublime")			coding[17] = 1;
+		else if (effectType == "switchCamp")				coding[18] = 1;
+		else if (effectType == "capture")							coding[19] = 1;
+		else if (effectType == "hurtTransfer")					coding[20] = 1;
+		else if (effectType == "hurtLink")						coding[21] = 1;
+		else if (effectType == "healTransfer")					coding[22] = 1;
+		else if (effectType == "healLink")						coding[23] = 1;
+		else if (effectType == "sublimeTransfer")					coding[24] = 1;
+		else if (effectType == "silenceTransfer")					coding[25] = 1;
+		else if (effectType == "woundTransfer")				coding[26] = 1;
+		else if (effectType == "wound")						coding[27] = 1;
+		else if (effectType == "convertSublimeToWound")		coding[28] = 1;
+		else if (effectType == "transferWound")				coding[29] = 1;
+		else if (effectType == "revenge")							coding[30] = 1;
+		else if (effectType == "revengeWound")					coding[31] = 1;
+		else if (effectType == "repayHeal")					coding[32] = 1;
+		else if (effectType == "repaySublime")					coding[33] = 1;
+		else if (effectType == "devour")					coding[34] = 1;
+		else if (effectType == "devourSublime")				coding[35] = 1;
+		else if (effectType == "devourButWound")			coding[36] = 1;
+		else if (effectType == "deadWishConvert")					coding[37] = 1;
+		else if (effectType == "deadWishHurt")					coding[38] = 1;
+		else if (effectType == "deadWishSpawnUp")					coding[39] = 1;
+		else if (effectType == "deadWishSpawnDown")			coding[40] = 1;
+		else if (effectType == "deadWishSpawnRight")		coding[41] = 1;
+		else if (effectType == "deadWishSpawnLeft")			coding[42] = 1;
+		else if (effectType == "deadWishDestroyUp")			coding[43] = 1;
+		else if (effectType == "deadWishDestroyDown")				coding[44] = 1;
+		else if (effectType == "deadWishDestroyRight")			coding[45] = 1;
+		else if (effectType == "deadWishDestroyLeft")				coding[46] = 1;
+		else if (effectType == "deadWishHeal")					coding[47] = 1;
+		else if (effectType == "deadWishHealUp")			coding[48] = 1;
+		else if (effectType == "deadWishHealDown")				coding[49] = 1;
+		else if (effectType == "deadWishHealRight")			coding[50] = 1;
+		else if (effectType == "deadWishHealLeft")				coding[51] = 1;
+		else if (effectType == "deadWishSublime")					coding[52] = 1;
+		else if (effectType == "deadWishTackle")			coding[53] = 1;
+		else if (effectType == "deadWishWound")				coding[54] = 1;
+		else if (effectType == "explode")							coding[55] = 1;
+		else if (effectType == "explodeToPoison")					coding[56] = 1;
+		else if (effectType == "explodeToWound")			coding[57] = 1;
+		else if (effectType == "exchange")						coding[58] = 1;
+		else if (effectType == "drag")							coding[59] = 1;
+		else if (effectType == "push") coding[60] = 1;
+		else if (effectType == "sublime") coding[61] = 1;
+		else if (effectType == "lock") coding[62] = 1;
+		else if (effectType == "tempLock") coding[63] = 1;
+		else if (effectType == "purify") coding[64] = 1;
+		else if (effectType == "spawn") coding[65] = 1;
+		else if (effectType == "cloneUp") coding[66] = 1;
+		else if (effectType == "cloneDown") coding[67] = 1;
+		else if (effectType == "cloneRight") coding[68] = 1;
+		else if (effectType == "cloneLeft") coding[69] = 1;
+		else if (effectType == "silence") coding[70] = 1;
+		else if (effectType == "tempSilence") coding[71] = 1;
+		else if (effectType == "copyHp") coding[72] = 1;
+		else if (effectType == "summonFirstDeath") coding[73] = 1;
+		else if (effectType == "exchangeFirstDeath") coding[74] = 1;
+		else if (effectType == "tackle") coding[75] = 1;
+		else if (effectType == "summonFirstPile") coding[76] = 1;
+		else if (effectType == "exchangeFirstPile") coding[77] = 1;
+		else if (effectType == "duel") coding[78] = 1;
+		else if (effectType == "recover") coding[79] = 1;
+		else if (effectType == "assignHp") coding[80] = 1;
+		else if (effectType == "copyGraveFirstHp") coding[81] = 1;
+		else if (effectType == "healFromWound") coding[82] = 1;
+		else if (effectType == "copyFirstGraveHp") coding[83] = 1;
+		else if (effectType == "increaseFirstDeathHpDefence") coding[84] = 1;
+		else if (effectType == "increaseFirstPileHp") coding[85] = 1;
+
+	}
+	void GetSkillAffixCampCoding(FString affixCampType, int32* coding)
+	{
+		if (affixCampType == "self") coding[0] = 1;
+		else if (affixCampType == "oppo") coding[1] = 1;
+		else if (affixCampType == "none") coding[2] = 1;
+	}
+	void GetSkillAffixCoding(FString affixType, int32* coding)
+	{
+		
+	}
+	void GetSkillTagConditionCoding(FString tagCondition, int32* coding)
+	{
+		
+	}
+	void GetCardTagCoding(FString tag, int32* coding)
+	{
+		
+	}
+	void GetPrereqTagCoding(FString prereqTag, int32* coding)
+	{
+		
+	}
+	void GetPrereqCampCoding(FString prereqCampType, int32* coding)
+	{
+		
+	}
+	void GetSkillPrereqCoding(FString skillPrereq, int32* coding)
+	{
+		
+	}
+	void GetPassiveSkillPrereqTypeCoding(FString passiveSkillPrereq, int32* coding)
+	{
+		
+	}
 };
 
-UCLASS()
+UCLASS(Blueprintable)
 class GWENBOARDGAMECLIENT_API UMcts : public UObject
 {
-				GENERATED_BODY()
+	GENERATED_BODY()
 	
 public:	
 
 protected:
 
 public:
-				UPROPERTY(EditAnywhere)
-				bool isTraining = false;
+	UPROPERTY(EditAnywhere)
+	bool isTraining = false;
 
-				UPROPERTY()
-				int32 expandSimulationMoves = 200;
+	UPROPERTY()
+	int32 expandSimulationMoves = 2;
 
-				UPROPERTY()
-				FBoardInfo simulationBoard;
+	UPROPERTY()
+	FBoardInfo simulationBoard;
 
-				UPROPERTY()
-				FBoardInfo realBoard;
+	UPROPERTY()
+	FBoardInfo realBoard;
 
-				UPROPERTY()
-				UMctsTreeNode* treeRoot;
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UMctsTreeNode> mctsTreeNodeBPClass;
 
-				UPROPERTY()
-				UMctsTreeNode* curSearchNode;
+	UPROPERTY()
+	UMctsTreeNode* veryFirstNode;
+
+	UPROPERTY()
+	TArray<UMctsTreeNode*> newAddNodes;
+
+	UPROPERTY()
+	UMctsTreeNode* treeRoot;
+
+	UPROPERTY()
+	UMctsTreeNode* curSearchNode;
 
 
-				void InitMcts(int32 simulationMoves);
+	void InitMcts(int32 simulationMoves);
 
-				void GetLatestSimulationBoard();
+	void GetLatestSimulationBoard();
 
-				void TriggerSimulation(uint8 sectionNb, int32 simulationNb);
+	void TriggerSimulation(uint8 sectionNb, int32 simulationNb);
 
 
-				void GetMoveProbs(uint8 sectionNb, TArray<int32>& outActs, TArray<float>& softmaxProbs);
+	void GetMoveProbs(uint8 sectionNb, TArray<int32>& outActs, TArray<float>& softmaxProbs);
 
-				void UpdateCurSearchNode(int32 targetMove);
+	void UpdateCurSearchNode(int32 targetMove);
 
-				void GetAction(uint8 sectionNb, int32& targetMove);
+	void GetAction(uint8 sectionNb, int32& targetMove);
 
+
+
+	/**
+	* Testing part
+	*/
 };

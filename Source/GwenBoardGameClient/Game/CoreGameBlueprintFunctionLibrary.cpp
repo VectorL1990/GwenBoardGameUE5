@@ -3,6 +3,7 @@
 
 #include "Game/CoreGameBlueprintFunctionLibrary.h"
 #include "CoreCardGamePC.h"
+#include "Kismet/GameplayStatics.h"
 #include "EffectAffixFunctionLibrary.h"
 
 
@@ -23,19 +24,6 @@ void UCoreGameBlueprintFunctionLibrary::Softmax(const TArray<float>& x, float te
 }
 
 
-void UCoreGameBlueprintFunctionLibrary::QueryRemotePolicyValue(bool simulateFlag, uint8* boardState, TArray<float>& actionProbs, float& stateValue)
-{
-    if (simulateFlag)
-    {
-        float aveProb = 1.0f / (float)UGlobalConstFunctionLibrary::totalActionNb;
-        actionProbs.Init(aveProb, UGlobalConstFunctionLibrary::totalActionNb);
-        stateValue = 1.0f;
-    }
-    else
-    {
-
-    }
-}
 
 int32 UCoreGameBlueprintFunctionLibrary::GetDirichletAction(const TArray<int32>& actions, const TArray<float>& probs)
 {
@@ -49,15 +37,22 @@ int32 UCoreGameBlueprintFunctionLibrary::GetDirichletAction(const TArray<int32>&
 
 
     // dirichlet random
-    std::gamma_distribution<float> gamma;
+    //std::normal_distribution<float> gamma;
     std::vector<float> dirichletNoises(stdActions.size());
     float sum = 0.0;
 
     for (int32 i = 0; i < probs.Num(); i++)
     {
-        gamma = std::gamma_distribution<float>(probs[i], 1.0);
+        std::normal_distribution<double> normalDistribution(probs[i], sqrt(probs[i]));
+        std::mt19937 gen(std::random_device{}());
+        dirichletNoises[i] = normalDistribution(gen);
+        sum += dirichletNoises[i];
+
+        /*
+        gamma = std::normal_distribution<float>(probs[i], 1.0);
         dirichletNoises[i] = gamma(randSeed);
         sum += dirichletNoises[i];
+        */
     }
 
     for (float& dirichletNoise : dirichletNoises)
@@ -98,9 +93,9 @@ TArray<FGridXY> UCoreGameBlueprintFunctionLibrary::GetAoeTargetGrids(
     int32 launchUid = boardCardInfo[launchY].colCardInfos[launchX];
     uint8 launchCamp = allInstanceCardInfo[launchUid].camp;
 
-				TArray<FGridXY> modifyGrids;
-				if (aoeType == "H3")
-				{
+    TArray<FGridXY> modifyGrids;
+    if (aoeType == "H3")
+    {
         // check left grid
         if (targetX > 0 && boardCardInfo[targetY].colCardInfos[targetX - 1] != -1)
         {
@@ -117,7 +112,7 @@ TArray<FGridXY> UCoreGameBlueprintFunctionLibrary::GetAoeTargetGrids(
             }
         }
         // check right grid
-        if (targetX < maxCol - 1 && boardCardInfo[targetY].colCardInfos[targetX + 1] != -1)
+        if (targetX < UGlobalConstFunctionLibrary::maxCol - 1 && boardCardInfo[targetY].colCardInfos[targetX + 1] != -1)
         {
             int32 targetUid = boardCardInfo[targetY].colCardInfos[targetX + 1];
             // which means target grid left is not empty
@@ -150,7 +145,7 @@ TArray<FGridXY> UCoreGameBlueprintFunctionLibrary::GetAoeTargetGrids(
     else if (aoeType == "V3")
     {
         // check left grid
-        if (targetY > 0 && boardCardInfo[targetY - 1].colCardInfos[targetX] != -1)
+        /*if (targetY > 0 && boardCardInfo[targetY - 1].colCardInfos[targetX] != -1)
         {
             int32 targetUid = boardCardInfo[targetY - 1].colCardInfos[targetX];
             // which means target grid left is not empty
@@ -165,7 +160,7 @@ TArray<FGridXY> UCoreGameBlueprintFunctionLibrary::GetAoeTargetGrids(
             }
         }
         // check right grid
-        if (targetY < maxRow - 1 && boardCardInfo[targetY + 1].colCardInfos[targetX] != -1)
+        if (targetY < UGlobalConstFunctionLibrary::graveCardSectionRow maxRow - 1 && boardCardInfo[targetY + 1].colCardInfos[targetX] != -1)
         {
             int32 targetUid = boardCardInfo[targetY + 1].colCardInfos[targetX];
             // which means target grid left is not empty
@@ -193,10 +188,11 @@ TArray<FGridXY> UCoreGameBlueprintFunctionLibrary::GetAoeTargetGrids(
                 grid.y = targetY;
                 modifyGrids.Add(grid);
             }
-        }
+        }*/
     }
     else if (aoeType == "Sweep")
     {
+        /*
         int32 xOffset = targetX - launchX;
         int32 yOffset = targetY - launchY;
         if (xOffset > 0)
@@ -318,10 +314,11 @@ TArray<FGridXY> UCoreGameBlueprintFunctionLibrary::GetAoeTargetGrids(
                     modifyGrids.Add(grid);
                 }
             }
-        }
+        }*/
     }
     else if (aoeType == "NormalCross")
     {
+        /*
         if (targetX > 0 && boardCardInfo[targetY].colCardInfos[targetX - 1] != -1)
         {
             int32 targetUid = boardCardInfo[targetY].colCardInfos[targetX - 1];
@@ -381,9 +378,11 @@ TArray<FGridXY> UCoreGameBlueprintFunctionLibrary::GetAoeTargetGrids(
                 modifyGrids.Add(grid);
             }
         }
+        */
     }
     else if (aoeType == "ObliqueCross")
     {
+        /*
         if (targetX - 1 >= 0 && targetY - 1 >= 0 && boardCardInfo[targetY - 1].colCardInfos[targetX - 1] != -1)
         {
             int32 targetUid = boardCardInfo[targetY - 1].colCardInfos[targetX - 1];
@@ -443,6 +442,7 @@ TArray<FGridXY> UCoreGameBlueprintFunctionLibrary::GetAoeTargetGrids(
                 modifyGrids.Add(grid);
             }
         }
+        */
     }
     else
     {
@@ -465,14 +465,147 @@ TArray<FGridXY> UCoreGameBlueprintFunctionLibrary::GetAoeTargetGrids(
     return modifyGrids;
 }
 
+TArray<FGridXY> UCoreGameBlueprintFunctionLibrary::GetAutoSkillTargetGrids(
+    uint8 launchCamp,
+    TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+    TArray<FBoardRow>& boardCardInfo,
+    int32 launchX,
+    int32 launchY,
+    int32 targetX,
+    int32 targetY,
+    FString autoSkillTargetGeoType,
+    FString targetCamp)
+{
+    int32 launchUid = boardCardInfo[launchY].colCardInfos[launchX];
+    //uint8 launchCamp = allInstanceCardInfo[launchUid].camp;
+
+    TArray<FGridXY> modifyGrids;
+    if (autoSkillTargetGeoType == "left")
+    {
+        /*
+        if (launchX > 0 && boardCardInfo[launchY].colCardInfos[launchX - 1] != -1)
+        {
+            int32 targetUid = boardCardInfo[launchY].colCardInfos[launchX - 1];
+            // which means target grid left is not empty
+            if ((targetCamp == "self" && allInstanceCardInfo[targetUid].camp == launchCamp) ||
+                (targetCamp == "oppo" && allInstanceCardInfo[targetUid].camp != launchCamp) ||
+                (targetCamp == "none"))
+            {
+                FGridXY grid;
+                grid.x = launchX - 1;
+                grid.y = launchY;
+                modifyGrids.Add(grid);
+            }
+        }*/
+    }
+    else if (autoSkillTargetGeoType == "right")
+    {
+        /*
+        if (launchX < maxCol - 1 && boardCardInfo[launchY].colCardInfos[launchX + 1] != -1)
+        {
+            int32 targetUid = boardCardInfo[launchY].colCardInfos[launchX + 1];
+            // which means target grid left is not empty
+            if ((targetCamp == "self" && allInstanceCardInfo[targetUid].camp == launchCamp) ||
+                (targetCamp == "oppo" && allInstanceCardInfo[targetUid].camp != launchCamp) ||
+                (targetCamp == "none"))
+            {
+                FGridXY grid;
+                grid.x = launchX + 1;
+                grid.y = launchY;
+                modifyGrids.Add(grid);
+            }
+        }
+        */
+    }
+    else if (autoSkillTargetGeoType == "forward")
+    {
+        if (launchCamp == 0)
+        {
+            if (targetY < (UGlobalConstFunctionLibrary::graveCardSectionRow +
+                UGlobalConstFunctionLibrary::playCardSectionRow +
+                UGlobalConstFunctionLibrary::boardSectionRow - 1))
+            {
+                int32 targetUid = boardCardInfo[targetY + 1].colCardInfos[targetX];
+                // which means target grid left is not empty
+                if (targetUid != -1 &&
+                    ((targetCamp == "self" && allInstanceCardInfo[targetUid].camp == launchCamp) ||
+                    (targetCamp == "oppo" && allInstanceCardInfo[targetUid].camp != launchCamp) ||
+                    (targetCamp == "none")))
+                {
+                    FGridXY grid;
+                    grid.x = targetX;
+                    grid.y = targetY + 1;
+                    modifyGrids.Add(grid);
+                }
+            }
+        }
+        else
+        {
+            if (targetY > (UGlobalConstFunctionLibrary::graveCardSectionRow +
+                UGlobalConstFunctionLibrary::playCardSectionRow))
+            {
+                int32 targetUid = boardCardInfo[targetY - 1].colCardInfos[targetX];
+                // which means target grid left is not empty
+                if (targetUid != -1 &&
+                    ((targetCamp == "self" && allInstanceCardInfo[targetUid].camp == launchCamp) ||
+                    (targetCamp == "oppo" && allInstanceCardInfo[targetUid].camp != launchCamp) ||
+                    (targetCamp == "none")))
+                {
+                    FGridXY grid;
+                    grid.x = targetX;
+                    grid.y = targetY - 1;
+                    modifyGrids.Add(grid);
+                }
+            }
+        }
+    }
+    else if (autoSkillTargetGeoType == "backward")
+    {
+
+    }
+    return modifyGrids;
+}
+
 FEffectResultDict UCoreGameBlueprintFunctionLibrary::LaunchPlayCardSkillDict(
+    uint8 launchCampNb,
     TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
     TArray<FBoardRow>& boardCardInfo,
     FEffectInfo& effectInfo,
     int32 launchX,
-    int32 launchY)
+    int32 launchY,
+    int32 targetX,
+    int32 targetY)
 {
+    TArray<FGridXY> modifyGrids = GetAutoSkillTargetGrids(
+        launchCampNb,
+        allInstanceCardInfo,
+        boardCardInfo,
+        launchX,
+        launchY,
+        targetX,
+        targetY,
+        effectInfo.autoSkillTargetGeoType,
+        effectInfo.targetCamp);
+
     FEffectResultDict effectResultDict;
+    for (int32 i = 0; i < modifyGrids.Num(); i++)
+    {
+        int32 targetX = modifyGrids[i].x;
+        int32 targetY = modifyGrids[i].y;
+        if (effectInfo.effectType == "hurt")
+        {
+            effectResultDict = Hurt(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY);
+        }
+        else if (effectInfo.effectType == "heal")
+        {
+            effectResultDict = Heal(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY);
+        }
+        else if (effectInfo.effectType == "IncreaseDefence")
+        {
+            effectResultDict = IncreaseDefence(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY);
+        }
+    }
+    
     return effectResultDict;
 }
 
@@ -486,11 +619,119 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::LaunchSkillDict(
     int32 targetY)
 {
     FEffectResultDict effectResultDict;
-    if (effectInfo.effectType == "IncreaseDefence")
+    if (effectInfo.effectType == "hurt")
+    {
+        effectResultDict = Hurt(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY);
+    }
+    else if (effectInfo.effectType == "heal")
+    {
+        effectResultDict = Heal(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY);
+    }
+    else if (effectInfo.effectType == "IncreaseDefence")
     {
         effectResultDict = IncreaseDefence(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY);
     }
 
+    return effectResultDict;
+}
+
+FEffectResultDict UCoreGameBlueprintFunctionLibrary::Hurt(
+    TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+    TArray<FBoardRow>& boardCardInfo,
+    FEffectInfo& effectInfo,
+    int32 launchX,
+    int32 launchY,
+    int32 targetX,
+    int32 targetY)
+{
+    int32 effectValue = 0;
+    if (effectInfo.effectAffix != "none")
+    {
+        effectValue = UEffectAffixFunctionLibrary::GetAffix(
+            effectInfo.effectAffix,
+            allInstanceCardInfo,
+            boardCardInfo,
+            effectInfo,
+            launchX,
+            launchY,
+            targetX,
+            targetY);
+    }
+    else
+    {
+        effectValue = effectInfo.values[0];
+    }
+
+    FEffectResultDict effectResultDict;
+    effectResultDict.modifyType = "hurt";
+    effectResultDict.success = true;
+
+    TArray<FGridXY> targetGrids = GetAoeTargetGrids(
+        allInstanceCardInfo,
+        boardCardInfo,
+        launchX,
+        launchY,
+        targetX,
+        targetY,
+        effectInfo.aoeType,
+        effectInfo.targetCamp);
+
+    for (int32 i = 0; i < targetGrids.Num(); i++)
+    {
+        int32 uid = boardCardInfo[targetGrids[i].y].colCardInfos[targetGrids[i].x];
+        allInstanceCardInfo[uid].curHp = allInstanceCardInfo[uid].curHp - effectValue;
+        effectResultDict.modifyGrids.Add(targetGrids[i]);
+    }
+    return effectResultDict;
+}
+
+FEffectResultDict UCoreGameBlueprintFunctionLibrary::Heal(
+    TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+    TArray<FBoardRow>& boardCardInfo,
+    FEffectInfo& effectInfo,
+    int32 launchX,
+    int32 launchY,
+    int32 targetX,
+    int32 targetY)
+{
+    int32 effectValue = 0;
+    if (effectInfo.effectAffix != "none")
+    {
+        effectValue = UEffectAffixFunctionLibrary::GetAffix(
+            effectInfo.effectAffix,
+            allInstanceCardInfo,
+            boardCardInfo,
+            effectInfo,
+            launchX,
+            launchY,
+            targetX,
+            targetY);
+    }
+    else
+    {
+        effectValue = effectInfo.values[0];
+    }
+
+    FEffectResultDict effectResultDict;
+    effectResultDict.modifyType = "hurt";
+    effectResultDict.success = true;
+
+    TArray<FGridXY> targetGrids = GetAoeTargetGrids(
+        allInstanceCardInfo,
+        boardCardInfo,
+        launchX,
+        launchY,
+        targetX,
+        targetY,
+        effectInfo.aoeType,
+        effectInfo.targetCamp);
+
+    for (int32 i = 0; i < targetGrids.Num(); i++)
+    {
+        int32 uid = boardCardInfo[targetGrids[i].y].colCardInfos[targetGrids[i].x];
+        allInstanceCardInfo[uid].curHp = allInstanceCardInfo[uid].curHp + effectValue;
+        effectResultDict.modifyGrids.Add(targetGrids[i]);
+    }
     return effectResultDict;
 }
 

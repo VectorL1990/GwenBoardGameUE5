@@ -25,11 +25,10 @@ enum class CardAnimationStatus : uint8
 UENUM(BlueprintType)
 enum class BattleCardStatus : uint8
 {
-    Select,
-    Standby,
+    InPile,
+    InHand,
     InBattle,
     InGrave,
-    UnUsed,
 };
 
 UENUM(BlueprintType)
@@ -117,6 +116,8 @@ enum class EGamingType : uint8
 
 
 
+
+
 /**
  *
  */
@@ -125,12 +126,8 @@ class GWENBOARDGAMECLIENT_API UCoreGameBlueprintFunctionLibrary : public UBluepr
 {
     GENERATED_BODY()
 public:
-    static const int32 maxCol = 8;
-    static const int32 maxRow = 8;
 
     static void Softmax(const TArray<float>& x, float temp, TArray<float>& softmax);
-
-    static void QueryRemotePolicyValue(bool simulateFlag, uint8* boardState, TArray<float>& actionProbs, float& stateValue);
 
     static int32 GetDirichletAction(const TArray<int32>& actions, const TArray<float>& probs);
 
@@ -146,12 +143,26 @@ public:
             FString aoeType, 
             FString targetCamp);
 
+    static TArray<FGridXY> GetAutoSkillTargetGrids(
+        uint8 launchCamp,
+        TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+        TArray<FBoardRow>& boardCardInfo,
+        int32 launchX,
+        int32 launchY,
+        int32 targetX,
+        int32 targetY,
+        FString autoSkillTargetGeoType,
+        FString targetCamp);
+
     static FEffectResultDict LaunchPlayCardSkillDict(
-            TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
-            TArray<FBoardRow>& boardCardInfo,
-            FEffectInfo& effectInfo,
-            int32 launchX,
-            int32 launchY);
+        uint8 launchCamp,
+        TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+        TArray<FBoardRow>& boardCardInfo,
+        FEffectInfo& effectInfo,
+        int32 launchX,
+        int32 launchY,
+        int32 targetX,
+        int32 targetY);
 
     static FEffectResultDict LaunchSkillDict(
             TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
@@ -161,6 +172,24 @@ public:
             int32 launchY,
             int32 targetX,
             int32 targetY);
+
+    static FEffectResultDict Hurt(
+        TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+        TArray<FBoardRow>& boardCardInfo,
+        FEffectInfo& effectInfo,
+        int32 launchX,
+        int32 launchY,
+        int32 targetX,
+        int32 targetY);
+
+    static FEffectResultDict Heal(
+        TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+        TArray<FBoardRow>& boardCardInfo,
+        FEffectInfo& effectInfo,
+        int32 launchX,
+        int32 launchY,
+        int32 targetX,
+        int32 targetY);
 
     static FEffectResultDict IncreaseDefence(
             TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,

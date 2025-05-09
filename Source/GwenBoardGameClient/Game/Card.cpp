@@ -17,7 +17,6 @@ ACard::ACard()
 void ACard::BeginPlay()
 {
     Super::BeginPlay();
-
 }
 
 // Called every frame
@@ -36,9 +35,22 @@ void ACard::Tick(float DeltaTime)
     
 }
 
-void ACard::InitCard(FString cardName)
+void ACard::InitCard(
+    FString cardName,
+    int32 inCurHp,
+    int32 inCurDefence)
 {
-    cardAnimationStatus = CardAnimationStatus::Generating;
+    cardWidgetComponent = GetComponentByClass<UWidgetComponent>();
+    UCardWidget3D* widget = Cast<UCardWidget3D>(cardWidgetComponent->GetWidget());
+    widget->NotifyInit();
+    widget->SetupHpDefence(inCurHp, inCurDefence);
+}
+
+void ACard::UpdateCard(int32 inCurHp, int32 inCurDefence)
+{
+    cardWidgetComponent = GetComponentByClass<UWidgetComponent>();
+    UCardWidget3D* widget = Cast<UCardWidget3D>(cardWidgetComponent->GetWidget());
+    widget->SetupHpDefence(inCurHp, inCurDefence);
 }
 
 FPLAY_CARD_INFO ACard::GetCardInfo()

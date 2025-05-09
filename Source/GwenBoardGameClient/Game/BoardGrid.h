@@ -29,6 +29,15 @@ public:
 
     int32 gridId;
 
+    UPROPERTY(EditAnywhere)
+    bool available = false;
+
     UPROPERTY()
-        ACard* card;
+    ACard* card;
+
+    UPROPERTY(EditAnywhere)
+    int32 gridX;
+
+    UPROPERTY(EditAnywhere)
+    int32 gridY;
 };

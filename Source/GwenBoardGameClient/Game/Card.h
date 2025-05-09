@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 
 #include "CoreGameBlueprintFunctionLibrary.h"
+#include <Components/WidgetComponent.h>
+#include "UI/CardWidget3D.h"
 #include "Card.generated.h"
 
 
@@ -32,7 +34,12 @@ public:
 
     void MoveCard();
 
-    void InitCard(FString cardName);
+    void InitCard(
+        FString cardName,
+        int32 inCurHp,
+        int32 inCurDefence);
+
+    void UpdateCard(int32 inCurHp, int32 inCurDefence);
 
     FPLAY_CARD_INFO GetCardInfo();
 
@@ -42,12 +49,17 @@ public:
 
     void DeHighlight();
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UWidgetComponent* cardWidgetComponent;
+
     CardAnimationStatus cardAnimationStatus = CardAnimationStatus::Default;
-    BattleCardStatus cardStatus = BattleCardStatus::Standby;
+    BattleCardStatus cardStatus = BattleCardStatus::InHand;
 
     FString cardName;
 
     FString cardUid;
+
+    int32 cardId;
 
     int32 hp;
 
@@ -66,6 +78,8 @@ public:
 
     UPROPERTY(BlueprintReadWrite)
     float curMoveCardTime = 0.0;
+
+    uint8 camp;
 
     int32 gridX;
 

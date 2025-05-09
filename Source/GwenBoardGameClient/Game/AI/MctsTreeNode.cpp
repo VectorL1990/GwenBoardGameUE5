@@ -5,97 +5,124 @@
 
 void UMctsTreeNode::Init(UMctsTreeNode* inParent, int32 inActionId, float inP, int32 inHirachy)
 {
-				parent = inParent;
-				actionId = inActionId;
-				visit = 0;
-				p = inP;
-				q = 0.0;
-				u = 0.0;
-				hirachy = inHirachy;
+	parent = inParent;
+	actionId = inActionId;
+	visit = 0;
+	p = inP;
+	q = 0.0;
+	u = 0.0;
+	hirachy = inHirachy;
 }
 
 float UMctsTreeNode::GetValue()
 {
-				u = 5.0 * p * FMath::Sqrt((float)parent->visit) / (1.0 + (float)visit);
-				return u;
-				//return 0;
+	u = 5.0 * p * FMath::Sqrt((float)parent->visit) / (1.0 + (float)visit);
+	return u;
+	//return 0;
 }
 
-void UMctsTreeNode::Expand(int32 parentHirachy, TMap<int32, float> actionProbs)
+TArray<UMctsTreeNode*> UMctsTreeNode::Expand(int32 parentHirachy, TMap<int32, float> actionProbs)
 {
-				for (TMap<int32, float>::TConstIterator iter = actionProbs.CreateConstIterator(); iter; ++iter)
-				{
-								if (!children.Contains(iter->Key))
-								{
-												UMctsTreeNode* child = NewObject<UMctsTreeNode>();
-												child->Init(this, iter->Key, iter->Value, hirachy + 1);
-												children.Add(iter->Key, child);
-								}
-				}
+	TArray<UMctsTreeNode*> newNodes;
+	for (TMap<int32, float>::TConstIterator iter = actionProbs.CreateConstIterator(); iter; ++iter)
+	{
+		if (!children.Contains(iter->Key))
+		{
+			UMctsTreeNode* child = NewObject<UMctsTreeNode>(GetWorld(), mctsTreeNodeBPClass);
+			child->Init(this, iter->Key, iter->Value, hirachy + 1);
+			children.Add(iter->Key, child);
+			newNodes.Add(child);
+		}
+	}
+	return newNodes;
 }
 
 UMctsTreeNode* UMctsTreeNode::Select(int32& outAction)
 {
-				float maxQU = 0.0;
-				int32 maxQUAction = 0;
-				UMctsTreeNode* outNode = NULL;
-				for (TMap<int, UMctsTreeNode*>::TConstIterator iter = children.CreateConstIterator(); iter; ++iter)
-				{
-								float nodeQU = iter->Value->GetValue();
-								if (nodeQU >= maxQU)
-								{
-												maxQU = nodeQU;
-												maxQUAction = iter->Key;
-												outNode = iter->Value;
-								}
-				}
-				outAction = maxQUAction;
-				return outNode;
+	float maxQU = 0.0;
+	int32 maxQUAction = 0;
+	UMctsTreeNode* outNode = NULL;
+	for (TMap<int, UMctsTreeNode*>::TConstIterator iter = children.CreateConstIterator(); iter; ++iter)
+	{
+		float nodeQU = iter->Value->GetValue();
+		if (nodeQU >= maxQU)
+		{
+			maxQU = nodeQU;
+			maxQUAction = iter->Key;
+			outNode = iter->Value;
+		}
+	}
+	outAction = maxQUAction;
+	return outNode;
 }
 
 void UMctsTreeNode::UpdateEvaluateQValue(float inQ)
 {
-				UpdateParentQValue(inQ);
-				q = inQ;
+	UpdateParentQValue(inQ);
+	q = inQ;
 }
 
 void UMctsTreeNode::UpdateParentQValue(float leafQ)
 {
-				if (parent)
-				{
-								parent->UpdateParentQValue(leafQ);
-				}
-				UpdateCurNodeQValue(leafQ);
+	if (parent)
+	{
+		parent->UpdateParentQValue(leafQ);
+	}
+	UpdateCurNodeQValue(leafQ);
 }
 
 void UMctsTreeNode::UpdateCurNodeQValue(float leafQ)
 {
-				visit += 1;
-				q = (q - leafQ) / visit;
+	visit += 1;
+	q = (q - leafQ) / visit;
 }
 
 bool UMctsTreeNode::IsLeaf()
 {
-				if (children.Num() == 0)
-				{
-								return true;
-				}
-				else
-				{
-								return false;
-				}
+	if (children.Num() == 0)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 bool UMctsTreeNode::IsRoot()
 {
-				if (!parent)
-				{
-								return true;
-				}
-				else
-				{
-								return false;
-				}
+	if (!parent)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+void UMctsTreeNode::ResetNode()
+{
+	parent = NULL;
+	actionId = -1;
+	visit = 0;
+	p = 1.0;
+	q = 0.0;
+	u = 0.0;
+	hirachy = 0;
+}
+
+TArray<UMctsTreeNode*> UMctsTreeNode::ConvertChildrenToList()
+{
+	TArray<UMctsTreeNode*> childrenList;
+	for (TMap<int, UMctsTreeNode*>::TConstIterator iter = children.CreateConstIterator(); iter; ++iter)
+	{
+		if (iter->Value)
+		{
+			childrenList.Add(iter->Value);
+		}
+	}
+	return childrenList;
 }
 
 

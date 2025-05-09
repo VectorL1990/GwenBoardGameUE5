@@ -18,6 +18,7 @@ void ACoreCardGamePC::BeginPlay()
 {
     SetShowMouseCursor(true);
     InitMenu();
+    //mctReplayMenu->RefreshMctsMenu();
 }
 
 void ACoreCardGamePC::Tick(float DeltaTime)
@@ -51,15 +52,34 @@ void ACoreCardGamePC::DealHover()
             AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
             ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
             coreCardGameMode->RecoverHoverCardLocations();
-            for (int32 i = 0; i < coreCardGameMode->battleCards.Num(); i++)
+            bool findCard = false;
+
+            for (int32 i = 0; i < coreCardGameMode->sectionZeroHandBattleCards.Num(); i++)
             {
-                if (coreCardGameMode->battleCards[i] == hitResult.GetComponent()->GetOwner())
+                if (coreCardGameMode->sectionZeroHandBattleCards[i] == hitResult.GetComponent()->GetOwner())
                 {
-                    coreCardGameMode->curHighlightCard = coreCardGameMode->battleCards[i];
-                    coreCardGameMode->battleCards[i]->Highlight();
+                    coreCardGameMode->curHighlightCard = coreCardGameMode->sectionZeroHandBattleCards[i];
+                    coreCardGameMode->sectionZeroHandBattleCards[i]->Highlight();
                     battleWidget->SetupCardDetail(coreCardGameMode->curHighlightCard->GetActorLocation());
-                    coreCardGameMode->CalculateHoverCardLocations(i);
+                    coreCardGameMode->CalculateHoverCardLocations(0, i);
+                    findCard = true;
                     break;
+                }
+            }
+
+            if (!findCard)
+            {
+                for (int32 i = 0; i < coreCardGameMode->sectionOneHandBattleCards.Num(); i++)
+                {
+                    if (coreCardGameMode->sectionOneHandBattleCards[i] == hitResult.GetComponent()->GetOwner())
+                    {
+                        coreCardGameMode->curHighlightCard = coreCardGameMode->sectionOneHandBattleCards[i];
+                        coreCardGameMode->sectionOneHandBattleCards[i]->Highlight();
+                        battleWidget->SetupCardDetail(coreCardGameMode->curHighlightCard->GetActorLocation());
+                        coreCardGameMode->CalculateHoverCardLocations(1, i);
+                        findCard = true;
+                        break;
+                    }
                 }
             }
         }
@@ -99,22 +119,28 @@ void ACoreCardGamePC::DealLeftClick()
         if (hitResult.GetComponent() && hitResult.GetComponent()->ComponentHasTag(FName(TEXT("BattleCard"))))
         {
             ACard* card = Cast<ACard>(hitResult.GetActor());
-            if (card->cardStatus == BattleCardStatus::Standby)
+            if (card->cardStatus == BattleCardStatus::InHand)
             {
                 // highlight edge of card and keep high space
                 AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
                 ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
                 coreCardGameMode->selectPlayCard = card;
-                coreCardGameMode->SetSelectPlayCard(card);
+                coreCardGameMode->SetSelectPlayCard(card->camp, card);
             }
         }
         else if (hitResult.GetComponent() && hitResult.GetComponent()->ComponentHasTag(FName(TEXT("BoardGrid"))))
         {
+            DrawDebugSphere(GetWorld(), hitResult.Location, 50.0, 10, FColor::Red, false, 1.0);
             AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
             ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
             if (coreCardGameMode->selectPlayCard)
             {
-                
+                ABoardGrid* grid = Cast<ABoardGrid>(hitResult.GetActor());
+                int32 launchX = coreCardGameMode->selectPlayCard->gridX;
+                int32 launchY = coreCardGameMode->selectPlayCard->gridY;
+                int32 targetX = grid->gridX;
+                int32 targetY = grid->gridY + UGlobalConstFunctionLibrary::graveCardSectionRow + UGlobalConstFunctionLibrary::playCardSectionRow;
+                coreCardGameMode->TestTriggerAction(coreCardGameMode->selectPlayCard->camp, launchX, launchY, targetX, targetY, ActionType::PlayCard);
             }
         }
         else
@@ -164,6 +190,8 @@ void ACoreCardGamePC::InitMenu()
 
     UUserWidget* initReplayMenu = CreateWidget(this, replayMenuBPClass);
     mctReplayMenu = Cast<UMctReplayMenuWidget>(initReplayMenu);
+    mctReplayMenu->NotifyInit();
+    mctReplayMenu->AddToViewport();
 }
 
 void ACoreCardGamePC::RegisterSelectCardWidget(UCardWidget* cardWidget)
@@ -228,24 +256,13 @@ void ACoreCardGamePC::TestSaveString(FString testString)
     UCoreGameBlueprintFunctionLibrary::WriteStringToFile("test.json", "", testString);
 }
 
-void ACoreCardGamePC::RefreshMctReplayMenu(UMctsTreeNode* rootNode, int32 simulationNb)
+void ACoreCardGamePC::TestTriggerSimulation()
 {
-    mctReplayMenu->RefreshSimulationButton(rootNode, simulationNb);
-    
+    AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
+    ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
+    coreCardGameMode->TestTriggerSimulation();
 }
 
-void ACoreCardGamePC::ConstructMctNodesTreeWidget(UMctsTreeNode* mctsNode)
-{
-    UUserWidget* newButton = CreateWidget(this, mctNodeButtonBPClass);
-    UMctNodeButton* mctNodeButton = Cast<UMctNodeButton>(newButton);
-    mctNodeButton->Init(mctsNode);
 
-    //if ()
-}
-
-void ACoreCardGamePC::RefreshMctSimulationNbPage(int simulationNb)
-{
-    
-}
 
 

@@ -16,27 +16,43 @@ class ACoreCardGameModeBase;
 class GWENBOARDGAMECLIENT_API FAIRunnable : public FRunnable
 {
 public:
-				class FRunnableThread* aiRunnableThread = nullptr;
+	class FRunnableThread* aiRunnableThread = nullptr;
 
-				ACoreCardGameModeBase* threadOwner;
+	ACoreCardGameModeBase* threadOwner;
 
-				bool running = false;
+	bool running = false;
 
-				EAIRunnableState aiRunnableState = EAIRunnableState::Default;
+	EAIRunnableState aiRunnableState = EAIRunnableState::Default;
 
-				UMcts* mcts;
+	UMcts* mcts;
 
-				uint8 curSectionNb = 0;
+	uint8 curSectionNb = 0;
 
-				FAIRunnable(ACoreCardGameModeBase* inOwner);
-				~FAIRunnable();
+	int32 waitLaunchX;
+	int32 waitLaunchY;
+	int32 waitTargetX;
+	int32 waitTargetY;
+	uint8 waitLaunchCamp;
+	ActionType waitActionType;
 
-				void Start(UMcts* inMcts);
+	FAIRunnable(ACoreCardGameModeBase* inOwner);
+	~FAIRunnable();
 
-				virtual bool Init() override;
-				virtual uint32 Run() override;
-				virtual void Stop() override;
-				virtual void Exit() override;
+	void Start(UMcts* inMcts);
 
-				void TriggerMctsGetAction(uint8 sectionNb);
+	virtual bool Init() override;
+	virtual uint32 Run() override;
+	virtual void Stop() override;
+	virtual void Exit() override;
+
+	void TriggerMctsGetAction(uint8 campNb);
+
+	void TriggerAssignAction(uint8 campNb,
+		int32 launchX,
+		int32 launchY,
+		int32 targetX,
+		int32 targetY,
+		ActionType actionType);
+
+	void TriggerTestGetAction();
 };

@@ -2,72 +2,43 @@
 
 
 #include "Game/UI/MctReplayMenuWidget.h"
+#include "Kismet/GameplayStatics.h"
 #include "MctSimulateButton.h"
+#include "../CoreCardGameModeBase.h"
 
-void UMctReplayMenuWidget::Init(UScrollBox* inMctNodesScrollBox)
+void UMctReplayMenuWidget::NotifyInit_Implementation()
 {
-				mctNodesScrollBox = inMctNodesScrollBox;
+
 }
 
-void UMctReplayMenuWidget::AddScrollBox(UScrollBox* scrollBox)
+void UMctReplayMenuWidget::Init(UTreeView* inTreeView)
 {
-				scrollBoxes.Add(scrollBox);
+	treeView = inTreeView;
 }
 
-void UMctReplayMenuWidget::RefreshSimulationButton(UMctsTreeNode* rootNode, int32 simulationNb)
+void UMctReplayMenuWidget::RefreshMctsMenu()
 {
-				UUserWidget* newSimulateButton = CreateWidget(this, mctSimulationButtonBPClass);
-				
+	treeView->ClearListItems();
+
+	AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
+	ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
+	rootNode = coreCardGameMode->aiRunnable->mcts->veryFirstNode;
+	treeView->AddItem(rootNode);
+	/*
+	UMctsTreeNode* testParent = NewObject<UMctsTreeNode>(GetWorld(), mctsTreeNodeBPClass);
+	testParent->hirachy = 0;
+
+	
+	UMctsTreeNode* childNode_1 = NewObject<UMctsTreeNode>(GetWorld(), mctsTreeNodeBPClass);
+	testParent->children.Add(1, childNode_1);
+	childNode_1->hirachy = 1;
+
+	UMctsTreeNode* childNode_2 = NewObject<UMctsTreeNode>(GetWorld(), mctsTreeNodeBPClass);
+	childNode_1->children.Add(2, childNode_2);
+	childNode_2->hirachy = 2;
+	
+	treeView->AddItem(testParent);
+	*/
 }
 
-void UMctReplayMenuWidget::GetInMctsNodesWidget(UMctsTreeNode* inParentNode)
-{
-				TArray<UWidget*> curTreeNodeWidgets = mctNodesScrollBox->GetAllChildren();
-				for (int32 i = 0; i < curTreeNodeWidgets.Num(); i++)
-				{
-								curTreeNodeWidgets[i]->ConditionalBeginDestroy();
-				}
-				mctNodesScrollBox->ClearChildren();
-
-				for (TMap<int32, UMctsTreeNode*>::TConstIterator iter = inParentNode->children.CreateConstIterator(); iter; ++iter)
-				{
-								UUserWidget* newNodeButton = CreateWidget(this, mctNodeButtonBPClass);
-								UMctNodeButton* mctNodeButton = Cast<UMctNodeButton>(newNodeButton);
-								mctNodeButton->Init(iter->Value);
-								mctNodesScrollBox->AddChild(mctNodeButton);
-				}
-
-				curParentNode = inParentNode;
-}
-
-void UMctReplayMenuWidget::GetOutMctsNodesWidget()
-{
-				TArray<UWidget*> curTreeNodeWidgets = mctNodesScrollBox->GetAllChildren();
-				for (int32 i = 0; i < curTreeNodeWidgets.Num(); i++)
-				{
-								curTreeNodeWidgets[i]->ConditionalBeginDestroy();
-				}
-				mctNodesScrollBox->ClearChildren();
-
-
-				if (curParentNode->parent)
-				{
-								for (TMap<int32, UMctsTreeNode*>::TConstIterator iter = curParentNode->parent->children.CreateConstIterator(); iter; ++iter)
-								{
-												UUserWidget* newNodeButton = CreateWidget(this, mctNodeButtonBPClass);
-												UMctNodeButton* mctNodeButton = Cast<UMctNodeButton>(newNodeButton);
-												mctNodeButton->Init(iter->Value);
-												mctNodesScrollBox->AddChild(mctNodeButton);
-								}
-								curParentNode = curParentNode->parent;
-				}
-				else
-				{
-								UUserWidget* newNodeButton = CreateWidget(this, mctNodeButtonBPClass);
-								UMctNodeButton* mctNodeButton = Cast<UMctNodeButton>(newNodeButton);
-								mctNodeButton->Init(curParentNode);
-								mctNodesScrollBox->AddChild(mctNodeButton);
-								curParentNode = NULL;
-				}
-}
 

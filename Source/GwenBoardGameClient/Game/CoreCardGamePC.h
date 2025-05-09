@@ -56,11 +56,8 @@ public:
     UFUNCTION(BlueprintCallable)
     void TestSaveString(FString testString);
 
-    void RefreshMctReplayMenu(UMctsTreeNode* rootNode, int32 simulationNb);
-
-    void ConstructMctNodesTreeWidget(UMctsTreeNode* mctsNode);
-
-    void RefreshMctSimulationNbPage(int simulationNb);
+    UFUNCTION(BlueprintCallable)
+    void TestTriggerSimulation();
 
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
@@ -70,13 +67,10 @@ public:
     TSubclassOf<UUserWidget> battleWidgetBPClass;
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<UUserWidget> selectCardWidgetBPClass;
+
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<UUserWidget> replayMenuBPClass;
-    UPROPERTY(EditDefaultsOnly)
-    TSubclassOf<UUserWidget> mctNodeButtonBPClass;
-    
-    UPROPERTY(EditDefaultsOnly)
-    TSubclassOf<UUserWidget> mctSimulationPageBPClass;
+
 
     UPROPERTY()
     UBattleWidget* battleWidget;
@@ -84,8 +78,7 @@ public:
     USelectCardWidget* selectCardWidget;
     UPROPERTY()
     UMctReplayMenuWidget* mctReplayMenu;
-    UPROPERTY()
-    UMctNodesPageWidget* mctNodesPage;
+
     
     //UMctNodesPageWidget* 
 

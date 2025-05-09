@@ -38,6 +38,8 @@ public:
     UFUNCTION(BlueprintNativeEvent)
     void InitDone();
 
+    float curTestOutputRuntimeInterval = 0.0;
+
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<ACard> cardBPClass;
 
@@ -66,6 +68,9 @@ public:
     TSubclassOf<AActor> boardGridBPClass;
 
     UPROPERTY(EditDefaultsOnly)
+    TSubclassOf<UMcts> mctsBPClass;
+
+    UPROPERTY(EditDefaultsOnly)
     float gridSpawnCardOffset = 0.1;
 
     UPROPERTY(EditDefaultsOnly)
@@ -84,10 +89,16 @@ public:
     float spreadCardStepHeight;
 
     UPROPERTY(EditDefaultsOnly)
-    FVector spreadCardOffset;
+    FVector sectionZeroSpreadCardOffset;
+
+    UPROPERTY(EditDefaultsOnly)
+    FVector sectionOneSpreadCardOffset;
 
     UPROPERTY(EditDefaultsOnly)
     float hoverMoveRightCardsOffset;
+
+    UPROPERTY(EditDefaultsOnly)
+    float hoverMoveCardsHorizontalOffset;
 
     UPROPERTY(EditDefaultsOnly)
     float hoverCardUpOffset;
@@ -97,6 +108,15 @@ public:
 
     UPROPERTY(EditDefaultsOnly)
     float hoverMoveCardInterpSpeed;
+
+    UPROPERTY(EditDefaultsOnly)
+    FVector sectionZeroGraveAreaLocation;
+
+    UPROPERTY(EditDefaultsOnly)
+    FVector sectionOneGraveAreaLocation;
+
+    UPROPERTY(EditDefaultsOnly)
+    FVector gridCardVerticalOffset;
 
     ACard* selectPlayCard;
 
@@ -120,6 +140,12 @@ public:
     // --- Main game logic
     class FAIRunnable* aiRunnable;
 
+    void TestTriggerSimulation();
+
+    void TestTriggerAction(uint8 campNb, int32 launchX, int32 launchY, int32 targetX, int32 targetY, ActionType actionType);
+
+    void DemonstrateMctsTreeNode(UMctsTreeNode* node);
+
     UPROPERTY()
     UMcts* mcts;
 
@@ -138,33 +164,36 @@ public:
     //void LaunchSkill();
 
     UPROPERTY()
-    TArray<ACard*> battleCards;
+    TArray<ACard*> sectionZeroHandBattleCards;
+
+    UPROPERTY()
+    TArray<ACard*> sectionOneHandBattleCards;
+
+    UPROPERTY()
+    TMap<int32, ACard*> allBattleCards;
 
     ACard* curHighlightCard;
 
-    TArray<FRotator> testCardRots;
-    TArray<FVector> testCardLocations;
+    TArray<FRotator> sectionZeroCardRots;
+    TArray<FRotator> sectionOneCardRots;
+    TArray<FVector> sectionZeroOriginLocations;
+    TArray<FVector> sectionOneOriginLocations;
+    TArray<FVector> sectionZeroCardLocations;
+    TArray<FVector> sectionOneCardLocations;
 
-    TArray<FVector> testCardTempLocations;
+    void SpawnHandCard(FString cardName, uint8 sectionNb, int32 cardUid, int32 inCurHp, int32 inCurDefence, int32 handCardNb);
 
-    ACard* testMoveCard;
-
-    void SpawnTestCards();
-
-    void CalculateHoverCardLocations(int32 hoverCardNb);
+    void CalculateHoverCardLocations(uint8 campNb, int32 hoverCardNb);
 
     void RecoverHoverCardLocations();
 
-    void SetSelectPlayCard(ACard* inSelectCard);
+    void SetSelectPlayCard(uint8 campNb, ACard* inSelectCard);
 
     void RecoverSelectPlayCard();
 
     void CalculateCardSpread();
 
     void MoveRearrangeCards();
-
-    UFUNCTION(BlueprintCallable)
-    void MoveCard(FVector originLoc, FVector targetLoc, float midHeight);
 
     // --- Training logic
     void SimulateTrainAction(float dT);
@@ -305,9 +334,6 @@ public:
 
     UPROPERTY()
         TMap<FString, FSYNC_CARD_INFO> allCardInfoMap;
-
-    UPROPERTY()
-    TMap<FString, ACard*> allCardMap;
 
     uint8 maxChangeSelectCardNb = 3;
     uint8 curChangeSelectCardNb = 0;
