@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+#include "../GlobalConstFunctionLibrary.h"
 #include "MctsTreeNode.generated.h"
 
 /**
@@ -21,6 +22,12 @@ public:
 
     // Expand executes after selecting max U + Q leaf node
     TArray<UMctsTreeNode*> Expand(int32 parentHirachy, TMap<int32, float> actionProbs);
+
+    UMctsTreeNode* ExpandNode(int32 parentHirachy, 
+        int32 actionId, 
+        float prob, 
+        const TArray<FBoardRow>& boardRows,
+        const TMap<int32, FInstanceCardInfo> inAllInstanceCardInfos);
 
     UMctsTreeNode* Select(int32& outAction);
 
@@ -50,6 +57,12 @@ public:
 
     UPROPERTY(BlueprintReadWrite)
     int32 actionId = -1;
+
+    UPROPERTY()
+    TArray<FBoardRow> replayBoardRows;
+
+    UPROPERTY()
+    TMap<int32, FInstanceCardInfo> allReplayInstanceCardInfo;
 
     int32 visit;
 

@@ -12,6 +12,7 @@
 #include "BattleCamera.h"
 #include "AI/MctsPlayer.h"
 #include "ReplayBoard.h"
+#include "ReplayCard.h"
 #include "CoreCardGameModeBase.generated.h"
 
 /**
@@ -42,6 +43,9 @@ public:
 
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<ACard> cardBPClass;
+
+    UPROPERTY(EditDefaultsOnly)
+    TSubclassOf<AReplayCard> replayCardBPClass;
 
     UPROPERTY(EditDefaultsOnly)
     FVector initSpawnCardLoc;
@@ -118,6 +122,9 @@ public:
     UPROPERTY(EditDefaultsOnly)
     FVector gridCardVerticalOffset;
 
+    UPROPERTY(EditDefaultsOnly)
+    FVector replayGridCardVerticalOffset;
+
     ACard* selectPlayCard;
 
     TMap<CameraType, ABattleCamera*> camerasMap;
@@ -130,6 +137,15 @@ public:
 
     UPROPERTY(EditDefaultsOnly)
     EGamingType gamingType = EGamingType::Training;
+
+    UPROPERTY(EditDefaultsOnly)
+    FVector replaySectionZeroFirstHandCardLoc;
+
+    UPROPERTY(EditDefaultsOnly)
+    FVector replaySectionOneFirstHandCardLoc;
+
+    UPROPERTY(EditDefaultsOnly)
+    float replayHandCardOffset;
 public:
     // --- Select card logic
     UFUNCTION(BlueprintNativeEvent)
@@ -171,6 +187,9 @@ public:
 
     UPROPERTY()
     TMap<int32, ACard*> allBattleCards;
+
+    UPROPERTY()
+    TMap<int32, AReplayCard*> allReplayCards;
 
     ACard* curHighlightCard;
 

@@ -37,6 +37,24 @@ TArray<UMctsTreeNode*> UMctsTreeNode::Expand(int32 parentHirachy, TMap<int32, fl
 	return newNodes;
 }
 
+UMctsTreeNode* UMctsTreeNode::ExpandNode(int32 parentHirachy, 
+	int32 actionId, 
+	float prob, 
+	const TArray<FBoardRow>& inBoardRows, 
+	const TMap<int32, FInstanceCardInfo> inAllInstanceCardInfos)
+{
+	if (!children.Contains(actionId))
+	{
+		UMctsTreeNode* child = NewObject<UMctsTreeNode>(GetWorld(), mctsTreeNodeBPClass);
+		child->Init(this, actionId, prob, hirachy + 1);
+		child->replayBoardRows = inBoardRows;
+		child->allReplayInstanceCardInfo = inAllInstanceCardInfos;
+		children.Add(actionId, child);
+		return child;
+	}
+	return NULL;
+}
+
 UMctsTreeNode* UMctsTreeNode::Select(int32& outAction)
 {
 	float maxQU = 0.0;

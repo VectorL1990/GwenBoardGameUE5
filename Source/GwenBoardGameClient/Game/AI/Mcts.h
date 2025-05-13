@@ -36,6 +36,18 @@ public:
 	UPROPERTY()
 		TArray<int32> sectionOneGraveCards;
 
+	FBoardInfo GetCopyBoard()
+	{
+		FBoardInfo copyBoard;
+		copyBoard.boardRows = boardRows;
+		copyBoard.allInstanceCardInfo = allInstanceCardInfo;
+		copyBoard.sectionZeroHandCards = sectionZeroHandCards;
+		copyBoard.sectionOneHandCards = sectionOneHandCards;
+		copyBoard.sectionZeroGraveCards = sectionZeroGraveCards;
+		copyBoard.sectionOneGraveCards = sectionOneGraveCards;
+		return copyBoard;
+	}
+
 	void StateCoding(int32* boardCoding)
 	{
 		int32 channelLen = UGlobalConstFunctionLibrary::maxCol *
@@ -192,15 +204,15 @@ public:
 
 			if (!sectionOnePlay)
 			{
-				actionId = totalBattleBoardGrids * launchGridNb +
+				actionId = totalBattleBoardGrids/2 * launchGridNb +
 					targetPlayBoardY * UGlobalConstFunctionLibrary::maxCol + targetX;
 			}
 			else
 			{
 				actionId = UGlobalConstFunctionLibrary::playCardSectionRow *
 					UGlobalConstFunctionLibrary::maxCol *
-					totalBattleBoardGrids +
-					totalBattleBoardGrids * launchGridNb +
+					totalBattleBoardGrids/2 +
+					totalBattleBoardGrids/2 * launchGridNb +
 					targetPlayBoardY * UGlobalConstFunctionLibrary::maxCol + targetX;
 			}
 		}
@@ -208,7 +220,7 @@ public:
 		{
 			int32 totalPlayCardActionNb = UGlobalConstFunctionLibrary::playCardSectionRow *
 				UGlobalConstFunctionLibrary::maxCol *
-				totalBattleBoardGrids * 2;
+				totalBattleBoardGrids/2 * 2;
 
 			int32 launchPlayBoardY = launchY -
 				UGlobalConstFunctionLibrary::playCardSectionRow -
@@ -228,7 +240,7 @@ public:
 		{
 			int32 totalPlayCardActionNb = UGlobalConstFunctionLibrary::playCardSectionRow *
 				UGlobalConstFunctionLibrary::maxCol *
-				totalBattleBoardGrids * 2;
+				totalBattleBoardGrids/2 * 2;
 
 			int32 totalLaunchSkillActionNb = UGlobalConstFunctionLibrary::boardSectionRow *
 				UGlobalConstFunctionLibrary::maxCol *
@@ -257,7 +269,7 @@ public:
 		int32 totalPlayBoardGridNb = UGlobalConstFunctionLibrary::boardSectionRow * UGlobalConstFunctionLibrary::maxCol;
 
 		int32 totalPlayCardActions = UGlobalConstFunctionLibrary::playCardSectionRow * UGlobalConstFunctionLibrary::maxCol *
-			UGlobalConstFunctionLibrary::boardSectionRow * UGlobalConstFunctionLibrary::maxCol * 2;
+			UGlobalConstFunctionLibrary::boardSectionRow/2 * UGlobalConstFunctionLibrary::maxCol * 2;
 
 		int32 totalLaunchSkillActions = UGlobalConstFunctionLibrary::maxCol * UGlobalConstFunctionLibrary::boardSectionRow *
 			UGlobalConstFunctionLibrary::maxCol * UGlobalConstFunctionLibrary::boardSectionRow;
@@ -268,7 +280,7 @@ public:
 		if (actionId < totalPlayCardActions)
 		{
 			// which means it's play card action
-			int32 playCardSectionGridNb = FMath::FloorToInt((float)actionId / (float)totalPlayBoardGridNb);
+			int32 playCardSectionGridNb = FMath::FloorToInt((float)actionId / (float)(totalPlayBoardGridNb/2));
 			bool sectionOnePlay = false;
 			if (playCardSectionGridNb >= UGlobalConstFunctionLibrary::playCardSectionRow * UGlobalConstFunctionLibrary::maxCol)
 			{
@@ -276,7 +288,7 @@ public:
 				playCardSectionGridNb -= UGlobalConstFunctionLibrary::playCardSectionRow * UGlobalConstFunctionLibrary::maxCol;
 				sectionOnePlay = true;
 			}
-			int32 targetPlayBoardGridNb = actionId % totalPlayBoardGridNb;
+			int32 targetPlayBoardGridNb = actionId % (totalPlayBoardGridNb/2);
 
 			int32 launchPlaySectionBoardRow = FMath::FloorToInt((float)playCardSectionGridNb / (float)UGlobalConstFunctionLibrary::maxCol);
 			int32 launchPlaySectionBoardCol = playCardSectionGridNb % UGlobalConstFunctionLibrary::maxCol;
@@ -369,7 +381,7 @@ public:
 		}
 	}
 
-	void GetLegalMoves(uint8 sectionNb, TArray<int32>& legalMoves)
+	void GetLegalMoves(uint8 sectionNb, TArray<int32>& legalMoves, TArray<ActionType>& actionTypes)
 	{
 		for (int32 row = 0; row < UGlobalConstFunctionLibrary::boardSectionRow; row++)
 		{
@@ -393,8 +405,9 @@ public:
 
 								int32 actionId = ActionCoding(playCardCol, playSectionBoardRow + UGlobalConstFunctionLibrary::graveCardSectionRow, col, checkRow, ActionType::PlayCard);
 								legalMoves.Add(actionId);
+								actionTypes.Add(ActionType::PlayCard);
 							}
-							else if (sectionNb == 1 && row > UGlobalConstFunctionLibrary::boardSectionRow / 2)
+							else if (sectionNb == 1 && row >= UGlobalConstFunctionLibrary::boardSectionRow / 2)
 							{
 								if (boardRows[playSectionBoardRow +
 									UGlobalConstFunctionLibrary::graveCardSectionRow +
@@ -415,6 +428,7 @@ public:
 									checkRow,
 									ActionType::PlayCard);
 								legalMoves.Add(actionId);
+								actionTypes.Add(ActionType::PlayCard);
 							}
 						}
 					}
@@ -524,6 +538,7 @@ public:
 								possibleGrids[i].y,
 								ActionType::LaunchSkill);
 							legalMoves.Add(actionId);
+							actionTypes.Add(ActionType::LaunchSkill);
 						}
 					}
 
@@ -547,13 +562,19 @@ public:
 							ActionType::Move);
 
 						legalMoves.Add(actionId);
+						actionTypes.Add(ActionType::Move);
 					}
 				}
 			}
 		}
 	}
 
-	void GetLegalActionProbsBoardValue(bool simulateFlag, uint8 sectionNb, int32* boardState, TMap<int32, float>& legalActionProbs, float& boardValue)
+	void GetLegalActionProbsBoardValue(bool simulateFlag, 
+		uint8 sectionNb, 
+		int32* boardState, 
+		TMap<int32, float>& legalActionProbs, 
+		TMap<int32, ActionType>& legalActionTypesMap, 
+		float& boardValue)
 	{
 		TArray<float> actionProbs;
 		if (simulateFlag)
@@ -570,11 +591,13 @@ public:
 		}
 
 		TArray<int32> legalActionIds;
-		GetLegalMoves(sectionNb, legalActionIds);
+		TArray<ActionType> legalActionTypes;
+		GetLegalMoves(sectionNb, legalActionIds, legalActionTypes);
 
 		for (int32 i = 0; i < legalActionIds.Num(); i++)
 		{
 			legalActionProbs.Add(legalActionIds[i], actionProbs[legalActionIds[i]]);
+			legalActionTypesMap.Add(legalActionIds[i], legalActionTypes[i]);
 		}
 	}
 

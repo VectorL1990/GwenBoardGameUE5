@@ -303,6 +303,76 @@ void ACoreCardGameModeBase::TestTriggerAction(uint8 campNb, int32 launchX, int32
 
 void ACoreCardGameModeBase::DemonstrateMctsTreeNode(UMctsTreeNode* node)
 {
+	for (TMap<int32, AReplayCard*>::TConstIterator iter = allReplayCards.CreateConstIterator(); iter; ++iter)
+	{
+		iter->Value->ConditionalBeginDestroy();
+	}
+	allReplayCards.Empty();
+
+
+	for (int32 i = 0; i < node->replayBoardRows.Num(); i++)
+	{
+		for (int32 j = 0; j < node->replayBoardRows[i].colCardInfos.Num(); j++)
+		{
+			int32 cardId = node->replayBoardRows[i].colCardInfos[j];
+			if (cardId != -1)
+			{
+				if (!allReplayCards.Contains(cardId))
+				{
+					// we should spawn card here
+					if (i < UGlobalConstFunctionLibrary::graveCardSectionRow ||
+						i >= (UGlobalConstFunctionLibrary::graveCardSectionRow +
+							UGlobalConstFunctionLibrary::playCardSectionRow +
+							UGlobalConstFunctionLibrary::boardSectionRow +
+							UGlobalConstFunctionLibrary::playCardSectionRow))
+					{
+						// which means it's a grave card
+					}
+					else if ((i >= UGlobalConstFunctionLibrary::graveCardSectionRow &&
+						i < UGlobalConstFunctionLibrary::graveCardSectionRow + UGlobalConstFunctionLibrary::playCardSectionRow) ||
+						(i >= UGlobalConstFunctionLibrary::graveCardSectionRow + UGlobalConstFunctionLibrary::playCardSectionRow + UGlobalConstFunctionLibrary::boardSectionRow &&
+							i < UGlobalConstFunctionLibrary::graveCardSectionRow + UGlobalConstFunctionLibrary::playCardSectionRow * 2 + UGlobalConstFunctionLibrary::boardSectionRow))
+					{
+						// which means it's in play card section
+
+						FVector spawnLocation;
+						if (i < UGlobalConstFunctionLibrary::graveCardSectionRow + UGlobalConstFunctionLibrary::playCardSectionRow)
+						{
+							FVector cardOffset(replayHandCardOffset * j, 0.0, 0.0);
+							spawnLocation = replaySectionZeroFirstHandCardLoc + cardOffset;
+						}
+						else
+						{
+							FVector cardOffset(-replayHandCardOffset * j, 0.0, 0.0);
+							spawnLocation = replaySectionOneFirstHandCardLoc + cardOffset;
+						}
+						AReplayCard* replayCard = GetWorld()->SpawnActor<AReplayCard>(replayCardBPClass, spawnLocation, FRotator::ZeroRotator);
+						replayCard->Init(node->allReplayInstanceCardInfo[cardId].originCardInfo.cardName,
+							node->allReplayInstanceCardInfo[cardId].curHp,
+							node->allReplayInstanceCardInfo[cardId].curDefence);
+						allReplayCards.Add(cardId, replayCard);
+					}
+					else
+					{
+						// which means it's in board section
+						int32 boardGridX = j;
+						int32 boardGridY = i - UGlobalConstFunctionLibrary::graveCardSectionRow - UGlobalConstFunctionLibrary::playCardSectionRow;
+						int32 boardGridId = boardGridY * UGlobalConstFunctionLibrary::maxCol + boardGridX;
+
+						FVector destLocation = boardGrids[boardGridId]->GetActorLocation() + replayGridCardVerticalOffset;
+						AReplayCard* replayCard = GetWorld()->SpawnActor<AReplayCard>(replayCardBPClass, destLocation, FRotator::ZeroRotator);
+						replayCard->Init(node->allReplayInstanceCardInfo[cardId].originCardInfo.cardName,
+							node->allReplayInstanceCardInfo[cardId].curHp,
+							node->allReplayInstanceCardInfo[cardId].curDefence);
+						allReplayCards.Add(cardId, replayCard);
+					}
+				}
+			}
+		}
+	}
+
+
+
 	int32 launchX = -1;
 	int32 launchY = -1;
 	int32 targetX = -1;
@@ -315,11 +385,18 @@ void ACoreCardGameModeBase::DemonstrateMctsTreeNode(UMctsTreeNode* node)
 	}
 	else
 	{
-		int32 launchCardUid = aiRunnable->mcts->realBoard.boardRows[launchY].colCardInfos[launchX];
-		int32 targetCardUid = aiRunnable->mcts->realBoard.boardRows[targetY].colCardInfos[targetX];
-		FVector launchCardLoc = allBattleCards[launchCardUid]->GetActorLocation();
-		FVector targetCardLoc = allBattleCards[targetCardUid]->GetActorLocation();
-		UKismetSystemLibrary::DrawDebugLine(this, launchCardLoc, targetCardLoc, FLinearColor::Green, 1.0, 10.0);
+		if (actionType == ActionType::PlayCard)
+		{
+
+		}
+		else if (actionType == ActionType::LaunchSkill)
+		{
+			int32 launchCardUid = aiRunnable->mcts->realBoard.boardRows[launchY].colCardInfos[launchX];
+			int32 targetCardUid = aiRunnable->mcts->realBoard.boardRows[targetY].colCardInfos[targetX];
+			FVector launchCardLoc = allBattleCards[launchCardUid]->GetActorLocation();
+			FVector targetCardLoc = allBattleCards[targetCardUid]->GetActorLocation();
+			UKismetSystemLibrary::DrawDebugLine(this, launchCardLoc, targetCardLoc, FLinearColor::Green, 1.0, 10.0);
+		}
 	}
 }
 

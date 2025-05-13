@@ -167,7 +167,7 @@ void UMcts::TriggerSimulation(uint8 sectionNb, int32 simulationNb)
 	curSearchNode = treeRoot;
 
 
-
+	GetLatestSimulationBoard();
 	while (true)
 	{
 		if (curSearchNode == NULL || curSearchNode->IsLeaf())
@@ -184,13 +184,18 @@ void UMcts::TriggerSimulation(uint8 sectionNb, int32 simulationNb)
 	}
 
 	int32 boardCoding[TotalCHW] = {0};
-	GetLatestSimulationBoard();
 	simulationBoard.StateCoding(boardCoding);
 	
 
 	TMap<int32, float> predictActionProbs;
+	TMap<int32, ActionType> predictActionTypes;
 	float simulationStateValue;
-	simulationBoard.GetLegalActionProbsBoardValue(true, sectionNb, boardCoding, predictActionProbs, simulationStateValue);
+	simulationBoard.GetLegalActionProbsBoardValue(true, 
+		sectionNb, 
+		boardCoding, 
+		predictActionProbs, 
+		predictActionTypes,
+		simulationStateValue);
 
 	// Tell whether game is end
 	bool isGameEnd = false;
@@ -200,8 +205,20 @@ void UMcts::TriggerSimulation(uint8 sectionNb, int32 simulationNb)
 		// expand the tree and update P, U for each node
 		if (!isGameEnd)
 		{
-			TArray<UMctsTreeNode*> newNodes = curSearchNode->Expand(curSearchNode->hirachy, predictActionProbs);
-			newAddNodes.Append(newNodes);
+			for (TMap<int32, float>::TConstIterator iter = predictActionProbs.CreateConstIterator(); iter; ++iter)
+			{
+				FBoardInfo copyBoard = simulationBoard.GetCopyBoard();
+				int32 actionId = iter->Key;
+				TArray<FRenderEffectRound> renderEffectRoundList;
+				ActionType testActionType = predictActionTypes[actionId];
+				copyBoard.TriggerAction(sectionNb, actionId, renderEffectRoundList);
+				UMctsTreeNode* newNode = curSearchNode->ExpandNode(curSearchNode->hirachy, 
+					iter->Key, 
+					iter->Value, 
+					copyBoard.boardRows,
+					copyBoard.allInstanceCardInfo);
+				newAddNodes.Add(newNode);
+			}
 		}
 		else
 		{
