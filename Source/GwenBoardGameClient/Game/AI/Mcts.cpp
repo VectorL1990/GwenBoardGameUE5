@@ -15,6 +15,7 @@ void UMcts::InitMcts(int32 simulationMoves)
 	expandSimulationMoves = simulationMoves;
 
 	veryFirstNode = NewObject<UMctsTreeNode>(GetWorld(), mctsTreeNodeBPClass);
+	tritonHttpClient = NewObject<UTritonHttpClient>(GetWorld(), tritonHttpClientBPClass);
 	treeRoot = veryFirstNode;
 
 	curSearchNode = treeRoot;
@@ -264,6 +265,68 @@ void UMcts::UpdateCurSearchNode(int32 targetMove)
 	else
 	{
 		treeRoot->ResetNode();
+	}
+}
+
+int32 UMcts::GetNextTritonRequestID()
+{
+	int32 tmpTritonRequestID = curTritonRequestID;
+	curTritonRequestID += 1;
+	return tmpTritonRequestID;
+}
+
+void UMcts::CheckTritonReponseAll()
+{
+	if (receivedTritonResponseNb < expandSimulationMoves)
+	{
+		return;
+	}
+
+	for (int32 i = 0; i < tritonResponseDatas.Num(); i++)
+	{
+
+	}
+}
+
+void UMcts::SendTritonRequest(uint8 sectionNb)
+{
+	for (int32 i = 0; i < expandSimulationMoves; i++)
+	{
+		curSearchNode = treeRoot;
+
+
+		GetLatestSimulationBoard();
+		while (true)
+		{
+			if (curSearchNode == NULL || curSearchNode->IsLeaf())
+			{
+				break;
+			}
+			int32 action = 0;
+			curSearchNode = curSearchNode->Select(action);
+			// we should do move here! So that we can predict next action probs
+			TArray<FRenderEffectRound> renderEffectRoundList;
+			simulationBoard.TriggerAction(sectionNb, action, renderEffectRoundList);
+
+			curSearchNode->stateStrings = simulationBoard.StateStringCoding();
+		}
+
+		int32 boardCoding[TotalCHW] = { 0 };
+		simulationBoard.StateCoding(boardCoding);
+
+		int32 requestID = GetNextTritonRequestID();
+		tritonHttpClient->SendInferenceRequest("GwenNetModel", boardCoding, TotalCHW, requestID);
+
+
+		TMap<int32, float> predictActionProbs;
+		TMap<int32, ActionType> predictActionTypes;
+		float simulationStateValue;
+		simulationBoard.GetLegalActionProbsBoardValue(true,
+			sectionNb,
+			boardCoding,
+			predictActionProbs,
+			predictActionTypes,
+			simulationStateValue);
 	}
 }
 

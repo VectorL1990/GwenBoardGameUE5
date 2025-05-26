@@ -67,7 +67,7 @@ uint32 FAIRunnable::Run()
 			mcts->realBoard.TriggerAction(waitLaunchCamp, actionCode, renderEffectRounds);
 			aiRunnableState = EAIRunnableState::NewState;
 		}
-		else if (aiRunnableState == EAIRunnableState::TestGetAction)
+		else if (aiRunnableState == EAIRunnableState::SendTritonRequest)
 		{
 			int32 targetMove;
 			mcts->GetAction(curSectionNb, targetMove);

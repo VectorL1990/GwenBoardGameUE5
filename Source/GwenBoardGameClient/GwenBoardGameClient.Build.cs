@@ -15,7 +15,7 @@ public class GwenBoardGameClient : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  "Networking", "Slate", "SlateCore" });
 
-        //PublicDependencyModuleNames.AddRange(new string[] { "HTTP" });
+        PublicDependencyModuleNames.AddRange(new string[] { "HTTP" });
 
         PublicDependencyModuleNames.AddRange(new string[] { "Json", "JsonUtilities" });
 

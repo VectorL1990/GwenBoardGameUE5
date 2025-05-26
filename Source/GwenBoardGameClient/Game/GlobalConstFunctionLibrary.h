@@ -382,6 +382,10 @@ enum class EAIRunnableState
     Default,
     NewTask,
     Working,
+    SendTritonRequest,
+    WaitTritonResponse,
+
+
     TestGetAction,
     FinishTestGetAction,
     NewState,

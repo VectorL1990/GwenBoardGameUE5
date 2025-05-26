@@ -7,6 +7,7 @@
 #include "../GlobalConstFunctionLibrary.h"
 #include "../BattleBoard.h"
 #include "MctsTreeNode.h"
+#include "TritonHttpClient.h"
 #include "Mcts.generated.h"
 
 
@@ -1054,6 +1055,23 @@ public:
 	}
 };
 
+USTRUCT(BlueprintType, Blueprintable)
+struct FTritonResponseData
+{
+	GENERATED_USTRUCT_BODY()
+public:
+	UPROPERTY()
+	UMctsTreeNode* parentNode;
+
+	UPROPERTY()
+	FBoardInfo curBoardInfo;
+
+	UPROPERTY()
+	TArray<float> policies;
+
+	float boardValue;
+};
+
 UCLASS(Blueprintable)
 class GWENBOARDGAMECLIENT_API UMcts : public UObject
 {
@@ -1079,6 +1097,9 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UMctsTreeNode> mctsTreeNodeBPClass;
 
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UTritonHttpClient> tritonHttpClientBPClass;
+
 	UPROPERTY()
 	UMctsTreeNode* veryFirstNode;
 
@@ -1091,6 +1112,16 @@ public:
 	UPROPERTY()
 	UMctsTreeNode* curSearchNode;
 
+	UPROPERTY()
+	UTritonHttpClient* tritonHttpClient;
+
+	int32 curTritonRequestID = 0;
+
+	int32 receivedTritonResponseNb = 0;
+
+	UPROPERTY()
+	TArray<FTritonResponseData> tritonResponseDatas;
+
 
 	void InitMcts(int32 simulationMoves);
 
@@ -1102,6 +1133,12 @@ public:
 	void GetMoveProbs(uint8 sectionNb, TArray<int32>& outActs, TArray<float>& softmaxProbs);
 
 	void UpdateCurSearchNode(int32 targetMove);
+
+	int32 GetNextTritonRequestID();
+
+	void CheckTritonReponseAll();
+
+	void SendTritonRequest(uint8 sectionNb);
 
 	void GetAction(uint8 sectionNb, int32& targetMove);
 
