@@ -162,99 +162,6 @@ void UMcts::GetLatestSimulationBoard()
 	simulationBoard.sectionOneGraveCards = realBoard.sectionOneGraveCards;
 }
 
-
-void UMcts::TriggerSimulation(uint8 sectionNb, int32 simulationNb)
-{
-	curSearchNode = treeRoot;
-
-
-	GetLatestSimulationBoard();
-	while (true)
-	{
-		if (curSearchNode == NULL || curSearchNode->IsLeaf())
-		{
-			break;
-		}
-		int32 action = 0;
-		curSearchNode = curSearchNode->Select(action);
-		// we should do move here! So that we can predict next action probs
-		TArray<FRenderEffectRound> renderEffectRoundList;
-		simulationBoard.TriggerAction(sectionNb, action, renderEffectRoundList);
-
-		curSearchNode->stateStrings = simulationBoard.StateStringCoding();
-	}
-
-	int32 boardCoding[TotalCHW] = {0};
-	simulationBoard.StateCoding(boardCoding);
-	
-
-	TMap<int32, float> predictActionProbs;
-	TMap<int32, ActionType> predictActionTypes;
-	float simulationStateValue;
-	simulationBoard.GetLegalActionProbsBoardValue(true, 
-		sectionNb, 
-		boardCoding, 
-		predictActionProbs, 
-		predictActionTypes,
-		simulationStateValue);
-
-	// Tell whether game is end
-	bool isGameEnd = false;
-
-	if (curSearchNode)
-	{
-		// expand the tree and update P, U for each node
-		if (!isGameEnd)
-		{
-			for (TMap<int32, float>::TConstIterator iter = predictActionProbs.CreateConstIterator(); iter; ++iter)
-			{
-				FBoardInfo copyBoard = simulationBoard.GetCopyBoard();
-				int32 actionId = iter->Key;
-				TArray<FRenderEffectRound> renderEffectRoundList;
-				ActionType testActionType = predictActionTypes[actionId];
-				copyBoard.TriggerAction(sectionNb, actionId, renderEffectRoundList);
-				UMctsTreeNode* newNode = curSearchNode->ExpandNode(curSearchNode->hirachy, 
-					iter->Key, 
-					iter->Value, 
-					copyBoard.boardRows,
-					copyBoard.allInstanceCardInfo);
-				newAddNodes.Add(newNode);
-			}
-		}
-		else
-		{
-
-		}
-
-		curSearchNode->UpdateEvaluateQValue(simulationStateValue);
-	}
-	
-}
-
-void UMcts::GetMoveProbs(uint8 sectionNb, TArray<int32>& outActs, TArray<float>& softmaxProbs)
-{
-	/*
-	APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
-	ACoreCardGamePC* coreCardGamePC = Cast<ACoreCardGamePC>(playerController);
-	coreCardGamePC->mctReplayMenu->rootNode = treeRoot;
-	*/
-
-	for (int32 i = 0; i < expandSimulationMoves; i++)
-	{
-		TriggerSimulation(sectionNb, i);
-	}
-
-	TArray<float> logVisits;
-	for (TMap<int32, UMctsTreeNode*>::TConstIterator iter = curSearchNode->children.CreateConstIterator(); iter; ++iter)
-	{
-		float logVisit = FMath::Loge(iter->Value->visit + 1e-10);
-		outActs.Add(iter->Key);
-		logVisits.Add(logVisit);
-	}
-
-	UCoreGameBlueprintFunctionLibrary::Softmax(logVisits, 0.001, softmaxProbs);
-}
-
 void UMcts::UpdateCurSearchNode(int32 targetMove)
 {
 	if (treeRoot->children.Contains(targetMove))
@@ -268,7 +175,59 @@ void UMcts::UpdateCurSearchNode(int32 targetMove)
 	}
 }
 
-int32 UMcts::GetNextTritonRequestID()
+void UMcts::SendTritonRequest(uint8 sectionNb)
+{
+	for (int32 i = 0; i < expandSimulationMoves; i++)
+	{
+		uint8 curSectionNb = sectionNb;
+		curSearchNode = treeRoot;
+
+		FBoardInfo copyBoard = realBoard.GetCopyBoard();
+		//GetLatestSimulationBoard();
+		while (true)
+		{
+			if (curSearchNode == NULL || curSearchNode->IsLeaf())
+			{
+				break;
+			}
+			int32 action = 0;
+			curSearchNode = curSearchNode->Select(action);
+			int32 launchX = 0;
+			int32 launchY = 0;
+			int32 targetX = 0;
+			int32 targetY = 0;
+			ActionType actionType = ActionType::EndRound;
+			copyBoard.ActionDecoding(action, launchX, launchY, targetX, targetY, actionType);
+			// we should do move here! So that we can predict next action probs
+			TArray<FRenderEffectRound> renderEffectRoundList;
+			copyBoard.TriggerAction(curSectionNb, action, renderEffectRoundList);
+			if (actionType == ActionType::EndRound)
+			{
+				if (curSectionNb == 0)
+				{
+					curSectionNb = 1;
+				}
+				else
+				{
+					curSectionNb = 0;
+				}
+			}
+		}
+
+		int32 boardCoding[TotalCHW] = { 0 };
+		copyBoard.StateCoding(boardCoding);
+
+		int32 requestID = GetCurTritonRequestID();
+		FTritonResponseData tritonResponseData;
+		tritonResponseData.curBoardInfo = copyBoard;
+		tritonResponseData.curMctsTreeNode = curSearchNode;
+		tritonResponseData.curSectionNb = curSectionNb;
+		tritonResponseDatas.Add(tritonResponseData);
+		tritonHttpClient->SendInferenceRequest("GwenNetModel", boardCoding, TotalCHW, requestID);
+	}
+}
+
+int32 UMcts::GetCurTritonRequestID()
 {
 	int32 tmpTritonRequestID = curTritonRequestID;
 	curTritonRequestID += 1;
@@ -282,60 +241,45 @@ void UMcts::CheckTritonReponseAll()
 		return;
 	}
 
+	// Expand searching tree first
 	for (int32 i = 0; i < tritonResponseDatas.Num(); i++)
 	{
+		TArray<int32> legalActionIds;
+		TArray<ActionType> legalActionTypes;
+		tritonResponseDatas[i].curBoardInfo.GetLegalMoves(tritonResponseDatas[i].curSectionNb, legalActionIds, legalActionTypes);
 
-	}
-}
-
-void UMcts::SendTritonRequest(uint8 sectionNb)
-{
-	for (int32 i = 0; i < expandSimulationMoves; i++)
-	{
-		curSearchNode = treeRoot;
-
-
-		GetLatestSimulationBoard();
-		while (true)
+		for (int32 j = 0; j < legalActionIds.Num(); j++)
 		{
-			if (curSearchNode == NULL || curSearchNode->IsLeaf())
-			{
-				break;
-			}
-			int32 action = 0;
-			curSearchNode = curSearchNode->Select(action);
-			// we should do move here! So that we can predict next action probs
 			TArray<FRenderEffectRound> renderEffectRoundList;
-			simulationBoard.TriggerAction(sectionNb, action, renderEffectRoundList);
-
-			curSearchNode->stateStrings = simulationBoard.StateStringCoding();
+			ActionType testActionType = legalActionTypes[legalActionIds[j]];
+			// Trigger action just for replay
+			tritonResponseDatas[i].curBoardInfo.TriggerAction(
+				tritonResponseDatas[i].curSectionNb, legalActionIds[j], renderEffectRoundList);
+			UMctsTreeNode* newNode = tritonResponseDatas[i].curMctsTreeNode->ExpandNode(
+				tritonResponseDatas[i].curMctsTreeNode->hirachy,
+				legalActionIds[j],
+				tritonResponseDatas[i].policies[legalActionIds[j]],
+				tritonResponseDatas[i].curBoardInfo.boardRows,
+				tritonResponseDatas[i].curBoardInfo.allInstanceCardInfo);
+			newAddNodes.Add(newNode);
 		}
 
-		int32 boardCoding[TotalCHW] = { 0 };
-		simulationBoard.StateCoding(boardCoding);
-
-		int32 requestID = GetNextTritonRequestID();
-		tritonHttpClient->SendInferenceRequest("GwenNetModel", boardCoding, TotalCHW, requestID);
-
-
-		TMap<int32, float> predictActionProbs;
-		TMap<int32, ActionType> predictActionTypes;
-		float simulationStateValue;
-		simulationBoard.GetLegalActionProbsBoardValue(true,
-			sectionNb,
-			boardCoding,
-			predictActionProbs,
-			predictActionTypes,
-			simulationStateValue);
+		tritonResponseDatas[i].curMctsTreeNode->UpdateQValueRecursive(tritonResponseDatas[i].boardValue);
 	}
-}
 
-void UMcts::GetAction(uint8 sectionNb, int32& targetMove)
-{
-	TArray<int32> moves;
+	// After expand nodes, we should find ideal motion and do action
+	TArray<float> logVisits;
+	TArray<int32> candidateActs;
+	for (TMap<int32, UMctsTreeNode*>::TConstIterator iter = treeRoot->children.CreateConstIterator(); iter; ++iter)
+	{
+		float logVisit = FMath::Loge(iter->Value->visit + 1e-10);
+		candidateActs.Add(iter->Key);
+		logVisits.Add(logVisit);
+	}
 	TArray<float> softmaxProbs;
-	GetMoveProbs(sectionNb, moves, softmaxProbs);
-	targetMove = UCoreGameBlueprintFunctionLibrary::GetDirichletAction(moves, softmaxProbs);
+	UCoreGameBlueprintFunctionLibrary::Softmax(logVisits, 0.001, softmaxProbs);
+
+	int32 targetMove = UCoreGameBlueprintFunctionLibrary::GetDirichletAction(candidateActs, softmaxProbs);
 
 	if (isTraining)
 	{
@@ -347,7 +291,3 @@ void UMcts::GetAction(uint8 sectionNb, int32& targetMove)
 		UpdateCurSearchNode(-1);
 	}
 }
-
-
-
-

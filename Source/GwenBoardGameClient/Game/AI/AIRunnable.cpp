@@ -69,9 +69,10 @@ uint32 FAIRunnable::Run()
 		}
 		else if (aiRunnableState == EAIRunnableState::SendTritonRequest)
 		{
-			int32 targetMove;
-			mcts->GetAction(curSectionNb, targetMove);
-			aiRunnableState = EAIRunnableState::FinishTestGetAction;
+			//int32 targetMove;
+			// Same to GetAction previous
+			mcts->SendTritonRequest(curSectionNb);
+			aiRunnableState = EAIRunnableState::WaitTritonResponse;
 		}
 	}
 	return 0;

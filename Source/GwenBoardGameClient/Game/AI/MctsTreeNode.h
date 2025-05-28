@@ -31,11 +31,7 @@ public:
 
     UMctsTreeNode* Select(int32& outAction);
 
-    void UpdateEvaluateQValue(float inQ);
-
-    void UpdateParentQValue(float leafQ);
-
-    void UpdateCurNodeQValue(float leafQ);
+    void UpdateQValueRecursive(float leafQ);
 	
     bool IsLeaf();
 
@@ -81,11 +77,5 @@ public:
     int32 hirachy;
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
-    int32 step;
-
-    UPROPERTY(BlueprintReadWrite, EditAnywhere)
-    int32 simulationNb;
-
-    UPROPERTY(BlueprintReadWrite, EditAnywhere)
-    TArray<FString> stateStrings;
+    uint8 curSectionNb;
 };

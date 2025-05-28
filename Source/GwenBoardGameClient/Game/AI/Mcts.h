@@ -570,38 +570,6 @@ public:
 		}
 	}
 
-	void GetLegalActionProbsBoardValue(bool simulateFlag, 
-		uint8 sectionNb, 
-		int32* boardState, 
-		TMap<int32, float>& legalActionProbs, 
-		TMap<int32, ActionType>& legalActionTypesMap, 
-		float& boardValue)
-	{
-		TArray<float> actionProbs;
-		if (simulateFlag)
-		{
-			float aveProb = 1.0f / (float)TotalActionNb;
-			actionProbs.Init(aveProb, TotalActionNb);
-			boardValue = 1.0f;
-		}
-		else
-		{
-			float aveProb = 1.0f / (float)TotalActionNb;
-			actionProbs.Init(aveProb, TotalActionNb);
-			boardValue = 1.0f;
-		}
-
-		TArray<int32> legalActionIds;
-		TArray<ActionType> legalActionTypes;
-		GetLegalMoves(sectionNb, legalActionIds, legalActionTypes);
-
-		for (int32 i = 0; i < legalActionIds.Num(); i++)
-		{
-			legalActionProbs.Add(legalActionIds[i], actionProbs[legalActionIds[i]]);
-			legalActionTypesMap.Add(legalActionIds[i], legalActionTypes[i]);
-		}
-	}
-
 
 
 	ActionType TriggerAction(
@@ -1061,10 +1029,12 @@ struct FTritonResponseData
 	GENERATED_USTRUCT_BODY()
 public:
 	UPROPERTY()
-	UMctsTreeNode* parentNode;
+	UMctsTreeNode* curMctsTreeNode;
 
 	UPROPERTY()
 	FBoardInfo curBoardInfo;
+
+	uint8 curSectionNb;
 
 	UPROPERTY()
 	TArray<float> policies;
@@ -1120,6 +1090,9 @@ public:
 	int32 receivedTritonResponseNb = 0;
 
 	UPROPERTY()
+	TMap<int32, int32> tritonRequestIDResponseArrayNbMap;
+
+	UPROPERTY()
 	TArray<FTritonResponseData> tritonResponseDatas;
 
 
@@ -1127,20 +1100,13 @@ public:
 
 	void GetLatestSimulationBoard();
 
-	void TriggerSimulation(uint8 sectionNb, int32 simulationNb);
-
-
-	void GetMoveProbs(uint8 sectionNb, TArray<int32>& outActs, TArray<float>& softmaxProbs);
-
 	void UpdateCurSearchNode(int32 targetMove);
 
-	int32 GetNextTritonRequestID();
+	int32 GetCurTritonRequestID();
 
 	void CheckTritonReponseAll();
 
 	void SendTritonRequest(uint8 sectionNb);
-
-	void GetAction(uint8 sectionNb, int32& targetMove);
 
 
 
