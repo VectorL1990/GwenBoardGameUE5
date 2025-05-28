@@ -31,7 +31,7 @@ public:
 
     UMctsTreeNode* Select(int32& outAction);
 
-    void UpdateQValueRecursive(float leafQ);
+    void UpdateQValueRecursive(float leafW);
 	
     bool IsLeaf();
 
@@ -67,6 +67,9 @@ public:
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
     float q;
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    float w;
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
     float u;

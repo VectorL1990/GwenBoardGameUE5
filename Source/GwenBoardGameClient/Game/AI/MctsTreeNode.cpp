@@ -10,6 +10,7 @@ void UMctsTreeNode::Init(UMctsTreeNode* inParent, int32 inActionId, float inP, i
 	visit = 0;
 	p = inP;
 	q = 0.0;
+	w = 0.0;
 	u = 0.0;
 	hirachy = inHirachy;
 }
@@ -74,21 +75,23 @@ UMctsTreeNode* UMctsTreeNode::Select(int32& outAction)
 	return outNode;
 }
 
-void UMctsTreeNode::UpdateQValueRecursive(float leafQ)
+void UMctsTreeNode::UpdateQValueRecursive(float leafW)
 {
 	if (parent)
 	{
 		if (parent->curSectionNb != curSectionNb)
 		{
-			parent->UpdateQValueRecursive(-leafQ);
+			parent->UpdateQValueRecursive(-leafW);
 		}
 		else
 		{
-			parent->UpdateQValueRecursive(leafQ);
+			parent->UpdateQValueRecursive(leafW);
 		}
 	}
 	visit += 1;
-	q = q + (leafQ - q) / visit;
+	
+	w = w + leafW;
+	q = w / visit;
 }
 
 bool UMctsTreeNode::IsLeaf()
