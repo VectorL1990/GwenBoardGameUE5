@@ -53,10 +53,6 @@ uint32 FAIRunnable::Run()
 	{
 		if (aiRunnableState == EAIRunnableState::Working)
 		{
-			
-
-
-
 			int32 actionCode = mcts->realBoard.ActionCoding(
 				waitLaunchX, 
 				waitLaunchY, 
@@ -67,12 +63,32 @@ uint32 FAIRunnable::Run()
 			mcts->realBoard.TriggerAction(waitLaunchCamp, actionCode, renderEffectRounds);
 			aiRunnableState = EAIRunnableState::NewState;
 		}
+		else if (aiRunnableState == EAIRunnableState::GetTritonAction)
+		{
+			mcts->curSimulationMove = 0;
+			aiRunnableState = EAIRunnableState::SendTritonRequest;
+		}
 		else if (aiRunnableState == EAIRunnableState::SendTritonRequest)
 		{
-			//int32 targetMove;
-			// Same to GetAction previous
-			mcts->SendTritonRequest(curSectionNb);
-			aiRunnableState = EAIRunnableState::WaitTritonResponse;
+			if (mcts->curSimulationMove >= mcts->expandSimulationMoves)
+			{
+				mcts->GetTritonAction();
+				mcts->curSimulationMove = 0;
+				aiRunnableState = EAIRunnableState::FinishGetTritonAction;
+			}
+			else
+			{
+				mcts->SendTritonRequest(curSectionNb);
+				mcts->curSimulationMove += 1;
+				aiRunnableState = EAIRunnableState::WaitTritonResponse;
+			}
+		}
+		else if (aiRunnableState == EAIRunnableState::WaitTritonResponse)
+		{
+			if (mcts->CheckTritonReponseAll())
+			{
+				aiRunnableState = EAIRunnableState::SendTritonRequest;
+			}
 		}
 	}
 	return 0;
@@ -86,7 +102,7 @@ void FAIRunnable::TriggerMctsGetAction(uint8 campNb)
 
 void FAIRunnable::TriggerTestGetAction()
 {
-	aiRunnableState = EAIRunnableState::TestGetAction;
+	aiRunnableState = EAIRunnableState::GetTritonAction;
 }
 
 void FAIRunnable::TriggerAssignAction(uint8 campNb,

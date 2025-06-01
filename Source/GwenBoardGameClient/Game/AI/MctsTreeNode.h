@@ -60,6 +60,9 @@ public:
     UPROPERTY()
     TMap<int32, FInstanceCardInfo> allReplayInstanceCardInfo;
 
+    UPROPERTY()
+    int32 stateCoding[TotalCHW] = { 0 };
+
     int32 visit;
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)

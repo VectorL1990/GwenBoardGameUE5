@@ -230,7 +230,7 @@ struct FBoardRow
     GENERATED_USTRUCT_BODY()
 public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        TArray<int32> colCardInfos;
+    TArray<int32> colCardInfos;
 };
 
 USTRUCT(BlueprintType, Blueprintable)
@@ -382,9 +382,10 @@ enum class EAIRunnableState
     Default,
     NewTask,
     Working,
+    GetTritonAction,
     SendTritonRequest,
     WaitTritonResponse,
-
+    FinishGetTritonAction,
 
     TestGetAction,
     FinishTestGetAction,

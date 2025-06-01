@@ -9,6 +9,34 @@
 
 void UCoreGameBlueprintFunctionLibrary::Softmax(const TArray<float>& x, float temp, TArray<float>& softmax)
 {
+    //TArray<float> Output;
+    //if (x.Num() == 0) return Output;
+
+    // 1. 找到最大值
+    float maxVal = x[0];
+    for (float val : x)
+    {
+        if (val > maxVal) maxVal = val;
+    }
+
+    // 2. 计算指数并求和（避免数值溢出）
+    float sum = 0.0f;
+    for (float val : x)
+    {
+        float expVal = FMath::Exp(val - maxVal);
+        softmax.Add(expVal);
+        sum += expVal;
+    }
+
+    // 3. 归一化概率
+    for (int32 i = 0; i < softmax.Num(); i++)
+    {
+        softmax[i] /= sum;
+    }
+
+    //return Output;
+
+    /*
     float expSum = 0.0;
     for (int32 i = 0; i < x.Num(); i++)
     {
@@ -21,6 +49,7 @@ void UCoreGameBlueprintFunctionLibrary::Softmax(const TArray<float>& x, float te
     {
         softmax[i] = x[i] / expSum;
     }
+    */
 }
 
 

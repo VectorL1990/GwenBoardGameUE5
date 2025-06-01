@@ -58,7 +58,7 @@ UMctsTreeNode* UMctsTreeNode::ExpandNode(int32 parentHirachy,
 
 UMctsTreeNode* UMctsTreeNode::Select(int32& outAction)
 {
-	float maxQU = 0.0;
+	float maxQU = -std::numeric_limits<float>::max();
 	int32 maxQUAction = 0;
 	UMctsTreeNode* outNode = NULL;
 	for (TMap<int, UMctsTreeNode*>::TConstIterator iter = children.CreateConstIterator(); iter; ++iter)
@@ -91,7 +91,7 @@ void UMctsTreeNode::UpdateQValueRecursive(float leafW)
 	visit += 1;
 	
 	w = w + leafW;
-	q = w / visit;
+	q = w / (float)visit;
 }
 
 bool UMctsTreeNode::IsLeaf()

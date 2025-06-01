@@ -8,6 +8,7 @@
 #include "../BattleBoard.h"
 #include "MctsTreeNode.h"
 #include "TritonHttpClient.h"
+#include "StateDecodingGrid.h"
 #include "Mcts.generated.h"
 
 
@@ -49,7 +50,144 @@ public:
 		return copyBoard;
 	}
 
-	void StateCoding(int32* boardCoding)
+	void StateDecoding(UMctsTreeNode* node, int32* boardCoding, TArray<AStateDecodingGrid*>& decodingGrids)
+	{
+		int32 channelLen = UGlobalConstFunctionLibrary::maxCol * (
+			UGlobalConstFunctionLibrary::graveCardSectionRow * 2 +
+			UGlobalConstFunctionLibrary::playCardSectionRow * 2 +
+			UGlobalConstFunctionLibrary::boardSectionRow);
+
+
+		for (int32 i = 0; i < node->replayBoardRows.Num(); i++)
+		{
+			for (int32 j = 0; j < node->replayBoardRows[i].colCardInfos.Num(); j++)
+			{
+				AStateDecodingGrid* decodeGrid = decodingGrids[i * UGlobalConstFunctionLibrary::maxCol + j];
+				int32 posInChannel = i * UGlobalConstFunctionLibrary::maxCol + j;
+				int32 skillLaunchTypeStartChannelNb = 0;
+				FString decodeSkillLaunchType;
+				for (int32 k = 0; k < 2; k++)
+				{
+					int32 code = boardCoding[channelLen * (k + skillLaunchTypeStartChannelNb) + posInChannel];
+					if (k == 0)
+					{
+						if (code == 1)
+						{
+							decodeSkillLaunchType = "auto";
+						}
+					}
+					else if (k == 1)
+					{
+						if (code == 1)
+						{
+							decodeSkillLaunchType = "manual";
+						}
+					}
+				}
+				decodeGrid->skillLaunchType = decodeSkillLaunchType;
+				
+				int32 autoSkillTargetGeoTypeStartChannelNb = 2;
+				FString decodeSkillTargetGeoType;
+				for (int32 k = 0; k < 2; k++)
+				{
+					int32 code = boardCoding[channelLen * (k + autoSkillTargetGeoTypeStartChannelNb) + posInChannel];
+					if (k == 0)
+					{
+						if (code == 1)
+						{
+							decodeSkillTargetGeoType = "left";
+						}
+					}
+					else
+					{
+						if (code == 1)
+						{
+							decodeSkillTargetGeoType = "forward";
+						}
+					}
+				}
+				decodeGrid->skillTargetGeoType = decodeSkillTargetGeoType;
+
+				int32 targetCampTypeStartChannelNb = 4;
+				FString decodeTargetCampType;
+				for (int32 k = 0; k < 2; k++)
+				{
+					int32 code = boardCoding[channelLen * (k + targetCampTypeStartChannelNb) + posInChannel];
+					if (k == 0)
+					{
+						if (code == 1)
+						{
+							decodeTargetCampType = "self";
+						}
+					}
+					else
+					{
+						if (code == 1)
+						{
+							decodeTargetCampType = "oppo";
+						}
+					}
+				}
+				decodeGrid->targetCampType = decodeTargetCampType;
+
+				int32 effectTypeStartChannelNb = 6;
+				FString effectType;
+				for (int32 k = 0; k < 2; k++)
+				{
+					int32 code = boardCoding[channelLen * (k + effectTypeStartChannelNb) + posInChannel];
+					if (k == 0)
+					{
+						if (code == 1)
+						{
+							effectType = "hurt";
+						}
+					}
+					else
+					{
+						if (code == 1)
+						{
+							effectType = "heal";
+						}
+					}
+				}
+				decodeGrid->effectType = effectType;
+
+				int32 launchGeoTypeStartChannelNb = 8;
+				FString launchGeoType;
+				for (int32 k = 0; k < 2; k++)
+				{
+					int32 code = boardCoding[channelLen * (k + launchGeoTypeStartChannelNb) + posInChannel];
+					if (k == 0)
+					{
+						if (code == 1)
+						{
+							launchGeoType = "point";
+						}
+					}
+					else
+					{
+						if (code == 1)
+						{
+							launchGeoType = "three";
+						}
+					}
+				}
+				decodeGrid->launchGeoType = launchGeoType;
+
+				int32 sectionTagStartChannelNb = 10;
+				if (boardCoding[channelLen * sectionTagStartChannelNb + posInChannel] == 0)
+				{
+					decodeGrid->curSection = 0;
+				}
+				else
+				{
+					decodeGrid->curSection = 1;
+				}
+			}
+		}
+	}
+
+	void StateCoding(uint8 curSectionNb, int32* boardCoding)
 	{
 		int32 channelLen = UGlobalConstFunctionLibrary::maxCol *
 			(UGlobalConstFunctionLibrary::playCardSectionRow * 2 +
@@ -147,6 +285,16 @@ public:
 				for (int32 k = 0; k < 2; k++)
 				{
 					boardCoding[channelLen * (k + launchGeoTypeStartChannelNb) + posInChannel] = testLaunchGeoType[k];
+				}
+
+				int32 sectionTagStartChannelNb = 10;
+				if (curSectionNb == 0)
+				{
+					boardCoding[channelLen * sectionTagStartChannelNb + posInChannel] = 0;
+				}
+				else
+				{
+					boardCoding[channelLen * sectionTagStartChannelNb + posInChannel] = 1;
 				}
 			}
 		}
@@ -1056,10 +1204,10 @@ public:
 	bool isTraining = false;
 
 	UPROPERTY()
-	int32 expandSimulationMoves = 2;
+	int32 curSimulationMove = 0;
 
 	UPROPERTY()
-	FBoardInfo simulationBoard;
+	int32 expandSimulationMoves = 2;
 
 	UPROPERTY()
 	FBoardInfo realBoard;
@@ -1087,28 +1235,29 @@ public:
 
 	int32 curTritonRequestID = 0;
 
-	int32 receivedTritonResponseNb = 0;
+	bool receivedTritonResponse = false;
 
 	UPROPERTY()
-	TMap<int32, int32> tritonRequestIDResponseArrayNbMap;
+	TMap<int32, int32> requestIdResponseNbMap;
 
 	UPROPERTY()
 	TArray<FTritonResponseData> tritonResponseDatas;
 
+	UPROPERTY()
+	FTritonResponseData tritonResponseData;
+
 
 	void InitMcts(int32 simulationMoves);
-
-	void GetLatestSimulationBoard();
 
 	void UpdateCurSearchNode(int32 targetMove);
 
 	int32 GetCurTritonRequestID();
 
-	void CheckTritonReponseAll();
+	bool CheckTritonReponseAll();
 
 	void SendTritonRequest(uint8 sectionNb);
 
-
+	void GetTritonAction();
 
 	/**
 	* Testing part

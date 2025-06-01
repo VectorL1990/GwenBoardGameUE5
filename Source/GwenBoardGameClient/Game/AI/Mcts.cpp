@@ -6,6 +6,7 @@
 #include "../CoreCardGameModeBase.h"
 #include "../CoreCardGamePC.h"
 #include "../../Base/GwenBoardGameInstance.h"
+#include "HAL/UnrealMemory.h"
 #include "../CoreGameBlueprintFunctionLibrary.h"
 
 
@@ -16,6 +17,7 @@ void UMcts::InitMcts(int32 simulationMoves)
 
 	veryFirstNode = NewObject<UMctsTreeNode>(GetWorld(), mctsTreeNodeBPClass);
 	tritonHttpClient = NewObject<UTritonHttpClient>(GetWorld(), tritonHttpClientBPClass);
+	tritonHttpClient->InitTritonClient(this);
 	treeRoot = veryFirstNode;
 
 	curSearchNode = treeRoot;
@@ -152,16 +154,6 @@ void UMcts::InitMcts(int32 simulationMoves)
 	}
 }
 
-void UMcts::GetLatestSimulationBoard()
-{
-	simulationBoard.boardRows = realBoard.boardRows;
-	simulationBoard.allInstanceCardInfo = realBoard.allInstanceCardInfo;
-	simulationBoard.sectionZeroHandCards = realBoard.sectionZeroHandCards;
-	simulationBoard.sectionOneHandCards = realBoard.sectionOneHandCards;
-	simulationBoard.sectionZeroGraveCards = realBoard.sectionZeroGraveCards;
-	simulationBoard.sectionOneGraveCards = realBoard.sectionOneGraveCards;
-}
-
 void UMcts::UpdateCurSearchNode(int32 targetMove)
 {
 	if (treeRoot->children.Contains(targetMove))
@@ -177,54 +169,47 @@ void UMcts::UpdateCurSearchNode(int32 targetMove)
 
 void UMcts::SendTritonRequest(uint8 sectionNb)
 {
-	for (int32 i = 0; i < expandSimulationMoves; i++)
-	{
-		uint8 curSectionNb = sectionNb;
-		curSearchNode = treeRoot;
+	uint8 curSectionNb = sectionNb;
+	curSearchNode = treeRoot;
 
-		FBoardInfo copyBoard = realBoard.GetCopyBoard();
-		//GetLatestSimulationBoard();
-		while (true)
+	FBoardInfo copyBoard = realBoard.GetCopyBoard();
+	while (true)
+	{
+		if (curSearchNode == NULL || curSearchNode->IsLeaf())
 		{
-			if (curSearchNode == NULL || curSearchNode->IsLeaf())
+			break;
+		}
+		int32 action = 0;
+		curSearchNode = curSearchNode->Select(action);
+		int32 launchX = 0;
+		int32 launchY = 0;
+		int32 targetX = 0;
+		int32 targetY = 0;
+		ActionType actionType = ActionType::EndRound;
+		copyBoard.ActionDecoding(action, launchX, launchY, targetX, targetY, actionType);
+		// we should do move here! So that we can predict next action probs
+		TArray<FRenderEffectRound> renderEffectRoundList;
+		copyBoard.TriggerAction(curSectionNb, action, renderEffectRoundList);
+		if (actionType == ActionType::EndRound)
+		{
+			if (curSectionNb == 0)
 			{
-				break;
+				curSectionNb = 1;
 			}
-			int32 action = 0;
-			curSearchNode = curSearchNode->Select(action);
-			int32 launchX = 0;
-			int32 launchY = 0;
-			int32 targetX = 0;
-			int32 targetY = 0;
-			ActionType actionType = ActionType::EndRound;
-			copyBoard.ActionDecoding(action, launchX, launchY, targetX, targetY, actionType);
-			// we should do move here! So that we can predict next action probs
-			TArray<FRenderEffectRound> renderEffectRoundList;
-			copyBoard.TriggerAction(curSectionNb, action, renderEffectRoundList);
-			if (actionType == ActionType::EndRound)
+			else
 			{
-				if (curSectionNb == 0)
-				{
-					curSectionNb = 1;
-				}
-				else
-				{
-					curSectionNb = 0;
-				}
+				curSectionNb = 0;
 			}
 		}
-
-		int32 boardCoding[TotalCHW] = { 0 };
-		copyBoard.StateCoding(boardCoding);
-
-		int32 requestID = GetCurTritonRequestID();
-		FTritonResponseData tritonResponseData;
-		tritonResponseData.curBoardInfo = copyBoard;
-		tritonResponseData.curMctsTreeNode = curSearchNode;
-		tritonResponseData.curSectionNb = curSectionNb;
-		tritonResponseDatas.Add(tritonResponseData);
-		tritonHttpClient->SendInferenceRequest("GwenNetModel", boardCoding, TotalCHW, requestID);
 	}
+
+	copyBoard.StateCoding(curSectionNb, curSearchNode->stateCoding);
+
+	int32 requestID = GetCurTritonRequestID();
+	tritonResponseData.curBoardInfo = copyBoard;
+	tritonResponseData.curMctsTreeNode = curSearchNode;
+	tritonResponseData.curSectionNb = curSectionNb;
+	tritonHttpClient->SendInferenceRequest("GwenNetModel", curSearchNode->stateCoding, TotalCHW, requestID);
 }
 
 int32 UMcts::GetCurTritonRequestID()
@@ -234,45 +219,49 @@ int32 UMcts::GetCurTritonRequestID()
 	return tmpTritonRequestID;
 }
 
-void UMcts::CheckTritonReponseAll()
+bool UMcts::CheckTritonReponseAll()
 {
-	if (receivedTritonResponseNb < expandSimulationMoves)
+	if (!receivedTritonResponse)
 	{
-		return;
+		return false;
 	}
 
 	// Expand searching tree first
-	for (int32 i = 0; i < tritonResponseDatas.Num(); i++)
+	TArray<int32> legalActionIds;
+	TArray<ActionType> legalActionTypes;
+	tritonResponseData.curBoardInfo.GetLegalMoves(tritonResponseData.curSectionNb, legalActionIds, legalActionTypes);
+
+	for (int32 j = 0; j < legalActionIds.Num(); j++)
 	{
-		TArray<int32> legalActionIds;
-		TArray<ActionType> legalActionTypes;
-		tritonResponseDatas[i].curBoardInfo.GetLegalMoves(tritonResponseDatas[i].curSectionNb, legalActionIds, legalActionTypes);
-
-		for (int32 j = 0; j < legalActionIds.Num(); j++)
-		{
-			TArray<FRenderEffectRound> renderEffectRoundList;
-			ActionType testActionType = legalActionTypes[legalActionIds[j]];
-			// Trigger action just for replay
-			tritonResponseDatas[i].curBoardInfo.TriggerAction(
-				tritonResponseDatas[i].curSectionNb, legalActionIds[j], renderEffectRoundList);
-			UMctsTreeNode* newNode = tritonResponseDatas[i].curMctsTreeNode->ExpandNode(
-				tritonResponseDatas[i].curMctsTreeNode->hirachy,
-				legalActionIds[j],
-				tritonResponseDatas[i].policies[legalActionIds[j]],
-				tritonResponseDatas[i].curBoardInfo.boardRows,
-				tritonResponseDatas[i].curBoardInfo.allInstanceCardInfo);
-			newAddNodes.Add(newNode);
-		}
-
-		tritonResponseDatas[i].curMctsTreeNode->UpdateQValueRecursive(tritonResponseDatas[i].boardValue);
+		TArray<FRenderEffectRound> renderEffectRoundList;
+		ActionType testActionType = legalActionTypes[j];
+		// Trigger action just for replay
+		FBoardInfo copyBoard = tritonResponseData.curBoardInfo.GetCopyBoard();
+		copyBoard.TriggerAction(tritonResponseData.curSectionNb,
+			legalActionIds[j], renderEffectRoundList);
+		UMctsTreeNode* newNode = tritonResponseData.curMctsTreeNode->ExpandNode(
+			tritonResponseData.curMctsTreeNode->hirachy,
+			legalActionIds[j],
+			tritonResponseData.policies[legalActionIds[j]],
+			copyBoard.boardRows,
+			copyBoard.allInstanceCardInfo);
+		newAddNodes.Add(newNode);
 	}
 
+	tritonResponseData.curMctsTreeNode->UpdateQValueRecursive(tritonResponseData.boardValue);
+
+	receivedTritonResponse = false;
+	return true;
+}
+
+void UMcts::GetTritonAction()
+{
 	// After expand nodes, we should find ideal motion and do action
 	TArray<float> logVisits;
 	TArray<int32> candidateActs;
 	for (TMap<int32, UMctsTreeNode*>::TConstIterator iter = treeRoot->children.CreateConstIterator(); iter; ++iter)
 	{
-		float logVisit = FMath::Loge(iter->Value->visit + 1e-10);
+		float logVisit = FMath::Loge((double)(iter->Value->visit) + 1e-10);
 		candidateActs.Add(iter->Key);
 		logVisits.Add(logVisit);
 	}
