@@ -383,10 +383,11 @@ enum class EAIRunnableState
     NewTask,
     Working,
     StartSelfPlay,
-    GetTritonAction,
-    SendTritonRequest,
+    SelfPlayLooping,
+    SelfPlaySendTritonRequest,
     WaitTritonResponse,
     NextSimulation,
+    SelfPlayLoopEnd,
     SelfPlayEnd,
 
     TestGetAction,
@@ -401,7 +402,7 @@ enum class EAIRunnableState
 UCLASS()
 class GWENBOARDGAMECLIENT_API UGlobalConstFunctionLibrary : public UBlueprintFunctionLibrary
 {
-				GENERATED_BODY()
+    GENERATED_BODY()
 public:
     static const int32 handCardNb = 5;
     static const int32 maxCol = 4;

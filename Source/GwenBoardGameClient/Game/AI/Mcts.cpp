@@ -7,6 +7,8 @@
 #include "../CoreCardGamePC.h"
 #include "../../Base/GwenBoardGameInstance.h"
 #include "HAL/UnrealMemory.h"
+#include "Misc/FileHelper.h"
+#include "Serialization/MemoryWriter.h"
 #include "../CoreGameBlueprintFunctionLibrary.h"
 
 
@@ -169,7 +171,7 @@ void UMcts::UpdateCurSearchNode(int32 targetMove)
 
 void UMcts::SendTritonRequest(uint8 sectionNb)
 {
-	uint8 curSectionNb = sectionNb;
+	uint8 curPlayingSectionNb = sectionNb;
 	curSearchNode = treeRoot;
 
 	FBoardInfo copyBoard = realBoard.GetCopyBoard();
@@ -189,26 +191,26 @@ void UMcts::SendTritonRequest(uint8 sectionNb)
 		copyBoard.ActionDecoding(action, launchX, launchY, targetX, targetY, actionType);
 		// we should do move here! So that we can predict next action probs
 		TArray<FRenderEffectRound> renderEffectRoundList;
-		copyBoard.TriggerAction(curSectionNb, action, renderEffectRoundList);
+		copyBoard.TriggerAction(curPlayingSectionNb, action, renderEffectRoundList);
 		if (actionType == ActionType::EndRound)
 		{
-			if (curSectionNb == 0)
+			if (curPlayingSectionNb == 0)
 			{
-				curSectionNb = 1;
+				curPlayingSectionNb = 1;
 			}
 			else
 			{
-				curSectionNb = 0;
+				curPlayingSectionNb = 0;
 			}
 		}
 	}
 
-	copyBoard.StateCoding(curSectionNb, curSearchNode->stateCoding);
+	copyBoard.StateCoding(curPlayingSectionNb, curSearchNode->stateCoding);
 
 	int32 requestID = GetCurTritonRequestID();
 	tritonResponseData.curBoardInfo = copyBoard;
 	tritonResponseData.curMctsTreeNode = curSearchNode;
-	tritonResponseData.curSectionNb = curSectionNb;
+	tritonResponseData.curPlayingSectionNb = curPlayingSectionNb;
 	tritonHttpClient->SendInferenceRequest("GwenNetModel", curSearchNode->stateCoding, TotalCHW, requestID);
 }
 
@@ -237,7 +239,7 @@ bool UMcts::CheckTritonReponseAll()
 		}
 		else
 		{
-			if (winner == tritonResponseData.curSectionNb)
+			if (winner == tritonResponseData.curPlayingSectionNb)
 			{
 				tritonResponseData.boardValue = 1.0;
 			}
@@ -252,7 +254,7 @@ bool UMcts::CheckTritonReponseAll()
 		// Expand searching tree first
 		TArray<int32> legalActionIds;
 		TArray<ActionType> legalActionTypes;
-		tritonResponseData.curBoardInfo.GetLegalMoves(tritonResponseData.curSectionNb, legalActionIds, legalActionTypes);
+		tritonResponseData.curBoardInfo.GetLegalMoves(tritonResponseData.curPlayingSectionNb, legalActionIds, legalActionTypes);
 
 		for (int32 j = 0; j < legalActionIds.Num(); j++)
 		{
@@ -260,11 +262,12 @@ bool UMcts::CheckTritonReponseAll()
 			ActionType testActionType = legalActionTypes[j];
 			// Trigger action just for replay
 			FBoardInfo copyBoard = tritonResponseData.curBoardInfo.GetCopyBoard();
-			copyBoard.TriggerAction(tritonResponseData.curSectionNb,
+			copyBoard.TriggerAction(tritonResponseData.curPlayingSectionNb,
 				legalActionIds[j], renderEffectRoundList);
 			UMctsTreeNode* newNode = tritonResponseData.curMctsTreeNode->ExpandNode(
 				tritonResponseData.curMctsTreeNode->hirachy,
 				legalActionIds[j],
+				legalActionTypes[j],
 				tritonResponseData.policies[legalActionIds[j]],
 				copyBoard.boardRows,
 				copyBoard.allInstanceCardInfo);
@@ -278,28 +281,36 @@ bool UMcts::CheckTritonReponseAll()
 	return true;
 }
 
-void UMcts::GetTritonAction(int32& actionId, TArray<float>& softmaxProbs)
+void UMcts::GetTritonAction(int32& actionId, ActionType& outActionType, TArray<float>& softmaxProbs)
 {
 	// After expand nodes, we should find ideal motion and do action
 	TArray<float> logVisits;
+	TArray<ActionType> actionTypes;
 	TArray<int32> candidateActs;
 	for (TMap<int32, UMctsTreeNode*>::TConstIterator iter = treeRoot->children.CreateConstIterator(); iter; ++iter)
 	{
 		float logVisit = FMath::Loge((double)(iter->Value->visit) + 1e-10);
 		candidateActs.Add(iter->Key);
 		logVisits.Add(logVisit);
+		actionTypes.Add(iter->Value->actionType);
 	}
 	UCoreGameBlueprintFunctionLibrary::Softmax(logVisits, 0.001, softmaxProbs);
 
 	if (isTraining)
 	{
-		int32 targetMove = UCoreGameBlueprintFunctionLibrary::GetDirichletAction(candidateActs, softmaxProbs);
+		
+		int32 targetMove;
+		ActionType targetActionType;
+		UCoreGameBlueprintFunctionLibrary::GetDirichletAction(candidateActs, actionTypes, softmaxProbs, targetMove, targetActionType);
 		UpdateCurSearchNode(targetMove);
 		actionId = targetMove;
+		outActionType = targetActionType;
 	}
 	else
 	{
-		int32 targetMove = UCoreGameBlueprintFunctionLibrary::GetDirichletAction(candidateActs, softmaxProbs);
+		int32 targetMove;
+		ActionType targetActionType;
+		UCoreGameBlueprintFunctionLibrary::GetDirichletAction(candidateActs, actionTypes, softmaxProbs, targetMove, targetActionType);
 		// reset search tree in real battle case
 		UpdateCurSearchNode(-1);
 		actionId = targetMove;
@@ -308,15 +319,38 @@ void UMcts::GetTritonAction(int32& actionId, TArray<float>& softmaxProbs)
 
 void UMcts::SaveTrainingData(const TArray<FTrainingData>& trainingDatas)
 {
-	FString saveDir = FPaths::ProjectSavedDir() / TEXT("TritonRequests");
-	IPlatformFile& platformFile = FPlatformFileManager::Get().GetPlatformFile();
-	if (!platformFile.DirectoryExists(*saveDir))
+	FString saveDir = FPaths::ProjectSavedDir() / TEXT("TrainingData.bin");
+
+	TArray<uint8> binaryData;
+	FMemoryWriter writer(binaryData);
+
+	int32 numDatas = trainingDatas.Num();
+	writer << numDatas;
+
+	for (const FTrainingData& data : trainingDatas)
 	{
-		platformFile.CreateDirectory(*saveDir);
+		for (int32 i = 0; i < TotalCHW; i++)
+		{
+			int32 stateCoding = data.stateCoding[i];
+			writer << stateCoding;
+		}
+
+		int32 actionProbsSize = data.actionProbs.Num();
+		writer << actionProbsSize;
+		for (int32 i = 0; i < actionProbsSize; i++)
+		{
+			float actionProb = data.actionProbs[i];
+			writer << actionProb;
+		}
+
+		int32 scoreSize = data.scores.Num();
+		writer << scoreSize;
+		for (int32 i = 0; i < scoreSize; i++)
+		{
+			float score = data.scores[i];
+			writer << score;
+		}
 	}
 
-	for (int32 i = 0; i < trainingDatas.Num(); i++)
-	{
-		
-	}
+	FFileHelper::SaveArrayToFile(binaryData, *saveDir);
 }

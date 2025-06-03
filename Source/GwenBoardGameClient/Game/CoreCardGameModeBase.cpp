@@ -56,8 +56,6 @@ void ACoreCardGameModeBase::Tick(float deltaTime)
 {
 	MoveRearrangeCards();
 
-	//TrainPlayGameLoop(deltaTime);
-
 	if (isSinglePlay)
 	{
 		
@@ -265,7 +263,7 @@ void ACoreCardGameModeBase::Tick(float deltaTime)
 		// We should refresh all nodes to Mct widget here.
 		//aiRunnable->mcts->treeRoot
 	}
-	else if (aiRunnable->aiRunnableState == EAIRunnableState::)
+	else if (aiRunnable->aiRunnableState == EAIRunnableState::SelfPlayEnd)
 	{
 		APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
 		ACoreCardGamePC* coreCardPC = Cast<ACoreCardGamePC>(playerController);
@@ -400,191 +398,6 @@ void ACoreCardGameModeBase::DemonstrateMctsTreeNode(UMctsTreeNode* node)
 	}
 }
 
-void ACoreCardGameModeBase::SimulateTrainAction(float dT)
-{
-	if (aiTrainPlayerActionCount >= aiTrainPlayerActionInterval)
-	{
-		// get train simulation action and launch
-		int32 actionId = -1;
-		if (curSectionNb == 0)
-		{
-			aiRunnable->TriggerMctsGetAction(0);
-			//sectionZeroMctsPlayer->mcts->GetAction(sectionZeroMctsPlayer->sectionNb, battleBoard, actionId);
-		}
-		else
-		{
-			aiRunnable->TriggerMctsGetAction(1);
-			//sectionOneMctsPlayer->mcts->GetAction(sectionOneMctsPlayer->sectionNb, battleBoard, actionId);
-		}
-
-		//curActionType = battleBoard->TriggerAction(actionId, true, curActionRenderEffectRoundList);
-		singleBattleState = SingleBattleState::ActionInterlude;
-
-		aiTrainPlayerActionCount = 0.0;
-	}
-	else
-	{
-		aiTrainPlayerActionCount += dT;
-	}
-}
-
-void ACoreCardGameModeBase::TrainPlayGameLoop(float dT)
-{
-	if (singleBattleState == SingleBattleState::Battle)
-	{
-		if (curCountingTick >= battleStateTicksMap["MaxLaunchActionTimeInterval"])
-		{
-			singleBattleState = SingleBattleState::BattleInterlude;
-			curCountingTick = 0.0;
-		}
-		else
-		{
-			// keep trying to trigger train action
-			SimulateTrainAction(dT);
-			if (curSectionNb == 0)
-			{
-				curSectionNb = 1;
-			}
-			else
-			{
-				curSectionNb = 0;
-			}
-			curCountingTick += dT;
-		}
-	}
-	else if (singleBattleState == SingleBattleState::Default)
-	{
-		if (curCountingTick >= battleStateTicksMap["BeforeSelectCard"])
-		{
-			singleBattleState = SingleBattleState::SelectCard;
-			APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
-			ACoreCardGamePC* coreCardPC = Cast<ACoreCardGamePC>(playerController);
-			coreCardPC->SwitchMenu("SelectCardMenu");
-			curCountingTick = 0.0;
-		}
-		else
-		{
-			curCountingTick += dT;
-		}
-	}
-	else if (singleBattleState == SingleBattleState::SelectCard)
-	{
-		if (gamingType == EGamingType::Training)
-		{
-			if (curCountingTick >= battleStateTicksMap["TrainSelectCardInterval"])
-			{
-				// switch to select card interlude
-				singleBattleState = SingleBattleState::AfterSelectCardInterlude;
-				APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
-				ACoreCardGamePC* coreCardPC = Cast<ACoreCardGamePC>(playerController);
-				coreCardPC->SwitchMenu("BattleMenu");
-				battleBoard->InitBattleBoard();
-				curCountingTick = 0.0;
-			}
-			else
-			{
-				curCountingTick += dT;
-			}
-		}
-		else
-		{
-			if (curCountingTick >= battleStateTicksMap["MaxSelectCardInterval"])
-			{
-				// switch to select card interlude
-				singleBattleState = SingleBattleState::AfterSelectCardInterlude;
-				APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
-				ACoreCardGamePC* coreCardPC = Cast<ACoreCardGamePC>(playerController);
-				coreCardPC->SwitchMenu("BattleMenu");
-				battleBoard->InitBattleBoard();
-				curCountingTick = 0.0;
-			}
-			else
-			{
-				curCountingTick += dT;
-			}
-		}
-	}
-	else if (singleBattleState == SingleBattleState::AfterSelectCardInterlude)
-	{
-		if (curCountingTick >= battleStateTicksMap["AfterSelectCardInterludeInterval"])
-		{
-			singleBattleState = SingleBattleState::SelectCardAnimInterlude;
-			curCountingTick = 0.0;
-		}
-		else
-		{
-			curCountingTick += dT;
-		}
-	}
-	else if (singleBattleState == SingleBattleState::SelectCardAnimInterlude)
-	{
-		if (curCountingTick >= battleStateTicksMap["SelectCardAnimInterval"])
-		{
-			singleBattleState = SingleBattleState::Battle;
-			curCountingTick = 0.0;
-		}
-		else
-		{
-			curCountingTick += dT;
-		}
-	}
-	else if (singleBattleState == SingleBattleState::ActionInterlude)
-	{
-		float actionInterlude = 0.0;
-		if (curActionType == ActionType::PlayCard)
-		{
-			actionInterlude = battleStateTicksMap["PlayCardInterlude"];
-		}
-		else if (curActionType == ActionType::LaunchSkill)
-		{
-			actionInterlude = battleStateTicksMap["LaunchSkillInterlude"];
-		}
-		else if (curActionType == ActionType::Move)
-		{
-			actionInterlude = battleStateTicksMap["MoveInterlude"];
-		}
-		else if (curActionType == ActionType::EndRound)
-		{
-			actionInterlude = battleStateTicksMap["EndRoundInterlude"];
-		}
-
-		if (curCountingTick >= actionInterlude)
-		{
-			singleBattleState = SingleBattleState::RenderEffectInterlude;
-			curCountingTick = 0.0;
-			TriggerRenderEffect();
-		}
-		else
-		{
-			curCountingTick += dT;
-		}
-	}
-	else if (singleBattleState == SingleBattleState::RenderEffectInterlude)
-	{
-		float curRenderEffectInterval = 0.0;
-		if (curActionEffectRound < curActionRenderEffectRoundList.Num())
-		{
-			curRenderEffectInterval = curActionRenderEffectRoundList[curActionEffectRound].renderTime;
-		}
-		else
-		{
-			// which means rendering is finished
-			singleBattleState = SingleBattleState::Battle;
-		}
-		
-		if (curCountingTick >= curRenderEffectInterval)
-		{
-			// let's switch to next effect rendering round
-			curActionEffectRound += 1;
-			curCountingTick = 0.0;
-			TriggerRenderEffect();
-		}
-		else
-		{
-			curCountingTick += dT;
-		}
-	}
-}
 
 void ACoreCardGameModeBase::TriggerReadCardInfo_Implementation()
 {

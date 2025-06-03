@@ -5,7 +5,9 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "../GlobalConstFunctionLibrary.h"
+#include <Game\CoreGameBlueprintFunctionLibrary.h>
 #include "MctsTreeNode.generated.h"
+
 
 /**
  * 
@@ -16,15 +18,14 @@ class GWENBOARDGAMECLIENT_API UMctsTreeNode : public UObject
     GENERATED_BODY()
 public:
     
-    void Init(UMctsTreeNode* inParent, int32 inActionId, float inP, int32 inHirachy);
+    void Init(UMctsTreeNode* inParent, int32 inActionId, ActionType actionType, float inP, int32 inHirachy);
 
     float GetValue();
 
     // Expand executes after selecting max U + Q leaf node
-    TArray<UMctsTreeNode*> Expand(int32 parentHirachy, TMap<int32, float> actionProbs);
-
     UMctsTreeNode* ExpandNode(int32 parentHirachy, 
         int32 actionId, 
+        ActionType actionType,
         float prob, 
         const TArray<FBoardRow>& boardRows,
         const TMap<int32, FInstanceCardInfo> inAllInstanceCardInfos);
@@ -53,6 +54,8 @@ public:
 
     UPROPERTY(BlueprintReadWrite)
     int32 actionId = -1;
+
+    ActionType actionType = ActionType::EndRound;
 
     UPROPERTY()
     TArray<FBoardRow> replayBoardRows;
@@ -83,5 +86,5 @@ public:
     int32 hirachy;
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
-    uint8 curSectionNb;
+    uint8 curPlayingSectionNb;
 };

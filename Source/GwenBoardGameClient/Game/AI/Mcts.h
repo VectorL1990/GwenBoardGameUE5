@@ -42,7 +42,7 @@ public:
 
 	int32 sectionOneScores = 0;
 
-	uint8 curSectionNb = 0;
+	uint8 curPlayingSectionNb = 0;
 
 	FBoardInfo GetCopyBoard()
 	{
@@ -1233,7 +1233,7 @@ public:
 	UPROPERTY()
 	FBoardInfo curBoardInfo;
 
-	uint8 curSectionNb;
+	uint8 curPlayingSectionNb;
 
 	UPROPERTY()
 	TArray<float> policies;
@@ -1316,6 +1316,9 @@ public:
 	UPROPERTY()
 	FTritonResponseData tritonResponseData;
 
+	UPROPERTY()
+	TArray<FTrainingData> trainingDatas;
+
 
 	void InitMcts(int32 simulationMoves);
 
@@ -1327,7 +1330,7 @@ public:
 
 	void SendTritonRequest(uint8 sectionNb);
 
-	void GetTritonAction(int32& actionId, TArray<float>& softmaxProbs);
+	void GetTritonAction(int32& actionId, ActionType& outActionType, TArray<float>& softmaxProbs);
 
 	void SaveTrainingData(const TArray<FTrainingData>& trainingDatas);
 

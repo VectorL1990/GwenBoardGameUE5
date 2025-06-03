@@ -215,9 +215,6 @@ public:
     void MoveRearrangeCards();
 
     // --- Training logic
-    void SimulateTrainAction(float dT);
-
-    void TrainPlayGameLoop(float dT);
 
     AReplayBoard* replayBoard;
 

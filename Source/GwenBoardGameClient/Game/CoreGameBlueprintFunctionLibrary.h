@@ -129,7 +129,11 @@ public:
 
     static void Softmax(const TArray<float>& x, float temp, TArray<float>& softmax);
 
-    static int32 GetDirichletAction(const TArray<int32>& actions, const TArray<float>& probs);
+    static int32 GetDirichletAction(const TArray<int32>& actions, 
+        const TArray<ActionType>& actionTypes, 
+        const TArray<float>& probs, 
+        int32& outAction, 
+        ActionType& outActionType);
 
     static void GetActionDetailFromId(int32 actionId, int32& launchX, int32& launchY, int32& targetX, int32& targetY, ActionType& actionType);
 

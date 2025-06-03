@@ -3,10 +3,11 @@
 
 #include "Game/AI/MctsTreeNode.h"
 
-void UMctsTreeNode::Init(UMctsTreeNode* inParent, int32 inActionId, float inP, int32 inHirachy)
+void UMctsTreeNode::Init(UMctsTreeNode* inParent, int32 inActionId, ActionType inActionType, float inP, int32 inHirachy)
 {
 	parent = inParent;
 	actionId = inActionId;
+	actionType = inActionType;
 	visit = 0;
 	p = inP;
 	q = 0.0;
@@ -22,24 +23,9 @@ float UMctsTreeNode::GetValue()
 	//return 0;
 }
 
-TArray<UMctsTreeNode*> UMctsTreeNode::Expand(int32 parentHirachy, TMap<int32, float> actionProbs)
-{
-	TArray<UMctsTreeNode*> newNodes;
-	for (TMap<int32, float>::TConstIterator iter = actionProbs.CreateConstIterator(); iter; ++iter)
-	{
-		if (!children.Contains(iter->Key))
-		{
-			UMctsTreeNode* child = NewObject<UMctsTreeNode>(GetWorld(), mctsTreeNodeBPClass);
-			child->Init(this, iter->Key, iter->Value, hirachy + 1);
-			children.Add(iter->Key, child);
-			newNodes.Add(child);
-		}
-	}
-	return newNodes;
-}
-
 UMctsTreeNode* UMctsTreeNode::ExpandNode(int32 parentHirachy, 
 	int32 actionId, 
+	ActionType actionType,
 	float prob, 
 	const TArray<FBoardRow>& inBoardRows, 
 	const TMap<int32, FInstanceCardInfo> inAllInstanceCardInfos)
@@ -47,7 +33,7 @@ UMctsTreeNode* UMctsTreeNode::ExpandNode(int32 parentHirachy,
 	if (!children.Contains(actionId))
 	{
 		UMctsTreeNode* child = NewObject<UMctsTreeNode>(GetWorld(), mctsTreeNodeBPClass);
-		child->Init(this, actionId, prob, hirachy + 1);
+		child->Init(this, actionId, actionType, prob, hirachy + 1);
 		child->replayBoardRows = inBoardRows;
 		child->allReplayInstanceCardInfo = inAllInstanceCardInfos;
 		children.Add(actionId, child);
@@ -79,7 +65,7 @@ void UMctsTreeNode::UpdateQValueRecursive(float leafW)
 {
 	if (parent)
 	{
-		if (parent->curSectionNb != curSectionNb)
+		if (parent->curPlayingSectionNb != curPlayingSectionNb)
 		{
 			parent->UpdateQValueRecursive(-leafW);
 		}

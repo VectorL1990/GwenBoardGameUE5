@@ -12,14 +12,12 @@ void UCoreGameBlueprintFunctionLibrary::Softmax(const TArray<float>& x, float te
     //TArray<float> Output;
     //if (x.Num() == 0) return Output;
 
-    // 1. 找到最大值
     float maxVal = x[0];
     for (float val : x)
     {
         if (val > maxVal) maxVal = val;
     }
 
-    // 2. 计算指数并求和（避免数值溢出）
     float sum = 0.0f;
     for (float val : x)
     {
@@ -28,7 +26,6 @@ void UCoreGameBlueprintFunctionLibrary::Softmax(const TArray<float>& x, float te
         sum += expVal;
     }
 
-    // 3. 归一化概率
     for (int32 i = 0; i < softmax.Num(); i++)
     {
         softmax[i] /= sum;
@@ -54,7 +51,12 @@ void UCoreGameBlueprintFunctionLibrary::Softmax(const TArray<float>& x, float te
 
 
 
-int32 UCoreGameBlueprintFunctionLibrary::GetDirichletAction(const TArray<int32>& actions, const TArray<float>& probs)
+int32 UCoreGameBlueprintFunctionLibrary::GetDirichletAction(
+const TArray<int32>& actions,
+    const TArray<ActionType>& actionTypes,
+    const TArray<float>& probs,
+    int32& outAction,
+    ActionType& outActionType)
 {
     std::vector<int> stdActions(actions.Num());
     FMemory::Memcpy(stdActions.data(), actions.GetData(), actions.Num()*sizeof(int));
@@ -76,12 +78,6 @@ int32 UCoreGameBlueprintFunctionLibrary::GetDirichletAction(const TArray<int32>&
         std::mt19937 gen(std::random_device{}());
         dirichletNoises[i] = normalDistribution(gen);
         sum += dirichletNoises[i];
-
-        /*
-        gamma = std::normal_distribution<float>(probs[i], 1.0);
-        dirichletNoises[i] = gamma(randSeed);
-        sum += dirichletNoises[i];
-        */
     }
 
     for (float& dirichletNoise : dirichletNoises)
@@ -100,8 +96,12 @@ int32 UCoreGameBlueprintFunctionLibrary::GetDirichletAction(const TArray<int32>&
 
     // choose action by discrete distribution
     std::discrete_distribution<int> dist(combineProbs.begin(), combineProbs.end());
+
+    int32 randSeedNb = dist(randSeed);
+    outAction = stdActions[dist(randSeed)];
+    outActionType = actionTypes[randSeedNb];
     
-    return stdActions[dist(randSeed)];
+    return randSeedNb;
 }
 
 void UCoreGameBlueprintFunctionLibrary::GetActionDetailFromId(int32 actionId, int32& launchX, int32& launchY, int32& targetX, int32& targetY, ActionType& actionType)
