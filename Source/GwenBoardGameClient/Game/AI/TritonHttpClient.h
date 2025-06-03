@@ -21,6 +21,8 @@ public:
 	
 	void SendInferenceRequest(const FString& modelName, const int32* inputData, int32 inputDataSize, int32 requestId);
 
+	void SaveRequestData(const TArray<uint8>& inputData);
+
 	void ProcessResponse(const int32& requestId, const int32& metaLen, const TArray<uint8>& responseData);
 
 	UPROPERTY()

@@ -38,6 +38,12 @@ public:
 	UPROPERTY()
 		TArray<int32> sectionOneGraveCards;
 
+	int32 sectionZeroScores = 0;
+
+	int32 sectionOneScores = 0;
+
+	uint8 curSectionNb = 0;
+
 	FBoardInfo GetCopyBoard()
 	{
 		FBoardInfo copyBoard;
@@ -781,6 +787,24 @@ public:
 		}
 		boardRows[targetY].colCardInfos[targetX] = playCardUid;
 		boardRows[launchY].colCardInfos[launchX] = -1;
+		if (launchCampNb == 0)
+		{
+			int32 playCardIndex = sectionZeroHandCards.Find(playCardUid);
+			if (playCardIndex != -1)
+			{
+				sectionZeroHandCards.RemoveAt(playCardIndex);
+			}
+			sectionZeroScores += allInstanceCardInfo[playCardUid].curHp;
+		}
+		else
+		{
+			int32 playCardIndex = sectionOneHandCards.Find(playCardUid);
+			if (playCardIndex != -1)
+			{
+				sectionOneHandCards.RemoveAt(playCardIndex);
+			}
+			sectionOneScores += allInstanceCardInfo[playCardUid].curHp;
+		}
 		allInstanceCardInfo[playCardUid].curCol = targetX;
 		allInstanceCardInfo[playCardUid].curRow = targetY;
 		
@@ -1169,6 +1193,33 @@ public:
 	{
 		
 	}
+
+	bool GameEnd(int32& winner)
+	{
+		if (sectionZeroHandCards.Num() <= 2 && sectionOneHandCards.Num() <= 2)
+		{
+			if (sectionZeroScores > sectionOneScores)
+			{
+				winner = 0;
+				return true;
+			}
+			else if (sectionOneScores > sectionZeroScores)
+			{
+				winner = 1;
+				return true;
+			}
+			else
+			{
+				winner = -1;
+				return true;
+			}
+		}
+		else
+		{
+			winner = 0;
+			return false;
+		}
+	}
 };
 
 USTRUCT(BlueprintType, Blueprintable)
@@ -1190,6 +1241,21 @@ public:
 	float boardValue;
 };
 
+USTRUCT(BlueprintType, Blueprintable)
+struct FTrainingData
+{
+	GENERATED_USTRUCT_BODY()
+public:
+	UPROPERTY()
+	int32 stateCoding[TotalCHW] = { 0 };
+
+	UPROPERTY()
+	TArray<float> actionProbs;
+
+	UPROPERTY()
+	TArray<float> scores;
+};
+
 UCLASS(Blueprintable)
 class GWENBOARDGAMECLIENT_API UMcts : public UObject
 {
@@ -1202,6 +1268,10 @@ protected:
 public:
 	UPROPERTY(EditAnywhere)
 	bool isTraining = false;
+
+	int32 maxSelfPlayLoop = 2;
+
+	int32 curSelfPlayLoop = 0;
 
 	UPROPERTY()
 	int32 curSimulationMove = 0;
@@ -1257,7 +1327,9 @@ public:
 
 	void SendTritonRequest(uint8 sectionNb);
 
-	void GetTritonAction();
+	void GetTritonAction(int32& actionId, TArray<float>& softmaxProbs);
+
+	void SaveTrainingData(const TArray<FTrainingData>& trainingDatas);
 
 	/**
 	* Testing part

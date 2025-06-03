@@ -9,6 +9,22 @@ void UTritonHttpClient::InitTritonClient(UObject* inMcts)
     mcts = inMcts;
 }
 
+void UTritonHttpClient::SaveRequestData(const TArray<uint8>& inputData)
+{
+    FString saveDir = FPaths::ProjectSavedDir() / TEXT("TritonRequests");
+    IPlatformFile& platformFile = FPlatformFileManager::Get().GetPlatformFile();
+    if (!platformFile.DirectoryExists(*saveDir))
+    {
+        platformFile.CreateDirectory(*saveDir);
+    }
+
+    FString timestamp = FDateTime::Now().ToString(TEXT("%Y%m%d_%H%M%S"));
+    FString filename = FString::Printf(TEXT("Request_%s.bin"), *timestamp);
+    FString fullPath = saveDir / filename;
+
+    FFileHelper::SaveArrayToFile(inputData, *fullPath);
+}
+
 void UTritonHttpClient::SendInferenceRequest(const FString& modelName, const int32* inputData, int32 inputDataSize, int32 requestId)
 {
     TArray<float> floatInput;

@@ -55,4 +55,6 @@ public:
 		ActionType actionType);
 
 	void TriggerTestGetAction();
+
+	void TriggerStartSelfPlay();
 };

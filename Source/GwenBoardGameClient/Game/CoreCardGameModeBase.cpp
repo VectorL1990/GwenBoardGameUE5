@@ -265,7 +265,7 @@ void ACoreCardGameModeBase::Tick(float deltaTime)
 		// We should refresh all nodes to Mct widget here.
 		//aiRunnable->mcts->treeRoot
 	}
-	else if (aiRunnable->aiRunnableState == EAIRunnableState::FinishGetTritonAction)
+	else if (aiRunnable->aiRunnableState == EAIRunnableState::)
 	{
 		APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
 		ACoreCardGamePC* coreCardPC = Cast<ACoreCardGamePC>(playerController);

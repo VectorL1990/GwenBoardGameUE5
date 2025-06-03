@@ -63,6 +63,11 @@ uint32 FAIRunnable::Run()
 			mcts->realBoard.TriggerAction(waitLaunchCamp, actionCode, renderEffectRounds);
 			aiRunnableState = EAIRunnableState::NewState;
 		}
+		else if (aiRunnableState == EAIRunnableState::StartSelfPlay)
+		{
+			mcts->curSelfPlayLoop = 0;
+			aiRunnableState = EAIRunnableState::GetTritonAction;
+		}
 		else if (aiRunnableState == EAIRunnableState::GetTritonAction)
 		{
 			mcts->curSimulationMove = 0;
@@ -72,9 +77,35 @@ uint32 FAIRunnable::Run()
 		{
 			if (mcts->curSimulationMove >= mcts->expandSimulationMoves)
 			{
-				mcts->GetTritonAction();
-				mcts->curSimulationMove = 0;
-				aiRunnableState = EAIRunnableState::FinishGetTritonAction;
+				FTrainingData trainingData;
+				int32 targetAction;
+				mcts->GetTritonAction(targetAction, trainingData.actionProbs);
+				mcts->realBoard.StateCoding(mcts->realBoard.curSectionNb, trainingData.stateCoding);
+				TArray<FRenderEffectRound> renderEffectList;
+				mcts->realBoard.TriggerAction(mcts->realBoard.curSectionNb, targetAction, renderEffectList);
+				int32 winner;
+				bool isGameEnd = mcts->realBoard.GameEnd(winner);
+
+				if (isGameEnd)
+				{
+					if (winner == 0)
+					{
+						trainingData.scores[0] = 1.0;
+						trainingData.scores[1] = -1.0;
+					}
+					else
+					{
+						trainingData.scores[0] = -1.0;
+						trainingData.scores[1] = 1.0;
+					}
+					mcts->curSimulationMove = 0;
+					aiRunnableState = EAIRunnableState::SelfPlayEnd;
+				}
+				else
+				{
+					mcts->curSimulationMove = 0;
+					aiRunnableState = EAIRunnableState::GetTritonAction;
+				}
 			}
 			else
 			{
@@ -90,6 +121,10 @@ uint32 FAIRunnable::Run()
 				aiRunnableState = EAIRunnableState::SendTritonRequest;
 			}
 		}
+		else if (aiRunnableState == EAIRunnableState::SelfPlayEnd)
+		{
+			// save training data to file
+		}
 	}
 	return 0;
 }
@@ -103,6 +138,11 @@ void FAIRunnable::TriggerMctsGetAction(uint8 campNb)
 void FAIRunnable::TriggerTestGetAction()
 {
 	aiRunnableState = EAIRunnableState::GetTritonAction;
+}
+
+void FAIRunnable::TriggerStartSelfPlay()
+{
+	aiRunnableState = EAIRunnableState::StartSelfPlay;
 }
 
 void FAIRunnable::TriggerAssignAction(uint8 campNb,

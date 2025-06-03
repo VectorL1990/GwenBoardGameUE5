@@ -226,26 +226,50 @@ bool UMcts::CheckTritonReponseAll()
 		return false;
 	}
 
-	// Expand searching tree first
-	TArray<int32> legalActionIds;
-	TArray<ActionType> legalActionTypes;
-	tritonResponseData.curBoardInfo.GetLegalMoves(tritonResponseData.curSectionNb, legalActionIds, legalActionTypes);
+	int32 winner;
+	bool isGameEnd = tritonResponseData.curBoardInfo.GameEnd(winner);
 
-	for (int32 j = 0; j < legalActionIds.Num(); j++)
+	if (isGameEnd)
 	{
-		TArray<FRenderEffectRound> renderEffectRoundList;
-		ActionType testActionType = legalActionTypes[j];
-		// Trigger action just for replay
-		FBoardInfo copyBoard = tritonResponseData.curBoardInfo.GetCopyBoard();
-		copyBoard.TriggerAction(tritonResponseData.curSectionNb,
-			legalActionIds[j], renderEffectRoundList);
-		UMctsTreeNode* newNode = tritonResponseData.curMctsTreeNode->ExpandNode(
-			tritonResponseData.curMctsTreeNode->hirachy,
-			legalActionIds[j],
-			tritonResponseData.policies[legalActionIds[j]],
-			copyBoard.boardRows,
-			copyBoard.allInstanceCardInfo);
-		newAddNodes.Add(newNode);
+		if (winner == -1)
+		{
+			tritonResponseData.boardValue = 0.0;
+		}
+		else
+		{
+			if (winner == tritonResponseData.curSectionNb)
+			{
+				tritonResponseData.boardValue = 1.0;
+			}
+			else
+			{
+				tritonResponseData.boardValue = -1.0;
+			}
+		}
+	}
+	else
+	{
+		// Expand searching tree first
+		TArray<int32> legalActionIds;
+		TArray<ActionType> legalActionTypes;
+		tritonResponseData.curBoardInfo.GetLegalMoves(tritonResponseData.curSectionNb, legalActionIds, legalActionTypes);
+
+		for (int32 j = 0; j < legalActionIds.Num(); j++)
+		{
+			TArray<FRenderEffectRound> renderEffectRoundList;
+			ActionType testActionType = legalActionTypes[j];
+			// Trigger action just for replay
+			FBoardInfo copyBoard = tritonResponseData.curBoardInfo.GetCopyBoard();
+			copyBoard.TriggerAction(tritonResponseData.curSectionNb,
+				legalActionIds[j], renderEffectRoundList);
+			UMctsTreeNode* newNode = tritonResponseData.curMctsTreeNode->ExpandNode(
+				tritonResponseData.curMctsTreeNode->hirachy,
+				legalActionIds[j],
+				tritonResponseData.policies[legalActionIds[j]],
+				copyBoard.boardRows,
+				copyBoard.allInstanceCardInfo);
+			newAddNodes.Add(newNode);
+		}
 	}
 
 	tritonResponseData.curMctsTreeNode->UpdateQValueRecursive(tritonResponseData.boardValue);
@@ -254,7 +278,7 @@ bool UMcts::CheckTritonReponseAll()
 	return true;
 }
 
-void UMcts::GetTritonAction()
+void UMcts::GetTritonAction(int32& actionId, TArray<float>& softmaxProbs)
 {
 	// After expand nodes, we should find ideal motion and do action
 	TArray<float> logVisits;
@@ -265,18 +289,34 @@ void UMcts::GetTritonAction()
 		candidateActs.Add(iter->Key);
 		logVisits.Add(logVisit);
 	}
-	TArray<float> softmaxProbs;
 	UCoreGameBlueprintFunctionLibrary::Softmax(logVisits, 0.001, softmaxProbs);
-
-	int32 targetMove = UCoreGameBlueprintFunctionLibrary::GetDirichletAction(candidateActs, softmaxProbs);
 
 	if (isTraining)
 	{
+		int32 targetMove = UCoreGameBlueprintFunctionLibrary::GetDirichletAction(candidateActs, softmaxProbs);
 		UpdateCurSearchNode(targetMove);
+		actionId = targetMove;
 	}
 	else
 	{
+		int32 targetMove = UCoreGameBlueprintFunctionLibrary::GetDirichletAction(candidateActs, softmaxProbs);
 		// reset search tree in real battle case
 		UpdateCurSearchNode(-1);
+		actionId = targetMove;
+	}
+}
+
+void UMcts::SaveTrainingData(const TArray<FTrainingData>& trainingDatas)
+{
+	FString saveDir = FPaths::ProjectSavedDir() / TEXT("TritonRequests");
+	IPlatformFile& platformFile = FPlatformFileManager::Get().GetPlatformFile();
+	if (!platformFile.DirectoryExists(*saveDir))
+	{
+		platformFile.CreateDirectory(*saveDir);
+	}
+
+	for (int32 i = 0; i < trainingDatas.Num(); i++)
+	{
+		
 	}
 }

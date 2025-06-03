@@ -382,10 +382,12 @@ enum class EAIRunnableState
     Default,
     NewTask,
     Working,
+    StartSelfPlay,
     GetTritonAction,
     SendTritonRequest,
     WaitTritonResponse,
-    FinishGetTritonAction,
+    NextSimulation,
+    SelfPlayEnd,
 
     TestGetAction,
     FinishTestGetAction,
