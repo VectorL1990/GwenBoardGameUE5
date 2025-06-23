@@ -14,18 +14,41 @@ void UMctsTreeNode::Init(UMctsTreeNode* inParent, int32 inActionId, ActionType i
 	w = 0.0;
 	u = 0.0;
 	hirachy = inHirachy;
+	sectionZeroScore = 0;
+	sectionOneScore = 0;
 }
 
-float UMctsTreeNode::GetValue()
+float UMctsTreeNode::GetValue(bool isTraining)
 {
+	/*
+	if (isTraining)
+	{
+		if (visit == 0)
+		{
+			return FLT_MAX;
+		}
+		else
+		{
+			u = 5.0 * p * FMath::Sqrt((float)parent->visit) / (1.0 + (float)visit);
+			return u + q;
+		}
+	}
+	else
+	{
+		u = 5.0 * p * FMath::Sqrt((float)parent->visit) / (1.0 + (float)visit);
+		return u + q;
+	}
+	*/
+	
 	u = 5.0 * p * FMath::Sqrt((float)parent->visit) / (1.0 + (float)visit);
-	return u;
+	return u + q;
 	//return 0;
 }
 
 UMctsTreeNode* UMctsTreeNode::ExpandNode(int32 parentHirachy, 
 	int32 actionId, 
 	ActionType actionType,
+	uint8 curPlayingSectionNb,
 	float prob, 
 	const TArray<FBoardRow>& inBoardRows, 
 	const TMap<int32, FInstanceCardInfo> inAllInstanceCardInfos)
@@ -34,6 +57,7 @@ UMctsTreeNode* UMctsTreeNode::ExpandNode(int32 parentHirachy,
 	{
 		UMctsTreeNode* child = NewObject<UMctsTreeNode>(GetWorld(), mctsTreeNodeBPClass);
 		child->Init(this, actionId, actionType, prob, hirachy + 1);
+		child->curPlayingSectionNb = curPlayingSectionNb;
 		child->replayBoardRows = inBoardRows;
 		child->allReplayInstanceCardInfo = inAllInstanceCardInfos;
 		children.Add(actionId, child);
@@ -42,14 +66,14 @@ UMctsTreeNode* UMctsTreeNode::ExpandNode(int32 parentHirachy,
 	return NULL;
 }
 
-UMctsTreeNode* UMctsTreeNode::Select(int32& outAction)
+UMctsTreeNode* UMctsTreeNode::Select(int32& outAction, bool isTraining)
 {
 	float maxQU = -std::numeric_limits<float>::max();
 	int32 maxQUAction = 0;
 	UMctsTreeNode* outNode = NULL;
 	for (TMap<int, UMctsTreeNode*>::TConstIterator iter = children.CreateConstIterator(); iter; ++iter)
 	{
-		float nodeQU = iter->Value->GetValue();
+		float nodeQU = iter->Value->GetValue(isTraining);
 		if (nodeQU >= maxQU)
 		{
 			maxQU = nodeQU;
@@ -61,23 +85,40 @@ UMctsTreeNode* UMctsTreeNode::Select(int32& outAction)
 	return outNode;
 }
 
-void UMctsTreeNode::UpdateQValueRecursive(float leafW)
+void UMctsTreeNode::UpdateQValueRecursive(int32 originActionId, int32 originLaunchSection, int32 originHirachy, float leafW, bool isTraining)
 {
 	if (parent)
 	{
 		if (parent->curPlayingSectionNb != curPlayingSectionNb)
 		{
-			parent->UpdateQValueRecursive(-leafW);
+			parent->UpdateQValueRecursive(originActionId, originLaunchSection, originHirachy, -leafW, isTraining);
 		}
 		else
 		{
-			parent->UpdateQValueRecursive(leafW);
+			parent->UpdateQValueRecursive(originActionId, originLaunchSection, originHirachy, leafW, isTraining);
 		}
 	}
+
 	visit += 1;
+	if (originHirachy <= hirachy)
+	{
+		truncatedVisit += 1;
+	}
 	
-	w = w + leafW;
-	q = w / (float)visit;
+	updateWActionIds.Add(originActionId);
+	updateWLaunchSections.Add(originLaunchSection);
+	updateWHistories.Add(leafW);
+	//w = w + leafW;
+	//q = w / (float)visit;
+	q += (leafW - q) / (float)visit;
+	if (!parent)
+	{
+		updateQUHistories.Add(0.0);
+	}
+	else
+	{
+		updateQUHistories.Add(GetValue(isTraining));
+	}
 }
 
 bool UMctsTreeNode::IsLeaf()
@@ -104,15 +145,23 @@ bool UMctsTreeNode::IsRoot()
 	}
 }
 
+void UMctsTreeNode::DeleteChildren()
+{
+
+}
+
 void UMctsTreeNode::ResetNode()
 {
 	parent = NULL;
 	actionId = -1;
 	visit = 0;
+	truncatedVisit = 0;
 	p = 1.0;
 	q = 0.0;
 	u = 0.0;
 	hirachy = 0;
+	sectionZeroScore = 0;
+	sectionOneScore = 0;
 }
 
 TArray<UMctsTreeNode*> UMctsTreeNode::ConvertChildrenToList()
@@ -126,6 +175,34 @@ TArray<UMctsTreeNode*> UMctsTreeNode::ConvertChildrenToList()
 		}
 	}
 	return childrenList;
+}
+
+void UMctsTreeNode::UpdateWinLoseResult(int32 winSection)
+{
+	if (winSection == -1)
+	{
+		// which means draw
+		winLoseResult = 0.0;
+	}
+	else
+	{
+		if (curPlayingSectionNb == winSection)
+		{
+			winLoseResult = 1.0;
+		}
+		else
+		{
+			winLoseResult = -1.0;
+		}
+	}
+
+	if (children.Num() > 0)
+	{
+		for (TMap<int, UMctsTreeNode*>::TConstIterator iter = children.CreateConstIterator(); iter; ++iter)
+		{
+			iter->Value->UpdateWinLoseResult(winSection);
+		}
+	}
 }
 
 

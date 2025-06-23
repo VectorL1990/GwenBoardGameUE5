@@ -8,6 +8,7 @@
 #include "TreeView.h"
 #include "MctNodeButton.h"
 #include "../AI/MctsTreeNode.h"
+#include "MctWValueElement.h"
 #include "MctReplayMenuWidget.generated.h"
 
 /**
@@ -21,16 +22,29 @@ public:
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<UMctsTreeNode> mctsTreeNodeBPClass;
 
+    UPROPERTY(EditDefaultsOnly)
+    TSubclassOf<UMctWValueElement> mctWElementBPClass;
+
     UMctsTreeNode* rootNode;
 
     UTreeView* treeView;
+
+    UScrollBox* scrollBox;
+
+    UPROPERTY()
+    TArray<UMctWValueElement*> mctWElements;
 
     UFUNCTION(BlueprintNativeEvent)
     void NotifyInit();
 
     UFUNCTION(BlueprintCallable)
-    void Init(UTreeView* inTreeView);
+    void Init(UTreeView* inTreeView, UScrollBox* inScrollBox);
 
     UFUNCTION(BlueprintCallable)
     void RefreshMctsMenu();
+
+    void UpdateWHistories(const TArray<int32> wActionIds, 
+        const TArray<uint8> wLaunchSections, 
+        const TArray<float> wHistories,
+        const TArray<float> quHistories);
 };

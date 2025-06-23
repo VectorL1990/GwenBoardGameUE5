@@ -46,7 +46,7 @@ void UTritonHttpClient::SendInferenceRequest(const FString& modelName, const int
         "inputs": [
             {
                 "name": "input_0",
-                "shape": [1, 200, 18, 8],
+                "shape": [1, 17, 14, 4],
                 "datatype": "FP32",
                 "parameters":
                 {
@@ -103,7 +103,7 @@ void UTritonHttpClient::ProcessResponse(const int32& requestId, const int32& met
         return;
     }
 
-    // ²½Öè3£ºÌáÈ¡outputsÊý×é
+    // ï¿½ï¿½ï¿½ï¿½3ï¿½ï¿½ï¿½ï¿½È¡outputsï¿½ï¿½ï¿½ï¿½
     const TArray<TSharedPtr<FJsonValue>>* outputsArray;
     if (!jsonObject->TryGetArrayField("outputs", outputsArray))
     {
@@ -116,11 +116,11 @@ void UTritonHttpClient::ProcessResponse(const int32& requestId, const int32& met
     {
         return;
     }
-    // ²½Öè5£ºÌáÈ¡²¢´¦ÀídataÊý×é
+    // ï¿½ï¿½ï¿½ï¿½5ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½dataï¿½ï¿½ï¿½ï¿½
     const TArray<TSharedPtr<FJsonValue>>* dataArray_0;
     if (outputObj_0->TryGetArrayField("data", dataArray_0))
     {
-        // ´´½¨¸¡µãÊý×é´æ´¢½á¹û
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½æ´¢ï¿½ï¿½ï¿½
         for (const TSharedPtr<FJsonValue>& dataValue : *dataArray_0)
         {
             double policy = 0.0;
@@ -131,8 +131,8 @@ void UTritonHttpClient::ProcessResponse(const int32& requestId, const int32& met
             }
             else
             {
-                // ´¦Àí¿ÉÄÜµÄ´íÎó
-                castMcts->tritonResponseData.policies.Add(0.0f);
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÜµÄ´ï¿½ï¿½ï¿½
+                castMcts->tritonResponseData.policies.Add(-10.0);
                 //castMcts->tritonResponseDatas[castMcts->requestIdResponseNbMap[requestId]].policies.Add(0.0f);
             }
         }

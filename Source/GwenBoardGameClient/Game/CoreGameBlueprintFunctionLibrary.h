@@ -112,7 +112,33 @@ enum class EGamingType : uint8
 
 
 
+class FastGammaSampler
+{
+public:
+    FastGammaSampler(double alpha, unsigned seed = std::random_device{}())
+        : alpha(alpha), rng(seed), uniform(0.0, 1.0) {
+    }
 
+    double operator()() {
+        // Johnk's算法：适用于α < 1
+        while (true) {
+            double U = uniform(rng);
+            double V = uniform(rng);
+            double X = std::pow(U, 1.0 / alpha);
+            double Y = std::pow(V, 1.0 / (1.0 - alpha));
+            if (X + Y <= 1.0) {
+                double Z = X / (X + Y);
+                double W = -std::log(uniform(rng)); // 指数分布
+                return Z * W;
+            }
+        }
+    }
+
+private:
+    double alpha;
+    std::mt19937 rng;
+    std::uniform_real_distribution<double> uniform;
+};
 
 
 
@@ -127,7 +153,13 @@ class GWENBOARDGAMECLIENT_API UCoreGameBlueprintFunctionLibrary : public UBluepr
     GENERATED_BODY()
 public:
 
-    static void Softmax(const TArray<float>& x, float temp, TArray<float>& softmax);
+    static void Softmax(const TArray<float>& x, TArray<float>& softmax);
+
+    static int32 GetRealDirichletAction(const TArray<int32>& actions,
+        const TArray<ActionType>& actionTypes,
+        const TArray<float>& probs,
+        int32& outAction,
+        ActionType& outActionType);
 
     static int32 GetDirichletAction(const TArray<int32>& actions, 
         const TArray<ActionType>& actionTypes, 
@@ -166,7 +198,9 @@ public:
         int32 launchX,
         int32 launchY,
         int32 targetX,
-        int32 targetY);
+        int32 targetY,
+        int32& sectionZeroScore,
+        int32& sectionOneScore);
 
     static FEffectResultDict LaunchSkillDict(
             TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
@@ -175,7 +209,9 @@ public:
             int32 launchX,
             int32 launchY,
             int32 targetX,
-            int32 targetY);
+            int32 targetY,
+        int32& sectionZeroScore,
+        int32& sectionOneScore);
 
     static FEffectResultDict Hurt(
         TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
@@ -184,7 +220,9 @@ public:
         int32 launchX,
         int32 launchY,
         int32 targetX,
-        int32 targetY);
+        int32 targetY,
+        int32& sectionZeroScore,
+        int32& sectionOneScore);
 
     static FEffectResultDict Heal(
         TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
@@ -193,7 +231,9 @@ public:
         int32 launchX,
         int32 launchY,
         int32 targetX,
-        int32 targetY);
+        int32 targetY,
+        int32& sectionZeroScore,
+        int32& sectionOneScore);
 
     static FEffectResultDict IncreaseDefence(
             TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,

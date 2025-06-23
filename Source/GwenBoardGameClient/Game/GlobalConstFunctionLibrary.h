@@ -6,11 +6,10 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "GlobalConstFunctionLibrary.generated.h"
 
-#define TotalCHW 560
-#define TotalActionNb 767
-#define TotalPlayCardActionNb 256
-#define TotalMoveActionNb 255
-#define TotalTriggerSkillActionNb 256
+#define StateCodingTotalCHW 952
+#define StateCodingC 17
+#define StateCodingH 14
+#define StateCodingW 4
 
 UENUM(BlueprintType)
 enum class EAtkDistanceType : uint8
@@ -113,7 +112,7 @@ public:
         TArray<int32> values;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        int32 moveDistance;
+    EAtkDistanceType moveDistance;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
         EAtkDistanceType attackDistanceType;

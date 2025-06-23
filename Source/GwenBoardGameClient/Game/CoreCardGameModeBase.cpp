@@ -346,6 +346,7 @@ void ACoreCardGameModeBase::DemonstrateMctsTreeNode(UMctsTreeNode* node)
 						}
 						AReplayCard* replayCard = GetWorld()->SpawnActor<AReplayCard>(replayCardBPClass, spawnLocation, FRotator::ZeroRotator);
 						replayCard->Init(node->allReplayInstanceCardInfo[cardId].originCardInfo.cardName,
+							node->allReplayInstanceCardInfo[cardId].camp,
 							node->allReplayInstanceCardInfo[cardId].curHp,
 							node->allReplayInstanceCardInfo[cardId].curDefence);
 						allReplayCards.Add(cardId, replayCard);
@@ -360,6 +361,7 @@ void ACoreCardGameModeBase::DemonstrateMctsTreeNode(UMctsTreeNode* node)
 						FVector destLocation = boardGrids[boardGridId]->GetActorLocation() + replayGridCardVerticalOffset;
 						AReplayCard* replayCard = GetWorld()->SpawnActor<AReplayCard>(replayCardBPClass, destLocation, FRotator::ZeroRotator);
 						replayCard->Init(node->allReplayInstanceCardInfo[cardId].originCardInfo.cardName,
+							node->allReplayInstanceCardInfo[cardId].camp,
 							node->allReplayInstanceCardInfo[cardId].curHp,
 							node->allReplayInstanceCardInfo[cardId].curDefence);
 						allReplayCards.Add(cardId, replayCard);
@@ -389,11 +391,27 @@ void ACoreCardGameModeBase::DemonstrateMctsTreeNode(UMctsTreeNode* node)
 		}
 		else if (actionType == ActionType::LaunchSkill)
 		{
-			int32 launchCardUid = aiRunnable->mcts->realBoard.boardRows[launchY].colCardInfos[launchX];
-			int32 targetCardUid = aiRunnable->mcts->realBoard.boardRows[targetY].colCardInfos[targetX];
-			FVector launchCardLoc = allBattleCards[launchCardUid]->GetActorLocation();
-			FVector targetCardLoc = allBattleCards[targetCardUid]->GetActorLocation();
+			int32 launchCardUid = node->replayBoardRows[launchY].colCardInfos[launchX];
+			int32 targetCardUid = node->replayBoardRows[targetY].colCardInfos[targetX];
+			FVector launchCardLoc = allReplayCards[launchCardUid]->GetActorLocation();
+			FVector targetCardLoc = allReplayCards[targetCardUid]->GetActorLocation();
 			UKismetSystemLibrary::DrawDebugLine(this, launchCardLoc, targetCardLoc, FLinearColor::Green, 1.0, 10.0);
+		}
+		else if (actionType == ActionType::Move)
+		{
+			int32 launchGridY = launchY - UGlobalConstFunctionLibrary::graveCardSectionRow -
+				UGlobalConstFunctionLibrary::playCardSectionRow;
+			int32 launchGridId = launchGridY * UGlobalConstFunctionLibrary::maxCol + launchX;
+			FVector launchGridLoc = boardGrids[launchGridId]->GetActorLocation();
+			FVector launchGridOffsetLoc = launchGridLoc + gridCardVerticalOffset;
+
+			int32 targetGridY = targetY - UGlobalConstFunctionLibrary::graveCardSectionRow -
+				UGlobalConstFunctionLibrary::playCardSectionRow;
+			int32 targetGridId = targetGridY * UGlobalConstFunctionLibrary::maxCol + targetX;
+			FVector targetGridLoc = boardGrids[targetGridId]->GetActorLocation();
+			FVector targetGridOffsetLoc = targetGridLoc + gridCardVerticalOffset;
+
+			UKismetSystemLibrary::DrawDebugLine(this, launchGridOffsetLoc, targetGridOffsetLoc, FLinearColor::Blue, 1.0, 10.0);
 		}
 	}
 }
@@ -457,6 +475,46 @@ void ACoreCardGameModeBase::TriggerRenderEffect()
 			AActor* particleActor = GetWorld()->SpawnActor<AActor>(particleActorClass, battleBoard->allCards[launchUid]->GetActorLocation(), targetRot);
 		}
 	}*/
+}
+
+void ACoreCardGameModeBase::DeleteHandAllCards()
+{
+	for (TMap<int32, ACard*>::TConstIterator iter = allBattleCards.CreateConstIterator(); iter; ++iter)
+	{
+		iter->Value->ConditionalBeginDestroy();
+	}
+	allBattleCards.Empty();
+
+	for (int32 i = 0; i < sectionZeroHandBattleCards.Num(); i++)
+	{
+		if (sectionZeroHandBattleCards[i]->IsValidLowLevel())
+		{
+			sectionZeroHandBattleCards[i]->ConditionalBeginDestroy();
+		}
+	}
+	sectionZeroHandBattleCards.Empty();
+
+	for (int32 i = 0; i < sectionOneHandBattleCards.Num(); i++)
+	{
+		if (sectionOneHandBattleCards[i]->IsValidLowLevel())
+		{
+			sectionOneHandBattleCards[i]->ConditionalBeginDestroy();
+		}
+	}
+	sectionOneHandBattleCards.Empty();
+
+	for (TMap<int32, AReplayCard*>::TConstIterator iter = allReplayCards.CreateConstIterator(); iter; ++iter)
+	{
+		iter->Value->ConditionalBeginDestroy();
+	}
+	allReplayCards.Empty();
+
+	sectionZeroCardRots.Empty();
+	sectionOneCardRots.Empty();
+	sectionZeroOriginLocations.Empty();
+	sectionOneOriginLocations.Empty();
+	sectionZeroCardLocations.Empty();
+	sectionOneCardLocations.Empty();
 }
 
 void ACoreCardGameModeBase::SpawnHandCard(FString cardName, uint8 sectionNb, int32 cardUid, int32 inCurHp, int32 inCurDefence, int32 handCardNb)
@@ -815,8 +873,9 @@ void ACoreCardGameModeBase::InitPreBattle()
 	battleBoard = GetWorld()->SpawnActor<ABattleBoard>(battleBoardBPClass,
 		FVector::Zero(), FRotator::ZeroRotator);
 
-	mcts = NewObject<UMcts>(this, mctsBPClass);
-	mcts->InitMcts(2);
+	mcts = NewObject<UMcts>(GetWorld(), mctsBPClass);
+	//mcts = NewObject<UMcts>(this, mctsBPClass);
+	mcts->InitMcts();
 	aiRunnable = new FAIRunnable(this);
 	aiRunnable->Start(mcts);
 }

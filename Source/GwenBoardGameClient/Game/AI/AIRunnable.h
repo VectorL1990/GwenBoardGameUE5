@@ -24,9 +24,8 @@ public:
 
 	EAIRunnableState aiRunnableState = EAIRunnableState::Default;
 
-	UMcts* mcts;
-
-	uint8 curSectionNb = 0;
+	UPROPERTY(Transient)
+	TObjectPtr<UMcts> mcts;
 
 	int32 waitLaunchX;
 	int32 waitLaunchY;
@@ -35,10 +34,12 @@ public:
 	uint8 waitLaunchCamp;
 	ActionType waitActionType;
 
+	//FCriticalSection criticalSection;
+
 	FAIRunnable(ACoreCardGameModeBase* inOwner);
 	~FAIRunnable();
 
-	void Start(UMcts* inMcts);
+	void Start(TObjectPtr<UMcts> inMcts);
 
 	virtual bool Init() override;
 	virtual uint32 Run() override;

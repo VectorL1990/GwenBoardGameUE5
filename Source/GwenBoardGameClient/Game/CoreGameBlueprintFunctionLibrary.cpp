@@ -7,7 +7,7 @@
 #include "EffectAffixFunctionLibrary.h"
 
 
-void UCoreGameBlueprintFunctionLibrary::Softmax(const TArray<float>& x, float temp, TArray<float>& softmax)
+void UCoreGameBlueprintFunctionLibrary::Softmax(const TArray<float>& x, TArray<float>& softmax)
 {
     //TArray<float> Output;
     //if (x.Num() == 0) return Output;
@@ -49,6 +49,14 @@ void UCoreGameBlueprintFunctionLibrary::Softmax(const TArray<float>& x, float te
     */
 }
 
+int32 UCoreGameBlueprintFunctionLibrary::GetRealDirichletAction(const TArray<int32>& actions,
+    const TArray<ActionType>& actionTypes,
+    const TArray<float>& probs,
+    int32& outAction,
+    ActionType& outActionType)
+{
+    return 0;
+}
 
 
 int32 UCoreGameBlueprintFunctionLibrary::GetDirichletAction(
@@ -603,7 +611,9 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::LaunchPlayCardSkillDict(
     int32 launchX,
     int32 launchY,
     int32 targetX,
-    int32 targetY)
+    int32 targetY,
+    int32& sectionZeroScore,
+    int32& sectionOneScore)
 {
     TArray<FGridXY> modifyGrids = GetAutoSkillTargetGrids(
         launchCampNb,
@@ -623,11 +633,11 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::LaunchPlayCardSkillDict(
         int32 targetY = modifyGrids[i].y;
         if (effectInfo.effectType == "hurt")
         {
-            effectResultDict = Hurt(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY);
+            effectResultDict = Hurt(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY, sectionZeroScore, sectionZeroScore);
         }
         else if (effectInfo.effectType == "heal")
         {
-            effectResultDict = Heal(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY);
+            effectResultDict = Heal(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY, sectionZeroScore, sectionOneScore);
         }
         else if (effectInfo.effectType == "IncreaseDefence")
         {
@@ -645,16 +655,18 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::LaunchSkillDict(
     int32 launchX,
     int32 launchY,
     int32 targetX,
-    int32 targetY)
+    int32 targetY,
+    int32& sectionZeroScore,
+    int32& sectionOneScore)
 {
     FEffectResultDict effectResultDict;
     if (effectInfo.effectType == "hurt")
     {
-        effectResultDict = Hurt(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY);
+        effectResultDict = Hurt(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY, sectionZeroScore, sectionOneScore);
     }
     else if (effectInfo.effectType == "heal")
     {
-        effectResultDict = Heal(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY);
+        effectResultDict = Heal(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY, sectionZeroScore, sectionOneScore);
     }
     else if (effectInfo.effectType == "IncreaseDefence")
     {
@@ -671,7 +683,9 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::Hurt(
     int32 launchX,
     int32 launchY,
     int32 targetX,
-    int32 targetY)
+    int32 targetY,
+    int32& sectionZeroScore,
+    int32& sectionOneScore)
 {
     int32 effectValue = 0;
     if (effectInfo.effectAffix != "none")
@@ -709,6 +723,14 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::Hurt(
     {
         int32 uid = boardCardInfo[targetGrids[i].y].colCardInfos[targetGrids[i].x];
         allInstanceCardInfo[uid].curHp = allInstanceCardInfo[uid].curHp - effectValue;
+        if (allInstanceCardInfo[uid].camp == 0)
+        {
+            sectionZeroScore -= effectValue;
+        }
+        else
+        {
+            sectionOneScore -= effectValue;
+        }
         effectResultDict.modifyGrids.Add(targetGrids[i]);
     }
     return effectResultDict;
@@ -721,7 +743,9 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::Heal(
     int32 launchX,
     int32 launchY,
     int32 targetX,
-    int32 targetY)
+    int32 targetY,
+    int32& sectionZeroScore,
+    int32& sectionOneScore)
 {
     int32 effectValue = 0;
     if (effectInfo.effectAffix != "none")
@@ -759,6 +783,14 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::Heal(
     {
         int32 uid = boardCardInfo[targetGrids[i].y].colCardInfos[targetGrids[i].x];
         allInstanceCardInfo[uid].curHp = allInstanceCardInfo[uid].curHp + effectValue;
+        if (allInstanceCardInfo[uid].camp == 0)
+        {
+            sectionZeroScore += effectValue;
+        }
+        else
+        {
+            sectionOneScore += effectValue;
+        }
         effectResultDict.modifyGrids.Add(targetGrids[i]);
     }
     return effectResultDict;

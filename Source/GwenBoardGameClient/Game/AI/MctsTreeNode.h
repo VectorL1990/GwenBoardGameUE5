@@ -20,28 +20,33 @@ public:
     
     void Init(UMctsTreeNode* inParent, int32 inActionId, ActionType actionType, float inP, int32 inHirachy);
 
-    float GetValue();
+    float GetValue(bool isTraining);
 
     // Expand executes after selecting max U + Q leaf node
     UMctsTreeNode* ExpandNode(int32 parentHirachy, 
         int32 actionId, 
         ActionType actionType,
+        uint8 curPlayingSectionNb,
         float prob, 
         const TArray<FBoardRow>& boardRows,
         const TMap<int32, FInstanceCardInfo> inAllInstanceCardInfos);
 
-    UMctsTreeNode* Select(int32& outAction);
+    UMctsTreeNode* Select(int32& outAction, bool isTraining);
 
-    void UpdateQValueRecursive(float leafW);
+    void UpdateQValueRecursive(int32 originActionId, int32 originLaunchSection, int32 originHirachy, float leafW, bool isTraining);
 	
     bool IsLeaf();
 
     bool IsRoot();
 
+    void DeleteChildren();
+
     void ResetNode();
 
     UFUNCTION(BlueprintCallable)
     TArray<UMctsTreeNode*> ConvertChildrenToList();
+
+    void UpdateWinLoseResult(int32 winSection);
 
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<UMctsTreeNode> mctsTreeNodeBPClass;
@@ -64,9 +69,11 @@ public:
     TMap<int32, FInstanceCardInfo> allReplayInstanceCardInfo;
 
     UPROPERTY()
-    int32 stateCoding[TotalCHW] = { 0 };
+    int32 stateCoding[StateCodingTotalCHW] = { 0 };
 
     int32 visit;
+
+    int32 truncatedVisit;
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
     float p;
@@ -80,7 +87,27 @@ public:
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
     float u;
 
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    int32 sectionZeroScore;
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    int32 sectionOneScore;
+
+    int32 winLoseResult;
+
     static float cPuct;
+
+    UPROPERTY()
+    TArray<float> updateWHistories;
+
+    UPROPERTY()
+    TArray<float> updateQUHistories;
+
+    UPROPERTY()
+    TArray<int32> updateWActionIds;
+
+    UPROPERTY()
+    TArray<uint8> updateWLaunchSections;
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
     int32 hirachy;

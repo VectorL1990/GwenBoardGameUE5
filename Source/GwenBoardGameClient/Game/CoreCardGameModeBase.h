@@ -162,8 +162,8 @@ public:
 
     void DemonstrateMctsTreeNode(UMctsTreeNode* node);
 
-    UPROPERTY()
-    UMcts* mcts;
+    UPROPERTY(Transient)
+    TObjectPtr<UMcts> mcts;
 
 
     int32 curActionEffectRound = 0;
@@ -201,6 +201,8 @@ public:
     TArray<FVector> sectionOneCardLocations;
 
     void SpawnHandCard(FString cardName, uint8 sectionNb, int32 cardUid, int32 inCurHp, int32 inCurDefence, int32 handCardNb);
+
+    void DeleteHandAllCards();
 
     void CalculateHoverCardLocations(uint8 campNb, int32 hoverCardNb);
 

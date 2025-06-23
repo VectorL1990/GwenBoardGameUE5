@@ -44,6 +44,29 @@ public:
 
 	uint8 curPlayingSectionNb = 0;
 
+	bool sectionZeroPlayCardAvailable = true;
+	bool sectionZeroMoveAvailable = true;
+	bool sectionOnePlayCardAvailable = true;
+	bool sectionOneMoveAvailable = true;
+
+	void ResetBoard()
+	{
+		boardRows.Empty();
+		allInstanceCardInfo.Empty();
+		curRoundPassiveEffectTriggeredUids.Empty();
+		sectionZeroHandCards.Empty();
+		sectionOneHandCards.Empty();
+		sectionZeroGraveCards.Empty();
+		sectionOneGraveCards.Empty();
+		sectionZeroScores = 0;
+		sectionOneScores = 0;
+		curPlayingSectionNb = 0;
+		sectionZeroPlayCardAvailable = true;
+		sectionZeroMoveAvailable = true;
+		sectionOnePlayCardAvailable = true;
+		sectionOneMoveAvailable = true;
+	}
+
 	FBoardInfo GetCopyBoard()
 	{
 		FBoardInfo copyBoard;
@@ -53,6 +76,13 @@ public:
 		copyBoard.sectionOneHandCards = sectionOneHandCards;
 		copyBoard.sectionZeroGraveCards = sectionZeroGraveCards;
 		copyBoard.sectionOneGraveCards = sectionOneGraveCards;
+		copyBoard.sectionZeroPlayCardAvailable = sectionZeroPlayCardAvailable;
+		copyBoard.sectionZeroMoveAvailable = sectionZeroMoveAvailable;
+		copyBoard.curPlayingSectionNb = curPlayingSectionNb;
+		copyBoard.sectionOnePlayCardAvailable = sectionOnePlayCardAvailable;
+		copyBoard.sectionOneMoveAvailable = sectionOneMoveAvailable;
+		copyBoard.sectionZeroScores = sectionZeroScores;
+		copyBoard.sectionOneScores = sectionOneScores;
 		return copyBoard;
 	}
 
@@ -263,37 +293,55 @@ public:
 				// There are 10 channels, which means there are 10 images
 				// Every image size is W x H
 				int32 posInChannel = i * UGlobalConstFunctionLibrary::maxCol + j;
-				int32 skillLaunchTypeStartChannelNb = 0;
+				int32 hpStartChannelNb = 0;
+				boardCoding[channelLen * hpStartChannelNb + posInChannel] = allInstanceCardInfo[uid].curHp;
+
+				int32 defenceStartChannelNb = 1;
+				boardCoding[channelLen * defenceStartChannelNb + posInChannel] = allInstanceCardInfo[uid].curDefence;
+
+				int32 originCoolDownStartChannelNb = 2;
+				boardCoding[channelLen * originCoolDownStartChannelNb + posInChannel] = allInstanceCardInfo[uid].originCardInfo.coolDown;
+
+				int32 curCoolDownStartChannelnb = 3;
+				boardCoding[channelLen * curCoolDownStartChannelnb + posInChannel] = allInstanceCardInfo[uid].curCoolDown;
+
+				int32 originAvailableTimesStartChannelNb = 4;
+				boardCoding[channelLen * originAvailableTimesStartChannelNb + posInChannel] = allInstanceCardInfo[uid].originCardInfo.availableTimes;
+
+				int32 availableTimesStartChannelNb = 5;
+				boardCoding[channelLen * availableTimesStartChannelNb + posInChannel] = allInstanceCardInfo[uid].curAvailableTimes;
+
+				int32 skillLaunchTypeStartChannelNb = 6;
 				for (int32 k = 0; k < 2; k++)
 				{
 					boardCoding[channelLen * (k + skillLaunchTypeStartChannelNb) + posInChannel] = testSkillLaunchTypeCoding[k];
 				}
 
-				int32 autoSkillTargetGeoTypeStartChannelNb = 2;
+				int32 autoSkillTargetGeoTypeStartChannelNb = 8;
 				for (int32 k = 0; k < 2; k++)
 				{
 					boardCoding[channelLen * (k + autoSkillTargetGeoTypeStartChannelNb) + posInChannel] = testAutoSkillTargetGeoTypeCoding[k];
 				}
 
-				int32 targetCampTypeStartChannelNb = 4;
+				int32 targetCampTypeStartChannelNb = 10;
 				for (int32 k = 0; k < 2; k++)
 				{
 					boardCoding[channelLen * (k + targetCampTypeStartChannelNb) + posInChannel] = testTargetCampTypeCoding[k];
 				}
 
-				int32 effectTypeStartChannelNb = 6;
+				int32 effectTypeStartChannelNb = 12;
 				for (int32 k = 0; k < 2; k++)
 				{
 					boardCoding[channelLen * (k + effectTypeStartChannelNb) + posInChannel] = testEffectTypeCoding[k];
 				}
 
-				int32 launchGeoTypeStartChannelNb = 8;
+				int32 launchGeoTypeStartChannelNb = 14;
 				for (int32 k = 0; k < 2; k++)
 				{
 					boardCoding[channelLen * (k + launchGeoTypeStartChannelNb) + posInChannel] = testLaunchGeoType[k];
 				}
 
-				int32 sectionTagStartChannelNb = 10;
+				int32 sectionTagStartChannelNb = 16;
 				if (curSectionNb == 0)
 				{
 					boardCoding[channelLen * sectionTagStartChannelNb + posInChannel] = 0;
@@ -304,35 +352,6 @@ public:
 				}
 			}
 		}
-	}
-
-	TArray<FString> StateStringCoding()
-	{
-		TArray<FString> boardState;
-		int32 totalGrids = UGlobalConstFunctionLibrary::maxCol * (UGlobalConstFunctionLibrary::boardSectionRow +
-			2 * UGlobalConstFunctionLibrary::playCardSectionRow +
-			2 * UGlobalConstFunctionLibrary::graveCardSectionRow);
-		boardState.Init("None", totalGrids);
-
-		for (int32 i = 0; i < boardRows.Num(); i++)
-		{
-			for (int32 j = 0; j < boardRows[i].colCardInfos.Num(); j++)
-			{
-				FString cardStateString = "None";
-				if (allInstanceCardInfo.Contains(boardRows[i].colCardInfos[j]))
-				{
-					int32 cardKey = boardRows[i].colCardInfos[j];
-					cardStateString = allInstanceCardInfo[cardKey].originCardInfo.cardName + "/";
-					cardStateString += FString::FromInt(allInstanceCardInfo[cardKey].curHp) + "/";
-					cardStateString += FString::FromInt(allInstanceCardInfo[cardKey].curDefence) + "/";
-					cardStateString += FString::FromInt(allInstanceCardInfo[cardKey].curCoolDown) + "/";
-					cardStateString += FString::FromInt(allInstanceCardInfo[cardKey].curAvailableTimes);
-				}
-				boardState.Add(cardStateString);
-			}
-		}
-
-		return boardState;
 	}
 
 	int32 ActionCoding(int32 launchX, int32 launchY, int32 targetX, int32 targetY, ActionType actionType)
@@ -368,7 +387,7 @@ public:
 					UGlobalConstFunctionLibrary::maxCol *
 					totalBattleBoardGrids/2 +
 					totalBattleBoardGrids/2 * launchGridNb +
-					targetPlayBoardY * UGlobalConstFunctionLibrary::maxCol + targetX;
+					(targetPlayBoardY - UGlobalConstFunctionLibrary::boardSectionRow /2) * UGlobalConstFunctionLibrary::maxCol + targetX;
 			}
 		}
 		else if (actionType == ActionType::LaunchSkill)
@@ -416,6 +435,24 @@ public:
 				targetPlayBoardY * UGlobalConstFunctionLibrary::maxCol + targetX +
 				totalPlayCardActionNb + totalLaunchSkillActionNb;
 		}
+		else if (actionType == ActionType::EndRound)
+		{
+			int32 totalPlayCardActionNb = UGlobalConstFunctionLibrary::playCardSectionRow *
+				UGlobalConstFunctionLibrary::maxCol *
+				totalBattleBoardGrids / 2 * 2;
+
+			int32 totalLaunchSkillActionNb = UGlobalConstFunctionLibrary::boardSectionRow *
+				UGlobalConstFunctionLibrary::maxCol *
+				UGlobalConstFunctionLibrary::boardSectionRow *
+				UGlobalConstFunctionLibrary::maxCol;
+
+			int32 totalMoveActionNb = UGlobalConstFunctionLibrary::boardSectionRow *
+				UGlobalConstFunctionLibrary::maxCol *
+				UGlobalConstFunctionLibrary::boardSectionRow *
+				UGlobalConstFunctionLibrary::maxCol;
+
+			actionId = totalPlayCardActionNb + totalLaunchSkillActionNb + totalMoveActionNb;
+		}
 		return actionId;
 	}
 
@@ -430,7 +467,6 @@ public:
 			UGlobalConstFunctionLibrary::maxCol * UGlobalConstFunctionLibrary::boardSectionRow;
 
 		int32 totalMoveActions = UGlobalConstFunctionLibrary::maxCol * UGlobalConstFunctionLibrary::boardSectionRow *
-			UGlobalConstFunctionLibrary::maxCol * UGlobalConstFunctionLibrary::boardSectionRow -
 			UGlobalConstFunctionLibrary::maxCol * UGlobalConstFunctionLibrary::boardSectionRow;
 		if (actionId < totalPlayCardActions)
 		{
@@ -452,9 +488,13 @@ public:
 			int32 targetPlayBoardCol = targetPlayBoardGridNb % UGlobalConstFunctionLibrary::maxCol;
 
 			launchX = launchPlaySectionBoardCol;
+			targetX = targetPlayBoardCol;
 			if (!sectionOnePlay)
 			{
 				launchY = launchPlaySectionBoardRow + UGlobalConstFunctionLibrary::graveCardSectionRow;
+				targetY = targetPlayBoardRow +
+					UGlobalConstFunctionLibrary::graveCardSectionRow +
+					UGlobalConstFunctionLibrary::playCardSectionRow;
 			}
 			else
 			{
@@ -462,12 +502,11 @@ public:
 					UGlobalConstFunctionLibrary::playCardSectionRow +
 					UGlobalConstFunctionLibrary::boardSectionRow +
 					launchPlaySectionBoardRow;
+				targetY = targetPlayBoardRow +
+					UGlobalConstFunctionLibrary::graveCardSectionRow +
+					UGlobalConstFunctionLibrary::playCardSectionRow +
+					UGlobalConstFunctionLibrary::boardSectionRow / 2;
 			}
-			targetX = targetPlayBoardCol;
-
-			targetY = targetPlayBoardRow +
-				UGlobalConstFunctionLibrary::graveCardSectionRow +
-				UGlobalConstFunctionLibrary::playCardSectionRow;
 
 			actionType = ActionType::PlayCard;
 		}
@@ -536,7 +575,7 @@ public:
 		}
 	}
 
-	void GetLegalMoves(uint8 sectionNb, TArray<int32>& legalMoves, TArray<ActionType>& actionTypes)
+	void GetLegalMoves(uint8 curPlayingSectionNb, TArray<int32>& legalMoves, TArray<ActionType>& actionTypes)
 	{
 		for (int32 row = 0; row < UGlobalConstFunctionLibrary::boardSectionRow; row++)
 		{
@@ -546,23 +585,34 @@ public:
 					UGlobalConstFunctionLibrary::playCardSectionRow + row;
 				if (boardRows[checkRow].colCardInfos[col] == -1)
 				{
+					if ((curPlayingSectionNb == 0 && !sectionZeroPlayCardAvailable) ||
+						(curPlayingSectionNb == 1 && !sectionOnePlayCardAvailable))
+					{
+						continue;
+					}
+
 					// which means target grid is empty, we can play card at that grid
 					for (int32 playSectionBoardRow = 0; playSectionBoardRow < UGlobalConstFunctionLibrary::playCardSectionRow; playSectionBoardRow++)
 					{
 						for (int32 playCardCol = 0; playCardCol < UGlobalConstFunctionLibrary::maxCol; playCardCol++)
 						{
-							if (sectionNb == 0 && row < UGlobalConstFunctionLibrary::boardSectionRow / 2)
+							if (curPlayingSectionNb == 0 && row < UGlobalConstFunctionLibrary::boardSectionRow / 2)
 							{
 								if (boardRows[playSectionBoardRow + UGlobalConstFunctionLibrary::graveCardSectionRow].colCardInfos[playCardCol] == -1)
 								{
 									continue;
 								}
 
-								int32 actionId = ActionCoding(playCardCol, playSectionBoardRow + UGlobalConstFunctionLibrary::graveCardSectionRow, col, checkRow, ActionType::PlayCard);
+								int32 actionId = ActionCoding(
+									playCardCol, 
+									playSectionBoardRow + UGlobalConstFunctionLibrary::graveCardSectionRow, 
+									col, 
+									checkRow, 
+									ActionType::PlayCard);
 								legalMoves.Add(actionId);
 								actionTypes.Add(ActionType::PlayCard);
 							}
-							else if (sectionNb == 1 && row >= UGlobalConstFunctionLibrary::boardSectionRow / 2)
+							else if (curPlayingSectionNb == 1 && row >= UGlobalConstFunctionLibrary::boardSectionRow / 2)
 							{
 								if (boardRows[playSectionBoardRow +
 									UGlobalConstFunctionLibrary::graveCardSectionRow +
@@ -593,9 +643,40 @@ public:
 					// which means this grid is not empty, we could launch skill or move card
 					// check possible skills
 					FInstanceCardInfo cardInfo = allInstanceCardInfo[boardRows[checkRow].colCardInfos[col]];
-					if (cardInfo.originCardInfo.launchType == "manual" &&
-						(cardInfo.curAvailableTimes == -1 || cardInfo.curAvailableTimes > 0) &&
-						(cardInfo.curCoolDown == -1 || cardInfo.curCoolDown == 0))
+					if (allInstanceCardInfo[boardRows[checkRow].colCardInfos[col]].camp != curPlayingSectionNb)
+					{
+						continue;
+					}
+
+					bool manualSkillAvailable = false;
+					if (cardInfo.originCardInfo.launchType == "manual")
+					{
+						if (cardInfo.originCardInfo.coolDown == -1)
+						{
+							if (cardInfo.originCardInfo.availableTimes == -1)
+							{
+								manualSkillAvailable = true;
+							}
+							else
+							{
+								if (cardInfo.curAvailableTimes > 0)
+								{
+									manualSkillAvailable = true;
+								}
+							}
+						}
+						else
+						{
+							if (cardInfo.curCoolDown == 0 &&
+								(cardInfo.originCardInfo.availableTimes == -1 ||
+								cardInfo.curAvailableTimes > 0))
+							{
+								manualSkillAvailable = true;
+							}
+						}
+					}
+
+					if (manualSkillAvailable)
 					{
 						FEffectInfo effectInfo;
 						effectInfo.aoeType = cardInfo.originCardInfo.aoeType;
@@ -697,30 +778,41 @@ public:
 						}
 					}
 
-
-					// check move action
-					TArray<FGridXY> possibleMoveGrids = UCheckTargetGeoRuleLibrary::GetPossibleMoveGrids(
-						cardInfo.originCardInfo.moveType,
-						allInstanceCardInfo,
-						boardRows,
-						col,
-						checkRow,
-						cardInfo.originCardInfo.moveDistance);
-
-					for (int32 i = 0; i < possibleMoveGrids.Num(); i++)
+					if ((curPlayingSectionNb == 0 && sectionZeroMoveAvailable) ||
+						(curPlayingSectionNb == 1 && sectionOneMoveAvailable))
 					{
-						int32 actionId = ActionCoding(
+						// check move action
+						TArray<FGridXY> possibleMoveGrids = UCheckTargetGeoRuleLibrary::GetPossibleMoveGrids(
+							cardInfo.originCardInfo.moveType,
+							allInstanceCardInfo,
+							boardRows,
 							col,
 							checkRow,
-							possibleMoveGrids[i].x,
-							possibleMoveGrids[i].y,
-							ActionType::Move);
+							cardInfo.originCardInfo.moveDistance);
 
-						legalMoves.Add(actionId);
-						actionTypes.Add(ActionType::Move);
+						for (int32 i = 0; i < possibleMoveGrids.Num(); i++)
+						{
+							int32 actionId = ActionCoding(
+								col,
+								checkRow,
+								possibleMoveGrids[i].x,
+								possibleMoveGrids[i].y,
+								ActionType::Move);
+
+							legalMoves.Add(actionId);
+							actionTypes.Add(ActionType::Move);
+						}
 					}
 				}
 			}
+		}
+
+
+		if (!actionTypes.Contains(ActionType::PlayCard))
+		{
+			int32 endRoundActionId = ActionCoding(0, 0, 0, 0, ActionType::EndRound);
+			legalMoves.Add(endRoundActionId);
+			actionTypes.Add(ActionType::EndRound);
 		}
 	}
 
@@ -756,14 +848,45 @@ public:
 				targetX,
 				targetY,
 				renderEffectRoundList);
+			if (campNb == 0)
+			{
+				sectionZeroPlayCardAvailable = false;
+			}
+			else
+			{
+				sectionOnePlayCardAvailable = false;
+			}
 		}
 		else if (actionType == ActionType::Move)
 		{
-
+			TriggerMove(launchX, launchY, targetX, targetY);
+			if (campNb == 0)
+			{
+				sectionZeroMoveAvailable = false;
+			}
+			else
+			{
+				sectionOneMoveAvailable = false;
+			}
 		}
 		else if (actionType == ActionType::EndRound)
 		{
-
+			if (curPlayingSectionNb == 0)
+			{
+				curPlayingSectionNb = 1;
+				sectionZeroPlayCardAvailable = true;
+				sectionZeroMoveAvailable = true;
+				sectionOnePlayCardAvailable = true;
+				sectionOneMoveAvailable = true;
+			}
+			else
+			{
+				curPlayingSectionNb = 0;
+				sectionOnePlayCardAvailable = true;
+				sectionOneMoveAvailable = true;
+				sectionZeroPlayCardAvailable = true;
+				sectionZeroMoveAvailable = true;
+			}
 		}
 
 		return actionType;
@@ -839,7 +962,8 @@ public:
 		effectInfo.values = allInstanceCardInfo[launchUid].originCardInfo.values;
 
 		FEffectResultDict effectResultInfo = UCoreGameBlueprintFunctionLibrary::LaunchPlayCardSkillDict(
-			launchCamp, allInstanceCardInfo, boardRows, effectInfo, launchX, launchY, targetX, targetY);
+			launchCamp, allInstanceCardInfo, boardRows, effectInfo, launchX, launchY, targetX, targetY, sectionZeroScores, sectionOneScores);
+
 		if (effectResultInfo.success)
 		{
 			effectResultInfo.triggerRound = 0;
@@ -885,9 +1009,14 @@ public:
 		effectInfo.passivePrereqType = allInstanceCardInfo[launchUid].originCardInfo.passivePrereqType;
 		effectInfo.values = allInstanceCardInfo[launchUid].originCardInfo.values;
 
-		FEffectResultDict effectResultInfo = UCoreGameBlueprintFunctionLibrary::LaunchSkillDict(allInstanceCardInfo, boardRows, effectInfo, launchX, launchY, targetX, targetY);
+		FEffectResultDict effectResultInfo = UCoreGameBlueprintFunctionLibrary::LaunchSkillDict(
+			allInstanceCardInfo, boardRows, effectInfo, launchX, launchY, targetX, targetY, sectionZeroScores, sectionOneScores);
 		if (effectResultInfo.success)
 		{
+			if (allInstanceCardInfo[launchUid].curAvailableTimes > 0)
+			{
+				allInstanceCardInfo[launchUid].curAvailableTimes -= 1;
+			}
 			effectResultInfo.triggerRound = 0;
 			TriggerPassiveEffect(effectResultInfo, renderEffectRoundList);
 		}
@@ -1196,7 +1325,7 @@ public:
 
 	bool GameEnd(int32& winner)
 	{
-		if (sectionZeroHandCards.Num() <= 2 && sectionOneHandCards.Num() <= 2)
+		if (sectionZeroHandCards.Num() <= 0 && sectionOneHandCards.Num() <= 0)
 		{
 			if (sectionZeroScores > sectionOneScores)
 			{
@@ -1216,7 +1345,7 @@ public:
 		}
 		else
 		{
-			winner = 0;
+			winner = -1;
 			return false;
 		}
 	}
@@ -1233,12 +1362,22 @@ public:
 	UPROPERTY()
 	FBoardInfo curBoardInfo;
 
-	uint8 curPlayingSectionNb;
+	//uint8 curPlayingSectionNb;
 
 	UPROPERTY()
 	TArray<float> policies;
 
 	float boardValue;
+};
+
+USTRUCT()
+struct FTrainDataStateCodingAndActionProbs
+{
+	GENERATED_USTRUCT_BODY()
+public:
+	int32 stateCoding[StateCodingTotalCHW] = { 0 };
+
+	TMap<int32, float> actionProbs;
 };
 
 USTRUCT(BlueprintType, Blueprintable)
@@ -1247,10 +1386,10 @@ struct FTrainingData
 	GENERATED_USTRUCT_BODY()
 public:
 	UPROPERTY()
-	int32 stateCoding[TotalCHW] = { 0 };
+	TArray<FTrainDataStateCodingAndActionProbs> stateCodingAndActionProbs;
 
 	UPROPERTY()
-	TArray<float> actionProbs;
+	TArray<uint8> playSectionNbs;
 
 	UPROPERTY()
 	TArray<float> scores;
@@ -1267,9 +1406,9 @@ protected:
 
 public:
 	UPROPERTY(EditAnywhere)
-	bool isTraining = false;
+	bool isTraining = true;
 
-	int32 maxSelfPlayLoop = 2;
+	int32 maxSelfPlayLoop = 100;
 
 	int32 curSelfPlayLoop = 0;
 
@@ -1277,7 +1416,7 @@ public:
 	int32 curSimulationMove = 0;
 
 	UPROPERTY()
-	int32 expandSimulationMoves = 2;
+	int32 expandSimulationMoves = 100;
 
 	UPROPERTY()
 	FBoardInfo realBoard;
@@ -1298,7 +1437,7 @@ public:
 	UMctsTreeNode* treeRoot;
 
 	UPROPERTY()
-	UMctsTreeNode* curSearchNode;
+	TArray<UMctsTreeNode*> finishSelfPlayGameTreeRoots;
 
 	UPROPERTY()
 	UTritonHttpClient* tritonHttpClient;
@@ -1308,19 +1447,17 @@ public:
 	bool receivedTritonResponse = false;
 
 	UPROPERTY()
-	TMap<int32, int32> requestIdResponseNbMap;
-
-	UPROPERTY()
-	TArray<FTritonResponseData> tritonResponseDatas;
-
-	UPROPERTY()
 	FTritonResponseData tritonResponseData;
 
-	UPROPERTY()
-	TArray<FTrainingData> trainingDatas;
+	FTrainingData curTrainingData;
+
+	//UPROPERTY()
+	//TArray<FTrainingData> trainingDatas;
 
 
-	void InitMcts(int32 simulationMoves);
+	void InitMcts();
+
+	void ResetMcts();
 
 	void UpdateCurSearchNode(int32 targetMove);
 
@@ -1328,11 +1465,25 @@ public:
 
 	bool CheckTritonReponseAll();
 
-	void SendTritonRequest(uint8 sectionNb);
+	void SendTritonRequest();
 
-	void GetTritonAction(int32& actionId, ActionType& outActionType, TArray<float>& softmaxProbs);
+	void GetTritonAction(
+		int32& actionId, 
+		ActionType& outActionType, 
+		uint8& outSectionNb,
+		TMap<int32, float>& trainDataActionProbsMap);
 
-	void SaveTrainingData(const TArray<FTrainingData>& trainingDatas);
+	void SaveTrainingData(const TArray<FTrainingData>& trainingDatas, 
+		int32 channelNb,
+		int32 height,
+		int32 width);
+
+	void AddTrainingData(const FTrainingData& trainingData,
+		int32 channelNb,
+		int32 height,
+		int32 width);
+
+	void ClearTree(UMctsTreeNode* curTreeNode);
 
 	/**
 	* Testing part

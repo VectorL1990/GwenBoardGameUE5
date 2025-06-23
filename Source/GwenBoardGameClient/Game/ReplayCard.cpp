@@ -22,11 +22,17 @@ void AReplayCard::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void AReplayCard::Init(FString cardName, int32 hp, int32 defence)
+void AReplayCard::Init(FString cardName, uint8 sectionNb, int32 hp, int32 defence)
 {
+	NotifyInit(sectionNb);
 	cardWidgetComponent = GetComponentByClass<UWidgetComponent>();
 	UCardWidget3D* widget = Cast<UCardWidget3D>(cardWidgetComponent->GetWidget());
 	widget->NotifyInit();
 	widget->SetupHpDefence(hp, defence);
+}
+
+void AReplayCard::NotifyInit_Implementation(uint8 camp)
+{
+
 }
 

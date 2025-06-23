@@ -4,27 +4,385 @@
 #include "Game/CheckTargetGeoRuleLibrary.h"
 
 
-TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleMoveGrids(FString rule, TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TArray<FBoardRow>& boardCardInfo, int32 launchX, int32 launchY, int32 distance)
+TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleMoveGrids(FString rule, 
+	TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, 
+	TArray<FBoardRow>& boardCardInfo, int32 launchX, int32 launchY, EAtkDistanceType distance)
 {
 	TArray<FGridXY> possibleGrids;
+	if (rule == "line")
+	{
+		possibleGrids = GetPossibleMoveLine(allInstanceCardInfo,
+			boardCardInfo,
+			launchX,
+			launchY,
+			distance);
+	}
+	else if (rule == "seperated")
+	{
+		possibleGrids = GetPossibleMoveSeperate(allInstanceCardInfo,
+			boardCardInfo,
+			launchX,
+			launchY,
+			distance);
+	}
+	else if (rule == "diagonal")
+	{
+		possibleGrids = GetPossibleMoveDiagonal(allInstanceCardInfo,
+			boardCardInfo,
+			launchX,
+			launchY,
+			distance);
+	}
 	return possibleGrids;
 }
 
-TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleMoveLine(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, int32 launchX, int32 launchY, int32 distance)
+TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleMoveLine(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, 
+	TArray<FBoardRow>& boardCardInfo, 
+	int32 launchX, 
+	int32 launchY, 
+	EAtkDistanceType distance)
 {
 	TArray<FGridXY> possibleGrids;
+	int32 launchUid = boardCardInfo[launchY].colCardInfos[launchX];
+	bool isRightBlock = false;
+	bool isLeftBlock = false;
+	bool isUpBlock = false;
+	bool isDownBlock = false;
+	int32 rightStep = 1;
+	while (launchX + rightStep <= UGlobalConstFunctionLibrary::maxCol - 1)
+	{
+		int32 uid = boardCardInfo[launchY].colCardInfos[launchX + rightStep];
+		if (uid == -1)
+		{
+			FGridXY grid;
+			grid.x = launchX + rightStep;
+			grid.y = launchY;
+			possibleGrids.Add(grid);
+		}
+		else
+		{
+			break;
+		}
+
+		if (distance == EAtkDistanceType::Closed)
+		{
+			break;
+		}
+		rightStep += 1;
+	}
+
+	int32 leftStep = 1;
+	while (launchX - leftStep >= 0)
+	{
+		int32 uid = boardCardInfo[launchY].colCardInfos[launchX - leftStep];
+		if (uid == -1)
+		{
+			FGridXY grid;
+			grid.x = launchX - leftStep;
+			grid.y = launchY;
+			possibleGrids.Add(grid);
+		}
+		else
+		{
+			break;
+		}
+
+		if (distance == EAtkDistanceType::Closed)
+		{
+			break;
+		}
+		leftStep += 1;
+	}
+
+	int32 upStep = 1;
+	while (launchY + upStep <=
+		UGlobalConstFunctionLibrary::graveCardSectionRow +
+		UGlobalConstFunctionLibrary::playCardSectionRow +
+		UGlobalConstFunctionLibrary::boardSectionRow - 1)
+	{
+		int32 uid = boardCardInfo[launchY + upStep].colCardInfos[launchX];
+		if (uid == -1)
+		{
+			FGridXY grid;
+			grid.x = launchX;
+			grid.y = launchY + upStep;
+			possibleGrids.Add(grid);
+		}
+		else
+		{
+			break;
+		}
+
+		if (distance == EAtkDistanceType::Closed)
+		{
+			break;
+		}
+		upStep += 1;
+	}
+
+	int32 downStep = 1;
+	while (launchY - downStep >= UGlobalConstFunctionLibrary::graveCardSectionRow +
+		UGlobalConstFunctionLibrary::playCardSectionRow)
+	{
+		int32 uid = boardCardInfo[launchY - downStep].colCardInfos[launchX];
+		if (uid == -1)
+		{
+			FGridXY grid;
+			grid.x = launchX;
+			grid.y = launchY - downStep;
+			possibleGrids.Add(grid);
+		}
+		else
+		{
+			break;
+		}
+
+		if (distance == EAtkDistanceType::Closed)
+		{
+			break;
+		}
+		downStep += 1;
+	}
 	return possibleGrids;
 }
 
-TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleMoveSeperate(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, int32 launchX, int32 launchY, int32 distance)
+TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleMoveSeperate(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, 
+	TArray<FBoardRow>& boardCardInfo, 
+	int32 launchX, int32 launchY, EAtkDistanceType distance)
 {
 	TArray<FGridXY> possibleGrids;
+	int32 launchUid = boardCardInfo[launchY].colCardInfos[launchX];
+
+	bool isRightBarbetteSet = false;
+	bool isRightBlock = false;
+
+	bool isLeftBarbetteSet = false;
+	bool isLeftBlock = false;
+
+	bool isUpBarbetteSet = false;
+	bool isUpBlock = false;
+
+	bool isDownBarbetteSet = false;
+	bool isDownBlock = false;
+	for (int32 i = launchX + 1; i < UGlobalConstFunctionLibrary::maxCol; i++)
+	{
+		int32 uid = boardCardInfo[launchY].colCardInfos[i];
+		if (!isRightBarbetteSet)
+		{
+			if (uid != -1)
+			{
+				isRightBarbetteSet = true;
+			}
+		}
+		else
+		{
+			if (uid == -1)
+			{
+				FGridXY grid;
+				grid.x = i;
+				grid.y = launchY;
+				possibleGrids.Add(grid);
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+
+	for (int32 i = launchX - 1; i >= 0; i--)
+	{
+		int32 uid = boardCardInfo[launchY].colCardInfos[i];
+		if (!isLeftBarbetteSet)
+		{
+			if (uid != -1)
+			{
+				isLeftBarbetteSet = true;
+			}
+		}
+		else
+		{
+			if (uid == -1)
+			{
+				FGridXY grid;
+				grid.x = i;
+				grid.y = launchY;
+				possibleGrids.Add(grid);
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+
+	for (int32 i = launchY + 1; i < UGlobalConstFunctionLibrary::graveCardSectionRow +
+		UGlobalConstFunctionLibrary::playCardSectionRow + UGlobalConstFunctionLibrary::boardSectionRow; i++)
+	{
+		int32 uid = boardCardInfo[i].colCardInfos[launchY];
+		if (!isUpBarbetteSet)
+		{
+			if (uid != -1)
+			{
+				isUpBarbetteSet = true;
+			}
+		}
+		else
+		{
+			if (uid == -1)
+			{
+				FGridXY grid;
+				grid.x = launchX;
+				grid.y = i;
+				possibleGrids.Add(grid);
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+
+	for (int32 i = launchY - 1; i >= UGlobalConstFunctionLibrary::graveCardSectionRow +
+		UGlobalConstFunctionLibrary::playCardSectionRow; i--)
+	{
+		int32 uid = boardCardInfo[i].colCardInfos[launchY];
+		if (!isDownBarbetteSet)
+		{
+			if (uid != -1)
+			{
+				isDownBarbetteSet = true;
+			}
+		}
+		else
+		{
+			if (uid == -1)
+			{
+				FGridXY grid;
+				grid.x = launchX;
+				grid.y = i;
+				possibleGrids.Add(grid);
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
 	return possibleGrids;
 }
 
-TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleMoveDiagonal(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TMap<int32, FBoardRow>& boardCardInfo, int32 launchX, int32 launchY, int32 distance)
+TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleMoveDiagonal(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, 
+	TArray<FBoardRow>& boardCardInfo, 
+	int32 launchX, int32 launchY, EAtkDistanceType distance)
 {
 	TArray<FGridXY> possibleGrids;
+	int32 launchUid = boardCardInfo[launchY].colCardInfos[launchX];
+	bool isLeftUpBlock = false;
+	bool isRightUpBlock = false;
+	bool isLeftDownBlock = false;
+	bool isRightDownBlock = false;
+	int32 leftUpStep = 1;
+	while (launchX - leftUpStep >= 0 &&
+		launchY + leftUpStep <= UGlobalConstFunctionLibrary::graveCardSectionRow +
+		UGlobalConstFunctionLibrary::playCardSectionRow +
+		UGlobalConstFunctionLibrary::boardSectionRow - 1)
+	{
+		int32 uid = boardCardInfo[launchY + leftUpStep].colCardInfos[launchX - leftUpStep];
+		if (uid == -1)
+		{
+			FGridXY grid;
+			grid.x = launchX - leftUpStep;
+			grid.y = launchY + leftUpStep;
+			possibleGrids.Add(grid);
+		}
+		else
+		{
+			break;
+		}
+
+		if (distance == EAtkDistanceType::Closed)
+		{
+			break;
+		}
+		leftUpStep += 1;
+	}
+
+	int32 rightUpStep = 1;
+	while (launchX + rightUpStep <= UGlobalConstFunctionLibrary::maxCol - 1 &&
+		launchY + rightUpStep <= UGlobalConstFunctionLibrary::graveCardSectionRow +
+		UGlobalConstFunctionLibrary::playCardSectionRow +
+		UGlobalConstFunctionLibrary::boardSectionRow - 1)
+	{
+		int32 uid = boardCardInfo[launchY + rightUpStep].colCardInfos[launchX + rightUpStep];
+		if (uid == -1)
+		{
+			FGridXY grid;
+			grid.x = launchX + rightUpStep;
+			grid.y = launchY + rightUpStep;
+			possibleGrids.Add(grid);
+		}
+		else
+		{
+			break;
+		}
+
+		if (distance == EAtkDistanceType::Closed)
+		{
+			break;
+		}
+		rightUpStep += 1;
+	}
+
+	int32 leftDownStep = 1;
+	while (launchX - leftDownStep >= 0 &&
+		launchY - leftDownStep >= UGlobalConstFunctionLibrary::graveCardSectionRow +
+		UGlobalConstFunctionLibrary::playCardSectionRow)
+	{
+		int32 uid = boardCardInfo[launchY - leftDownStep].colCardInfos[launchX - leftDownStep];
+		if (uid == -1)
+		{
+			FGridXY grid;
+			grid.x = launchX - leftDownStep;
+			grid.y = launchY - leftDownStep;
+			possibleGrids.Add(grid);
+		}
+		else
+		{
+			break;
+		}
+
+		if (distance == EAtkDistanceType::Closed)
+		{
+			break;
+		}
+		leftDownStep += 1;
+	}
+
+	int32 rightDownStep = 1;
+	while (launchX + rightDownStep <= UGlobalConstFunctionLibrary::maxCol - 1 &&
+		launchY - rightDownStep >= UGlobalConstFunctionLibrary::graveCardSectionRow +
+		UGlobalConstFunctionLibrary::playCardSectionRow)
+	{
+		int32 uid = boardCardInfo[launchY - rightDownStep].colCardInfos[launchX + rightDownStep];
+		if (uid == -1)
+		{
+			FGridXY grid;
+			grid.x = launchX + rightDownStep;
+			grid.y = launchY - rightDownStep;
+			possibleGrids.Add(grid);
+		}
+		else
+		{
+			break;
+		}
+
+		if (distance == EAtkDistanceType::Closed)
+		{
+			break;
+		}
+		rightDownStep += 1;
+	}
 	return possibleGrids;
 }
 

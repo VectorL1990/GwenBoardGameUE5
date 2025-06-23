@@ -29,7 +29,8 @@ public:
 	UWidgetComponent* cardWidgetComponent;
 
 
-	void Init(FString cardName, int32 hp, int32 defence);
+	void Init(FString cardName, uint8 sectionNb, int32 hp, int32 defence);
 
-
+	UFUNCTION(BlueprintNativeEvent)
+	void NotifyInit(uint8 camp);
 };
