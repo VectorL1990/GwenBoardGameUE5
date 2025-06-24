@@ -1450,7 +1450,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	bool isTraining = true;
 
-	int32 maxSelfPlayLoop = 1;
+	int32 maxSelfPlayLoop = 10;
 
 	int32 curSelfPlayLoop = 0;
 
@@ -1458,7 +1458,7 @@ public:
 	int32 curSimulationMove = 0;
 
 	UPROPERTY()
-	int32 expandSimulationMoves = 10;
+	int32 expandSimulationMoves = 1000;
 
 	UPROPERTY()
 	FBoardInfo realBoard;
