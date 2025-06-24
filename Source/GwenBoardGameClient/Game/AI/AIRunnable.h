@@ -57,5 +57,7 @@ public:
 
 	void TriggerTestGetAction();
 
+	void TriggerTestTritonInference();
+
 	void TriggerStartSelfPlay();
 };

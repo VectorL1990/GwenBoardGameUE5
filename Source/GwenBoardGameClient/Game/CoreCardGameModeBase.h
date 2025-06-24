@@ -158,6 +158,8 @@ public:
 
     void TestTriggerSimulation();
 
+    void TestTriggerTritonInference();
+
     void TestTriggerAction(uint8 campNb, int32 launchX, int32 launchY, int32 targetX, int32 targetY, ActionType actionType);
 
     void DemonstrateMctsTreeNode(UMctsTreeNode* node);

@@ -263,6 +263,11 @@ void ACoreCardGamePC::TestTriggerSimulation()
     coreCardGameMode->TestTriggerSimulation();
 }
 
-
+void ACoreCardGamePC::TestTriggerTritonInference()
+{
+    AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
+    ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
+    coreCardGameMode->TestTriggerTritonInference();
+}
 
 

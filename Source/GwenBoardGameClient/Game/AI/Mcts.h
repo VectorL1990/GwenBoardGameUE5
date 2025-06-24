@@ -314,31 +314,66 @@ public:
 				int32 skillLaunchTypeStartChannelNb = 6;
 				for (int32 k = 0; k < 2; k++)
 				{
-					boardCoding[channelLen * (k + skillLaunchTypeStartChannelNb) + posInChannel] = testSkillLaunchTypeCoding[k];
+					if (allInstanceCardInfo[uid].camp == 0)
+					{
+						boardCoding[channelLen * (k + skillLaunchTypeStartChannelNb) + posInChannel] = testSkillLaunchTypeCoding[k];
+					}
+					else
+					{
+						boardCoding[channelLen * (k + skillLaunchTypeStartChannelNb) + posInChannel] = -testSkillLaunchTypeCoding[k];
+					}
 				}
 
 				int32 autoSkillTargetGeoTypeStartChannelNb = 8;
 				for (int32 k = 0; k < 2; k++)
 				{
-					boardCoding[channelLen * (k + autoSkillTargetGeoTypeStartChannelNb) + posInChannel] = testAutoSkillTargetGeoTypeCoding[k];
+					if (allInstanceCardInfo[uid].camp == 0)
+					{
+						boardCoding[channelLen * (k + autoSkillTargetGeoTypeStartChannelNb) + posInChannel] = testAutoSkillTargetGeoTypeCoding[k];
+					}
+					else
+					{
+						boardCoding[channelLen * (k + autoSkillTargetGeoTypeStartChannelNb) + posInChannel] = -testAutoSkillTargetGeoTypeCoding[k];
+					}
 				}
 
 				int32 targetCampTypeStartChannelNb = 10;
 				for (int32 k = 0; k < 2; k++)
 				{
-					boardCoding[channelLen * (k + targetCampTypeStartChannelNb) + posInChannel] = testTargetCampTypeCoding[k];
+					if (allInstanceCardInfo[uid].camp == 0)
+					{
+						boardCoding[channelLen * (k + targetCampTypeStartChannelNb) + posInChannel] = testTargetCampTypeCoding[k];
+					}
+					else
+					{
+						boardCoding[channelLen * (k + targetCampTypeStartChannelNb) + posInChannel] = -testTargetCampTypeCoding[k];
+					}
 				}
 
 				int32 effectTypeStartChannelNb = 12;
 				for (int32 k = 0; k < 2; k++)
 				{
-					boardCoding[channelLen * (k + effectTypeStartChannelNb) + posInChannel] = testEffectTypeCoding[k];
+					if (allInstanceCardInfo[uid].camp == 0)
+					{
+						boardCoding[channelLen * (k + effectTypeStartChannelNb) + posInChannel] = testEffectTypeCoding[k];
+					}
+					else
+					{
+						boardCoding[channelLen * (k + effectTypeStartChannelNb) + posInChannel] = -testEffectTypeCoding[k];
+					}
 				}
 
 				int32 launchGeoTypeStartChannelNb = 14;
 				for (int32 k = 0; k < 2; k++)
 				{
-					boardCoding[channelLen * (k + launchGeoTypeStartChannelNb) + posInChannel] = testLaunchGeoType[k];
+					if (allInstanceCardInfo[uid].camp == 0)
+					{
+						boardCoding[channelLen * (k + launchGeoTypeStartChannelNb) + posInChannel] = testLaunchGeoType[k];
+					}
+					else
+					{
+						boardCoding[channelLen * (k + launchGeoTypeStartChannelNb) + posInChannel] = -testLaunchGeoType[k];
+					}
 				}
 
 				int32 sectionTagStartChannelNb = 16;
@@ -819,6 +854,7 @@ public:
 
 
 	ActionType TriggerAction(
+		bool testInference,
 		uint8 campNb,
 		int32 actionId,
 		TArray<FRenderEffectRound>& renderEffectRoundList)
@@ -842,6 +878,7 @@ public:
 		else if (actionType == ActionType::PlayCard)
 		{
 			TriggerPlayCard(
+				testInference,
 				campNb,
 				launchX,
 				launchY,
@@ -895,6 +932,7 @@ public:
 
 
 	void TriggerPlayCard(
+		bool testInference,
 		uint8 launchCampNb,
 		int32 launchX,
 		int32 launchY,
@@ -925,6 +963,10 @@ public:
 			if (playCardIndex != -1)
 			{
 				sectionOneHandCards.RemoveAt(playCardIndex);
+			}
+			if (testInference)
+			{
+				allInstanceCardInfo[playCardUid].curHp -= 2;
 			}
 			sectionOneScores += allInstanceCardInfo[playCardUid].curHp;
 		}
@@ -1408,7 +1450,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	bool isTraining = true;
 
-	int32 maxSelfPlayLoop = 100;
+	int32 maxSelfPlayLoop = 1;
 
 	int32 curSelfPlayLoop = 0;
 
@@ -1416,7 +1458,7 @@ public:
 	int32 curSimulationMove = 0;
 
 	UPROPERTY()
-	int32 expandSimulationMoves = 100;
+	int32 expandSimulationMoves = 10;
 
 	UPROPERTY()
 	FBoardInfo realBoard;

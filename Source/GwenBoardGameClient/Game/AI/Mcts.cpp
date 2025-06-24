@@ -332,7 +332,7 @@ void UMcts::SendTritonRequest()
 		copyBoard.ActionDecoding(action, launchX, launchY, targetX, targetY, actionType);
 		// we should do move here! So that we can predict next action probs
 		TArray<FRenderEffectRound> renderEffectRoundList;
-		copyBoard.TriggerAction(copyBoard.curPlayingSectionNb, action, renderEffectRoundList);
+		copyBoard.TriggerAction(false, copyBoard.curPlayingSectionNb, action, renderEffectRoundList);
 	}
 
 	copyBoard.StateCoding(copyBoard.curPlayingSectionNb, curSearchNode->stateCoding);
@@ -391,7 +391,7 @@ bool UMcts::CheckTritonReponseAll()
 			// Trigger action just for replay
 			FBoardInfo copyBoard = tritonResponseData.curBoardInfo.GetCopyBoard();
 
-			copyBoard.TriggerAction(tritonResponseData.curBoardInfo.curPlayingSectionNb,
+			copyBoard.TriggerAction(false, tritonResponseData.curBoardInfo.curPlayingSectionNb,
 				legalActionIds[j], renderEffectRoundList);
 
 			float expPolicy = exp(tritonResponseData.policies[legalActionIds[j]]);

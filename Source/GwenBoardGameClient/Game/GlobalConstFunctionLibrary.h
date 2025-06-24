@@ -392,6 +392,8 @@ enum class EAIRunnableState
     TestGetAction,
     FinishTestGetAction,
     NewState,
+
+    TestTritonRequest,
 };
 
 

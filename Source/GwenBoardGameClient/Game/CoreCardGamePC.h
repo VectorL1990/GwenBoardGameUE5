@@ -59,6 +59,9 @@ public:
     UFUNCTION(BlueprintCallable)
     void TestTriggerSimulation();
 
+    UFUNCTION(BlueprintCallable)
+    void TestTriggerTritonInference();
+
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
     ACoreCardGameManager* coreCardGameManager;

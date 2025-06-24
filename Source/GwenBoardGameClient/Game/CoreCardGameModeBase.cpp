@@ -294,6 +294,11 @@ void ACoreCardGameModeBase::TestTriggerSimulation()
 	aiRunnable->TriggerTestGetAction();
 }
 
+void ACoreCardGameModeBase::TestTriggerTritonInference()
+{
+	aiRunnable->TriggerTestTritonInference();
+}
+
 void ACoreCardGameModeBase::TestTriggerAction(uint8 campNb, int32 launchX, int32 launchY, int32 targetX, int32 targetY, ActionType actionType)
 {
 	aiRunnable->TriggerAssignAction(campNb, launchX, launchY, targetX, targetY, actionType);

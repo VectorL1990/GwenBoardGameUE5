@@ -60,7 +60,7 @@ uint32 FAIRunnable::Run()
 				waitTargetY, 
 				waitActionType);
 			TArray<FRenderEffectRound> renderEffectRounds;
-			mcts->realBoard.TriggerAction(waitLaunchCamp, actionCode, renderEffectRounds);
+			mcts->realBoard.TriggerAction(false, waitLaunchCamp, actionCode, renderEffectRounds);
 			aiRunnableState = EAIRunnableState::NewState;
 		}
 		else if (aiRunnableState == EAIRunnableState::StartSelfPlay)
@@ -105,7 +105,7 @@ uint32 FAIRunnable::Run()
 				mcts->curTrainingData.playSectionNbs.Add(targetSectionNb);
 
 				TArray<FRenderEffectRound> renderEffectList;
-				mcts->realBoard.TriggerAction(mcts->realBoard.curPlayingSectionNb, targetAction, renderEffectList);
+				mcts->realBoard.TriggerAction(false, mcts->realBoard.curPlayingSectionNb, targetAction, renderEffectList);
 
 				int32 winner;
 				bool isGameEnd = mcts->realBoard.GameEnd(winner);
@@ -176,6 +176,11 @@ uint32 FAIRunnable::Run()
 		{
 
 		}
+		else if (aiRunnableState == EAIRunnableState::TestTritonRequest)
+		{
+			mcts->SendTritonRequest();
+			aiRunnableState = EAIRunnableState::Default;
+		}
 	}
 	return 0;
 }
@@ -188,6 +193,11 @@ void FAIRunnable::TriggerMctsGetAction(uint8 campNb)
 void FAIRunnable::TriggerTestGetAction()
 {
 	aiRunnableState = EAIRunnableState::SelfPlayLooping;
+}
+
+void FAIRunnable::TriggerTestTritonInference()
+{
+	aiRunnableState = EAIRunnableState::TestTritonRequest;
 }
 
 void FAIRunnable::TriggerStartSelfPlay()
