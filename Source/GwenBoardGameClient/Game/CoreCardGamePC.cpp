@@ -270,4 +270,11 @@ void ACoreCardGamePC::TestTriggerTritonInference()
     coreCardGameMode->TestTriggerTritonInference();
 }
 
+void ACoreCardGamePC::NextMctsTrainNodeMenu()
+{
+    if (mctReplayMenu)
+    {
+        mctReplayMenu->NextMctsNodeMenu();
+    }
+}
 

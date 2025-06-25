@@ -25,21 +25,21 @@ void UMctReplayMenuWidget::RefreshMctsMenu()
 	ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
 	rootNode = coreCardGameMode->aiRunnable->mcts->finishSelfPlayGameTreeRoots[0];
 	treeView->AddItem(rootNode);
-	/*
-	UMctsTreeNode* testParent = NewObject<UMctsTreeNode>(GetWorld(), mctsTreeNodeBPClass);
-	testParent->hirachy = 0;
+}
 
-	
-	UMctsTreeNode* childNode_1 = NewObject<UMctsTreeNode>(GetWorld(), mctsTreeNodeBPClass);
-	testParent->children.Add(1, childNode_1);
-	childNode_1->hirachy = 1;
+void UMctReplayMenuWidget::NextMctsNodeMenu()
+{
+	treeView->ClearListItems();
 
-	UMctsTreeNode* childNode_2 = NewObject<UMctsTreeNode>(GetWorld(), mctsTreeNodeBPClass);
-	childNode_1->children.Add(2, childNode_2);
-	childNode_2->hirachy = 2;
-	
-	treeView->AddItem(testParent);
-	*/
+	AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
+	ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
+	curShowMctsNodeNb += 1;
+	if (curShowMctsNodeNb >= coreCardGameMode->aiRunnable->mcts->finishSelfPlayGameTreeRoots.Num())
+	{
+		curShowMctsNodeNb = 0;
+	}
+	rootNode = coreCardGameMode->aiRunnable->mcts->finishSelfPlayGameTreeRoots[curShowMctsNodeNb];
+	treeView->AddItem(rootNode);
 }
 
 void UMctReplayMenuWidget::UpdateWHistories(const TArray<int32> wActionIds, 

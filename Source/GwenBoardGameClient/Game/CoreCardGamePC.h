@@ -62,6 +62,9 @@ public:
     UFUNCTION(BlueprintCallable)
     void TestTriggerTritonInference();
 
+    UFUNCTION(BlueprintCallable)
+    void NextMctsTrainNodeMenu();
+
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
     ACoreCardGameManager* coreCardGameManager;

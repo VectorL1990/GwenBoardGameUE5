@@ -43,6 +43,11 @@ public:
     UFUNCTION(BlueprintCallable)
     void RefreshMctsMenu();
 
+    int32 curShowMctsNodeNb = 0;
+
+    UFUNCTION(BlueprintCallable)
+    void NextMctsNodeMenu();
+
     void UpdateWHistories(const TArray<int32> wActionIds, 
         const TArray<uint8> wLaunchSections, 
         const TArray<float> wHistories,

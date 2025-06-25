@@ -155,10 +155,6 @@ void UMcts::InitMcts()
 
 void UMcts::ResetMcts()
 {
-	if (veryFirstNode)
-	{
-		//ClearTree(veryFirstNode);
-	}
 	realBoard.ResetBoard();
 	curSimulationMove = 0;
 	curTritonRequestID = 0;
@@ -446,21 +442,36 @@ void UMcts::GetTritonAction(
 
 	if (isTraining)
 	{
-		int32 maxSoftmaxProbNb = 0;
-		float maxSoftmaxProb = -FLT_MAX;
-		for (int32 i = 0; i < softmaxProbs.Num(); i++)
+		TArray<float> copyProbs = softmaxProbs;
+		copyProbs.Sort(TGreater<float>());
+		TArray<int32> finalCandidateActs;
+		TArray<ActionType> finalActionTypes;
+		if (copyProbs.Num() >= 3)
 		{
-			if (softmaxProbs[i] > maxSoftmaxProb)
+			float thresholdProb = copyProbs[2];
+			for (int32 i = 0; i < softmaxProbs.Num(); i++)
 			{
-				maxSoftmaxProb = softmaxProbs[i];
-				maxSoftmaxProbNb = i;
+				if (softmaxProbs[i] >= thresholdProb)
+				{
+					finalCandidateActs.Add(candidateActs[i]);
+					finalActionTypes.Add(actionTypes[i]);
+				}
 			}
 		}
-		int32 targetMove = candidateActs[maxSoftmaxProbNb];
+		else
+		{
+			finalCandidateActs = candidateActs;
+			finalActionTypes = actionTypes;
+		}
+
+		int32 randActNb = FMath::RandRange(0, finalCandidateActs.Num() - 1);
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, "select rand act nb: " + FString::FromInt(randActNb));
+		
+		int32 targetMove = finalCandidateActs[randActNb];
 		outSectionNb = treeRoot->children[targetMove]->curPlayingSectionNb;
 		UpdateCurSearchNode(targetMove);
 		actionId = targetMove;
-		outActionType = actionTypes[maxSoftmaxProbNb];
+		outActionType = finalActionTypes[randActNb];
 		/*
 		int32 targetMove;
 		ActionType targetActionType;
