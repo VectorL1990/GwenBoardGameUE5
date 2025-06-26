@@ -60,7 +60,7 @@ uint32 FAIRunnable::Run()
 				waitTargetY, 
 				waitActionType);
 			TArray<FRenderEffectRound> renderEffectRounds;
-			mcts->realBoard.TriggerAction(false, waitLaunchCamp, actionCode, renderEffectRounds);
+			mcts->realBoard.TriggerAction(true, waitLaunchCamp, actionCode, renderEffectRounds);
 			aiRunnableState = EAIRunnableState::NewState;
 		}
 		else if (aiRunnableState == EAIRunnableState::StartSelfPlay)
@@ -178,7 +178,7 @@ uint32 FAIRunnable::Run()
 		}
 		else if (aiRunnableState == EAIRunnableState::TestTritonRequest)
 		{
-			mcts->SendTritonRequest();
+			mcts->SendTestTritonRequest();
 			aiRunnableState = EAIRunnableState::Default;
 		}
 	}

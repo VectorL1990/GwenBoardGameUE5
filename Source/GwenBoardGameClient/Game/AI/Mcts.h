@@ -233,6 +233,20 @@ public:
 		{
 			for (int32 j = 0; j < boardRows[i].colCardInfos.Num(); j++)
 			{
+				int32 posInChannel = i * UGlobalConstFunctionLibrary::maxCol + j;
+
+				int32 sectionTagStartChannelNb = 17;
+				if (curSectionNb == 0)
+				{
+					boardCoding[channelLen * sectionTagStartChannelNb + posInChannel] = 1;
+				}
+				else
+				{
+					boardCoding[channelLen * sectionTagStartChannelNb + posInChannel] = -1;
+				}
+
+
+
 				int32 uid = boardRows[i].colCardInfos[j];
 
 				if (uid == -1)
@@ -292,26 +306,106 @@ public:
 
 				// There are 10 channels, which means there are 10 images
 				// Every image size is W x H
-				int32 posInChannel = i * UGlobalConstFunctionLibrary::maxCol + j;
-				int32 hpStartChannelNb = 0;
-				boardCoding[channelLen * hpStartChannelNb + posInChannel] = allInstanceCardInfo[uid].curHp;
+				
+				int32 campStartChannelNb = 0;
+				if (allInstanceCardInfo[uid].camp == 0)
+				{
+					boardCoding[channelLen * campStartChannelNb + posInChannel] = 1;
+				}
+				else
+				{
+					boardCoding[channelLen * campStartChannelNb + posInChannel] = -1;
+				}
 
-				int32 defenceStartChannelNb = 1;
-				boardCoding[channelLen * defenceStartChannelNb + posInChannel] = allInstanceCardInfo[uid].curDefence;
+				int32 hpStartChannelNb = 1;
+				if (allInstanceCardInfo[uid].camp == 0)
+				{
+					boardCoding[channelLen * hpStartChannelNb + posInChannel] = allInstanceCardInfo[uid].curHp;
+				}
+				else
+				{
+					boardCoding[channelLen * hpStartChannelNb + posInChannel] = -allInstanceCardInfo[uid].curHp;
+				}
 
-				int32 originCoolDownStartChannelNb = 2;
-				boardCoding[channelLen * originCoolDownStartChannelNb + posInChannel] = allInstanceCardInfo[uid].originCardInfo.coolDown;
+				int32 defenceStartChannelNb = 2;
+				if (allInstanceCardInfo[uid].camp == 0)
+				{
+					boardCoding[channelLen * defenceStartChannelNb + posInChannel] = allInstanceCardInfo[uid].curDefence;
+				}
+				else
+				{
+					boardCoding[channelLen * defenceStartChannelNb + posInChannel] = -allInstanceCardInfo[uid].curDefence;
+				}
 
-				int32 curCoolDownStartChannelnb = 3;
-				boardCoding[channelLen * curCoolDownStartChannelnb + posInChannel] = allInstanceCardInfo[uid].curCoolDown;
+				int32 originCoolDownStartChannelNb = 3;
+				if (allInstanceCardInfo[uid].camp == 0)
+				{
+					if (allInstanceCardInfo[uid].originCardInfo.coolDown == -1)
+					{
+						boardCoding[channelLen * originCoolDownStartChannelNb + posInChannel] = 999;
+					}
+					else
+					{
+						boardCoding[channelLen * originCoolDownStartChannelNb + posInChannel] = allInstanceCardInfo[uid].originCardInfo.coolDown;
+					}
+				}
+				else
+				{
+					if (allInstanceCardInfo[uid].originCardInfo.coolDown == -1)
+					{
+						boardCoding[channelLen * originCoolDownStartChannelNb + posInChannel] = -999;
+					}
+					else
+					{
+						boardCoding[channelLen * originCoolDownStartChannelNb + posInChannel] = -allInstanceCardInfo[uid].originCardInfo.coolDown;
+					}
+				}
 
-				int32 originAvailableTimesStartChannelNb = 4;
-				boardCoding[channelLen * originAvailableTimesStartChannelNb + posInChannel] = allInstanceCardInfo[uid].originCardInfo.availableTimes;
+				int32 curCoolDownStartChannelnb = 4;
+				if (allInstanceCardInfo[uid].camp == 0)
+				{
+					boardCoding[channelLen * curCoolDownStartChannelnb + posInChannel] = allInstanceCardInfo[uid].curCoolDown;
+				}
+				else
+				{
+					boardCoding[channelLen * curCoolDownStartChannelnb + posInChannel] = -allInstanceCardInfo[uid].curCoolDown;
+				}
 
-				int32 availableTimesStartChannelNb = 5;
-				boardCoding[channelLen * availableTimesStartChannelNb + posInChannel] = allInstanceCardInfo[uid].curAvailableTimes;
+				int32 originAvailableTimesStartChannelNb = 5;
+				if (allInstanceCardInfo[uid].camp == 0)
+				{
+					if (allInstanceCardInfo[uid].originCardInfo.coolDown == -1)
+					{
+						boardCoding[channelLen * originAvailableTimesStartChannelNb + posInChannel] = 999;
+					}
+					else
+					{
+						boardCoding[channelLen * originAvailableTimesStartChannelNb + posInChannel] = allInstanceCardInfo[uid].originCardInfo.availableTimes;
+					}
+				}
+				else
+				{
+					if (allInstanceCardInfo[uid].originCardInfo.coolDown == -1)
+					{
+						boardCoding[channelLen * originAvailableTimesStartChannelNb + posInChannel] = -999;
+					}
+					else
+					{
+						boardCoding[channelLen * originAvailableTimesStartChannelNb + posInChannel] = -allInstanceCardInfo[uid].originCardInfo.availableTimes;
+					}
+				}
 
-				int32 skillLaunchTypeStartChannelNb = 6;
+				int32 availableTimesStartChannelNb = 6;
+				if (allInstanceCardInfo[uid].camp == 0)
+				{
+					boardCoding[channelLen * availableTimesStartChannelNb + posInChannel] = allInstanceCardInfo[uid].curAvailableTimes;
+				}
+				else
+				{
+					boardCoding[channelLen * availableTimesStartChannelNb + posInChannel] = -allInstanceCardInfo[uid].curAvailableTimes;
+				}
+
+				int32 skillLaunchTypeStartChannelNb = 7;
 				for (int32 k = 0; k < 2; k++)
 				{
 					if (allInstanceCardInfo[uid].camp == 0)
@@ -324,7 +418,7 @@ public:
 					}
 				}
 
-				int32 autoSkillTargetGeoTypeStartChannelNb = 8;
+				int32 autoSkillTargetGeoTypeStartChannelNb = 9;
 				for (int32 k = 0; k < 2; k++)
 				{
 					if (allInstanceCardInfo[uid].camp == 0)
@@ -337,7 +431,7 @@ public:
 					}
 				}
 
-				int32 targetCampTypeStartChannelNb = 10;
+				int32 targetCampTypeStartChannelNb = 11;
 				for (int32 k = 0; k < 2; k++)
 				{
 					if (allInstanceCardInfo[uid].camp == 0)
@@ -350,7 +444,7 @@ public:
 					}
 				}
 
-				int32 effectTypeStartChannelNb = 12;
+				int32 effectTypeStartChannelNb = 13;
 				for (int32 k = 0; k < 2; k++)
 				{
 					if (allInstanceCardInfo[uid].camp == 0)
@@ -363,7 +457,7 @@ public:
 					}
 				}
 
-				int32 launchGeoTypeStartChannelNb = 14;
+				int32 launchGeoTypeStartChannelNb = 15;
 				for (int32 k = 0; k < 2; k++)
 				{
 					if (allInstanceCardInfo[uid].camp == 0)
@@ -376,15 +470,7 @@ public:
 					}
 				}
 
-				int32 sectionTagStartChannelNb = 16;
-				if (curSectionNb == 0)
-				{
-					boardCoding[channelLen * sectionTagStartChannelNb + posInChannel] = 0;
-				}
-				else
-				{
-					boardCoding[channelLen * sectionTagStartChannelNb + posInChannel] = 1;
-				}
+				
 			}
 		}
 	}
@@ -955,6 +1041,10 @@ public:
 			{
 				sectionZeroHandCards.RemoveAt(playCardIndex);
 			}
+			if (testInference)
+			{
+				allInstanceCardInfo[playCardUid].curHp -= 4;
+			}
 			sectionZeroScores += allInstanceCardInfo[playCardUid].curHp;
 		}
 		else
@@ -963,10 +1053,6 @@ public:
 			if (playCardIndex != -1)
 			{
 				sectionOneHandCards.RemoveAt(playCardIndex);
-			}
-			if (testInference)
-			{
-				allInstanceCardInfo[playCardUid].curHp -= 2;
 			}
 			sectionOneScores += allInstanceCardInfo[playCardUid].curHp;
 		}
@@ -1508,6 +1594,8 @@ public:
 	bool CheckTritonReponseAll();
 
 	void SendTritonRequest();
+
+	void SendTestTritonRequest();
 
 	void GetTritonAction(
 		int32& actionId, 

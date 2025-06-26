@@ -339,6 +339,14 @@ void UMcts::SendTritonRequest()
 	tritonHttpClient->SendInferenceRequest("GwenNetModel", curSearchNode->stateCoding, StateCodingTotalCHW, requestID);
 }
 
+void UMcts::SendTestTritonRequest()
+{
+	int32 stateCoding[StateCodingTotalCHW] = { 0 };
+	realBoard.StateCoding(realBoard.curPlayingSectionNb, stateCoding);
+	int32 requestID = GetCurTritonRequestID();
+	tritonHttpClient->SendInferenceRequest("GwenNetModel", stateCoding, StateCodingTotalCHW, requestID);
+}
+
 int32 UMcts::GetCurTritonRequestID()
 {
 	int32 tmpTritonRequestID = curTritonRequestID;
