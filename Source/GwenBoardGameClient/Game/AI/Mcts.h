@@ -1041,10 +1041,6 @@ public:
 			{
 				sectionZeroHandCards.RemoveAt(playCardIndex);
 			}
-			if (testInference)
-			{
-				allInstanceCardInfo[playCardUid].curHp -= 4;
-			}
 			sectionZeroScores += allInstanceCardInfo[playCardUid].curHp;
 		}
 		else
@@ -1053,6 +1049,10 @@ public:
 			if (playCardIndex != -1)
 			{
 				sectionOneHandCards.RemoveAt(playCardIndex);
+			}
+			if (testInference)
+			{
+				allInstanceCardInfo[playCardUid].curHp -= 4;
 			}
 			sectionOneScores += allInstanceCardInfo[playCardUid].curHp;
 		}
@@ -1536,7 +1536,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	bool isTraining = true;
 
-	int32 maxSelfPlayLoop = 50;
+	int32 maxSelfPlayLoop = 100;
 
 	int32 curSelfPlayLoop = 0;
 

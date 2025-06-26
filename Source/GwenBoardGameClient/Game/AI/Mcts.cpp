@@ -454,9 +454,9 @@ void UMcts::GetTritonAction(
 		copyProbs.Sort(TGreater<float>());
 		TArray<int32> finalCandidateActs;
 		TArray<ActionType> finalActionTypes;
-		if (copyProbs.Num() >= 3)
+		if (copyProbs.Num() >= 10)
 		{
-			float thresholdProb = copyProbs[2];
+			float thresholdProb = copyProbs[9];
 			for (int32 i = 0; i < softmaxProbs.Num(); i++)
 			{
 				if (softmaxProbs[i] >= thresholdProb)
