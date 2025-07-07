@@ -7,6 +7,7 @@
 
 #include "CoreGameBlueprintFunctionLibrary.h"
 #include <Components/WidgetComponent.h>
+#include <Components/StaticMeshComponent.h>
 #include "UI/CardWidget3D.h"
 #include "Card.generated.h"
 
@@ -33,6 +34,9 @@ public:
     virtual void Tick(float DeltaTime) override;
 
     void MoveCard();
+
+    UFUNCTION(BlueprintNativeEvent)
+    void NotifyInit();
 
     void InitCard(
         FString cardName,

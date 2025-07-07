@@ -343,6 +343,7 @@ void UMcts::SendTestTritonRequest()
 {
 	int32 stateCoding[StateCodingTotalCHW] = { 0 };
 	realBoard.StateCoding(realBoard.curPlayingSectionNb, stateCoding);
+	SaveTestStateData(stateCoding);
 	int32 requestID = GetCurTritonRequestID();
 	tritonHttpClient->SendInferenceRequest("GwenNetModel", stateCoding, StateCodingTotalCHW, requestID);
 }
@@ -518,6 +519,22 @@ void UMcts::GetTritonAction(
 		*/
 	}
 	
+}
+
+void UMcts::SaveTestStateData(int32* stateCoding)
+{
+	FString stateCodingSaveDir = FPaths::ProjectSavedDir() / TEXT("TestCaseStateCoding.bin");
+
+	TArray<uint8> stateCodingBinaryData;
+	FMemoryWriter stateCodingWriter(stateCodingBinaryData);
+
+	for (int32 i = 0; i < StateCodingTotalCHW; i++)
+	{
+		int32 coding = stateCoding[i];
+		stateCodingWriter << coding;
+	}
+
+	FFileHelper::SaveArrayToFile(stateCodingBinaryData, *stateCodingSaveDir);
 }
 
 void UMcts::SaveTrainingData(const TArray<FTrainingData>& trainingDatas,

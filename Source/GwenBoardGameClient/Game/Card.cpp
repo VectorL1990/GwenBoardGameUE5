@@ -3,6 +3,8 @@
 
 #include "Card.h"
 #include "CoreCardGameModeBase.h"
+#include "Kismet/GameplayStatics.h"
+#include "../Base/GwenBoardGameInstance.h"
 
 
 // Sets default values
@@ -35,11 +37,24 @@ void ACard::Tick(float DeltaTime)
     
 }
 
+void ACard::NotifyInit_Implementation()
+{
+
+}
+
 void ACard::InitCard(
     FString cardName,
     int32 inCurHp,
     int32 inCurDefence)
 {
+    NotifyInit();
+    UGameInstance* gi = UGameplayStatics::GetGameInstance(this);
+    UGwenBoardGameInstance* gameGI = Cast<UGwenBoardGameInstance>(gi);
+
+    UStaticMeshComponent* staticMeshComponent = GetComponentByClass<UStaticMeshComponent>();
+    UMaterialInstanceDynamic* mi = Cast<UMaterialInstanceDynamic>(staticMeshComponent->GetMaterial(0));
+    mi->SetTextureParameterValue("BaseTexture", gameGI->allCardInfos[cardName].texture);
+
     cardWidgetComponent = GetComponentByClass<UWidgetComponent>();
     UCardWidget3D* widget = Cast<UCardWidget3D>(cardWidgetComponent->GetWidget());
     widget->NotifyInit();

@@ -91,7 +91,7 @@ class GWENBOARDGAMECLIENT_API UGwenBoardGameInstance : public UGameInstance
 	float timeBetweenTicks = 0.008f;
 
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadWrite)
 	TMap<FString, FCardInfo> allCardInfos;
 
 	FString curRoomKey;

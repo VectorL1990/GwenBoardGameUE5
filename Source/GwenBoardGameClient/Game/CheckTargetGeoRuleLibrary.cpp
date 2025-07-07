@@ -17,7 +17,7 @@ TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleMoveGrids(FString rule,
 			launchY,
 			distance);
 	}
-	else if (rule == "seperated")
+	else if (rule == "seperate")
 	{
 		possibleGrids = GetPossibleMoveSeperate(allInstanceCardInfo,
 			boardCardInfo,
@@ -397,7 +397,7 @@ TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleTargetGeoGrids(FString ge
 	{
 		possibleGrids = GetPossibleLine(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, distanceType);
 	}
-	else if (geoRule == "seperated")
+	else if (geoRule == "seperate")
 	{
 		possibleGrids = GetPossibleSeperate(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, distanceType);
 	}
@@ -595,7 +595,7 @@ TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleSeperate(TMap<int32, FIns
 	for (int32 i = launchY + 1; i < UGlobalConstFunctionLibrary::graveCardSectionRow +
 		UGlobalConstFunctionLibrary::playCardSectionRow + UGlobalConstFunctionLibrary::boardSectionRow; i++)
 	{
-		int32 uid = boardCardInfo[i].colCardInfos[launchY];
+		int32 uid = boardCardInfo[i].colCardInfos[launchX];
 		if (!isUpBarbetteSet)
 		{
 			if (uid != -1)
@@ -622,7 +622,7 @@ TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleSeperate(TMap<int32, FIns
 	for (int32 i = launchY - 1; i >= UGlobalConstFunctionLibrary::graveCardSectionRow +
 		UGlobalConstFunctionLibrary::playCardSectionRow; i--)
 	{
-		int32 uid = boardCardInfo[i].colCardInfos[launchY];
+		int32 uid = boardCardInfo[i].colCardInfos[launchX];
 		if (!isDownBarbetteSet)
 		{
 			if (uid != -1)

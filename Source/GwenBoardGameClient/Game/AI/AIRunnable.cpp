@@ -66,7 +66,7 @@ uint32 FAIRunnable::Run()
 		else if (aiRunnableState == EAIRunnableState::StartSelfPlay)
 		{
 			mcts->curSelfPlayLoop = 0;
-			//mcts->trainingDatas.Empty();
+			mcts->realBoard.curPlayingSectionNb = FMath::RandRange(0, 1);
 			mcts->treeRoot->curPlayingSectionNb = mcts->realBoard.curPlayingSectionNb;
 			FTrainingData newTrainingData;
 			mcts->curTrainingData = newTrainingData;

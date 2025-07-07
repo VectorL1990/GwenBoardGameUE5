@@ -42,6 +42,8 @@ public:
 
 	int32 sectionOneScores = 0;
 
+	uint8 curLaunchPlaySectionNb = 0;
+
 	uint8 curPlayingSectionNb = 0;
 
 	bool sectionZeroPlayCardAvailable = true;
@@ -60,7 +62,16 @@ public:
 		sectionOneGraveCards.Empty();
 		sectionZeroScores = 0;
 		sectionOneScores = 0;
-		curPlayingSectionNb = 0;
+		if (curLaunchPlaySectionNb == 0)
+		{
+			curLaunchPlaySectionNb = 1;
+		}
+		else
+		{
+			curLaunchPlaySectionNb = 0;
+		}
+		//curPlayingSectionNb = FMath::RandRange(0, 1);
+		curPlayingSectionNb = curLaunchPlaySectionNb;
 		sectionZeroPlayCardAvailable = true;
 		sectionZeroMoveAvailable = true;
 		sectionOnePlayCardAvailable = true;
@@ -229,13 +240,41 @@ public:
 			(UGlobalConstFunctionLibrary::playCardSectionRow * 2 +
 				UGlobalConstFunctionLibrary::graveCardSectionRow * 2 +
 				UGlobalConstFunctionLibrary::boardSectionRow);
+
+		int32 sectionZeroTotalHp = 0;
+		int32 sectionOneTotalHp = 0;
+		for (int32 i = UGlobalConstFunctionLibrary::graveCardSectionRow;
+			i < UGlobalConstFunctionLibrary::graveCardSectionRow + 
+			UGlobalConstFunctionLibrary::playCardSectionRow * 2 + 
+			UGlobalConstFunctionLibrary::boardSectionRow; i++)
+		{
+			for (int32 j = 0; j < boardRows[i].colCardInfos.Num(); j++)
+			{
+				int32 uid = boardRows[i].colCardInfos[j];
+
+				if (uid == -1)
+				{
+					continue;
+				}
+
+				if (allInstanceCardInfo[uid].camp == 0)
+				{
+					sectionZeroTotalHp += allInstanceCardInfo[uid].curHp;
+				}
+				else
+				{
+					sectionOneTotalHp += allInstanceCardInfo[uid].curHp;
+				}
+			}
+		}
+
 		for (int32 i = 0; i < boardRows.Num(); i++)
 		{
 			for (int32 j = 0; j < boardRows[i].colCardInfos.Num(); j++)
 			{
 				int32 posInChannel = i * UGlobalConstFunctionLibrary::maxCol + j;
 
-				int32 sectionTagStartChannelNb = 17;
+				int32 sectionTagStartChannelNb = 19;
 				if (curSectionNb == 0)
 				{
 					boardCoding[channelLen * sectionTagStartChannelNb + posInChannel] = 1;
@@ -243,6 +282,16 @@ public:
 				else
 				{
 					boardCoding[channelLen * sectionTagStartChannelNb + posInChannel] = -1;
+				}
+
+				int32 hpDiffStartChannelNb = 20;
+				if (curSectionNb == 0)
+				{
+					boardCoding[channelLen * hpDiffStartChannelNb + posInChannel] = sectionZeroTotalHp - sectionOneTotalHp;
+				}
+				else
+				{
+					boardCoding[channelLen * hpDiffStartChannelNb + posInChannel] = sectionOneTotalHp - sectionZeroTotalHp;
 				}
 
 
@@ -265,12 +314,14 @@ public:
 				int32 testTargetCampTypeCoding[2] = { 0 };
 				int32 testEffectTypeCoding[2] = { 0 };
 				int32 testLaunchGeoType[2] = { 0 };
+				int32 testTargetGeoType[2] = { 0 };
 
 				GetTestSkillLaunchTypeCoding(allInstanceCardInfo[uid].originCardInfo.launchType, testSkillLaunchTypeCoding);
 				GetTestAutoSkillGeoTargetCoding(allInstanceCardInfo[uid].originCardInfo.autoSkillTargetGeoType, testAutoSkillTargetGeoTypeCoding);
 				GetSkillTargetCampCoding(allInstanceCardInfo[uid].originCardInfo.targetCamp, testTargetCampTypeCoding);
 				GetTestSkillEffectCoding(allInstanceCardInfo[uid].originCardInfo.effectType, testEffectTypeCoding);
 				GetTestSkillLaunchGeoCoding(allInstanceCardInfo[uid].originCardInfo.launchGeoType, testLaunchGeoType);
+				GetTestSkillTargetGeoCoding(allInstanceCardInfo[uid].originCardInfo.targetGeoType, testTargetGeoType);
 
 				/*
 				int32 autoSkillGeoTargetTypeCoding[17] = { 0 };
@@ -308,7 +359,7 @@ public:
 				// Every image size is W x H
 				
 				int32 campStartChannelNb = 0;
-				if (allInstanceCardInfo[uid].camp == 0)
+				if (allInstanceCardInfo[uid].camp == curSectionNb)
 				{
 					boardCoding[channelLen * campStartChannelNb + posInChannel] = 1;
 				}
@@ -318,7 +369,7 @@ public:
 				}
 
 				int32 hpStartChannelNb = 1;
-				if (allInstanceCardInfo[uid].camp == 0)
+				if (allInstanceCardInfo[uid].camp == curSectionNb)
 				{
 					boardCoding[channelLen * hpStartChannelNb + posInChannel] = allInstanceCardInfo[uid].curHp;
 				}
@@ -328,7 +379,7 @@ public:
 				}
 
 				int32 defenceStartChannelNb = 2;
-				if (allInstanceCardInfo[uid].camp == 0)
+				if (allInstanceCardInfo[uid].camp == curSectionNb)
 				{
 					boardCoding[channelLen * defenceStartChannelNb + posInChannel] = allInstanceCardInfo[uid].curDefence;
 				}
@@ -338,7 +389,7 @@ public:
 				}
 
 				int32 originCoolDownStartChannelNb = 3;
-				if (allInstanceCardInfo[uid].camp == 0)
+				if (allInstanceCardInfo[uid].camp == curSectionNb)
 				{
 					if (allInstanceCardInfo[uid].originCardInfo.coolDown == -1)
 					{
@@ -362,7 +413,7 @@ public:
 				}
 
 				int32 curCoolDownStartChannelnb = 4;
-				if (allInstanceCardInfo[uid].camp == 0)
+				if (allInstanceCardInfo[uid].camp == curSectionNb)
 				{
 					boardCoding[channelLen * curCoolDownStartChannelnb + posInChannel] = allInstanceCardInfo[uid].curCoolDown;
 				}
@@ -372,7 +423,7 @@ public:
 				}
 
 				int32 originAvailableTimesStartChannelNb = 5;
-				if (allInstanceCardInfo[uid].camp == 0)
+				if (allInstanceCardInfo[uid].camp == curSectionNb)
 				{
 					if (allInstanceCardInfo[uid].originCardInfo.coolDown == -1)
 					{
@@ -396,7 +447,7 @@ public:
 				}
 
 				int32 availableTimesStartChannelNb = 6;
-				if (allInstanceCardInfo[uid].camp == 0)
+				if (allInstanceCardInfo[uid].camp == curSectionNb)
 				{
 					boardCoding[channelLen * availableTimesStartChannelNb + posInChannel] = allInstanceCardInfo[uid].curAvailableTimes;
 				}
@@ -408,7 +459,7 @@ public:
 				int32 skillLaunchTypeStartChannelNb = 7;
 				for (int32 k = 0; k < 2; k++)
 				{
-					if (allInstanceCardInfo[uid].camp == 0)
+					if (allInstanceCardInfo[uid].camp == curSectionNb)
 					{
 						boardCoding[channelLen * (k + skillLaunchTypeStartChannelNb) + posInChannel] = testSkillLaunchTypeCoding[k];
 					}
@@ -421,7 +472,7 @@ public:
 				int32 autoSkillTargetGeoTypeStartChannelNb = 9;
 				for (int32 k = 0; k < 2; k++)
 				{
-					if (allInstanceCardInfo[uid].camp == 0)
+					if (allInstanceCardInfo[uid].camp == curSectionNb)
 					{
 						boardCoding[channelLen * (k + autoSkillTargetGeoTypeStartChannelNb) + posInChannel] = testAutoSkillTargetGeoTypeCoding[k];
 					}
@@ -434,7 +485,7 @@ public:
 				int32 targetCampTypeStartChannelNb = 11;
 				for (int32 k = 0; k < 2; k++)
 				{
-					if (allInstanceCardInfo[uid].camp == 0)
+					if (allInstanceCardInfo[uid].camp == curSectionNb)
 					{
 						boardCoding[channelLen * (k + targetCampTypeStartChannelNb) + posInChannel] = testTargetCampTypeCoding[k];
 					}
@@ -447,7 +498,7 @@ public:
 				int32 effectTypeStartChannelNb = 13;
 				for (int32 k = 0; k < 2; k++)
 				{
-					if (allInstanceCardInfo[uid].camp == 0)
+					if (allInstanceCardInfo[uid].camp == curSectionNb)
 					{
 						boardCoding[channelLen * (k + effectTypeStartChannelNb) + posInChannel] = testEffectTypeCoding[k];
 					}
@@ -460,7 +511,7 @@ public:
 				int32 launchGeoTypeStartChannelNb = 15;
 				for (int32 k = 0; k < 2; k++)
 				{
-					if (allInstanceCardInfo[uid].camp == 0)
+					if (allInstanceCardInfo[uid].camp == curSectionNb)
 					{
 						boardCoding[channelLen * (k + launchGeoTypeStartChannelNb) + posInChannel] = testLaunchGeoType[k];
 					}
@@ -470,7 +521,18 @@ public:
 					}
 				}
 
-				
+				int32 targetGeoTypeStartChannelNb = 17;
+				for (int32 k = 0; k < 2; k++)
+				{
+					if (allInstanceCardInfo[uid].camp == curSectionNb)
+					{
+						boardCoding[channelLen * (k + targetGeoTypeStartChannelNb) + posInChannel] = testTargetGeoType[k];
+					}
+					else
+					{
+						boardCoding[channelLen * (k + targetGeoTypeStartChannelNb) + posInChannel] = -testTargetGeoType[k];
+					}
+				}
 			}
 		}
 	}
@@ -1041,6 +1103,10 @@ public:
 			{
 				sectionZeroHandCards.RemoveAt(playCardIndex);
 			}
+			if (testInference)
+			{
+				allInstanceCardInfo[playCardUid].curHp -= 1;
+			}
 			sectionZeroScores += allInstanceCardInfo[playCardUid].curHp;
 		}
 		else
@@ -1049,10 +1115,6 @@ public:
 			if (playCardIndex != -1)
 			{
 				sectionOneHandCards.RemoveAt(playCardIndex);
-			}
-			if (testInference)
-			{
-				allInstanceCardInfo[playCardUid].curHp -= 4;
 			}
 			sectionOneScores += allInstanceCardInfo[playCardUid].curHp;
 		}
@@ -1094,6 +1156,17 @@ public:
 
 		if (effectResultInfo.success)
 		{
+			for (int32 i = 0; i < effectResultInfo.modifyGrids.Num(); i++)
+			{
+				if (allInstanceCardInfo[effectResultInfo.modifyUids[i]].curHp <= 0.0)
+				{
+					// move this card to grave
+					MoveCard2Grave(allInstanceCardInfo[effectResultInfo.modifyUids[i]].camp,
+						effectResultInfo.modifyGrids[i].x,
+						effectResultInfo.modifyGrids[i].y,
+						effectResultInfo.modifyUids[i]);
+				}
+			}
 			effectResultInfo.triggerRound = 0;
 			TriggerPassiveEffect(effectResultInfo, renderEffectRoundList);
 		}
@@ -1144,6 +1217,17 @@ public:
 			if (allInstanceCardInfo[launchUid].curAvailableTimes > 0)
 			{
 				allInstanceCardInfo[launchUid].curAvailableTimes -= 1;
+			}
+			for (int32 i = 0; i < effectResultInfo.modifyGrids.Num(); i++)
+			{
+				if (allInstanceCardInfo[effectResultInfo.modifyUids[i]].curHp <= 0.0)
+				{
+					// move this card to grave
+					MoveCard2Grave(allInstanceCardInfo[effectResultInfo.modifyUids[i]].camp,
+						effectResultInfo.modifyGrids[i].x,
+						effectResultInfo.modifyGrids[i].y,
+						effectResultInfo.modifyUids[i]);
+				}
 			}
 			effectResultInfo.triggerRound = 0;
 			TriggerPassiveEffect(effectResultInfo, renderEffectRoundList);
@@ -1222,6 +1306,64 @@ public:
 		allInstanceCardInfo[moveCardUid].curRow = targetY;
 	}
 
+	void MoveCard2Grave(uint8 section, int32 deadGridX, int32 deadGridY, int32 deadUid)
+	{
+		if (section == 0)
+		{
+			for (int32 i = 0; i < UGlobalConstFunctionLibrary::graveCardSectionRow; i++)
+			{
+				bool move2Grave = false;
+				for (int32 j = 0; j < UGlobalConstFunctionLibrary::maxCol; j++)
+				{
+					int32 graveUid = boardRows[i].colCardInfos[j];
+					if (graveUid == -1 || (i == UGlobalConstFunctionLibrary::graveCardSectionRow - 1 && j == UGlobalConstFunctionLibrary::maxCol - 1))
+					{
+						// which means this grave lot is empty
+						boardRows[i].colCardInfos[j] = deadUid;
+						boardRows[deadGridY].colCardInfos[deadGridX] = -1;
+						move2Grave = true;
+						break;
+					}
+				}
+				if (move2Grave)
+				{
+					break;
+				}
+			}
+		}
+		else
+		{
+			for (int32 i = UGlobalConstFunctionLibrary::graveCardSectionRow +
+				UGlobalConstFunctionLibrary::playCardSectionRow * 2 +
+				UGlobalConstFunctionLibrary::boardSectionRow; 
+				i < UGlobalConstFunctionLibrary::graveCardSectionRow*2 +
+				UGlobalConstFunctionLibrary::playCardSectionRow * 2 + 
+				UGlobalConstFunctionLibrary::boardSectionRow; 
+				i++)
+			{
+				bool move2Grave = false;
+				for (int32 j = 0; j < UGlobalConstFunctionLibrary::maxCol; j++)
+				{
+					int32 graveUid = boardRows[i].colCardInfos[j];
+					if (graveUid == -1 || (i == UGlobalConstFunctionLibrary::graveCardSectionRow*2 +
+						UGlobalConstFunctionLibrary::playCardSectionRow * 2 +
+						UGlobalConstFunctionLibrary::boardSectionRow - 1 && j == UGlobalConstFunctionLibrary::maxCol - 1))
+					{
+						// which means this grave lot is empty
+						boardRows[i].colCardInfos[j] = deadUid;
+						boardRows[deadGridY].colCardInfos[deadGridX] = -1;
+						move2Grave = true;
+						break;
+					}
+				}
+				if (move2Grave)
+				{
+					break;
+				}
+			}
+		}
+	}
+
 
 	void GetTestSkillLaunchTypeCoding(FString launchType, int32* coding)
 	{
@@ -1272,6 +1414,12 @@ public:
 		else if (launchGeoType == "three") coding[1] = 1;
 	}
 
+	void GetTestSkillTargetGeoCoding(FString targetGeoType, int32* coding)
+	{
+		if (targetGeoType == "line") coding[0] = 1;
+		else if (targetGeoType == "seperate") coding[1] = 1;
+	}
+
 	void GetSkillLaunchGeoCoding(FString launchGeoType, int32* coding)
 	{
 		if (launchGeoType == "point")						coding[0] = 1;
@@ -1288,7 +1436,7 @@ public:
 	void GetSkillTargetGeoCoding(FString targetGeoType, int32* coding)
 	{
 		if (targetGeoType == "line")							coding[0] = 1;
-		else if (targetGeoType == "seperated")			coding[1] = 1;
+		else if (targetGeoType == "seperate")			coding[1] = 1;
 		else if (targetGeoType == "diagonal")				coding[2] = 1;
 		else if (targetGeoType == "diagonalSeperated") coding[3] = 1;
 		else if (targetGeoType == "connect")					coding[4] = 1;
@@ -1536,7 +1684,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	bool isTraining = true;
 
-	int32 maxSelfPlayLoop = 100;
+	int32 maxSelfPlayLoop = 10;
 
 	int32 curSelfPlayLoop = 0;
 
@@ -1544,7 +1692,7 @@ public:
 	int32 curSimulationMove = 0;
 
 	UPROPERTY()
-	int32 expandSimulationMoves = 100;
+	int32 expandSimulationMoves = 50;
 
 	UPROPERTY()
 	FBoardInfo realBoard;
@@ -1607,6 +1755,8 @@ public:
 		int32 channelNb,
 		int32 height,
 		int32 width);
+
+	void SaveTestStateData(int32* stateCoding);
 
 	void AddTrainingData(const FTrainingData& trainingData,
 		int32 channelNb,

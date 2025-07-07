@@ -732,6 +732,7 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::Hurt(
             sectionOneScore -= effectValue;
         }
         effectResultDict.modifyGrids.Add(targetGrids[i]);
+        effectResultDict.modifyUids.Add(uid);
     }
     return effectResultDict;
 }
@@ -792,6 +793,7 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::Heal(
             sectionOneScore += effectValue;
         }
         effectResultDict.modifyGrids.Add(targetGrids[i]);
+        effectResultDict.modifyUids.Add(uid);
     }
     return effectResultDict;
 }
@@ -842,6 +844,7 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::IncreaseDefence(
         int32 uid = boardCardInfo[targetGrids[i].y].colCardInfos[targetGrids[i].x];
         allInstanceCardInfo[uid].curDefence = allInstanceCardInfo[uid].curDefence + effectValue;
         effectResultDict.modifyGrids.Add(targetGrids[i]);
+        effectResultDict.modifyUids.Add(uid);
     }
     return effectResultDict;
 }
@@ -892,6 +895,7 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::ReplaceDefence(
         int32 uid = boardCardInfo[targetGrids[i].y].colCardInfos[targetGrids[i].x];
         allInstanceCardInfo[uid].curDefence = allInstanceCardInfo[uid].curDefence + effectValue;
         effectResultDict.modifyGrids.Add(targetGrids[i]);
+        effectResultDict.modifyUids.Add(uid);
     }
     return effectResultDict;
 }

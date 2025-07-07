@@ -398,9 +398,22 @@ void ACoreCardGameModeBase::DemonstrateMctsTreeNode(UMctsTreeNode* node)
 		{
 			int32 launchCardUid = node->replayBoardRows[launchY].colCardInfos[launchX];
 			int32 targetCardUid = node->replayBoardRows[targetY].colCardInfos[targetX];
-			FVector launchCardLoc = allReplayCards[launchCardUid]->GetActorLocation();
-			FVector targetCardLoc = allReplayCards[targetCardUid]->GetActorLocation();
-			UKismetSystemLibrary::DrawDebugLine(this, launchCardLoc, targetCardLoc, FLinearColor::Green, 1.0, 10.0);
+			if (targetCardUid == -1)
+			{
+				int32 targetGridY = targetY - UGlobalConstFunctionLibrary::graveCardSectionRow -
+					UGlobalConstFunctionLibrary::playCardSectionRow;
+				int32 targetGridId = targetGridY * UGlobalConstFunctionLibrary::maxCol + targetX;
+				FVector launchCardLoc = allReplayCards[launchCardUid]->GetActorLocation();
+				FVector targetGridLoc = boardGrids[targetGridId]->GetActorLocation();
+				GEngine->AddOnScreenDebugMessage(-1, 5.0, FColor::Red, "Target is killed");
+				UKismetSystemLibrary::DrawDebugLine(this, launchCardLoc, targetGridLoc, FLinearColor::Red, 1.0, 10.0);
+			}
+			else
+			{
+				FVector launchCardLoc = allReplayCards[launchCardUid]->GetActorLocation();
+				FVector targetCardLoc = allReplayCards[targetCardUid]->GetActorLocation();
+				UKismetSystemLibrary::DrawDebugLine(this, launchCardLoc, targetCardLoc, FLinearColor::Green, 1.0, 10.0);
+			}
 		}
 		else if (actionType == ActionType::Move)
 		{
