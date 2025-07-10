@@ -455,9 +455,9 @@ void UMcts::GetTritonAction(
 		copyProbs.Sort(TGreater<float>());
 		TArray<int32> finalCandidateActs;
 		TArray<ActionType> finalActionTypes;
-		if (copyProbs.Num() >= 10)
+		if (copyProbs.Num() >= 80)
 		{
-			float thresholdProb = copyProbs[9];
+			float thresholdProb = copyProbs[79];
 			for (int32 i = 0; i < softmaxProbs.Num(); i++)
 			{
 				if (softmaxProbs[i] >= thresholdProb)
@@ -474,7 +474,7 @@ void UMcts::GetTritonAction(
 		}
 
 		int32 randActNb = FMath::RandRange(0, finalCandidateActs.Num() - 1);
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, "select rand act nb: " + FString::FromInt(randActNb));
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, "total acts: " + FString::FromInt(copyProbs.Num()) + ", select rand act nb: " + FString::FromInt(randActNb));
 		
 		int32 targetMove = finalCandidateActs[randActNb];
 		outSectionNb = treeRoot->children[targetMove]->curPlayingSectionNb;

@@ -65,17 +65,22 @@ public:
 		if (curLaunchPlaySectionNb == 0)
 		{
 			curLaunchPlaySectionNb = 1;
+			sectionZeroPlayCardAvailable = false;
+			sectionZeroMoveAvailable = false;
+			sectionOnePlayCardAvailable = true;
+			sectionOneMoveAvailable = true;
 		}
 		else
 		{
 			curLaunchPlaySectionNb = 0;
+			sectionZeroPlayCardAvailable = true;
+			sectionZeroMoveAvailable = true;
+			sectionOnePlayCardAvailable = false;
+			sectionOneMoveAvailable = false;
 		}
 		//curPlayingSectionNb = FMath::RandRange(0, 1);
 		curPlayingSectionNb = curLaunchPlaySectionNb;
-		sectionZeroPlayCardAvailable = true;
-		sectionZeroMoveAvailable = true;
-		sectionOnePlayCardAvailable = true;
-		sectionOneMoveAvailable = true;
+		
 	}
 
 	FBoardInfo GetCopyBoard()
@@ -274,7 +279,7 @@ public:
 			{
 				int32 posInChannel = i * UGlobalConstFunctionLibrary::maxCol + j;
 
-				int32 sectionTagStartChannelNb = 19;
+				int32 sectionTagStartChannelNb = 23;
 				if (curSectionNb == 0)
 				{
 					boardCoding[channelLen * sectionTagStartChannelNb + posInChannel] = 1;
@@ -284,7 +289,31 @@ public:
 					boardCoding[channelLen * sectionTagStartChannelNb + posInChannel] = -1;
 				}
 
-				int32 hpDiffStartChannelNb = 20;
+				int32 canPlayCardStartChannelNb = 24;
+				if (curSectionNb == 0 && sectionZeroPlayCardAvailable)
+				{
+					boardCoding[channelLen * canPlayCardStartChannelNb + posInChannel] = 1;
+					boardCoding[channelLen * (canPlayCardStartChannelNb + 1) + posInChannel] = -1;
+				}
+				else if (curSectionNb == 1 && sectionOnePlayCardAvailable)
+				{
+					boardCoding[channelLen * canPlayCardStartChannelNb + posInChannel] = -1;
+					boardCoding[channelLen * (canPlayCardStartChannelNb + 1) + posInChannel] = 1;
+				}
+
+				int32 canMoveStartChannelNb = 26;
+				if (curSectionNb == 0 && sectionZeroMoveAvailable)
+				{
+					boardCoding[channelLen * canMoveStartChannelNb + posInChannel] = 1;
+					boardCoding[channelLen * (canMoveStartChannelNb + 1) + posInChannel] = -1;
+				}
+				else if (curSectionNb == 1 && sectionOneMoveAvailable)
+				{
+					boardCoding[channelLen * canMoveStartChannelNb + posInChannel] = -1;
+					boardCoding[channelLen * (canMoveStartChannelNb + 1) + posInChannel] = 1;
+				}
+
+				int32 hpDiffStartChannelNb = 28;
 				if (curSectionNb == 0)
 				{
 					boardCoding[channelLen * hpDiffStartChannelNb + posInChannel] = sectionZeroTotalHp - sectionOneTotalHp;
@@ -315,6 +344,8 @@ public:
 				int32 testEffectTypeCoding[2] = { 0 };
 				int32 testLaunchGeoType[2] = { 0 };
 				int32 testTargetGeoType[2] = { 0 };
+				int32 testMoveType[2] = { 0 };
+				int32 testAtkDisType[2] = { 0 };
 
 				GetTestSkillLaunchTypeCoding(allInstanceCardInfo[uid].originCardInfo.launchType, testSkillLaunchTypeCoding);
 				GetTestAutoSkillGeoTargetCoding(allInstanceCardInfo[uid].originCardInfo.autoSkillTargetGeoType, testAutoSkillTargetGeoTypeCoding);
@@ -322,6 +353,8 @@ public:
 				GetTestSkillEffectCoding(allInstanceCardInfo[uid].originCardInfo.effectType, testEffectTypeCoding);
 				GetTestSkillLaunchGeoCoding(allInstanceCardInfo[uid].originCardInfo.launchGeoType, testLaunchGeoType);
 				GetTestSkillTargetGeoCoding(allInstanceCardInfo[uid].originCardInfo.targetGeoType, testTargetGeoType);
+				GetTestMoveTypeCoding(allInstanceCardInfo[uid].originCardInfo.moveType, testMoveType);
+				GetTestAtkDistanceCoding(allInstanceCardInfo[uid].originCardInfo.attackDistanceType, testMoveType);
 
 				/*
 				int32 autoSkillGeoTargetTypeCoding[17] = { 0 };
@@ -357,15 +390,19 @@ public:
 
 				// There are 10 channels, which means there are 10 images
 				// Every image size is W x H
-				
-				int32 campStartChannelNb = 0;
-				if (allInstanceCardInfo[uid].camp == curSectionNb)
+
+				int32 boardSectionTagStartChannelNb = 0;
+				if (i >= UGlobalConstFunctionLibrary::graveCardSectionRow + UGlobalConstFunctionLibrary::playCardSectionRow &&
+					i < UGlobalConstFunctionLibrary::graveCardSectionRow + UGlobalConstFunctionLibrary::playCardSectionRow + UGlobalConstFunctionLibrary::boardSectionRow)
 				{
-					boardCoding[channelLen * campStartChannelNb + posInChannel] = 1;
-				}
-				else
-				{
-					boardCoding[channelLen * campStartChannelNb + posInChannel] = -1;
+					if (allInstanceCardInfo[uid].camp == curSectionNb)
+					{
+						boardCoding[channelLen * boardSectionTagStartChannelNb + posInChannel] = 1;
+					}
+					else
+					{
+						boardCoding[channelLen * boardSectionTagStartChannelNb + posInChannel] = -1;
+					}
 				}
 
 				int32 hpStartChannelNb = 1;
@@ -531,6 +568,32 @@ public:
 					else
 					{
 						boardCoding[channelLen * (k + targetGeoTypeStartChannelNb) + posInChannel] = -testTargetGeoType[k];
+					}
+				}
+
+				int32 moveTypeStartChannelNb = 19;
+				for (int32 k = 0; k < 2; k++)
+				{
+					if (allInstanceCardInfo[uid].camp == curSectionNb)
+					{
+						boardCoding[channelLen * (k + moveTypeStartChannelNb) + posInChannel] = testMoveType[k];
+					}
+					else
+					{
+						boardCoding[channelLen * (k + moveTypeStartChannelNb) + posInChannel] = -testMoveType[k];
+					}
+				}
+
+				int32 atkDisTypeStartChannelNb = 21;
+				for (int32 k = 0; k < 2; k++)
+				{
+					if (allInstanceCardInfo[uid].camp == curSectionNb)
+					{
+						boardCoding[channelLen * (k + atkDisTypeStartChannelNb) + posInChannel] = testAtkDisType[k];
+					}
+					else
+					{
+						boardCoding[channelLen * (k + atkDisTypeStartChannelNb) + posInChannel] = -testAtkDisType[k];
 					}
 				}
 			}
@@ -1059,18 +1122,18 @@ public:
 			if (curPlayingSectionNb == 0)
 			{
 				curPlayingSectionNb = 1;
-				sectionZeroPlayCardAvailable = true;
-				sectionZeroMoveAvailable = true;
+				sectionZeroPlayCardAvailable = false;
+				sectionZeroMoveAvailable = false;
 				sectionOnePlayCardAvailable = true;
 				sectionOneMoveAvailable = true;
 			}
 			else
 			{
 				curPlayingSectionNb = 0;
-				sectionOnePlayCardAvailable = true;
-				sectionOneMoveAvailable = true;
 				sectionZeroPlayCardAvailable = true;
 				sectionZeroMoveAvailable = true;
+				sectionOnePlayCardAvailable = false;
+				sectionOneMoveAvailable = false;
 			}
 		}
 
@@ -1103,10 +1166,7 @@ public:
 			{
 				sectionZeroHandCards.RemoveAt(playCardIndex);
 			}
-			if (testInference)
-			{
-				allInstanceCardInfo[playCardUid].curHp -= 1;
-			}
+			
 			sectionZeroScores += allInstanceCardInfo[playCardUid].curHp;
 		}
 		else
@@ -1116,6 +1176,12 @@ public:
 			{
 				sectionOneHandCards.RemoveAt(playCardIndex);
 			}
+			/*
+			if (testInference)
+			{
+				allInstanceCardInfo[playCardUid].curHp -= 3;
+			}
+			*/
 			sectionOneScores += allInstanceCardInfo[playCardUid].curHp;
 		}
 		allInstanceCardInfo[playCardUid].curCol = targetX;
@@ -1420,6 +1486,18 @@ public:
 		else if (targetGeoType == "seperate") coding[1] = 1;
 	}
 
+	void GetTestMoveTypeCoding(FString moveType, int32* coding)
+	{
+		if (moveType == "line") coding[0] = 1;
+		else if (moveType == "diagonal") coding[1] = 1;
+	}
+
+	void GetTestAtkDistanceCoding(EAtkDistanceType atkDisType, int32* coding)
+	{
+		if (atkDisType == EAtkDistanceType::Closed) coding[0] = 1;
+		else if (atkDisType == EAtkDistanceType::Far) coding[1] = 1;
+	}
+
 	void GetSkillLaunchGeoCoding(FString launchGeoType, int32* coding)
 	{
 		if (launchGeoType == "point")						coding[0] = 1;
@@ -1684,7 +1762,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	bool isTraining = true;
 
-	int32 maxSelfPlayLoop = 10;
+	int32 maxSelfPlayLoop = 1000;
 
 	int32 curSelfPlayLoop = 0;
 
@@ -1692,7 +1770,7 @@ public:
 	int32 curSimulationMove = 0;
 
 	UPROPERTY()
-	int32 expandSimulationMoves = 50;
+	int32 expandSimulationMoves = 4;
 
 	UPROPERTY()
 	FBoardInfo realBoard;

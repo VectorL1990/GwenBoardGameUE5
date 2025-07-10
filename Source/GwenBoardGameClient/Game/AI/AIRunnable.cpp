@@ -68,6 +68,20 @@ uint32 FAIRunnable::Run()
 			mcts->curSelfPlayLoop = 0;
 			mcts->realBoard.curPlayingSectionNb = FMath::RandRange(0, 1);
 			mcts->treeRoot->curPlayingSectionNb = mcts->realBoard.curPlayingSectionNb;
+			if (mcts->treeRoot->curPlayingSectionNb == 0)
+			{
+				mcts->realBoard.sectionZeroPlayCardAvailable = true;
+				mcts->realBoard.sectionZeroMoveAvailable = true;
+				mcts->realBoard.sectionOnePlayCardAvailable = false;
+				mcts->realBoard.sectionOneMoveAvailable = false;
+			}
+			else
+			{
+				mcts->realBoard.sectionZeroPlayCardAvailable = false;
+				mcts->realBoard.sectionZeroMoveAvailable = false;
+				mcts->realBoard.sectionOnePlayCardAvailable = true;
+				mcts->realBoard.sectionOneMoveAvailable = true;
+			}
 			FTrainingData newTrainingData;
 			mcts->curTrainingData = newTrainingData;
 			aiRunnableState = EAIRunnableState::SelfPlayLooping;

@@ -46,7 +46,7 @@ void UTritonHttpClient::SendInferenceRequest(const FString& modelName, const int
         "inputs": [
             {
                 "name": "input_0",
-                "shape": [1, 21, 14, 4],
+                "shape": [1, 29, 14, 4],
                 "datatype": "FP32",
                 "parameters":
                 {

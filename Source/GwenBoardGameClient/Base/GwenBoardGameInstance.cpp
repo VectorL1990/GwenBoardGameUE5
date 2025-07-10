@@ -184,7 +184,8 @@ void UGwenBoardGameInstance::SetCardInfo(FString cardName,
 				TArray<int32> values,
 				UTexture* texture,
 				FString moveType,
-				FString cardCategory)
+				FString cardCategory,
+				EAtkDistanceType atkDistanceType)
 {
 				FCardInfo cardInfo;
 				cardInfo.cardName = cardName;
@@ -219,6 +220,7 @@ void UGwenBoardGameInstance::SetCardInfo(FString cardName,
 				cardInfo.texture = texture;
 				cardInfo.moveType = moveType;
 				cardInfo.cardCategory = cardCategory;
+				cardInfo.attackDistanceType = atkDistanceType;
 				allCardInfos.Add(cardName, cardInfo);
 }
 
