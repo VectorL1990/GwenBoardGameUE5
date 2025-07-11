@@ -289,31 +289,7 @@ public:
 					boardCoding[channelLen * sectionTagStartChannelNb + posInChannel] = -1;
 				}
 
-				int32 canPlayCardStartChannelNb = 24;
-				if (curSectionNb == 0 && sectionZeroPlayCardAvailable)
-				{
-					boardCoding[channelLen * canPlayCardStartChannelNb + posInChannel] = 1;
-					boardCoding[channelLen * (canPlayCardStartChannelNb + 1) + posInChannel] = -1;
-				}
-				else if (curSectionNb == 1 && sectionOnePlayCardAvailable)
-				{
-					boardCoding[channelLen * canPlayCardStartChannelNb + posInChannel] = -1;
-					boardCoding[channelLen * (canPlayCardStartChannelNb + 1) + posInChannel] = 1;
-				}
-
-				int32 canMoveStartChannelNb = 26;
-				if (curSectionNb == 0 && sectionZeroMoveAvailable)
-				{
-					boardCoding[channelLen * canMoveStartChannelNb + posInChannel] = 1;
-					boardCoding[channelLen * (canMoveStartChannelNb + 1) + posInChannel] = -1;
-				}
-				else if (curSectionNb == 1 && sectionOneMoveAvailable)
-				{
-					boardCoding[channelLen * canMoveStartChannelNb + posInChannel] = -1;
-					boardCoding[channelLen * (canMoveStartChannelNb + 1) + posInChannel] = 1;
-				}
-
-				int32 hpDiffStartChannelNb = 28;
+				int32 hpDiffStartChannelNb = 24;
 				if (curSectionNb == 0)
 				{
 					boardCoding[channelLen * hpDiffStartChannelNb + posInChannel] = sectionZeroTotalHp - sectionOneTotalHp;
@@ -430,7 +406,7 @@ public:
 				{
 					if (allInstanceCardInfo[uid].originCardInfo.coolDown == -1)
 					{
-						boardCoding[channelLen * originCoolDownStartChannelNb + posInChannel] = 999;
+						boardCoding[channelLen * originCoolDownStartChannelNb + posInChannel] = 1;
 					}
 					else
 					{
@@ -441,7 +417,7 @@ public:
 				{
 					if (allInstanceCardInfo[uid].originCardInfo.coolDown == -1)
 					{
-						boardCoding[channelLen * originCoolDownStartChannelNb + posInChannel] = -999;
+						boardCoding[channelLen * originCoolDownStartChannelNb + posInChannel] = -1;
 					}
 					else
 					{
@@ -462,9 +438,9 @@ public:
 				int32 originAvailableTimesStartChannelNb = 5;
 				if (allInstanceCardInfo[uid].camp == curSectionNb)
 				{
-					if (allInstanceCardInfo[uid].originCardInfo.coolDown == -1)
+					if (allInstanceCardInfo[uid].originCardInfo.availableTimes == -1)
 					{
-						boardCoding[channelLen * originAvailableTimesStartChannelNb + posInChannel] = 999;
+						boardCoding[channelLen * originAvailableTimesStartChannelNb + posInChannel] = 1;
 					}
 					else
 					{
@@ -473,9 +449,9 @@ public:
 				}
 				else
 				{
-					if (allInstanceCardInfo[uid].originCardInfo.coolDown == -1)
+					if (allInstanceCardInfo[uid].originCardInfo.availableTimes == -1)
 					{
-						boardCoding[channelLen * originAvailableTimesStartChannelNb + posInChannel] = -999;
+						boardCoding[channelLen * originAvailableTimesStartChannelNb + posInChannel] = -1;
 					}
 					else
 					{
@@ -1762,7 +1738,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	bool isTraining = true;
 
-	int32 maxSelfPlayLoop = 1000;
+	int32 maxSelfPlayLoop = 2000;
 
 	int32 curSelfPlayLoop = 0;
 
@@ -1770,7 +1746,7 @@ public:
 	int32 curSimulationMove = 0;
 
 	UPROPERTY()
-	int32 expandSimulationMoves = 2;
+	int32 expandSimulationMoves = 1;
 
 	UPROPERTY()
 	FBoardInfo realBoard;
