@@ -354,7 +354,7 @@ public:
 				GetTestSkillLaunchGeoCoding(allInstanceCardInfo[uid].originCardInfo.launchGeoType, testLaunchGeoType);
 				GetTestSkillTargetGeoCoding(allInstanceCardInfo[uid].originCardInfo.targetGeoType, testTargetGeoType);
 				GetTestMoveTypeCoding(allInstanceCardInfo[uid].originCardInfo.moveType, testMoveType);
-				GetTestAtkDistanceCoding(allInstanceCardInfo[uid].originCardInfo.attackDistanceType, testMoveType);
+				GetTestAtkDistanceCoding(allInstanceCardInfo[uid].originCardInfo.attackDistanceType, testAtkDisType);
 
 				/*
 				int32 autoSkillGeoTargetTypeCoding[17] = { 0 };
@@ -1770,7 +1770,7 @@ public:
 	int32 curSimulationMove = 0;
 
 	UPROPERTY()
-	int32 expandSimulationMoves = 4;
+	int32 expandSimulationMoves = 2;
 
 	UPROPERTY()
 	FBoardInfo realBoard;
