@@ -9,6 +9,7 @@
 #include "HAL/UnrealMemory.h"
 #include "Misc/FileHelper.h"
 #include "Serialization/MemoryWriter.h"
+#include "HAL/PlatformTime.h"
 #include "../CoreGameBlueprintFunctionLibrary.h"
 
 
@@ -473,8 +474,22 @@ void UMcts::GetTritonAction(
 			finalActionTypes = actionTypes;
 		}
 
-		int32 randActNb = FMath::RandRange(0, finalCandidateActs.Num() - 1);
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, "total acts: " + FString::FromInt(copyProbs.Num()) + ", select rand act nb: " + FString::FromInt(randActNb));
+		/*
+		const uint32 Range = finalCandidateActs.Num();
+		uint32 RandomValue;
+		do {
+			RandomValue = FMath::Rand();
+		} while (RandomValue >= (MAX_uint32 - (MAX_uint32 % Range)));
+		int32 randActNb = int32(RandomValue % Range);*/
+		uint64 Seed = FDateTime::Now().GetTicks();
+		FRandomStream RandomStream;
+		RandomStream.Initialize(Seed);
+		int32 randActNb = RandomStream.RandRange(0, finalCandidateActs.Num() - 1);
+
+
+		//FGenericPlatformMath::SRandInit(FDateTime::Now().GetTicks());
+		//int32 randActNb = FMath::RandRange(0, finalCandidateActs.Num() - 1);
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, "cur game: " + FString::FromInt(curSelfPlayLoop) + ", total acts: " + FString::FromInt(finalCandidateActs.Num()) + ", select rand act nb: " + FString::FromInt(randActNb));
 		
 		int32 targetMove = finalCandidateActs[randActNb];
 		outSectionNb = treeRoot->children[targetMove]->curPlayingSectionNb;
