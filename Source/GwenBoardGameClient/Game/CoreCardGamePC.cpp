@@ -60,7 +60,8 @@ void ACoreCardGamePC::DealHover()
                 {
                     coreCardGameMode->curHighlightCard = coreCardGameMode->sectionZeroHandBattleCards[i];
                     coreCardGameMode->sectionZeroHandBattleCards[i]->Highlight();
-                    battleWidget->SetupCardDetail(coreCardGameMode->curHighlightCard->GetActorLocation());
+                    battleWidget->SetupCardDetail(coreCardGameMode->curHighlightCard->GetActorLocation(),
+                        coreCardGameMode->sectionZeroHandBattleCards[i]->cardName);
                     coreCardGameMode->CalculateHoverCardLocations(0, i);
                     findCard = true;
                     break;
@@ -75,11 +76,27 @@ void ACoreCardGamePC::DealHover()
                     {
                         coreCardGameMode->curHighlightCard = coreCardGameMode->sectionOneHandBattleCards[i];
                         coreCardGameMode->sectionOneHandBattleCards[i]->Highlight();
-                        battleWidget->SetupCardDetail(coreCardGameMode->curHighlightCard->GetActorLocation());
+                        battleWidget->SetupCardDetail(coreCardGameMode->curHighlightCard->GetActorLocation(),
+                            coreCardGameMode->sectionOneHandBattleCards[i]->cardName);
                         coreCardGameMode->CalculateHoverCardLocations(1, i);
                         findCard = true;
                         break;
                     }
+                }
+            }
+        }
+        else if (hitResult.GetComponent() && hitResult.GetComponent()->ComponentHasTag(FName(TEXT("ReplayCard"))) &&
+            hitResult.GetComponent()->GetOwner())
+        {
+            AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
+            ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
+            for (int32 i = 0; i < coreCardGameMode->allReplayCards.Num(); i++)
+            {
+                if (coreCardGameMode->allReplayCards[i] == hitResult.GetComponent()->GetOwner())
+                {
+                    battleWidget->SetupCardDetail(coreCardGameMode->allReplayCards[i]->GetActorLocation(),
+                        coreCardGameMode->allReplayCards[i]->cardName);
+                    break;
                 }
             }
         }
@@ -90,9 +107,9 @@ void ACoreCardGamePC::DealHover()
             if (coreCardGameMode->curHighlightCard)
             {
                 coreCardGameMode->curHighlightCard->DeHighlight();
-                battleWidget->HideCardDetail();
                 coreCardGameMode->curHighlightCard = NULL;
             }
+            battleWidget->HideCardDetail();
             coreCardGameMode->RecoverHoverCardLocations();
         }
     }
@@ -184,6 +201,8 @@ void ACoreCardGamePC::InitMenu()
 {
     UUserWidget* initBattleWidget = CreateWidget(this, battleWidgetBPClass);
     battleWidget = Cast<UBattleWidget>(initBattleWidget);
+    battleWidget->NotifyInit();
+    SwitchMenu("BattleMenu");
 
     UUserWidget* initSelectCardWidget = CreateWidget(this, selectCardWidgetBPClass);
     selectCardWidget = Cast<USelectCardWidget>(initSelectCardWidget);

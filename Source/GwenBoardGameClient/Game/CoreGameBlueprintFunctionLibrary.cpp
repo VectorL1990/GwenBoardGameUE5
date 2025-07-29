@@ -502,105 +502,39 @@ TArray<FGridXY> UCoreGameBlueprintFunctionLibrary::GetAoeTargetGrids(
     return modifyGrids;
 }
 
-TArray<FGridXY> UCoreGameBlueprintFunctionLibrary::GetAutoSkillTargetGrids(
+
+
+FEffectResultDict UCoreGameBlueprintFunctionLibrary::LaunchRoundEndSkillDict(
     uint8 launchCamp,
     TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
     TArray<FBoardRow>& boardCardInfo,
+    FEffectInfo& effectInfo,
     int32 launchX,
     int32 launchY,
-    int32 targetX,
-    int32 targetY,
-    FString autoSkillTargetGeoType,
-    FString targetCamp)
+    bool isPotentialVirtual,
+    int32& sectionZeroScore,
+    int32& sectionOneScore)
 {
-    int32 launchUid = boardCardInfo[launchY].colCardInfos[launchX];
-    //uint8 launchCamp = allInstanceCardInfo[launchUid].camp;
+    TArray<FGridXY> modifyGrids = UCheckTargetGeoRuleLibrary::GetRoundEndAutoSkillTargetGrids(launchCamp,
+        allInstanceCardInfo,
+        boardCardInfo,
+        launchX,
+        launchY,
+        effectInfo.targetGeoType,
+        effectInfo.targetCamp);
 
-    TArray<FGridXY> modifyGrids;
-    if (autoSkillTargetGeoType == "left")
+    FEffectResultDict effectResultDict;
+    for (int32 i = 0; i < modifyGrids.Num(); i++)
     {
-        /*
-        if (launchX > 0 && boardCardInfo[launchY].colCardInfos[launchX - 1] != -1)
+        int32 targetX = modifyGrids[i].x;
+        int32 targetY = modifyGrids[i].y;
+        if (effectInfo.effectType == "heal")
         {
-            int32 targetUid = boardCardInfo[launchY].colCardInfos[launchX - 1];
-            // which means target grid left is not empty
-            if ((targetCamp == "self" && allInstanceCardInfo[targetUid].camp == launchCamp) ||
-                (targetCamp == "oppo" && allInstanceCardInfo[targetUid].camp != launchCamp) ||
-                (targetCamp == "none"))
-            {
-                FGridXY grid;
-                grid.x = launchX - 1;
-                grid.y = launchY;
-                modifyGrids.Add(grid);
-            }
-        }*/
-    }
-    else if (autoSkillTargetGeoType == "right")
-    {
-        /*
-        if (launchX < maxCol - 1 && boardCardInfo[launchY].colCardInfos[launchX + 1] != -1)
-        {
-            int32 targetUid = boardCardInfo[launchY].colCardInfos[launchX + 1];
-            // which means target grid left is not empty
-            if ((targetCamp == "self" && allInstanceCardInfo[targetUid].camp == launchCamp) ||
-                (targetCamp == "oppo" && allInstanceCardInfo[targetUid].camp != launchCamp) ||
-                (targetCamp == "none"))
-            {
-                FGridXY grid;
-                grid.x = launchX + 1;
-                grid.y = launchY;
-                modifyGrids.Add(grid);
-            }
-        }
-        */
-    }
-    else if (autoSkillTargetGeoType == "forward")
-    {
-        if (launchCamp == 0)
-        {
-            if (targetY < (UGlobalConstFunctionLibrary::graveCardSectionRow +
-                UGlobalConstFunctionLibrary::playCardSectionRow +
-                UGlobalConstFunctionLibrary::boardSectionRow - 1))
-            {
-                int32 targetUid = boardCardInfo[targetY + 1].colCardInfos[targetX];
-                // which means target grid left is not empty
-                if (targetUid != -1 &&
-                    ((targetCamp == "self" && allInstanceCardInfo[targetUid].camp == launchCamp) ||
-                    (targetCamp == "oppo" && allInstanceCardInfo[targetUid].camp != launchCamp) ||
-                    (targetCamp == "none")))
-                {
-                    FGridXY grid;
-                    grid.x = targetX;
-                    grid.y = targetY + 1;
-                    modifyGrids.Add(grid);
-                }
-            }
-        }
-        else
-        {
-            if (targetY > (UGlobalConstFunctionLibrary::graveCardSectionRow +
-                UGlobalConstFunctionLibrary::playCardSectionRow))
-            {
-                int32 targetUid = boardCardInfo[targetY - 1].colCardInfos[targetX];
-                // which means target grid left is not empty
-                if (targetUid != -1 &&
-                    ((targetCamp == "self" && allInstanceCardInfo[targetUid].camp == launchCamp) ||
-                    (targetCamp == "oppo" && allInstanceCardInfo[targetUid].camp != launchCamp) ||
-                    (targetCamp == "none")))
-                {
-                    FGridXY grid;
-                    grid.x = targetX;
-                    grid.y = targetY - 1;
-                    modifyGrids.Add(grid);
-                }
-            }
+            effectResultDict = Heal(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY, isPotentialVirtual, sectionZeroScore, sectionOneScore);
         }
     }
-    else if (autoSkillTargetGeoType == "backward")
-    {
 
-    }
-    return modifyGrids;
+    return effectResultDict;
 }
 
 FEffectResultDict UCoreGameBlueprintFunctionLibrary::LaunchPlayCardSkillDict(
@@ -612,10 +546,11 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::LaunchPlayCardSkillDict(
     int32 launchY,
     int32 targetX,
     int32 targetY,
+    bool isVirtual,
     int32& sectionZeroScore,
     int32& sectionOneScore)
 {
-    TArray<FGridXY> modifyGrids = GetAutoSkillTargetGrids(
+    TArray<FGridXY> modifyGrids = UCheckTargetGeoRuleLibrary::GetAutoSkillTargetGrids(
         launchCampNb,
         allInstanceCardInfo,
         boardCardInfo,
@@ -623,7 +558,7 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::LaunchPlayCardSkillDict(
         launchY,
         targetX,
         targetY,
-        effectInfo.autoSkillTargetGeoType,
+        effectInfo.targetGeoType,
         effectInfo.targetCamp);
 
     FEffectResultDict effectResultDict;
@@ -633,20 +568,77 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::LaunchPlayCardSkillDict(
         int32 targetY = modifyGrids[i].y;
         if (effectInfo.effectType == "hurt")
         {
-            effectResultDict = Hurt(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY, sectionZeroScore, sectionZeroScore);
+            effectResultDict = Hurt(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY, isVirtual, sectionZeroScore, sectionZeroScore);
         }
         else if (effectInfo.effectType == "heal")
         {
-            effectResultDict = Heal(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY, sectionZeroScore, sectionOneScore);
+            effectResultDict = Heal(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY, isVirtual, sectionZeroScore, sectionOneScore);
         }
         else if (effectInfo.effectType == "IncreaseDefence")
         {
-            effectResultDict = IncreaseDefence(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY);
+            effectResultDict = IncreaseDefence(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY, isVirtual);
         }
     }
     
     return effectResultDict;
 }
+
+FEffectResultDict UCoreGameBlueprintFunctionLibrary::LaunchPassiveSkillDict(
+    uint8 launchCamp,
+    TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+    TArray<FBoardRow>& boardCardInfo,
+    FEffectInfo& effectInfo,
+    FString triggerEffectType,
+    int32 launchX,
+    int32 launchY,
+    int32 triggerX,
+    int32 triggerY,
+    bool isVirtual,
+    int32& sectionZeroScore,
+    int32& sectionOneScore)
+{
+    TArray<FGridXY> modifyGrids = UCheckTargetGeoRuleLibrary::GetPassiveSkillTargetGrids(
+        launchCamp,
+        allInstanceCardInfo,
+        boardCardInfo,
+        launchX,
+        launchY,
+        triggerX,
+        triggerY,
+        effectInfo.targetGeoType,
+        effectInfo.targetCamp);
+
+    FEffectResultDict effectResultDict;
+    for (int32 i = 0; i < modifyGrids.Num(); i++)
+    {
+        int32 targetX = modifyGrids[i].x;
+        int32 targetY = modifyGrids[i].y;
+        if (effectInfo.effectType == "revenge")
+        {
+            if (triggerEffectType == "hurt")
+            {
+                effectResultDict = Hurt(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY, isVirtual, sectionZeroScore, sectionOneScore);
+            }
+        }
+        else if (effectInfo.effectType == "revengeWound")
+        {
+            if (triggerEffectType == "hurt")
+            {
+                effectResultDict = Wound(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY, isVirtual);
+            }
+        }
+        else if (effectInfo.effectType == "repayHeal")
+        {
+            if (triggerEffectType == "heal")
+            {
+                effectResultDict = Heal(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY, isVirtual, sectionZeroScore, sectionOneScore);
+            }
+        }
+    }
+
+    return effectResultDict;
+}
+
 
 FEffectResultDict UCoreGameBlueprintFunctionLibrary::LaunchSkillDict(
     TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
@@ -656,21 +648,22 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::LaunchSkillDict(
     int32 launchY,
     int32 targetX,
     int32 targetY,
+    bool isPotentialVirtual,
     int32& sectionZeroScore,
     int32& sectionOneScore)
 {
     FEffectResultDict effectResultDict;
     if (effectInfo.effectType == "hurt")
     {
-        effectResultDict = Hurt(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY, sectionZeroScore, sectionOneScore);
+        effectResultDict = Hurt(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY, isPotentialVirtual, sectionZeroScore, sectionOneScore);
     }
     else if (effectInfo.effectType == "heal")
     {
-        effectResultDict = Heal(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY, sectionZeroScore, sectionOneScore);
+        effectResultDict = Heal(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY, isPotentialVirtual, sectionZeroScore, sectionOneScore);
     }
-    else if (effectInfo.effectType == "IncreaseDefence")
+    else if (effectInfo.effectType == "increaseDefence")
     {
-        effectResultDict = IncreaseDefence(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY);
+        effectResultDict = IncreaseDefence(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY, isPotentialVirtual);
     }
 
     return effectResultDict;
@@ -684,13 +677,14 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::Hurt(
     int32 launchY,
     int32 targetX,
     int32 targetY,
+    bool isPotentialVirtual,
     int32& sectionZeroScore,
     int32& sectionOneScore)
 {
-    int32 effectValue = 0;
+    FGetAffixInfo affixInfo;
     if (effectInfo.effectAffix != "none")
     {
-        effectValue = UEffectAffixFunctionLibrary::GetAffix(
+        affixInfo = UEffectAffixFunctionLibrary::GetAffix(
             effectInfo.effectAffix,
             allInstanceCardInfo,
             boardCardInfo,
@@ -702,7 +696,7 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::Hurt(
     }
     else
     {
-        effectValue = effectInfo.values[0];
+        affixInfo.effectValue = effectInfo.values[0];
     }
 
     FEffectResultDict effectResultDict;
@@ -722,15 +716,81 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::Hurt(
     for (int32 i = 0; i < targetGrids.Num(); i++)
     {
         int32 uid = boardCardInfo[targetGrids[i].y].colCardInfos[targetGrids[i].x];
-        allInstanceCardInfo[uid].curHp = allInstanceCardInfo[uid].curHp - effectValue;
-        if (allInstanceCardInfo[uid].camp == 0)
+
+        if (!isPotentialVirtual)
         {
-            sectionZeroScore -= effectValue;
+            if (allInstanceCardInfo[uid].curDefence > 0)
+            {
+                if (affixInfo.effectValue > allInstanceCardInfo[uid].curDefence)
+                {
+                    int32 dfcConsumeHurt = affixInfo.effectValue - allInstanceCardInfo[uid].curDefence;
+                    allInstanceCardInfo[uid].curDefence = 0;
+                    if (allInstanceCardInfo[uid].curHp >= dfcConsumeHurt)
+                    {
+                        allInstanceCardInfo[uid].curHp = allInstanceCardInfo[uid].curHp - dfcConsumeHurt;
+                        if (allInstanceCardInfo[uid].camp == 0)
+                        {
+                            sectionZeroScore -= dfcConsumeHurt;
+                        }
+                        else
+                        {
+                            sectionOneScore -= dfcConsumeHurt;
+                        }
+                    }
+                    else
+                    {
+                        if (allInstanceCardInfo[uid].camp == 0)
+                        {
+                            sectionZeroScore -= allInstanceCardInfo[uid].curHp;
+                        }
+                        else
+                        {
+                            sectionOneScore -= allInstanceCardInfo[uid].curHp;
+                        }
+                        allInstanceCardInfo[uid].curHp = 0;
+                    }
+                }
+                else
+                {
+                    allInstanceCardInfo[uid].curDefence -= affixInfo.effectValue;
+                }
+            }
+            else
+            {
+                if (allInstanceCardInfo[uid].curHp >= affixInfo.effectValue)
+                {
+                    allInstanceCardInfo[uid].curHp -= affixInfo.effectValue;
+                    if (allInstanceCardInfo[uid].camp == 0)
+                    {
+                        sectionZeroScore -= affixInfo.effectValue;
+                    }
+                    else
+                    {
+                        sectionOneScore -= affixInfo.effectValue;
+                    }
+                }
+                else
+                {
+                    if (allInstanceCardInfo[uid].camp == 0)
+                    {
+                        sectionZeroScore -= allInstanceCardInfo[uid].curHp;
+                    }
+                    else
+                    {
+                        sectionOneScore -= allInstanceCardInfo[uid].curHp;
+                    }
+                    allInstanceCardInfo[uid].curHp = 0;
+                }
+            }
+
+            if (affixInfo.costType == "useSelfDefence")
+            {
+                int32 launchUid = boardCardInfo[launchY].colCardInfos[launchX];
+                allInstanceCardInfo[launchUid].curDefence -= affixInfo.costValue;
+            }
         }
-        else
-        {
-            sectionOneScore -= effectValue;
-        }
+        
+        effectResultDict.modifyValues.Add(affixInfo.effectValue);
         effectResultDict.modifyGrids.Add(targetGrids[i]);
         effectResultDict.modifyUids.Add(uid);
     }
@@ -745,13 +805,14 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::Heal(
     int32 launchY,
     int32 targetX,
     int32 targetY,
+    bool isPotentialVirtual,
     int32& sectionZeroScore,
     int32& sectionOneScore)
 {
-    int32 effectValue = 0;
+    FGetAffixInfo affixInfo;
     if (effectInfo.effectAffix != "none")
     {
-        effectValue = UEffectAffixFunctionLibrary::GetAffix(
+        affixInfo = UEffectAffixFunctionLibrary::GetAffix(
             effectInfo.effectAffix,
             allInstanceCardInfo,
             boardCardInfo,
@@ -763,11 +824,11 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::Heal(
     }
     else
     {
-        effectValue = effectInfo.values[0];
+        affixInfo.effectValue = effectInfo.values[0];
     }
 
     FEffectResultDict effectResultDict;
-    effectResultDict.modifyType = "hurt";
+    effectResultDict.modifyType = "heal";
     effectResultDict.success = true;
 
     TArray<FGridXY> targetGrids = GetAoeTargetGrids(
@@ -783,15 +844,27 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::Heal(
     for (int32 i = 0; i < targetGrids.Num(); i++)
     {
         int32 uid = boardCardInfo[targetGrids[i].y].colCardInfos[targetGrids[i].x];
-        allInstanceCardInfo[uid].curHp = allInstanceCardInfo[uid].curHp + effectValue;
-        if (allInstanceCardInfo[uid].camp == 0)
+
+        if (!isPotentialVirtual)
         {
-            sectionZeroScore += effectValue;
+            allInstanceCardInfo[uid].curHp = allInstanceCardInfo[uid].curHp + affixInfo.effectValue;
+            if (allInstanceCardInfo[uid].camp == 0)
+            {
+                sectionZeroScore += affixInfo.effectValue;
+            }
+            else
+            {
+                sectionOneScore += affixInfo.effectValue;
+            }
+
+            if (affixInfo.costType == "useSelfDefence")
+            {
+                int32 launchUid = boardCardInfo[launchY].colCardInfos[launchX];
+                allInstanceCardInfo[launchUid].curDefence -= affixInfo.costValue;
+            }
         }
-        else
-        {
-            sectionOneScore += effectValue;
-        }
+        
+        effectResultDict.modifyValues.Add(affixInfo.effectValue);
         effectResultDict.modifyGrids.Add(targetGrids[i]);
         effectResultDict.modifyUids.Add(uid);
     }
@@ -805,12 +878,13 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::IncreaseDefence(
     int32 launchX,
     int32 launchY,
     int32 targetX,
-    int32 targetY)
+    int32 targetY,
+    bool isPotentialVirtual)
 {
-    int32 effectValue = 0;
+    FGetAffixInfo affixInfo;
     if (effectInfo.effectAffix != "none")
     {
-        effectValue = UEffectAffixFunctionLibrary::GetAffix(
+        affixInfo = UEffectAffixFunctionLibrary::GetAffix(
             effectInfo.effectAffix,
             allInstanceCardInfo,
             boardCardInfo,
@@ -822,7 +896,7 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::IncreaseDefence(
     }
     else
     {
-        effectValue = effectInfo.values[0];
+        affixInfo.effectValue = effectInfo.values[0];
     }
 
     FEffectResultDict effectResultDict;
@@ -842,26 +916,38 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::IncreaseDefence(
     for (int32 i = 0; i < targetGrids.Num(); i++)
     {
         int32 uid = boardCardInfo[targetGrids[i].y].colCardInfos[targetGrids[i].x];
-        allInstanceCardInfo[uid].curDefence = allInstanceCardInfo[uid].curDefence + effectValue;
+
+        if (!isPotentialVirtual)
+        {
+            allInstanceCardInfo[uid].curDefence = allInstanceCardInfo[uid].curDefence + affixInfo.effectValue;
+
+            if (affixInfo.costType == "useSelfDefence")
+            {
+                int32 launchUid = boardCardInfo[launchY].colCardInfos[launchX];
+                allInstanceCardInfo[launchUid].curDefence -= affixInfo.costValue;
+            }
+        }
+        
+        effectResultDict.modifyValues.Add(affixInfo.effectValue);
         effectResultDict.modifyGrids.Add(targetGrids[i]);
         effectResultDict.modifyUids.Add(uid);
     }
     return effectResultDict;
 }
 
-FEffectResultDict UCoreGameBlueprintFunctionLibrary::ReplaceDefence(
-    TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+FEffectResultDict UCoreGameBlueprintFunctionLibrary::Wound(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
     TArray<FBoardRow>& boardCardInfo,
     FEffectInfo& effectInfo,
     int32 launchX,
     int32 launchY,
     int32 targetX,
-    int32 targetY)
+    int32 targetY,
+    bool isPotentialVirtual)
 {
-    int32 effectValue = 0;
+    FGetAffixInfo affixInfo;
     if (effectInfo.effectAffix != "none")
     {
-        effectValue = UEffectAffixFunctionLibrary::GetAffix(
+        affixInfo = UEffectAffixFunctionLibrary::GetAffix(
             effectInfo.effectAffix,
             allInstanceCardInfo,
             boardCardInfo,
@@ -873,11 +959,11 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::ReplaceDefence(
     }
     else
     {
-        effectValue = effectInfo.values[0];
+        affixInfo.effectValue = effectInfo.values[0];
     }
 
     FEffectResultDict effectResultDict;
-    effectResultDict.modifyType = "replaceDefence";
+    effectResultDict.modifyType = "wound";
     effectResultDict.success = true;
 
     TArray<FGridXY> targetGrids = GetAoeTargetGrids(
@@ -893,12 +979,32 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::ReplaceDefence(
     for (int32 i = 0; i < targetGrids.Num(); i++)
     {
         int32 uid = boardCardInfo[targetGrids[i].y].colCardInfos[targetGrids[i].x];
-        allInstanceCardInfo[uid].curDefence = allInstanceCardInfo[uid].curDefence + effectValue;
+
+        if (!isPotentialVirtual)
+        {
+            if (allInstanceCardInfo[uid].curExtraTags.Contains("wound"))
+            {
+                allInstanceCardInfo[uid].curExtraTags["wound"] = allInstanceCardInfo[uid].curExtraTags["wound"] + affixInfo.effectValue;
+            }
+            else
+            {
+                allInstanceCardInfo[uid].curExtraTags.Add("wound", affixInfo.effectValue);
+            }
+
+            if (affixInfo.costType == "useSelfDefence")
+            {
+                int32 launchUid = boardCardInfo[launchY].colCardInfos[launchX];
+                allInstanceCardInfo[launchUid].curDefence -= affixInfo.costValue;
+            }
+        }
+
+        effectResultDict.modifyValues.Add(affixInfo.effectValue);
         effectResultDict.modifyGrids.Add(targetGrids[i]);
         effectResultDict.modifyUids.Add(uid);
     }
     return effectResultDict;
 }
+
 
 void UCoreGameBlueprintFunctionLibrary::ConvertStateToJson(
     const TArray<FString>& stateArray,

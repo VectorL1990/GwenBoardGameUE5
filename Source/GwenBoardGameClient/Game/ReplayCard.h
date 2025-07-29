@@ -28,9 +28,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UWidgetComponent* cardWidgetComponent;
 
+	UPROPERTY(EditDefaultsOnly)
+	UMaterialInterface* matParent;
 
-	void Init(FString cardName, uint8 sectionNb, int32 hp, int32 defence);
+	FString cardName;
+
+	void Init(FString inCardName, uint8 sectionNb, int32 hp, int32 defence, int32 cd, int32 available);
 
 	UFUNCTION(BlueprintNativeEvent)
 	void NotifyInit(uint8 camp);
+
+
+	void InitReplayCard(uint8 sectionNb, FString cardName);
 };

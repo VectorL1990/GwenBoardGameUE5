@@ -202,7 +202,7 @@ public:
     TArray<FVector> sectionZeroCardLocations;
     TArray<FVector> sectionOneCardLocations;
 
-    void SpawnHandCard(FString cardName, uint8 sectionNb, int32 cardUid, int32 inCurHp, int32 inCurDefence, int32 handCardNb);
+    void SpawnHandCard(FString cardName, uint8 sectionNb, int32 cardUid, int32 inCurHp, int32 inCurDefence, int32 inCurCd, int32 inCurAvailable, int32 handCardNb);
 
     void DeleteHandAllCards();
 

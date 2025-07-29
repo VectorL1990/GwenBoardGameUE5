@@ -15,5 +15,37 @@ class GWENBOARDGAMECLIENT_API UCheckPrereqTagFunctionLibrary : public UBlueprint
 {
     GENERATED_BODY()
 public:
-    static bool CheckPrereqTagRule(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TArray<FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY);
+    static bool CheckLaunchPrereqTagRule(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, 
+        TArray<FBoardRow>& boardCardInfo, 
+        FEffectInfo& effectInfo, 
+        int32 launchX, 
+        int32 launchY);
+
+	static bool CheckLaunchNextToTag(
+		TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+		TArray<FBoardRow>& boardRows,
+		int32 launchX,
+		int32 launchY,
+		FString prereqTag);
+
+	static bool CheckLaunchSelfHasTag(
+		TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+		TArray<FBoardRow>& boardRows,
+		int32 launchX,
+		int32 launchY,
+		FString prereqTag);
+
+
+
+	static bool CheckTargetPrereqTagRule(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+		TArray<FBoardRow>& boardCardInfo,
+		FEffectInfo& effectInfo,
+		int32 targetX,
+		int32 targetY);
+
+	static bool CheckTargetHasTag(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+		TArray<FBoardRow>& boardRows,
+		int32 targetX,
+		int32 targetY,
+		FString prereqTag);
 };

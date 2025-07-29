@@ -11,24 +11,30 @@
 void UBattleWidget::Init(UCardDetailWidget* inCardDetailWidget)
 {
 	cardDetailWidget = inCardDetailWidget;
+	cardDetailWidget->NotifyInit();
 	//HideCardDetail();
 }
 
-void UBattleWidget::SetupCardDetail(FVector cardWorldPose)
+void UBattleWidget::NotifyInit_Implementation()
 {
-	/*
+
+}
+
+void UBattleWidget::SetupCardDetail(FVector cardWorldPose, FString cardName)
+{
 	cardDetailWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	cardDetailWidget->SetupDetailDescription(cardName);
 	FVector2D cardScreenPose;
 	UGameplayStatics::ProjectWorldToScreen(UGameplayStatics::GetPlayerController(this, 0), cardWorldPose, cardScreenPose);
 	float viewportScale = UWidgetLayoutLibrary::GetViewportScale(this);
 	UCanvasPanelSlot* cardDetailSlot = Cast<UCanvasPanelSlot>(cardDetailWidget->Slot);
 	cardDetailSlot->SetPosition(cardScreenPose / viewportScale);
-	cardDetailWidget->TriggerShowWidget();*/
+	cardDetailWidget->TriggerShowWidget();
 }
 
 void UBattleWidget::HideCardDetail()
 {
-	//cardDetailWidget->SetVisibility(ESlateVisibility::Hidden);
+	cardDetailWidget->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UBattleWidget::ClickButton(FString buttonName)

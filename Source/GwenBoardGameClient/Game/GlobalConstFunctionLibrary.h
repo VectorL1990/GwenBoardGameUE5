@@ -6,8 +6,8 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "GlobalConstFunctionLibrary.generated.h"
 
-#define StateCodingTotalCHW 1400
-#define StateCodingC 25
+#define StateCodingTotalCHW 3304
+#define StateCodingC 59
 #define StateCodingH 14
 #define StateCodingW 4
 
@@ -61,9 +61,6 @@ public:
         FString launchType;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        int32 initCoolDown;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
         int32 coolDown;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -71,9 +68,6 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
         FString launchGeoType;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        FString autoSkillTargetGeoType;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
         FString targetGeoType;
@@ -104,6 +98,9 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
         FString prereqType;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        int32 prereqValue;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
         FString passivePrereqType;
@@ -147,6 +144,9 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     int32 curAvailableTimes;
 
+    UPROPERTY()
+    TMap<FString, int32> curExtraTags;
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
         int32 curDefence;
 
@@ -155,6 +155,24 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     int32 curCol;
+
+    UPROPERTY()
+    bool passiveEffectTriggerThisRound = false;
+};
+
+USTRUCT(BlueprintType, Blueprintable)
+struct FGetAffixInfo
+{
+    GENERATED_USTRUCT_BODY()
+public:
+    UPROPERTY()
+    int32 effectValue;
+
+    UPROPERTY()
+    FString costType;
+
+    UPROPERTY()
+    int32 costValue;
 };
 
 
@@ -175,9 +193,6 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
         FString launchGeoType;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        FString autoSkillTargetGeoType;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
         FString targetGeoType;
@@ -208,6 +223,9 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
         FString prereqType;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        int32 prereqValue;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
         FString passivePrereqType;

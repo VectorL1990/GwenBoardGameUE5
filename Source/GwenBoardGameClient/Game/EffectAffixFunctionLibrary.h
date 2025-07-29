@@ -15,7 +15,7 @@ class GWENBOARDGAMECLIENT_API UEffectAffixFunctionLibrary : public UBlueprintFun
 {
 				GENERATED_BODY()
 public:
-    static int32 GetAffix(
+    static FGetAffixInfo GetAffix(
         FString affixType,
         TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
         TArray<FBoardRow>& boardCardInfo,
@@ -31,15 +31,95 @@ public:
 
     static int32 DistDiff(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TArray<FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 targetX, int32 targetY);
 
-    static int32 SameRowNb(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TArray<FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 targetX, int32 targetY);
+    static int32 SameLaunchRowNb(
+        TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, 
+        TArray<FBoardRow>& boardCardInfo, 
+        FEffectInfo& effectInfo, 
+        int32 launchX, 
+        int32 launchY, 
+        int32 targetX, 
+        int32 targetY);
 
-    static int32 SameColNb(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TArray<FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 targetX, int32 targetY);
+    static int32 SameTargetRowNb(
+        TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, 
+        TArray<FBoardRow>& boardCardInfo, 
+        FEffectInfo& effectInfo, 
+        int32 launchX, 
+        int32 launchY, 
+        int32 targetX, 
+        int32 targetY);
 
-    static int32 SameRowSelfCampNb(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TArray<FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 targetX, int32 targetY);
+    static int32 SameLaunchColNb(
+        TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, 
+        TArray<FBoardRow>& boardCardInfo, 
+        FEffectInfo& effectInfo, 
+        int32 launchX, 
+        int32 launchY, 
+        int32 targetX, 
+        int32 targetY);
 
-    static int32 SameColSelfCampNb(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TArray<FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 targetX, int32 targetY);
+    static int32 SameTargetColNb(
+        TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+        TArray<FBoardRow>& boardCardInfo,
+        FEffectInfo& effectInfo,
+        int32 launchX,
+        int32 launchY,
+        int32 targetX,
+        int32 targetY);
 
-    static int32 SameRowOppoCampNb(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TArray<FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 targetX, int32 targetY);
+    static int32 SameLaunchRowSelfCampNb(
+        TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, 
+        TArray<FBoardRow>& boardCardInfo, 
+        FEffectInfo& effectInfo, 
+        int32 launchX, 
+        int32 launchY, 
+        int32 targetX, 
+        int32 targetY);
+
+    static int32 SameTargetRowSelfCampNb(
+        TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, 
+        TArray<FBoardRow>& boardCardInfo, 
+        FEffectInfo& effectInfo, 
+        int32 launchX, 
+        int32 launchY, 
+        int32 targetX, 
+        int32 targetY);
+
+    static int32 SameLaunchColSelfCampNb(
+        TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, 
+        TArray<FBoardRow>& boardCardInfo, 
+        FEffectInfo& effectInfo, 
+        int32 launchX, 
+        int32 launchY, 
+        int32 targetX, 
+        int32 targetY);
+
+    static int32 SameTargetColSelfCampNb(
+        TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+        TArray<FBoardRow>& boardCardInfo,
+        FEffectInfo& effectInfo,
+        int32 launchX,
+        int32 launchY,
+        int32 targetX,
+        int32 targetY);
+
+    static int32 SameLaunchRowOppoCampNb(
+        TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, 
+        TArray<FBoardRow>& boardCardInfo, 
+        FEffectInfo& effectInfo, 
+        int32 launchX, 
+        int32 launchY, 
+        int32 targetX, 
+        int32 targetY);
+
+    static int32 SameTargetRowOppoCampNb(
+        TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+        TArray<FBoardRow>& boardCardInfo,
+        FEffectInfo& effectInfo,
+        int32 launchX,
+        int32 launchY,
+        int32 targetX,
+        int32 targetY);
 
     static int32 SameColOppoCampNb(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TArray<FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 targetX, int32 targetY);
 
@@ -89,7 +169,23 @@ public:
 
     static int32 SameRowOppoHurtCardNb(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TArray<FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 targetX, int32 targetY);
 
-    static int32 SameColOppoHurtCardNb(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TArray<FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 targetX, int32 targetY);
+    static int32 SameColOppoHurtCardNb(
+        TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, 
+        TArray<FBoardRow>& boardCardInfo, 
+        FEffectInfo& effectInfo, 
+        int32 launchX, 
+        int32 launchY, 
+        int32 targetX, 
+        int32 targetY);
+
+    static int32 UseSelfDefence_2(
+        TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+        TArray<FBoardRow>& boardCardInfo,
+        FEffectInfo& effectInfo,
+        int32 launchX,
+        int32 launchY,
+        int32 targetX,
+        int32 targetY);
 
     static void testFunc1(int32 launchX, int32 launchY, int32 targetX, int32 targetY);
 

@@ -39,11 +39,13 @@ public:
     void NotifyInit();
 
     void InitCard(
-        FString cardName,
+        FString inCardName,
         int32 inCurHp,
-        int32 inCurDefence);
+        int32 inCurDefence,
+        int32 inCurCd,
+        int32 inCurAvailable);
 
-    void UpdateCard(int32 inCurHp, int32 inCurDefence);
+    void UpdateCard(int32 inCurHp, int32 inCurDefence, int32 inCurCd, int32 inCurAvailable);
 
     FPLAY_CARD_INFO GetCardInfo();
 

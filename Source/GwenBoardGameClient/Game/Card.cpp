@@ -43,11 +43,14 @@ void ACard::NotifyInit_Implementation()
 }
 
 void ACard::InitCard(
-    FString cardName,
+    FString inCardName,
     int32 inCurHp,
-    int32 inCurDefence)
+    int32 inCurDefence,
+    int32 inCurCd,
+    int32 inCurAvailable)
 {
     NotifyInit();
+    cardName = inCardName;
     UGameInstance* gi = UGameplayStatics::GetGameInstance(this);
     UGwenBoardGameInstance* gameGI = Cast<UGwenBoardGameInstance>(gi);
 
@@ -58,14 +61,14 @@ void ACard::InitCard(
     cardWidgetComponent = GetComponentByClass<UWidgetComponent>();
     UCardWidget3D* widget = Cast<UCardWidget3D>(cardWidgetComponent->GetWidget());
     widget->NotifyInit();
-    widget->SetupHpDefence(inCurHp, inCurDefence);
+    widget->SetupHpDefence(inCurHp, inCurDefence, inCurCd, inCurAvailable);
 }
 
-void ACard::UpdateCard(int32 inCurHp, int32 inCurDefence)
+void ACard::UpdateCard(int32 inCurHp, int32 inCurDefence, int32 inCurCd, int32 inCurAvailable)
 {
     cardWidgetComponent = GetComponentByClass<UWidgetComponent>();
     UCardWidget3D* widget = Cast<UCardWidget3D>(cardWidgetComponent->GetWidget());
-    widget->SetupHpDefence(inCurHp, inCurDefence);
+    widget->SetupHpDefence(inCurHp, inCurDefence, inCurCd, inCurAvailable);
 }
 
 FPLAY_CARD_INFO ACard::GetCardInfo()

@@ -179,16 +179,16 @@ public:
             FString aoeType, 
             FString targetCamp);
 
-    static TArray<FGridXY> GetAutoSkillTargetGrids(
+    static FEffectResultDict LaunchRoundEndSkillDict(
         uint8 launchCamp,
         TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
         TArray<FBoardRow>& boardCardInfo,
+        FEffectInfo& effectInfo,
         int32 launchX,
         int32 launchY,
-        int32 targetX,
-        int32 targetY,
-        FString autoSkillTargetGeoType,
-        FString targetCamp);
+        bool isPotentialVirtual,
+        int32& sectionZeroScore,
+        int32& sectionOneScore);
 
     static FEffectResultDict LaunchPlayCardSkillDict(
         uint8 launchCamp,
@@ -199,17 +199,33 @@ public:
         int32 launchY,
         int32 targetX,
         int32 targetY,
+        bool isVirtual,
+        int32& sectionZeroScore,
+        int32& sectionOneScore);
+
+    static FEffectResultDict LaunchPassiveSkillDict(
+        uint8 launchCamp,
+        TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+        TArray<FBoardRow>& boardCardInfo,
+        FEffectInfo& effectInfo,
+        FString triggerEffectType,
+        int32 launchX,
+        int32 launchY,
+        int32 triggerX,
+        int32 triggerY,
+        bool isVirtual,
         int32& sectionZeroScore,
         int32& sectionOneScore);
 
     static FEffectResultDict LaunchSkillDict(
-            TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
-            TArray<FBoardRow>& boardCardInfo,
-            FEffectInfo& effectInfo,
-            int32 launchX,
-            int32 launchY,
-            int32 targetX,
-            int32 targetY,
+        TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+        TArray<FBoardRow>& boardCardInfo,
+        FEffectInfo& effectInfo,
+        int32 launchX,
+        int32 launchY,
+        int32 targetX,
+        int32 targetY,
+        bool isPotentialVirtual,
         int32& sectionZeroScore,
         int32& sectionOneScore);
 
@@ -221,6 +237,7 @@ public:
         int32 launchY,
         int32 targetX,
         int32 targetY,
+        bool isPotentialVirtual,
         int32& sectionZeroScore,
         int32& sectionOneScore);
 
@@ -232,26 +249,28 @@ public:
         int32 launchY,
         int32 targetX,
         int32 targetY,
+        bool isPotentialVirtual,
         int32& sectionZeroScore,
         int32& sectionOneScore);
 
     static FEffectResultDict IncreaseDefence(
-            TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
-            TArray<FBoardRow>& boardCardInfo,
-            FEffectInfo& effectInfo,
-            int32 launchX,
-            int32 launchY,
-            int32 targetX,
-            int32 targetY);
-
-    static FEffectResultDict ReplaceDefence(
         TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
         TArray<FBoardRow>& boardCardInfo,
         FEffectInfo& effectInfo,
         int32 launchX,
         int32 launchY,
         int32 targetX,
-        int32 targetY);
+        int32 targetY,
+        bool isPotentialVirtual);
+
+    static FEffectResultDict Wound(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+        TArray<FBoardRow>& boardCardInfo,
+        FEffectInfo& effectInfo,
+        int32 launchX,
+        int32 launchY,
+        int32 targetX,
+        int32 targetY,
+        bool isPotentialVirtual);
 
     static void ConvertStateToJson(const TArray<FString>& stateArray,
         const int32 col,

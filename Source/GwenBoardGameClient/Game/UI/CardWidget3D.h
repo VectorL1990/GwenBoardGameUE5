@@ -19,12 +19,20 @@ public:
 
 	UTextBlock* curDefenceText;
 
+	UTextBlock* curCdText;
+
+	UTextBlock* curAvailableText;
+
 	UFUNCTION(BlueprintNativeEvent)
 	void NotifyInit();
 
 	UFUNCTION(BlueprintCallable)
-	void InitWidget(UTextBlock* inCurHpText, UTextBlock* inCurDefenceText);
+	void InitWidget(
+		UTextBlock* inCurHpText, 
+		UTextBlock* inCurDefenceText, 
+		UTextBlock* inCurCdText,
+		UTextBlock* inCurAvailableText);
 
 	UFUNCTION(BlueprintCallable)
-	void SetupHpDefence(int32 inCurHp, int32 inCurDefence);
+	void SetupHpDefence(int32 inCurHp, int32 inCurDefence, int32 inCurCd, int32 inCurAvailable);
 };

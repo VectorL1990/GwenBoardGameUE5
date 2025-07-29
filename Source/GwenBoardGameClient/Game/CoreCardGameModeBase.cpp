@@ -146,7 +146,9 @@ void ACoreCardGameModeBase::Tick(float deltaTime)
 			{
 				int32 curHp = aiRunnable->mcts->realBoard.allInstanceCardInfo[iter->Key].curHp;
 				int32 curDefence = aiRunnable->mcts->realBoard.allInstanceCardInfo[iter->Key].curDefence;
-				iter->Value->UpdateCard(curHp, curDefence);
+				int32 curCd = aiRunnable->mcts->realBoard.allInstanceCardInfo[iter->Key].curCoolDown;
+				int32 curAvailable = aiRunnable->mcts->realBoard.allInstanceCardInfo[iter->Key].curAvailableTimes;
+				iter->Value->UpdateCard(curHp, curDefence, curCd, curAvailable);
 			}
 		}
 
@@ -353,7 +355,9 @@ void ACoreCardGameModeBase::DemonstrateMctsTreeNode(UMctsTreeNode* node)
 						replayCard->Init(node->allReplayInstanceCardInfo[cardId].originCardInfo.cardName,
 							node->allReplayInstanceCardInfo[cardId].camp,
 							node->allReplayInstanceCardInfo[cardId].curHp,
-							node->allReplayInstanceCardInfo[cardId].curDefence);
+							node->allReplayInstanceCardInfo[cardId].curDefence,
+							node->allReplayInstanceCardInfo[cardId].curCoolDown,
+							node->allReplayInstanceCardInfo[cardId].curAvailableTimes);
 						allReplayCards.Add(cardId, replayCard);
 					}
 					else
@@ -368,7 +372,9 @@ void ACoreCardGameModeBase::DemonstrateMctsTreeNode(UMctsTreeNode* node)
 						replayCard->Init(node->allReplayInstanceCardInfo[cardId].originCardInfo.cardName,
 							node->allReplayInstanceCardInfo[cardId].camp,
 							node->allReplayInstanceCardInfo[cardId].curHp,
-							node->allReplayInstanceCardInfo[cardId].curDefence);
+							node->allReplayInstanceCardInfo[cardId].curDefence,
+							node->allReplayInstanceCardInfo[cardId].curCoolDown,
+							node->allReplayInstanceCardInfo[cardId].curAvailableTimes);
 						allReplayCards.Add(cardId, replayCard);
 					}
 				}
@@ -400,19 +406,55 @@ void ACoreCardGameModeBase::DemonstrateMctsTreeNode(UMctsTreeNode* node)
 			int32 targetCardUid = node->replayBoardRows[targetY].colCardInfos[targetX];
 			if (targetCardUid == -1)
 			{
-				int32 targetGridY = targetY - UGlobalConstFunctionLibrary::graveCardSectionRow -
-					UGlobalConstFunctionLibrary::playCardSectionRow;
-				int32 targetGridId = targetGridY * UGlobalConstFunctionLibrary::maxCol + targetX;
-				FVector launchCardLoc = allReplayCards[launchCardUid]->GetActorLocation();
-				FVector targetGridLoc = boardGrids[targetGridId]->GetActorLocation();
-				GEngine->AddOnScreenDebugMessage(-1, 5.0, FColor::Red, "Target is killed");
-				UKismetSystemLibrary::DrawDebugLine(this, launchCardLoc, targetGridLoc, FLinearColor::Red, 1.0, 10.0);
+				if (launchCardUid == -1)
+				{
+					int32 launchGridY = launchY - UGlobalConstFunctionLibrary::graveCardSectionRow -
+						UGlobalConstFunctionLibrary::playCardSectionRow;
+					int32 launchGridId = launchGridY * UGlobalConstFunctionLibrary::maxCol + launchX;
+
+					int32 targetGridY = targetY - UGlobalConstFunctionLibrary::graveCardSectionRow -
+						UGlobalConstFunctionLibrary::playCardSectionRow;
+					int32 targetGridId = targetGridY * UGlobalConstFunctionLibrary::maxCol + targetX;
+
+					FVector launchGridLoc = boardGrids[launchGridId]->GetActorLocation() + FVector(0.0, 5.0, 0.0);
+					FVector targetGridLoc = boardGrids[targetGridId]->GetActorLocation();
+					GEngine->AddOnScreenDebugMessage(-1, 5.0, FColor::Yellow, "Target is killed");
+					UKismetSystemLibrary::DrawDebugLine(this, launchGridLoc, targetGridLoc, FLinearColor::Yellow, 1.0, 10.0);
+				}
+				else
+				{
+					int32 targetGridY = targetY - UGlobalConstFunctionLibrary::graveCardSectionRow -
+						UGlobalConstFunctionLibrary::playCardSectionRow;
+					int32 targetGridId = targetGridY * UGlobalConstFunctionLibrary::maxCol + targetX;
+					FVector launchCardLoc = allReplayCards[launchCardUid]->GetActorLocation();
+					FVector targetGridLoc = boardGrids[targetGridId]->GetActorLocation();
+					GEngine->AddOnScreenDebugMessage(-1, 5.0, FColor::Red, "Target is killed");
+					UKismetSystemLibrary::DrawDebugLine(this, launchCardLoc, targetGridLoc, FLinearColor::Red, 1.0, 10.0);
+				}
 			}
 			else
 			{
-				FVector launchCardLoc = allReplayCards[launchCardUid]->GetActorLocation();
-				FVector targetCardLoc = allReplayCards[targetCardUid]->GetActorLocation();
-				UKismetSystemLibrary::DrawDebugLine(this, launchCardLoc, targetCardLoc, FLinearColor::Green, 1.0, 10.0);
+				if (launchCardUid == -1)
+				{
+					int32 launchGridY = launchY - UGlobalConstFunctionLibrary::graveCardSectionRow -
+						UGlobalConstFunctionLibrary::playCardSectionRow;
+					int32 launchGridId = launchGridY * UGlobalConstFunctionLibrary::maxCol + launchX;
+
+					int32 targetGridY = targetY - UGlobalConstFunctionLibrary::graveCardSectionRow -
+						UGlobalConstFunctionLibrary::playCardSectionRow;
+					int32 targetGridId = targetGridY * UGlobalConstFunctionLibrary::maxCol + targetX;
+
+					FVector launchGridLoc = boardGrids[launchGridId]->GetActorLocation() + FVector(0.0, 5.0, 0.0);
+					FVector targetCardLoc = allReplayCards[targetCardUid]->GetActorLocation();
+					GEngine->AddOnScreenDebugMessage(-1, 5.0, FColor::Yellow, "Target is killed");
+					UKismetSystemLibrary::DrawDebugLine(this, launchGridLoc, targetCardLoc, FLinearColor::Yellow, 1.0, 10.0);
+				}
+				else
+				{
+					FVector launchCardLoc = allReplayCards[launchCardUid]->GetActorLocation();
+					FVector targetCardLoc = allReplayCards[targetCardUid]->GetActorLocation();
+					UKismetSystemLibrary::DrawDebugLine(this, launchCardLoc, targetCardLoc, FLinearColor::Green, 1.0, 10.0);
+				}
 			}
 		}
 		else if (actionType == ActionType::Move)
@@ -535,7 +577,7 @@ void ACoreCardGameModeBase::DeleteHandAllCards()
 	sectionOneCardLocations.Empty();
 }
 
-void ACoreCardGameModeBase::SpawnHandCard(FString cardName, uint8 sectionNb, int32 cardUid, int32 inCurHp, int32 inCurDefence, int32 handCardNb)
+void ACoreCardGameModeBase::SpawnHandCard(FString cardName, uint8 sectionNb, int32 cardUid, int32 inCurHp, int32 inCurDefence, int32 inCurCd, int32 inCurAvailable, int32 handCardNb)
 {
 	FVector spawnLoc = FVector(0.0, 0.0, 0.0);
 	ACard* card = GetWorld()->SpawnActor<ACard>(cardBPClass, spawnLoc, FRotator::ZeroRotator);
@@ -561,7 +603,7 @@ void ACoreCardGameModeBase::SpawnHandCard(FString cardName, uint8 sectionNb, int
 	}
 
 	card->camp = sectionNb;
-	card->InitCard(cardName, inCurHp, inCurDefence);
+	card->InitCard(cardName, inCurHp, inCurDefence, inCurCd, inCurAvailable);
 
 	if (sectionNb == 0)
 	{

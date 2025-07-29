@@ -47,6 +47,40 @@ public:
 
 
 
+	static TArray<FGridXY> GetAutoSkillTargetGrids(
+		uint8 launchCamp,
+		TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+		TArray<FBoardRow>& boardCardInfo,
+		int32 launchX,
+		int32 launchY,
+		int32 targetX,
+		int32 targetY,
+		FString tagetGeoType,
+		FString targetCamp);
+
+	static TArray<FGridXY> GetRoundEndAutoSkillTargetGrids(
+		uint8 launchCamp,
+		TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+		TArray<FBoardRow>& boardCardInfo,
+		int32 launchX,
+		int32 launchY,
+		FString targetGeoType,
+		FString targetCamp);
+
+	static TArray<FGridXY> GetPassiveSkillTargetGrids(
+		uint8 launchCamp,
+		TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+		TArray<FBoardRow>& boardRows,
+		int32 launchX,
+		int32 launchY,
+		int32 triggerX,
+		int32 triggerY,
+		FString targetGeoType,
+		FString targetCamp);
+
+
+
+
 	static void CheckPossibleTargetLocateGeoGrids(FString locateGeoRule, TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TArray<FBoardRow>& boardCardInfo, TArray<FGridXY>& checkGrids);
 
 	static void CheckPossibleTargetLocateThree(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, 

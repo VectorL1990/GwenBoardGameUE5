@@ -21,7 +21,10 @@ public:
     UFUNCTION(BlueprintCallable)
     void Init(UCardDetailWidget* inCardDetailWidget);
 
-    void SetupCardDetail(FVector cardWorldPose);
+    UFUNCTION(BlueprintNativeEvent)
+    void NotifyInit();
+
+    void SetupCardDetail(FVector cardWorldPose, FString cardName);
 
     void HideCardDetail();
 

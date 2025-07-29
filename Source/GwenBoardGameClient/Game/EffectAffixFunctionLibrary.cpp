@@ -3,7 +3,7 @@
 
 #include "Game/EffectAffixFunctionLibrary.h"
 
-int32 UEffectAffixFunctionLibrary::GetAffix(
+FGetAffixInfo UEffectAffixFunctionLibrary::GetAffix(
     FString affixType,
     TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
     TArray<FBoardRow>& boardCardInfo,
@@ -13,16 +13,46 @@ int32 UEffectAffixFunctionLibrary::GetAffix(
     int32 targetX,
     int32 targetY)
 {
-    int32 affixValue = 0;
-    if (affixType == "ColDiff")
+    FGetAffixInfo affixInfo;
+    if (affixType == "colDiff")
     {
-        affixValue = ColDiff(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY);
+        affixInfo.effectValue = ColDiff(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY);
     }
-    else if (affixType == "RowDiff")
+    else if (affixType == "rowDiff")
     {
-        affixValue = RowDiff(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY);
+        affixInfo.effectValue = RowDiff(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY);
     }
-    return affixValue;
+    else if (affixType == "sameLaunchRowNb")
+    {
+        affixInfo.effectValue = SameLaunchRowNb(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY);
+    }
+    else if (affixType == "sameTargetRowNb")
+    {
+        affixInfo.effectValue = SameTargetRowNb(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY);
+    }
+    else if (affixType == "sameLaunchColNb")
+    {
+        affixInfo.effectValue = SameLaunchColNb(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY);
+    }
+    else if (affixType == "sameTargetColNb")
+    {
+        affixInfo.effectValue = SameTargetColNb(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY);
+    }
+    else if (affixType == "sameLaunchRowOppoCampNb")
+    {
+        affixInfo.effectValue = SameLaunchRowOppoCampNb(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY);
+    }
+    else if (affixType == "sameTargetRowOppoCampNb")
+    {
+        affixInfo.effectValue = SameTargetRowOppoCampNb(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY);
+    }
+    else if (affixType == "useSelfDefence_2")
+    {
+        affixInfo.effectValue = UseSelfDefence_2(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY);
+        affixInfo.costType = "useSelfDefence";
+        affixInfo.costValue = 2* affixInfo.effectValue;
+    }
+    return affixInfo;
 }
 
 int32 UEffectAffixFunctionLibrary::ColDiff(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TArray<FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 targetX, int32 targetY)
@@ -44,7 +74,36 @@ int32 UEffectAffixFunctionLibrary::DistDiff(TMap<int32, FInstanceCardInfo>& allI
     return colDiff + rowDiff;
 }
 
-int32 UEffectAffixFunctionLibrary::SameRowNb(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TArray<FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 targetX, int32 targetY)
+int32 UEffectAffixFunctionLibrary::SameLaunchRowNb(
+    TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, 
+    TArray<FBoardRow>& boardCardInfo, 
+    FEffectInfo& effectInfo, 
+    int32 launchX, 
+    int32 launchY, 
+    int32 targetX, 
+    int32 targetY)
+{
+    int32 sameRowNb = 0;
+    for (int32 i = 0; i < UGlobalConstFunctionLibrary::maxCol; i++)
+    {
+        int32 uid = boardCardInfo[launchY].colCardInfos[i];
+        if (uid != -1)
+        {
+
+            sameRowNb += 1;
+        }
+    }
+    return sameRowNb;
+}
+
+int32 UEffectAffixFunctionLibrary::SameTargetRowNb(
+    TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+    TArray<FBoardRow>& boardCardInfo,
+    FEffectInfo& effectInfo,
+    int32 launchX,
+    int32 launchY,
+    int32 targetX,
+    int32 targetY)
 {
     int32 sameRowNb = 0;
     for (int32 i = 0; i < UGlobalConstFunctionLibrary::maxCol; i++)
@@ -59,7 +118,35 @@ int32 UEffectAffixFunctionLibrary::SameRowNb(TMap<int32, FInstanceCardInfo>& all
     return sameRowNb;
 }
 
-int32 UEffectAffixFunctionLibrary::SameColNb(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TArray<FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 targetX, int32 targetY)
+int32 UEffectAffixFunctionLibrary::SameLaunchColNb(
+    TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, 
+    TArray<FBoardRow>& boardCardInfo, 
+    FEffectInfo& effectInfo, 
+    int32 launchX, 
+    int32 launchY, 
+    int32 targetX, 
+    int32 targetY)
+{
+    int32 sameColNb = 0;
+    for (int32 i = 0; i < UGlobalConstFunctionLibrary::boardSectionRow; i++)
+    {
+        int32 uid = boardCardInfo[i].colCardInfos[launchX];
+        if (uid != -1)
+        {
+            sameColNb += 1;
+        }
+    }
+    return sameColNb;
+}
+
+int32 UEffectAffixFunctionLibrary::SameTargetColNb(
+    TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+    TArray<FBoardRow>& boardCardInfo,
+    FEffectInfo& effectInfo,
+    int32 launchX,
+    int32 launchY,
+    int32 targetX,
+    int32 targetY)
 {
     int32 sameColNb = 0;
     for (int32 i = 0; i < UGlobalConstFunctionLibrary::boardSectionRow; i++)
@@ -73,13 +160,20 @@ int32 UEffectAffixFunctionLibrary::SameColNb(TMap<int32, FInstanceCardInfo>& all
     return sameColNb;
 }
 
-int32 UEffectAffixFunctionLibrary::SameRowSelfCampNb(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TArray<FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 targetX, int32 targetY)
+int32 UEffectAffixFunctionLibrary::SameLaunchRowSelfCampNb(
+    TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, 
+    TArray<FBoardRow>& boardCardInfo, 
+    FEffectInfo& effectInfo, 
+    int32 launchX, 
+    int32 launchY, 
+    int32 targetX, 
+    int32 targetY)
 {
     int32 sameRowNb = 0;
     for (int32 i = 0; i < UGlobalConstFunctionLibrary::maxCol; i++)
     {
         int32 launchUid = boardCardInfo[launchY].colCardInfos[launchX];
-        int32 uid = boardCardInfo[targetY].colCardInfos[i];
+        int32 uid = boardCardInfo[launchX].colCardInfos[i];
         if (uid != -1 && allInstanceCardInfo[uid].camp == allInstanceCardInfo[launchUid].camp)
         {
             sameRowNb += 1;
@@ -88,7 +182,58 @@ int32 UEffectAffixFunctionLibrary::SameRowSelfCampNb(TMap<int32, FInstanceCardIn
     return sameRowNb;
 }
 
-int32 UEffectAffixFunctionLibrary::SameColSelfCampNb(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TArray<FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 targetX, int32 targetY)
+int32 UEffectAffixFunctionLibrary::SameTargetRowSelfCampNb(
+    TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+    TArray<FBoardRow>& boardCardInfo,
+    FEffectInfo& effectInfo,
+    int32 launchX,
+    int32 launchY,
+    int32 targetX,
+    int32 targetY)
+{
+    int32 sameRowNb = 0;
+    for (int32 i = 0; i < UGlobalConstFunctionLibrary::maxCol; i++)
+    {
+        int32 launchUid = boardCardInfo[launchY].colCardInfos[launchX];
+        int32 uid = boardCardInfo[targetX].colCardInfos[i];
+        if (uid != -1 && allInstanceCardInfo[uid].camp == allInstanceCardInfo[launchUid].camp)
+        {
+            sameRowNb += 1;
+        }
+    }
+    return sameRowNb;
+}
+
+int32 UEffectAffixFunctionLibrary::SameLaunchColSelfCampNb(
+    TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+    TArray<FBoardRow>& boardCardInfo, 
+    FEffectInfo& effectInfo,
+    int32 launchX,
+    int32 launchY,
+    int32 targetX,
+    int32 targetY)
+{
+    int32 sameColNb = 0;
+    for (int32 i = 0; i < UGlobalConstFunctionLibrary::boardSectionRow; i++)
+    {
+        int32 launchUid = boardCardInfo[launchY].colCardInfos[launchX];
+        int32 uid = boardCardInfo[i].colCardInfos[launchX];
+        if (uid != -1 && allInstanceCardInfo[uid].camp == allInstanceCardInfo[launchUid].camp)
+        {
+            sameColNb += 1;
+        }
+    }
+    return sameColNb;
+}
+
+int32 UEffectAffixFunctionLibrary::SameTargetColSelfCampNb(
+    TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+    TArray<FBoardRow>& boardCardInfo,
+    FEffectInfo& effectInfo,
+    int32 launchX,
+    int32 launchY,
+    int32 targetX,
+    int32 targetY)
 {
     int32 sameColNb = 0;
     for (int32 i = 0; i < UGlobalConstFunctionLibrary::boardSectionRow; i++)
@@ -103,7 +248,36 @@ int32 UEffectAffixFunctionLibrary::SameColSelfCampNb(TMap<int32, FInstanceCardIn
     return sameColNb;
 }
 
-int32 UEffectAffixFunctionLibrary::SameRowOppoCampNb(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, TArray<FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, int32 targetX, int32 targetY)
+int32 UEffectAffixFunctionLibrary::SameLaunchRowOppoCampNb(
+    TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, 
+    TArray<FBoardRow>& boardCardInfo, 
+    FEffectInfo& effectInfo, 
+    int32 launchX, 
+    int32 launchY, 
+    int32 targetX, 
+    int32 targetY)
+{
+    int32 sameRowNb = 0;
+    for (int32 i = 0; i < UGlobalConstFunctionLibrary::maxCol; i++)
+    {
+        int32 launchUid = boardCardInfo[launchY].colCardInfos[launchX];
+        int32 uid = boardCardInfo[launchY].colCardInfos[i];
+        if (uid != -1 && allInstanceCardInfo[uid].camp != allInstanceCardInfo[launchUid].camp)
+        {
+            sameRowNb += 1;
+        }
+    }
+    return sameRowNb;
+}
+
+int32 UEffectAffixFunctionLibrary::SameTargetRowOppoCampNb(
+    TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+    TArray<FBoardRow>& boardCardInfo,
+    FEffectInfo& effectInfo,
+    int32 launchX,
+    int32 launchY,
+    int32 targetX,
+    int32 targetY)
 {
     int32 sameRowNb = 0;
     for (int32 i = 0; i < UGlobalConstFunctionLibrary::maxCol; i++)
@@ -773,6 +947,20 @@ int32 UEffectAffixFunctionLibrary::SameColOppoHurtCardNb(TMap<int32, FInstanceCa
         }
     }
     return sameColHurtCardNb;
+}
+
+int32 UEffectAffixFunctionLibrary::UseSelfDefence_2(
+    TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+    TArray<FBoardRow>& boardCardInfo,
+    FEffectInfo& effectInfo,
+    int32 launchX,
+    int32 launchY,
+    int32 targetX,
+    int32 targetY)
+{
+    int32 launchUid = boardCardInfo[launchY].colCardInfos[launchX];
+    int32 useSelfDefenceHurt = allInstanceCardInfo[launchUid].curDefence / 2;
+    return useSelfDefenceHurt;
 }
 
 void UEffectAffixFunctionLibrary::testFunc1(int32 launchX, int32 launchY, int32 targetX, int32 targetY)

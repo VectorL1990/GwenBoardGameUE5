@@ -62,6 +62,9 @@ uint32 FAIRunnable::Run()
 			TArray<FRenderEffectRound> renderEffectRounds;
 			mcts->realBoard.TriggerAction(true, waitLaunchCamp, actionCode, renderEffectRounds);
 			aiRunnableState = EAIRunnableState::NewState;
+
+			mcts->realBoard.lastActionId = actionCode;
+			mcts->realBoard.lastStepActionType = ActionType::PlayCard;
 		}
 		else if (aiRunnableState == EAIRunnableState::StartSelfPlay)
 		{
@@ -111,15 +114,27 @@ uint32 FAIRunnable::Run()
 				uint8 targetSectionNb;
 				mcts->GetTritonAction(targetAction, targetActionType, targetSectionNb, trainStateCodingAndActionProbs.actionProbs);
 
+				/*
 				int32 trainingDataStateCoding[StateCodingTotalCHW] = { 0 };
 				mcts->realBoard.StateCoding(mcts->realBoard.curPlayingSectionNb, trainingDataStateCoding);
 				FMemory::Memcpy(trainStateCodingAndActionProbs.stateCoding, trainingDataStateCoding, StateCodingTotalCHW * sizeof(int32));
 
 				mcts->curTrainingData.stateCodingAndActionProbs.Add(trainStateCodingAndActionProbs);
 				mcts->curTrainingData.playSectionNbs.Add(targetSectionNb);
+				*/
 
 				TArray<FRenderEffectRound> renderEffectList;
 				mcts->realBoard.TriggerAction(false, mcts->realBoard.curPlayingSectionNb, targetAction, renderEffectList);
+
+				mcts->realBoard.lastActionId = targetAction;
+				mcts->realBoard.lastStepActionType = targetActionType;
+
+				int32 trainingDataStateCoding[StateCodingTotalCHW] = { 0 };
+				mcts->realBoard.StateCoding(mcts->realBoard.curPlayingSectionNb, trainingDataStateCoding);
+				FMemory::Memcpy(trainStateCodingAndActionProbs.stateCoding, trainingDataStateCoding, StateCodingTotalCHW * sizeof(int32));
+
+				mcts->curTrainingData.stateCodingAndActionProbs.Add(trainStateCodingAndActionProbs);
+				mcts->curTrainingData.playSectionNbs.Add(targetSectionNb);
 
 				int32 winner;
 				bool isGameEnd = mcts->realBoard.GameEnd(winner);

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/TextBlock.h"
 #include "CardDetailWidget.generated.h"
 
 /**
@@ -14,6 +15,14 @@ class GWENBOARDGAMECLIENT_API UCardDetailWidget : public UUserWidget
 {
 GENERATED_BODY()
 public:
+    UPROPERTY(BlueprintReadWrite)
+    UTextBlock* descriptionTextBlock;
+
+    UFUNCTION(BlueprintNativeEvent)
+    void NotifyInit();
+
     UFUNCTION(BlueprintNativeEvent)
     void TriggerShowWidget();
+
+    void SetupDetailDescription(FString cardName);
 };

@@ -35,9 +35,10 @@ void UMcts::InitMcts()
 		instanceCardInfo.originCardInfo = gwenGI->allCardInfos[gwenGI->sectionZeroPileCards[i]];
 		instanceCardInfo.camp = 0;
 		instanceCardInfo.curAvailableTimes = gwenGI->allCardInfos[gwenGI->sectionZeroPileCards[i]].availableTimes;
-		instanceCardInfo.curCoolDown = gwenGI->allCardInfos[gwenGI->sectionZeroPileCards[i]].initCoolDown;
+		instanceCardInfo.curCoolDown = gwenGI->allCardInfos[gwenGI->sectionZeroPileCards[i]].coolDown;
 		instanceCardInfo.curDefence = gwenGI->allCardInfos[gwenGI->sectionZeroPileCards[i]].defence;
 		instanceCardInfo.curHp = gwenGI->allCardInfos[gwenGI->sectionZeroPileCards[i]].hp;
+		instanceCardInfo.curExtraTags.Empty();
 		if (i < UGlobalConstFunctionLibrary::handCardNb)
 		{
 			if (curHandCardCol >= UGlobalConstFunctionLibrary::maxCol)
@@ -57,6 +58,8 @@ void UMcts::InitMcts()
 				0, generateCardId,
 				instanceCardInfo.originCardInfo.hp,
 				instanceCardInfo.originCardInfo.defence,
+				instanceCardInfo.originCardInfo.coolDown,
+				instanceCardInfo.originCardInfo.availableTimes,
 				i);
 			realBoard.allInstanceCardInfo.Add(generateCardId, instanceCardInfo);
 			generateCardId += 1;
@@ -78,10 +81,11 @@ void UMcts::InitMcts()
 		FInstanceCardInfo instanceCardInfo;
 		instanceCardInfo.originCardInfo = gwenGI->allCardInfos[gwenGI->sectionOnePileCards[i]];
 		instanceCardInfo.camp = 1;
-		instanceCardInfo.curAvailableTimes = gwenGI->allCardInfos[gwenGI->sectionZeroPileCards[i]].availableTimes;
-		instanceCardInfo.curCoolDown = gwenGI->allCardInfos[gwenGI->sectionZeroPileCards[i]].initCoolDown;
-		instanceCardInfo.curDefence = gwenGI->allCardInfos[gwenGI->sectionZeroPileCards[i]].defence;
-		instanceCardInfo.curHp = gwenGI->allCardInfos[gwenGI->sectionZeroPileCards[i]].hp;
+		instanceCardInfo.curAvailableTimes = gwenGI->allCardInfos[gwenGI->sectionOnePileCards[i]].availableTimes;
+		instanceCardInfo.curCoolDown = gwenGI->allCardInfos[gwenGI->sectionOnePileCards[i]].coolDown;
+		instanceCardInfo.curDefence = gwenGI->allCardInfos[gwenGI->sectionOnePileCards[i]].defence;
+		instanceCardInfo.curHp = gwenGI->allCardInfos[gwenGI->sectionOnePileCards[i]].hp;
+		instanceCardInfo.curExtraTags.Empty();
 		if (i < UGlobalConstFunctionLibrary::handCardNb)
 		{
 			if (curHandCardCol >= UGlobalConstFunctionLibrary::maxCol)
@@ -100,7 +104,10 @@ void UMcts::InitMcts()
 			coreCardGameMode->SpawnHandCard(instanceCardInfo.originCardInfo.cardName, 
 				1, generateCardId,
 				instanceCardInfo.originCardInfo.hp,
-				instanceCardInfo.originCardInfo.defence, i);
+				instanceCardInfo.originCardInfo.defence,
+				instanceCardInfo.originCardInfo.coolDown,
+				instanceCardInfo.originCardInfo.availableTimes, 
+				i);
 			realBoard.allInstanceCardInfo.Add(generateCardId, instanceCardInfo);
 			generateCardId += 1;
 		}
@@ -176,9 +183,10 @@ void UMcts::ResetMcts()
 		instanceCardInfo.originCardInfo = gwenGI->allCardInfos[gwenGI->sectionZeroPileCards[i]];
 		instanceCardInfo.camp = 0;
 		instanceCardInfo.curAvailableTimes = gwenGI->allCardInfos[gwenGI->sectionZeroPileCards[i]].availableTimes;
-		instanceCardInfo.curCoolDown = gwenGI->allCardInfos[gwenGI->sectionZeroPileCards[i]].initCoolDown;
+		instanceCardInfo.curCoolDown = gwenGI->allCardInfos[gwenGI->sectionZeroPileCards[i]].coolDown;
 		instanceCardInfo.curDefence = gwenGI->allCardInfos[gwenGI->sectionZeroPileCards[i]].defence;
 		instanceCardInfo.curHp = gwenGI->allCardInfos[gwenGI->sectionZeroPileCards[i]].hp;
+		instanceCardInfo.curExtraTags.Empty();
 		if (i < UGlobalConstFunctionLibrary::handCardNb)
 		{
 			if (curHandCardCol >= UGlobalConstFunctionLibrary::maxCol)
@@ -219,10 +227,11 @@ void UMcts::ResetMcts()
 		FInstanceCardInfo instanceCardInfo;
 		instanceCardInfo.originCardInfo = gwenGI->allCardInfos[gwenGI->sectionOnePileCards[i]];
 		instanceCardInfo.camp = 1;
-		instanceCardInfo.curAvailableTimes = gwenGI->allCardInfos[gwenGI->sectionZeroPileCards[i]].availableTimes;
-		instanceCardInfo.curCoolDown = gwenGI->allCardInfos[gwenGI->sectionZeroPileCards[i]].initCoolDown;
-		instanceCardInfo.curDefence = gwenGI->allCardInfos[gwenGI->sectionZeroPileCards[i]].defence;
-		instanceCardInfo.curHp = gwenGI->allCardInfos[gwenGI->sectionZeroPileCards[i]].hp;
+		instanceCardInfo.curAvailableTimes = gwenGI->allCardInfos[gwenGI->sectionOnePileCards[i]].availableTimes;
+		instanceCardInfo.curCoolDown = gwenGI->allCardInfos[gwenGI->sectionOnePileCards[i]].coolDown;
+		instanceCardInfo.curDefence = gwenGI->allCardInfos[gwenGI->sectionOnePileCards[i]].defence;
+		instanceCardInfo.curHp = gwenGI->allCardInfos[gwenGI->sectionOnePileCards[i]].hp;
+		instanceCardInfo.curExtraTags.Empty();
 		if (i < UGlobalConstFunctionLibrary::handCardNb)
 		{
 			if (curHandCardCol >= UGlobalConstFunctionLibrary::maxCol)
@@ -330,6 +339,8 @@ void UMcts::SendTritonRequest()
 		// we should do move here! So that we can predict next action probs
 		TArray<FRenderEffectRound> renderEffectRoundList;
 		copyBoard.TriggerAction(false, copyBoard.curPlayingSectionNb, action, renderEffectRoundList);
+		copyBoard.lastActionId = action;
+		copyBoard.lastStepActionType = actionType;
 	}
 
 	copyBoard.StateCoding(copyBoard.curPlayingSectionNb, curSearchNode->stateCoding);

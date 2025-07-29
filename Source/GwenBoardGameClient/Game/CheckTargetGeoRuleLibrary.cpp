@@ -219,7 +219,7 @@ TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleMoveSeperate(TMap<int32, 
 	for (int32 i = launchY + 1; i < UGlobalConstFunctionLibrary::graveCardSectionRow +
 		UGlobalConstFunctionLibrary::playCardSectionRow + UGlobalConstFunctionLibrary::boardSectionRow; i++)
 	{
-		int32 uid = boardCardInfo[i].colCardInfos[launchY];
+		int32 uid = boardCardInfo[i].colCardInfos[launchX];
 		if (!isUpBarbetteSet)
 		{
 			if (uid != -1)
@@ -246,7 +246,7 @@ TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleMoveSeperate(TMap<int32, 
 	for (int32 i = launchY - 1; i >= UGlobalConstFunctionLibrary::graveCardSectionRow +
 		UGlobalConstFunctionLibrary::playCardSectionRow; i--)
 	{
-		int32 uid = boardCardInfo[i].colCardInfos[launchY];
+		int32 uid = boardCardInfo[i].colCardInfos[launchX];
 		if (!isDownBarbetteSet)
 		{
 			if (uid != -1)
@@ -404,6 +404,139 @@ TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleTargetGeoGrids(FString ge
 	else if (geoRule == "diagonal")
 	{
 		possibleGrids = GetPossibleDiagonal(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, distanceType);
+	}
+	else if (geoRule == "self")
+	{
+		FGridXY grid;
+		grid.x = launchX;
+		grid.y = launchY;
+		possibleGrids.Add(grid);
+	}
+	else if (geoRule == "left")
+	{
+		int32 launchUid = boardCardInfo[launchY].colCardInfos[launchX];
+		uint8 launchCamp = allInstanceCardInfo[launchUid].camp;
+		if (launchCamp == 0)
+		{
+			if (launchX < UGlobalConstFunctionLibrary::maxCol - 1)
+			{
+				int32 targetUid = boardCardInfo[launchY].colCardInfos[launchX + 1];
+				if (targetUid != -1 &&
+					((allInstanceCardInfo[launchUid].originCardInfo.targetCamp == "self" && allInstanceCardInfo[targetUid].camp == launchCamp) ||
+						(allInstanceCardInfo[launchUid].originCardInfo.targetCamp == "oppo" && allInstanceCardInfo[targetUid].camp != launchCamp) ||
+						(allInstanceCardInfo[launchUid].originCardInfo.targetCamp == "none")))
+				{
+					FGridXY grid;
+					grid.x = launchX - 1;
+					grid.y = launchY;
+					possibleGrids.Add(grid);
+				}
+			}
+		}
+		else
+		{
+			if (launchX > 0)
+			{
+				int32 targetUid = boardCardInfo[launchY].colCardInfos[launchX - 1];
+				if (targetUid != -1 &&
+					((allInstanceCardInfo[launchUid].originCardInfo.targetCamp == "self" && allInstanceCardInfo[targetUid].camp == launchCamp) ||
+						(allInstanceCardInfo[launchUid].originCardInfo.targetCamp == "oppo" && allInstanceCardInfo[targetUid].camp != launchCamp) ||
+						(allInstanceCardInfo[launchUid].originCardInfo.targetCamp == "none")))
+				{
+					FGridXY grid;
+					grid.x = launchX + 1;
+					grid.y = launchY;
+					possibleGrids.Add(grid);
+				}
+			}
+		}
+	}
+	else if (geoRule == "right")
+	{
+		int32 launchUid = boardCardInfo[launchY].colCardInfos[launchX];
+		uint8 launchCamp = allInstanceCardInfo[launchUid].camp;
+		if (launchCamp == 0)
+		{
+			if (launchX < UGlobalConstFunctionLibrary::maxCol - 1)
+			{
+				int32 targetUid = boardCardInfo[launchY].colCardInfos[launchX + 1];
+				if (targetUid != -1 &&
+					((allInstanceCardInfo[launchUid].originCardInfo.targetCamp == "self" && allInstanceCardInfo[targetUid].camp == launchCamp) ||
+						(allInstanceCardInfo[launchUid].originCardInfo.targetCamp == "oppo" && allInstanceCardInfo[targetUid].camp != launchCamp) ||
+						(allInstanceCardInfo[launchUid].originCardInfo.targetCamp == "none")))
+				{
+					FGridXY grid;
+					grid.x = launchX + 1;
+					grid.y = launchY;
+					possibleGrids.Add(grid);
+				}
+			}
+		}
+		else
+		{
+			if (launchX > 0)
+			{
+				int32 targetUid = boardCardInfo[launchY].colCardInfos[launchX - 1];
+				if (targetUid != -1 &&
+					((allInstanceCardInfo[launchUid].originCardInfo.targetCamp == "self" && allInstanceCardInfo[targetUid].camp == launchCamp) ||
+						(allInstanceCardInfo[launchUid].originCardInfo.targetCamp == "oppo" && allInstanceCardInfo[targetUid].camp != launchCamp) ||
+						(allInstanceCardInfo[launchUid].originCardInfo.targetCamp == "none")))
+				{
+					FGridXY grid;
+					grid.x = launchX - 1;
+					grid.y = launchY;
+					possibleGrids.Add(grid);
+				}
+			}
+		}
+	}
+	else if (geoRule == "forward")
+	{
+		int32 launchUid = boardCardInfo[launchY].colCardInfos[launchX];
+		uint8 launchCamp = allInstanceCardInfo[launchUid].camp;
+		if (launchCamp == 0)
+		{
+			if (launchY < (UGlobalConstFunctionLibrary::graveCardSectionRow +
+				UGlobalConstFunctionLibrary::playCardSectionRow +
+				UGlobalConstFunctionLibrary::boardSectionRow - 1))
+			{
+				int32 targetUid = boardCardInfo[launchY + 1].colCardInfos[launchX];
+				// which means target grid left is not empty
+				if (targetUid != -1 &&
+					((allInstanceCardInfo[launchUid].originCardInfo.targetCamp == "self" && allInstanceCardInfo[targetUid].camp == launchCamp) ||
+						(allInstanceCardInfo[launchUid].originCardInfo.targetCamp == "oppo" && allInstanceCardInfo[targetUid].camp != launchCamp) ||
+						(allInstanceCardInfo[launchUid].originCardInfo.targetCamp == "none")))
+				{
+					FGridXY grid;
+					grid.x = launchX;
+					grid.y = launchY + 1;
+					possibleGrids.Add(grid);
+				}
+			}
+		}
+		else
+		{
+			if (launchY > (UGlobalConstFunctionLibrary::graveCardSectionRow +
+				UGlobalConstFunctionLibrary::playCardSectionRow))
+			{
+				int32 targetUid = boardCardInfo[launchY - 1].colCardInfos[launchX];
+				// which means target grid left is not empty
+				if (targetUid != -1 &&
+					((allInstanceCardInfo[launchUid].originCardInfo.targetCamp == "self" && allInstanceCardInfo[targetUid].camp == launchCamp) ||
+						(allInstanceCardInfo[launchUid].originCardInfo.targetCamp == "oppo" && allInstanceCardInfo[targetUid].camp != launchCamp) ||
+						(allInstanceCardInfo[launchUid].originCardInfo.targetCamp == "none")))
+				{
+					FGridXY grid;
+					grid.x = launchX;
+					grid.y = launchY - 1;
+					possibleGrids.Add(grid);
+				}
+			}
+		}
+	}
+	else if (geoRule == "backward")
+	{
+
 	}
 	return possibleGrids;
 }
@@ -770,6 +903,337 @@ TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleDiagonal(TMap<int32, FIns
 
 
 	return possibleGrids;
+}
+
+
+TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetAutoSkillTargetGrids(
+	uint8 launchCamp,
+	TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+	TArray<FBoardRow>& boardCardInfo,
+	int32 launchX,
+	int32 launchY,
+	int32 targetX,
+	int32 targetY,
+	FString targetGeoType,
+	FString targetCamp)
+{
+	int32 launchUid = boardCardInfo[launchY].colCardInfos[launchX];
+	//uint8 launchCamp = allInstanceCardInfo[launchUid].camp;
+
+	TArray<FGridXY> modifyGrids;
+	if (targetGeoType == "left")
+	{
+		/*
+		if (launchX > 0 && boardCardInfo[launchY].colCardInfos[launchX - 1] != -1)
+		{
+			int32 targetUid = boardCardInfo[launchY].colCardInfos[launchX - 1];
+			// which means target grid left is not empty
+			if ((targetCamp == "self" && allInstanceCardInfo[targetUid].camp == launchCamp) ||
+				(targetCamp == "oppo" && allInstanceCardInfo[targetUid].camp != launchCamp) ||
+				(targetCamp == "none"))
+			{
+				FGridXY grid;
+				grid.x = launchX - 1;
+				grid.y = launchY;
+				modifyGrids.Add(grid);
+			}
+		}*/
+	}
+	else if (targetGeoType == "right")
+	{
+		/*
+		if (launchX < maxCol - 1 && boardCardInfo[launchY].colCardInfos[launchX + 1] != -1)
+		{
+			int32 targetUid = boardCardInfo[launchY].colCardInfos[launchX + 1];
+			// which means target grid left is not empty
+			if ((targetCamp == "self" && allInstanceCardInfo[targetUid].camp == launchCamp) ||
+				(targetCamp == "oppo" && allInstanceCardInfo[targetUid].camp != launchCamp) ||
+				(targetCamp == "none"))
+			{
+				FGridXY grid;
+				grid.x = launchX + 1;
+				grid.y = launchY;
+				modifyGrids.Add(grid);
+			}
+		}
+		*/
+	}
+	else if (targetGeoType == "forward")
+	{
+		if (launchCamp == 0)
+		{
+			if (targetY < (UGlobalConstFunctionLibrary::graveCardSectionRow +
+				UGlobalConstFunctionLibrary::playCardSectionRow +
+				UGlobalConstFunctionLibrary::boardSectionRow - 1))
+			{
+				int32 targetUid = boardCardInfo[targetY + 1].colCardInfos[targetX];
+				// which means target grid left is not empty
+				if (targetUid != -1 &&
+					((targetCamp == "self" && allInstanceCardInfo[targetUid].camp == launchCamp) ||
+						(targetCamp == "oppo" && allInstanceCardInfo[targetUid].camp != launchCamp) ||
+						(targetCamp == "none")))
+				{
+					FGridXY grid;
+					grid.x = targetX;
+					grid.y = targetY + 1;
+					modifyGrids.Add(grid);
+				}
+			}
+		}
+		else
+		{
+			if (targetY > (UGlobalConstFunctionLibrary::graveCardSectionRow +
+				UGlobalConstFunctionLibrary::playCardSectionRow))
+			{
+				int32 targetUid = boardCardInfo[targetY - 1].colCardInfos[targetX];
+				// which means target grid left is not empty
+				if (targetUid != -1 &&
+					((targetCamp == "self" && allInstanceCardInfo[targetUid].camp == launchCamp) ||
+						(targetCamp == "oppo" && allInstanceCardInfo[targetUid].camp != launchCamp) ||
+						(targetCamp == "none")))
+				{
+					FGridXY grid;
+					grid.x = targetX;
+					grid.y = targetY - 1;
+					modifyGrids.Add(grid);
+				}
+			}
+		}
+	}
+	else if (targetGeoType == "backward")
+	{
+
+	}
+	return modifyGrids;
+}
+
+TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetRoundEndAutoSkillTargetGrids(
+	uint8 launchCamp,
+	TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+	TArray<FBoardRow>& boardCardInfo,
+	int32 launchX,
+	int32 launchY,
+	FString targetGeoType,
+	FString targetCamp)
+{
+	int32 launchUid = boardCardInfo[launchY].colCardInfos[launchX];
+	//uint8 launchCamp = allInstanceCardInfo[launchUid].camp;
+
+	TArray<FGridXY> modifyGrids;
+	if (targetGeoType == "self")
+	{
+		FGridXY grid;
+		grid.x = launchX;
+		grid.y = launchY;
+		modifyGrids.Add(grid);
+	}
+	else if (targetGeoType == "left")
+	{
+		if (launchCamp == 0)
+		{
+			if (launchX < UGlobalConstFunctionLibrary::maxCol - 1)
+			{
+				int32 targetUid = boardCardInfo[launchY].colCardInfos[launchX + 1];
+				if (targetUid != -1 &&
+					((targetCamp == "self" && allInstanceCardInfo[targetUid].camp == launchCamp) ||
+						(targetCamp == "oppo" && allInstanceCardInfo[targetUid].camp != launchCamp) ||
+						(targetCamp == "none")))
+				{
+					FGridXY grid;
+					grid.x = launchX - 1;
+					grid.y = launchY;
+					modifyGrids.Add(grid);
+				}
+			}
+		}
+		else
+		{
+			if (launchX > 0)
+			{
+				int32 targetUid = boardCardInfo[launchY].colCardInfos[launchX - 1];
+				if (targetUid != -1 &&
+					((targetCamp == "self" && allInstanceCardInfo[targetUid].camp == launchCamp) ||
+						(targetCamp == "oppo" && allInstanceCardInfo[targetUid].camp != launchCamp) ||
+						(targetCamp == "none")))
+				{
+					FGridXY grid;
+					grid.x = launchX + 1;
+					grid.y = launchY;
+					modifyGrids.Add(grid);
+				}
+			}
+		}
+	}
+	else if (targetGeoType == "right")
+	{
+		if (launchCamp == 0)
+		{
+			if (launchX < UGlobalConstFunctionLibrary::maxCol - 1)
+			{
+				int32 targetUid = boardCardInfo[launchY].colCardInfos[launchX + 1];
+				if (targetUid != -1 &&
+					((targetCamp == "self" && allInstanceCardInfo[targetUid].camp == launchCamp) ||
+						(targetCamp == "oppo" && allInstanceCardInfo[targetUid].camp != launchCamp) ||
+						(targetCamp == "none")))
+				{
+					FGridXY grid;
+					grid.x = launchX + 1;
+					grid.y = launchY;
+					modifyGrids.Add(grid);
+				}
+			}
+		}
+		else
+		{
+			if (launchX > 0)
+			{
+				int32 targetUid = boardCardInfo[launchY].colCardInfos[launchX - 1];
+				if (targetUid != -1 &&
+					((targetCamp == "self" && allInstanceCardInfo[targetUid].camp == launchCamp) ||
+						(targetCamp == "oppo" && allInstanceCardInfo[targetUid].camp != launchCamp) ||
+						(targetCamp == "none")))
+				{
+					FGridXY grid;
+					grid.x = launchX - 1;
+					grid.y = launchY;
+					modifyGrids.Add(grid);
+				}
+			}
+		}
+	}
+	else if (targetGeoType == "forward")
+	{
+		if (launchCamp == 0)
+		{
+			if (launchY < (UGlobalConstFunctionLibrary::graveCardSectionRow +
+				UGlobalConstFunctionLibrary::playCardSectionRow +
+				UGlobalConstFunctionLibrary::boardSectionRow - 1))
+			{
+				int32 targetUid = boardCardInfo[launchY + 1].colCardInfos[launchX];
+				// which means target grid left is not empty
+				if (targetUid != -1 &&
+					((targetCamp == "self" && allInstanceCardInfo[targetUid].camp == launchCamp) ||
+						(targetCamp == "oppo" && allInstanceCardInfo[targetUid].camp != launchCamp) ||
+						(targetCamp == "none")))
+				{
+					FGridXY grid;
+					grid.x = launchX;
+					grid.y = launchY + 1;
+					modifyGrids.Add(grid);
+				}
+			}
+		}
+		else
+		{
+			if (launchY > (UGlobalConstFunctionLibrary::graveCardSectionRow +
+				UGlobalConstFunctionLibrary::playCardSectionRow))
+			{
+				int32 targetUid = boardCardInfo[launchY - 1].colCardInfos[launchX];
+				// which means target grid left is not empty
+				if (targetUid != -1 &&
+					((targetCamp == "self" && allInstanceCardInfo[targetUid].camp == launchCamp) ||
+						(targetCamp == "oppo" && allInstanceCardInfo[targetUid].camp != launchCamp) ||
+						(targetCamp == "none")))
+				{
+					FGridXY grid;
+					grid.x = launchX;
+					grid.y = launchY - 1;
+					modifyGrids.Add(grid);
+				}
+			}
+		}
+	}
+	else if (targetGeoType == "backward")
+	{
+
+	}
+	return modifyGrids;
+}
+
+TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPassiveSkillTargetGrids(
+	uint8 launchCamp,
+	TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+	TArray<FBoardRow>& boardRows,
+	int32 launchX,
+	int32 launchY,
+	int32 triggerX,
+	int32 triggerY,
+	FString targetGeoType,
+	FString targetCamp)
+{
+	int32 launchUid = boardRows[launchY].colCardInfos[launchX];
+	//uint8 launchCamp = allInstanceCardInfo[launchUid].camp;
+
+	TArray<FGridXY> modifyGrids;
+	if (targetGeoType == "self")
+	{
+		FGridXY grid;
+		grid.x = launchX;
+		grid.y = launchY;
+		modifyGrids.Add(grid);
+	}
+	else if (targetGeoType == "reflect")
+	{
+		FGridXY grid;
+		grid.x = triggerX;
+		grid.y = triggerY;
+		modifyGrids.Add(grid);
+	}
+	else if (targetGeoType == "left")
+	{
+
+	}
+	else if (targetGeoType == "right")
+	{
+
+	}
+	else if (targetGeoType == "forward")
+	{
+		if (launchCamp == 0)
+		{
+			if (launchY < (UGlobalConstFunctionLibrary::graveCardSectionRow +
+				UGlobalConstFunctionLibrary::playCardSectionRow +
+				UGlobalConstFunctionLibrary::boardSectionRow - 1))
+			{
+				int32 targetUid = boardRows[launchY + 1].colCardInfos[launchX];
+				// which means target grid left is not empty
+				if (targetUid != -1 &&
+					((targetCamp == "self" && allInstanceCardInfo[targetUid].camp == launchCamp) ||
+						(targetCamp == "oppo" && allInstanceCardInfo[targetUid].camp != launchCamp) ||
+						(targetCamp == "none")))
+				{
+					FGridXY grid;
+					grid.x = launchX;
+					grid.y = launchY + 1;
+					modifyGrids.Add(grid);
+				}
+			}
+		}
+		else
+		{
+			if (launchY > (UGlobalConstFunctionLibrary::graveCardSectionRow +
+				UGlobalConstFunctionLibrary::playCardSectionRow))
+			{
+				int32 targetUid = boardRows[launchY - 1].colCardInfos[launchX];
+				// which means target grid left is not empty
+				if (targetUid != -1 &&
+					((targetCamp == "self" && allInstanceCardInfo[targetUid].camp == launchCamp) ||
+						(targetCamp == "oppo" && allInstanceCardInfo[targetUid].camp != launchCamp) ||
+						(targetCamp == "none")))
+				{
+					FGridXY grid;
+					grid.x = launchX;
+					grid.y = launchY - 1;
+					modifyGrids.Add(grid);
+				}
+			}
+		}
+	}
+	else if (targetGeoType == "backward")
+	{
+
+	}
+	return modifyGrids;
 }
 
 
