@@ -102,143 +102,6 @@ public:
 		return copyBoard;
 	}
 
-	void StateDecoding(UMctsTreeNode* node, int32* boardCoding, TArray<AStateDecodingGrid*>& decodingGrids)
-	{
-		int32 channelLen = UGlobalConstFunctionLibrary::maxCol * (
-			UGlobalConstFunctionLibrary::graveCardSectionRow * 2 +
-			UGlobalConstFunctionLibrary::playCardSectionRow * 2 +
-			UGlobalConstFunctionLibrary::boardSectionRow);
-
-
-		for (int32 i = 0; i < node->replayBoardRows.Num(); i++)
-		{
-			for (int32 j = 0; j < node->replayBoardRows[i].colCardInfos.Num(); j++)
-			{
-				AStateDecodingGrid* decodeGrid = decodingGrids[i * UGlobalConstFunctionLibrary::maxCol + j];
-				int32 posInChannel = i * UGlobalConstFunctionLibrary::maxCol + j;
-				int32 skillLaunchTypeStartChannelNb = 0;
-				FString decodeSkillLaunchType;
-				for (int32 k = 0; k < 2; k++)
-				{
-					int32 code = boardCoding[channelLen * (k + skillLaunchTypeStartChannelNb) + posInChannel];
-					if (k == 0)
-					{
-						if (code == 1)
-						{
-							decodeSkillLaunchType = "auto";
-						}
-					}
-					else if (k == 1)
-					{
-						if (code == 1)
-						{
-							decodeSkillLaunchType = "manual";
-						}
-					}
-				}
-				decodeGrid->skillLaunchType = decodeSkillLaunchType;
-				
-				int32 autoSkillTargetGeoTypeStartChannelNb = 2;
-				FString decodeSkillTargetGeoType;
-				for (int32 k = 0; k < 2; k++)
-				{
-					int32 code = boardCoding[channelLen * (k + autoSkillTargetGeoTypeStartChannelNb) + posInChannel];
-					if (k == 0)
-					{
-						if (code == 1)
-						{
-							decodeSkillTargetGeoType = "left";
-						}
-					}
-					else
-					{
-						if (code == 1)
-						{
-							decodeSkillTargetGeoType = "forward";
-						}
-					}
-				}
-				decodeGrid->skillTargetGeoType = decodeSkillTargetGeoType;
-
-				int32 targetCampTypeStartChannelNb = 4;
-				FString decodeTargetCampType;
-				for (int32 k = 0; k < 2; k++)
-				{
-					int32 code = boardCoding[channelLen * (k + targetCampTypeStartChannelNb) + posInChannel];
-					if (k == 0)
-					{
-						if (code == 1)
-						{
-							decodeTargetCampType = "self";
-						}
-					}
-					else
-					{
-						if (code == 1)
-						{
-							decodeTargetCampType = "oppo";
-						}
-					}
-				}
-				decodeGrid->targetCampType = decodeTargetCampType;
-
-				int32 effectTypeStartChannelNb = 6;
-				FString effectType;
-				for (int32 k = 0; k < 2; k++)
-				{
-					int32 code = boardCoding[channelLen * (k + effectTypeStartChannelNb) + posInChannel];
-					if (k == 0)
-					{
-						if (code == 1)
-						{
-							effectType = "hurt";
-						}
-					}
-					else
-					{
-						if (code == 1)
-						{
-							effectType = "heal";
-						}
-					}
-				}
-				decodeGrid->effectType = effectType;
-
-				int32 launchGeoTypeStartChannelNb = 8;
-				FString launchGeoType;
-				for (int32 k = 0; k < 2; k++)
-				{
-					int32 code = boardCoding[channelLen * (k + launchGeoTypeStartChannelNb) + posInChannel];
-					if (k == 0)
-					{
-						if (code == 1)
-						{
-							launchGeoType = "point";
-						}
-					}
-					else
-					{
-						if (code == 1)
-						{
-							launchGeoType = "three";
-						}
-					}
-				}
-				decodeGrid->launchGeoType = launchGeoType;
-
-				int32 sectionTagStartChannelNb = 10;
-				if (boardCoding[channelLen * sectionTagStartChannelNb + posInChannel] == 0)
-				{
-					decodeGrid->curSection = 0;
-				}
-				else
-				{
-					decodeGrid->curSection = 1;
-				}
-			}
-		}
-	}
-
 	void StateCoding(uint8 curSectionNb, int32* boardCoding)
 	{
 		int32 channelLen = UGlobalConstFunctionLibrary::maxCol *
@@ -273,14 +136,14 @@ public:
 			}
 		}
 
-		GetPotentialEffectCoding(boardCoding, channelLen, curSectionNb);
+		//GetPotentialEffectCoding(boardCoding, channelLen, curSectionNb);
 		for (int32 i = 0; i < boardRows.Num(); i++)
 		{
 			for (int32 j = 0; j < boardRows[i].colCardInfos.Num(); j++)
 			{
 				int32 posInChannel = i * UGlobalConstFunctionLibrary::maxCol + j;
 
-				int32 sectionTagStartChannelNb = 57;
+				int32 sectionTagStartChannelNb = 82;
 				if (curSectionNb == 0)
 				{
 					boardCoding[channelLen * sectionTagStartChannelNb + posInChannel] = 1;
@@ -290,7 +153,7 @@ public:
 					boardCoding[channelLen * sectionTagStartChannelNb + posInChannel] = -1;
 				}
 
-				int32 hpDiffStartChannelNb = 58;
+				int32 hpDiffStartChannelNb = 83;
 				if (curSectionNb == 0)
 				{
 					boardCoding[channelLen * hpDiffStartChannelNb + posInChannel] = sectionZeroTotalHp - sectionOneTotalHp;
@@ -319,12 +182,18 @@ public:
 				int32 targetGeoType[11] = { 0 };
 				int32 moveType[3] = { 0 };
 				int32 aoeType[4] = { 0 };
+				int32 skillType[20] = { 0 };
+				int32 prereqType[23] = { 0 };
+				int32 affixType[6] = { 0 };
 
 
 				GetSkillLaunchGeoCoding(allInstanceCardInfo[uid].originCardInfo.launchGeoType, launchGeoType);
 				GetSkillTargetGeoCoding(allInstanceCardInfo[uid].originCardInfo.targetGeoType, targetGeoType);
 				GetMoveTypeCoding(allInstanceCardInfo[uid].originCardInfo.moveType, moveType);
 				GetSkillAoeCoding(allInstanceCardInfo[uid].originCardInfo.aoeType, aoeType);
+				GetSkillEffectCoding(allInstanceCardInfo[uid].originCardInfo.effectType, skillType);
+				GetPrereqTypeCoding(allInstanceCardInfo[uid].originCardInfo.prereqType, prereqType);
+				GetAffixTypeCoding(allInstanceCardInfo[uid].originCardInfo.effectAffix, affixType);
 
 				// There are 10 channels, which means there are 10 images
 				// Every image size is W x H
@@ -448,6 +317,45 @@ public:
 					else
 					{
 						boardCoding[channelLen * (k + aoeTypeStartChannelNb) + posInChannel] = -aoeType[k];
+					}
+				}
+
+				int32 skillTypeStartChannelNb = 33;
+				for (int32 k = 0; k < 20; k++)
+				{
+					if (allInstanceCardInfo[uid].camp == curSectionNb)
+					{
+						boardCoding[channelLen * (k + skillTypeStartChannelNb) + posInChannel] = skillType[k];
+					}
+					else
+					{
+						boardCoding[channelLen * (k + skillTypeStartChannelNb) + posInChannel] = -skillType[k];
+					}
+				}
+
+				int32 prereqTypeStartChannelNb = 53;
+				for (int32 k = 0; k < 23; k++)
+				{
+					if (allInstanceCardInfo[uid].camp == curSectionNb)
+					{
+						boardCoding[channelLen * (k + prereqTypeStartChannelNb) + posInChannel] = prereqType[k];
+					}
+					else
+					{
+						boardCoding[channelLen * (k + prereqTypeStartChannelNb) + posInChannel] = -prereqType[k];
+					}
+				}
+
+				int32 affixTypeStartChannelNb = 76;
+				for (int32 k = 0; k < 6; k++)
+				{
+					if (allInstanceCardInfo[uid].camp == curSectionNb)
+					{
+						boardCoding[channelLen * (k + prereqTypeStartChannelNb) + posInChannel] = affixType[k];
+					}
+					else
+					{
+						boardCoding[channelLen * (k + prereqTypeStartChannelNb) + posInChannel] = -affixType[k];
 					}
 				}
 			}
@@ -1797,90 +1705,66 @@ public:
 		if (effectType == "hurt")									coding[0] = 1;
 		else if (effectType == "heal")							coding[1] = 1;
 		else if (effectType == "increaseDefence")					coding[2] = 1;
-		else if (effectType == "replaceDefence")			coding[3] = 1;
-		else if (effectType == "increaseSelfDefence")				coding[4] = 1;
-		else if (effectType == "giveTempArmor")				coding[5] = 1;
-		else if (effectType == "giveArmor")					coding[6] = 1;
-		else if (effectType == "tempArmor")					coding[7] = 1;
-		else if (effectType == "defenceHurt")						coding[8] = 1;
-		else if (effectType == "defenceHeal")						coding[9] = 1;
-		else if (effectType == "defenceDetonate")					coding[10] = 1;
-		else if (effectType == "useArmorHurt")					coding[11] = 1;
-		else if (effectType == "useArmorHeal")					coding[12] = 1;
-		else if (effectType == "armorDetonate")				coding[13] = 1;
-		else if (effectType == "armorDetonateSilence")			coding[14] = 1;
-		else if (effectType == "armorDetonateWound")		coding[15] = 1;
-		else if (effectType == "armorDetonatePoison")				coding[16] = 1;
-		else if (effectType == "armorDetonateSublime")			coding[17] = 1;
-		else if (effectType == "switchCamp")				coding[18] = 1;
-		else if (effectType == "capture")							coding[19] = 1;
-		else if (effectType == "hurtTransfer")					coding[20] = 1;
-		else if (effectType == "hurtLink")						coding[21] = 1;
-		else if (effectType == "healTransfer")					coding[22] = 1;
-		else if (effectType == "healLink")						coding[23] = 1;
-		else if (effectType == "sublimeTransfer")					coding[24] = 1;
-		else if (effectType == "silenceTransfer")					coding[25] = 1;
-		else if (effectType == "woundTransfer")				coding[26] = 1;
-		else if (effectType == "wound")						coding[27] = 1;
-		else if (effectType == "convertSublimeToWound")		coding[28] = 1;
-		else if (effectType == "transferWound")				coding[29] = 1;
-		else if (effectType == "revenge")							coding[30] = 1;
-		else if (effectType == "revengeWound")					coding[31] = 1;
-		else if (effectType == "repayHeal")					coding[32] = 1;
-		else if (effectType == "repaySublime")					coding[33] = 1;
-		else if (effectType == "devour")					coding[34] = 1;
-		else if (effectType == "devourSublime")				coding[35] = 1;
-		else if (effectType == "devourButWound")			coding[36] = 1;
-		else if (effectType == "deadWishConvert")					coding[37] = 1;
-		else if (effectType == "deadWishHurt")					coding[38] = 1;
-		else if (effectType == "deadWishSpawnUp")					coding[39] = 1;
-		else if (effectType == "deadWishSpawnDown")			coding[40] = 1;
-		else if (effectType == "deadWishSpawnRight")		coding[41] = 1;
-		else if (effectType == "deadWishSpawnLeft")			coding[42] = 1;
-		else if (effectType == "deadWishDestroyUp")			coding[43] = 1;
-		else if (effectType == "deadWishDestroyDown")				coding[44] = 1;
-		else if (effectType == "deadWishDestroyRight")			coding[45] = 1;
-		else if (effectType == "deadWishDestroyLeft")				coding[46] = 1;
-		else if (effectType == "deadWishHeal")					coding[47] = 1;
-		else if (effectType == "deadWishHealUp")			coding[48] = 1;
-		else if (effectType == "deadWishHealDown")				coding[49] = 1;
-		else if (effectType == "deadWishHealRight")			coding[50] = 1;
-		else if (effectType == "deadWishHealLeft")				coding[51] = 1;
-		else if (effectType == "deadWishSublime")					coding[52] = 1;
-		else if (effectType == "deadWishTackle")			coding[53] = 1;
-		else if (effectType == "deadWishWound")				coding[54] = 1;
-		else if (effectType == "explode")							coding[55] = 1;
-		else if (effectType == "explodeToPoison")					coding[56] = 1;
-		else if (effectType == "explodeToWound")			coding[57] = 1;
-		else if (effectType == "exchange")						coding[58] = 1;
-		else if (effectType == "drag")							coding[59] = 1;
-		else if (effectType == "push") coding[60] = 1;
-		else if (effectType == "sublime") coding[61] = 1;
-		else if (effectType == "lock") coding[62] = 1;
-		else if (effectType == "tempLock") coding[63] = 1;
-		else if (effectType == "purify") coding[64] = 1;
-		else if (effectType == "spawn") coding[65] = 1;
-		else if (effectType == "cloneUp") coding[66] = 1;
-		else if (effectType == "cloneDown") coding[67] = 1;
-		else if (effectType == "cloneRight") coding[68] = 1;
-		else if (effectType == "cloneLeft") coding[69] = 1;
-		else if (effectType == "silence") coding[70] = 1;
-		else if (effectType == "tempSilence") coding[71] = 1;
-		else if (effectType == "copyHp") coding[72] = 1;
-		else if (effectType == "summonFirstDeath") coding[73] = 1;
-		else if (effectType == "exchangeFirstDeath") coding[74] = 1;
-		else if (effectType == "tackle") coding[75] = 1;
-		else if (effectType == "summonFirstPile") coding[76] = 1;
-		else if (effectType == "exchangeFirstPile") coding[77] = 1;
-		else if (effectType == "duel") coding[78] = 1;
-		else if (effectType == "recover") coding[79] = 1;
-		else if (effectType == "assignHp") coding[80] = 1;
-		else if (effectType == "copyGraveFirstHp") coding[81] = 1;
-		else if (effectType == "healFromWound") coding[82] = 1;
-		else if (effectType == "copyFirstGraveHp") coding[83] = 1;
-		else if (effectType == "increaseFirstDeathHpDefence") coding[84] = 1;
-		else if (effectType == "increaseFirstPileHp") coding[85] = 1;
+		else if (effectType == "giveArmor")					coding[3] = 1;
+		else if (effectType == "switchCamp")				coding[4] = 1;
+		else if (effectType == "capture")							coding[5] = 1;
+		else if (effectType == "wound")						coding[6] = 1;
+		else if (effectType == "revenge")							coding[7] = 1;
+		else if (effectType == "revengeWound")					coding[8] = 1;
+		else if (effectType == "repayHeal")					coding[9] = 1;
+		else if (effectType == "devour")					coding[10] = 1;
+		else if (effectType == "explode")							coding[11] = 1;
+		else if (effectType == "sublime") coding[12] = 1;
+		else if (effectType == "spawn") coding[13] = 1;
+		else if (effectType == "clone") coding[14] = 1;
+		else if (effectType == "silence") coding[15] = 1;
+		else if (effectType == "summonFirstDeath") coding[16] = 1;
+		else if (effectType == "exchangeFirstDeath") coding[17] = 1;
+		else if (effectType == "duel") coding[18] = 1;
+		else if (effectType == "recover") coding[19] = 1;
 
+	}
+
+	void GetAffixTypeCoding(FString affixType, int32* coding)
+	{
+		if (affixType == "sameLaunchRowNb") coding[0] = 1;
+		else if (affixType == "sameRowNb") coding[1] = 1;
+		else if (affixType == "sameColNb") coding[2] = 1;
+		else if (affixType == "useSelfDefence_2") coding[3] = 1;
+		else if (affixType == "graveCardNb") coding[4] = 1;
+		else if (affixType == "useTargetArmor") coding[5] = 1;
+
+	}
+
+	void GetPrereqTypeCoding(FString prereqType, int32* coding)
+	{
+		if (prereqType == "selfSameRowDefenceMore") coding[0] = 1;
+		else if (prereqType == "sameRowDefenceMore") coding[1] = 1;
+		else if (prereqType == "selfDefenceMore") coding[2] = 1;
+		else if (prereqType == "maxDefenceIsSelf") coding[3] = 1;
+		else if (prereqType == "defenceDiffMore") coding[4] = 1;
+		else if (prereqType == "threeDefenceMore") coding[5] = 1;
+		else if (prereqType == "sameRowSelfDefenceMoreOppo") coding[6] = 1;
+		else if (prereqType == "sameColSelfDefenceMoreOppo") coding[7] = 1;
+
+		else if (prereqType == "hasArmor") coding[8] = 1;
+
+		else if (prereqType == "handCardMore") coding[9] = 1;
+		else if (prereqType == "handCardLess") coding[10] = 1;
+		else if (prereqType == "selfGraveMore") coding[11] = 1;
+
+		else if (prereqType == "sameRowMore") coding[12] = 1;
+		else if (prereqType == "sameColMore") coding[13] = 1;
+		else if (prereqType == "sameColSelfCardMoreThanOppo") coding[14] = 1;
+		else if (prereqType == "selfHealCardMore") coding[15] = 1;
+		
+		else if (prereqType == "sameHp") coding[16] = 1;
+		else if (prereqType == "hpDiffMore") coding[17] = 1;
+		else if (prereqType == "maxHpIsSelf") coding[18] = 1;
+		else if (prereqType == "targetHpLess") coding[19] = 1;
+		else if (prereqType == "selfHurt") coding[20] = 1;
+		else if (prereqType == "hurtCardMore") coding[21] = 1;
+		else if (prereqType == "nextToHurt") coding[22] = 1;
 	}
 
 

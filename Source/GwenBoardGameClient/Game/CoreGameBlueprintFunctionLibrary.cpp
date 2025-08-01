@@ -574,7 +574,7 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::LaunchPlayCardSkillDict(
         {
             effectResultDict = Heal(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY, isVirtual, sectionZeroScore, sectionOneScore);
         }
-        else if (effectInfo.effectType == "IncreaseDefence")
+        else if (effectInfo.effectType == "increaseDefence")
         {
             effectResultDict = IncreaseDefence(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY, isVirtual);
         }

@@ -6,8 +6,8 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "GlobalConstFunctionLibrary.generated.h"
 
-#define StateCodingTotalCHW 3304
-#define StateCodingC 59
+#define StateCodingTotalCHW 4704
+#define StateCodingC 84
 #define StateCodingH 14
 #define StateCodingW 4
 
