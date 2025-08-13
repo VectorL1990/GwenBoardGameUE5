@@ -30,6 +30,11 @@ void ACoreCardGameModeBase::BeginPlay()
 		sectionOneHandBattleCards[i]->SetActorLocation(sectionOneCardLocations[i]);
 		sectionOneHandBattleCards[i]->SetActorRotation(sectionOneCardRots[i]);
 	}
+
+	FName testTag = "testMotionCard";
+	TArray<AActor*> testTagCards;
+	UGameplayStatics::GetAllActorsWithTag(this, testTag, testTagCards);
+	testMotionCard = testTagCards[0];
 }
 
 void ACoreCardGameModeBase::InitEvents()
@@ -54,6 +59,9 @@ void ACoreCardGameModeBase::InitEvents()
 
 void ACoreCardGameModeBase::Tick(float deltaTime)
 {
+	TestCardMotion(deltaTime);
+	TestCardHorizonMotion(deltaTime);
+	TestCardRotation(deltaTime);
 	MoveRearrangeCards();
 
 	if (isSinglePlay)
@@ -1201,5 +1209,197 @@ void ACoreCardGameModeBase::onSyncTimeInterval(const UKBEventData* eventData)
 void ACoreCardGameModeBase::SpawnSelectCard()
 {
 
+}
+
+void ACoreCardGameModeBase::TestTriggerCardMotion(FVector2D targetHorizonTarget)
+{
+	testCardMotionStage = ETestCardMotionStage::RiseAcc;
+	testMotionCardHorizonTarget = targetHorizonTarget;
+
+	FVector2D curHorizonLoc = FVector2D(testMotionCard->GetActorLocation().X, testMotionCard->GetActorLocation().Y);
+	float xOffset = targetHorizonTarget.X - curHorizonLoc.X;
+	float yOffset = targetHorizonTarget.Y - curHorizonLoc.Y;
+
+	testMotionCardXOffset = FMath::Abs(xOffset);
+	testMotionCardYOffset = FMath::Abs(yOffset);
+
+	testMotionCardHorizonXAcc = xOffset / (testMotionHorizonT * testMotionHorizonT);
+	testMotionCardHorizonYAcc = yOffset / (testMotionHorizonT * testMotionHorizonT);
+
+	testCardHorizonXMotionStage = ETestCardHorizonMotionStage::Acc;
+	testCardHorizonYMotionStage = ETestCardHorizonMotionStage::Acc;
+}
+
+void ACoreCardGameModeBase::TestTriggerCardRotation()
+{
+	testCardRotationStage = ETestCardRotationStage::PosRotate;
+	testMotionCardNextRotationPitch = testMotionCardMaxRotationPitch;
+}
+
+void ACoreCardGameModeBase::TestCardRotation(float dT)
+{
+	if (FMath::Abs(testMotionCardNextRotationPitch) <= 1.0)
+	{
+		testCardRotationStage = ETestCardRotationStage::Default;
+		FRotator rot = FRotator(0.0, 0.0, 0.0);
+		testMotionCard->SetActorRotation(rot);
+	}
+	else
+	{
+		if (testCardRotationStage == ETestCardRotationStage::PosRotate)
+		{
+			if (testMotionCardCurRotationPitch >= testMotionCardNextRotationPitch)
+			{
+				testMotionCardCurRotationPitch = testMotionCardNextRotationPitch;
+				testMotionCardNextRotationPitch = -0.5 * testMotionCardNextRotationPitch;
+				testCardRotationStage = ETestCardRotationStage::NegRotate;
+			}
+			else
+			{
+				testMotionCardCurRotationPitch += testMotionCardRotateSpeed;
+			}
+		}
+		else if (testCardRotationStage == ETestCardRotationStage::NegRotate)
+		{
+			if (testMotionCardCurRotationPitch <= testMotionCardNextRotationPitch)
+			{
+				testMotionCardCurRotationPitch = testMotionCardNextRotationPitch;
+				testMotionCardNextRotationPitch = -0.5 * testMotionCardNextRotationPitch;
+				testCardRotationStage = ETestCardRotationStage::PosRotate;
+			}
+			else
+			{
+				testMotionCardCurRotationPitch -= testMotionCardRotateSpeed;
+			}
+		}
+		FRotator rot = FRotator(testMotionCardCurRotationPitch, testMotionCardCurRotationPitch*0.15, testMotionCardCurRotationPitch*0.15);
+		testMotionCard->SetActorRotation(rot);
+	}
+}
+
+void ACoreCardGameModeBase::TestCardHorizonMotion(float dT)
+{
+	if (testCardHorizonXMotionStage == ETestCardHorizonMotionStage::Acc)
+	{
+		float xMotion = testMotionCardHorizonXSpeed * dT + 0.5 * testMotionCardHorizonXAcc * dT * dT;
+		testMotionCardXAccMotion += FMath::Abs(xMotion);
+		float xPos = testMotionCard->GetActorLocation().X + xMotion;
+		testMotionCardHorizonXSpeed += testMotionCardHorizonXAcc * dT;
+		if (testMotionCardXAccMotion >= testMotionCardXOffset / 2.0)
+		{
+			testCardHorizonXMotionStage = ETestCardHorizonMotionStage::Dec;
+		}
+		testMotionCardCurXLoc = xPos;
+	}
+	else if (testCardHorizonXMotionStage == ETestCardHorizonMotionStage::Dec)
+	{
+		float xMotion = testMotionCardHorizonXSpeed * dT + 0.5 * testMotionCardHorizonXAcc * dT * dT;
+		testMotionCardXAccMotion += FMath::Abs(xMotion);
+		float xPos = testMotionCard->GetActorLocation().X + xMotion;
+		testMotionCardHorizonXSpeed -= testMotionCardHorizonXAcc * dT;
+		if (testMotionCardXAccMotion >= testMotionCardXOffset)
+		{
+			testCardHorizonXMotionStage = ETestCardHorizonMotionStage::Default;
+		}
+		testMotionCardCurXLoc = xPos;
+	}
+
+
+	if (testCardHorizonYMotionStage == ETestCardHorizonMotionStage::Acc)
+	{
+		float yMotion = testMotionCardHorizonYSpeed * dT + 0.5 * testMotionCardHorizonYAcc * dT * dT;
+		testMotionCardYAccMotion += FMath::Abs(yMotion);
+		float yPos = testMotionCard->GetActorLocation().Y + yMotion;
+		testMotionCardHorizonYSpeed += testMotionCardHorizonYAcc * dT;
+		if (testMotionCardYAccMotion >= testMotionCardHorizonYAcc / 2.0)
+		{
+			testCardHorizonYMotionStage = ETestCardHorizonMotionStage::Dec;
+		}
+		testMotionCardCurYLoc = yPos;
+	}
+	else if (testCardHorizonYMotionStage == ETestCardHorizonMotionStage::Dec)
+	{
+		float yMotion = testMotionCardHorizonYSpeed * dT + 0.5 * testMotionCardHorizonYAcc * dT * dT;
+		testMotionCardYAccMotion += FMath::Abs(yMotion);
+		float yPos = testMotionCard->GetActorLocation().Y + yMotion;
+		testMotionCardHorizonYSpeed -= testMotionCardHorizonYAcc * dT;
+		if (testMotionCardYAccMotion >= testMotionCardHorizonYAcc)
+		{
+			testCardHorizonYMotionStage = ETestCardHorizonMotionStage::Dec;
+		}
+		testMotionCardCurYLoc = yPos;
+	}
+}
+
+void ACoreCardGameModeBase::TestCardMotion(float dT)
+{
+	if (testCardMotionStage == ETestCardMotionStage::RiseAcc)
+	{
+		float rising = testMotionCard->GetActorLocation().Z + testMotionCardSpeed * dT + 0.5 * testMotionAcc * dT * dT;
+		testMotionCardSpeed += testMotionAcc * dT;
+		if (testMotionCardSpeed >= maxMotionCardSpeed)
+		{
+			testMotionCardSpeed = maxMotionCardSpeed;
+			testCardMotionStage = ETestCardMotionStage::RiseDec;
+		}
+		FVector des = FVector(testMotionCardCurXLoc, testMotionCardCurYLoc, rising);
+		testMotionCard->SetActorLocation(des);
+	}
+	else if (testCardMotionStage == ETestCardMotionStage::RiseDec)
+	{
+		float rising = testMotionCard->GetActorLocation().Z + testMotionCardSpeed * dT + 0.5 * testMotionAcc * dT * dT;
+		testMotionCardSpeed -= testMotionAcc * dT;
+		if (testMotionCardSpeed <= 0.0)
+		{
+			testMotionCardSpeed = 0.0;
+			testCardMotionStage = ETestCardMotionStage::DropAcc;
+		}
+		FVector des = FVector(testMotionCardCurXLoc, testMotionCardCurYLoc, rising);
+		testMotionCard->SetActorLocation(des);
+	}
+	else if (testCardMotionStage == ETestCardMotionStage::DropAcc)
+	{
+		float drop = testMotionCard->GetActorLocation().Z - testMotionCardSpeed * dT - 0.5 * testDropAcc * dT * dT;
+		testMotionCardSpeed += testDropAcc * dT;
+		FVector des = FVector(testMotionCardCurXLoc, testMotionCardCurYLoc, drop);
+		testMotionCard->SetActorLocation(des);
+		if (des.Z <= 120.0)
+		{
+			testCardMotionStage = ETestCardMotionStage::RebounceUp;
+			des.Z = 120.0;
+			testMotionCard->SetActorLocation(des);
+			testMotionCardSpeed = testMotionCardSpeed * testRebounceSpeedLost;
+
+			TestTriggerCardRotation();
+		}
+
+
+	}
+	else if (testCardMotionStage == ETestCardMotionStage::RebounceUp)
+	{
+		float rebounce = testMotionCard->GetActorLocation().Z + testMotionCardSpeed * dT + 0.5 * testRebounceAcc * dT * dT;
+		testMotionCardSpeed -= testRebounceAcc * dT;
+		FVector des = FVector(testMotionCardCurXLoc, testMotionCardCurYLoc, rebounce);
+		testMotionCard->SetActorLocation(des);
+		if (testMotionCardSpeed <= 0.0)
+		{
+			testMotionCardSpeed = 0.0;
+			testCardMotionStage = ETestCardMotionStage::RebounceDown;
+		}
+	}
+	else if (testCardMotionStage == ETestCardMotionStage::RebounceDown)
+	{
+		float drop = testMotionCard->GetActorLocation().Z - testMotionCardSpeed * dT - 0.5 * testRebounceAcc * dT * dT;
+		testMotionCardSpeed += testRebounceAcc * dT;
+		FVector des = FVector(testMotionCardCurXLoc, testMotionCardCurYLoc, drop);
+		testMotionCard->SetActorLocation(des);
+		if (des.Z <= 120.0)
+		{
+			testCardMotionStage = ETestCardMotionStage::Default;
+			des.Z = 120.0;
+			testMotionCard->SetActorLocation(des);
+			testMotionCardSpeed = 0.0;
+		}
+	}
 }
 

@@ -357,4 +357,85 @@ public:
 
     uint8 maxChangeSelectCardNb = 3;
     uint8 curChangeSelectCardNb = 0;
+
+
+
+    AActor* testMotionCard;
+    ETestCardMotionStage testCardMotionStage = ETestCardMotionStage::Default;
+
+    ETestCardRotationStage testCardRotationStage = ETestCardRotationStage::Default;
+
+    ETestCardHorizonMotionStage testCardHorizonXMotionStage = ETestCardHorizonMotionStage::Default;
+
+    ETestCardHorizonMotionStage testCardHorizonYMotionStage = ETestCardHorizonMotionStage::Default;
+
+    float testMotionCardXOffset = 0.0;
+
+    float testMotionCardYOffset = 0.0;
+
+    float testMotionCardXAccMotion = 0.0;
+
+    float testMotionCardYAccMotion = 0.0;
+
+    UPROPERTY(EditDefaultsOnly)
+    float testMotionAcc = 100;
+
+    UPROPERTY(EditDefaultsOnly)
+    float testDropAcc = 100;
+
+    UPROPERTY(EditDefaultsOnly)
+    float testRebounceAcc = 100;
+
+    UPROPERTY(EditDefaultsOnly)
+    float testRebounceSpeedLost = 0.5;
+
+    float testMotionCardSpeed = 0.0;
+
+    float testMotionCardHorizonXSpeed = 0.0;
+
+    float testMotionCardHorizonYSpeed = 0.0;
+
+    UPROPERTY(EditDefaultsOnly)
+    float maxMotionCardSpeed = 100.0;
+
+    UPROPERTY(EditDefaultsOnly)
+    float testMotionCardRotationAttenuation = 0.5;
+
+    UPROPERTY(EditDefaultsOnly)
+    float testMotionCardRotateSpeed = 0.4;
+
+    UPROPERTY(EditDefaultsOnly)
+    float testMotionCardMaxRotationPitch = 20.0;
+
+    float testMotionCardCurRotationPitch = 0.0;
+
+    float testMotionCardNextRotationPitch = 0.0;
+
+    float testMotionCardHorizonXAcc = 0.0;
+
+    float testMotionCardHorizonYAcc = 0.0;
+
+    FVector2D testMotionCardHorizonTarget = FVector2D::Zero();
+
+    UPROPERTY(EditDefaultsOnly)
+    float testMotionHorizonT = 1.0;
+
+    float testMotionCardCurXLoc = 0.0;
+
+    float testMotionCardCurYLoc = 0.0;
+
+    UFUNCTION(BlueprintCallable)
+    void TestTriggerCardMotion(FVector2D targetHorizonTarget);
+
+    UFUNCTION(BlueprintCallable)
+    void TestTriggerCardRotation();
+
+    UFUNCTION(BlueprintCallable)
+    void TestCardHorizonMotion(float dT);
+
+    UFUNCTION(BlueprintCallable)
+    void TestCardMotion(float dT);
+
+    UFUNCTION(BlueprintCallable)
+    void TestCardRotation(float dT);
 };

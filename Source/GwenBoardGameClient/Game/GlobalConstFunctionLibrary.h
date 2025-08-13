@@ -18,6 +18,33 @@ enum class EAtkDistanceType : uint8
     Far = 1,
 };
 
+UENUM(BlueprintType)
+enum class ETestCardMotionStage : uint8
+{
+    Default = 0,
+    RiseAcc = 1,
+    RiseDec = 2,
+    DropAcc = 3,
+    RebounceUp = 4,
+    RebounceDown = 5,
+};
+
+UENUM(BlueprintType)
+enum class ETestCardRotationStage : uint8
+{
+    Default = 0,
+    PosRotate = 1,
+    NegRotate = 2,
+};
+
+UENUM(BlueprintType)
+enum class ETestCardHorizonMotionStage : uint8
+{
+    Default = 0,
+    Acc = 1,
+    Dec = 2,
+};
+
 
 USTRUCT(BlueprintType, Blueprintable)
 struct FCardInfo
