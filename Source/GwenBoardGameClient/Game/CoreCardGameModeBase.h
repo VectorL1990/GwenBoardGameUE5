@@ -424,6 +424,9 @@ public:
 
     float testMotionCardCurYLoc = 0.0;
 
+    UPROPERTY(EditDefaultsOnly)
+    float testMotionCardLerp = 0.2;
+
     UFUNCTION(BlueprintCallable)
     void TestTriggerCardMotion(FVector2D targetHorizonTarget);
 

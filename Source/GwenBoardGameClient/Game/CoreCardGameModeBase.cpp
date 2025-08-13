@@ -1279,11 +1279,18 @@ void ACoreCardGameModeBase::TestCardRotation(float dT)
 
 void ACoreCardGameModeBase::TestCardHorizonMotion(float dT)
 {
+	
+}
+
+void ACoreCardGameModeBase::TestCardMotion(float dT)
+{
+	/*
 	if (testCardHorizonXMotionStage == ETestCardHorizonMotionStage::Acc)
 	{
 		float xMotion = testMotionCardHorizonXSpeed * dT + 0.5 * testMotionCardHorizonXAcc * dT * dT;
 		testMotionCardXAccMotion += FMath::Abs(xMotion);
 		float xPos = testMotionCard->GetActorLocation().X + xMotion;
+		//float xPos = testMotionCard->GetActorLocation().X;
 		testMotionCardHorizonXSpeed += testMotionCardHorizonXAcc * dT;
 		if (testMotionCardXAccMotion >= testMotionCardXOffset / 2.0)
 		{
@@ -1296,10 +1303,12 @@ void ACoreCardGameModeBase::TestCardHorizonMotion(float dT)
 		float xMotion = testMotionCardHorizonXSpeed * dT + 0.5 * testMotionCardHorizonXAcc * dT * dT;
 		testMotionCardXAccMotion += FMath::Abs(xMotion);
 		float xPos = testMotionCard->GetActorLocation().X + xMotion;
+		//float xPos = testMotionCard->GetActorLocation().X;
 		testMotionCardHorizonXSpeed -= testMotionCardHorizonXAcc * dT;
 		if (testMotionCardXAccMotion >= testMotionCardXOffset)
 		{
 			testCardHorizonXMotionStage = ETestCardHorizonMotionStage::Default;
+			//xPos = testMotionCardHorizonTarget.X;
 		}
 		testMotionCardCurXLoc = xPos;
 	}
@@ -1310,6 +1319,7 @@ void ACoreCardGameModeBase::TestCardHorizonMotion(float dT)
 		float yMotion = testMotionCardHorizonYSpeed * dT + 0.5 * testMotionCardHorizonYAcc * dT * dT;
 		testMotionCardYAccMotion += FMath::Abs(yMotion);
 		float yPos = testMotionCard->GetActorLocation().Y + yMotion;
+		//float yPos = testMotionCard->GetActorLocation().Y;
 		testMotionCardHorizonYSpeed += testMotionCardHorizonYAcc * dT;
 		if (testMotionCardYAccMotion >= testMotionCardHorizonYAcc / 2.0)
 		{
@@ -1322,17 +1332,29 @@ void ACoreCardGameModeBase::TestCardHorizonMotion(float dT)
 		float yMotion = testMotionCardHorizonYSpeed * dT + 0.5 * testMotionCardHorizonYAcc * dT * dT;
 		testMotionCardYAccMotion += FMath::Abs(yMotion);
 		float yPos = testMotionCard->GetActorLocation().Y + yMotion;
+		//float yPos = testMotionCard->GetActorLocation().Y;
 		testMotionCardHorizonYSpeed -= testMotionCardHorizonYAcc * dT;
 		if (testMotionCardYAccMotion >= testMotionCardHorizonYAcc)
 		{
-			testCardHorizonYMotionStage = ETestCardHorizonMotionStage::Dec;
+			testCardHorizonYMotionStage = ETestCardHorizonMotionStage::Default;
+			//yPos = testMotionCardHorizonTarget.Y;
 		}
 		testMotionCardCurYLoc = yPos;
 	}
-}
+	*/
 
-void ACoreCardGameModeBase::TestCardMotion(float dT)
-{
+
+	if (testCardHorizonXMotionStage == ETestCardHorizonMotionStage::Acc)
+	{
+		FVector2D horizonLoc = FVector2D(testMotionCard->GetActorLocation().X, testMotionCard->GetActorLocation().Y);
+		FVector2D lerpLoc = FMath::Lerp(horizonLoc, testMotionCardHorizonTarget, testMotionCardLerp);
+		testMotionCardCurXLoc = lerpLoc.X;
+		testMotionCardCurYLoc = lerpLoc.Y;
+	}
+
+
+
+
 	if (testCardMotionStage == ETestCardMotionStage::RiseAcc)
 	{
 		float rising = testMotionCard->GetActorLocation().Z + testMotionCardSpeed * dT + 0.5 * testMotionAcc * dT * dT;
