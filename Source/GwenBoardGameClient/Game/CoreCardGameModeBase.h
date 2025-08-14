@@ -369,6 +369,8 @@ public:
 
     ETestCardHorizonMotionStage testCardHorizonYMotionStage = ETestCardHorizonMotionStage::Default;
 
+    float testMotionCardRiseTop = 0.0;
+
     float testMotionCardXOffset = 0.0;
 
     float testMotionCardYOffset = 0.0;
@@ -426,6 +428,12 @@ public:
 
     UPROPERTY(EditDefaultsOnly)
     float testMotionCardLerp = 0.2;
+
+    float testMotionCurCountT = 0.0;
+
+    float testMotionRiseT = 0.0;
+
+    float testMotionTotalT = 0.0;
 
     UFUNCTION(BlueprintCallable)
     void TestTriggerCardMotion(FVector2D targetHorizonTarget);
