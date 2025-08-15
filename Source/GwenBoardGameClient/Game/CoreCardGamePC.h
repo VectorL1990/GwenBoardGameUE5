@@ -35,6 +35,9 @@ public:
     UFUNCTION(BlueprintCallable)
     void DealLeftClick();
 
+    UFUNCTION(BlueprintCallable)
+    void DealRightClick();
+
     void InitSelectCardCamera();
 
     void ReceiveFinishCardSelection();

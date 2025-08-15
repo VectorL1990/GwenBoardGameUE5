@@ -54,6 +54,7 @@ void ACoreCardGamePC::DealHover()
             coreCardGameMode->RecoverHoverCardLocations();
             bool findCard = false;
 
+            // Is it hand card of section zero ???
             for (int32 i = 0; i < coreCardGameMode->sectionZeroHandBattleCards.Num(); i++)
             {
                 if (coreCardGameMode->sectionZeroHandBattleCards[i] == hitResult.GetComponent()->GetOwner())
@@ -68,6 +69,7 @@ void ACoreCardGamePC::DealHover()
                 }
             }
 
+            // Is it hand card of section one ???
             if (!findCard)
             {
                 for (int32 i = 0; i < coreCardGameMode->sectionOneHandBattleCards.Num(); i++)
@@ -79,6 +81,21 @@ void ACoreCardGamePC::DealHover()
                         battleWidget->SetupCardDetail(coreCardGameMode->curHighlightCard->GetActorLocation(),
                             coreCardGameMode->sectionOneHandBattleCards[i]->cardName);
                         coreCardGameMode->CalculateHoverCardLocations(1, i);
+                        findCard = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!findCard)
+            {
+                for (TMap<int32, ACard*>::TConstIterator iter = coreCardGameMode->allBattleCards.CreateConstIterator(); iter; ++iter)
+                {
+                    if (iter->Value == hitResult.GetComponent()->GetOwner())
+                    {
+                        coreCardGameMode->curHighlightCard = iter->Value;
+                        iter->Value->Highlight();
+                        battleWidget->SetupCardDetail(iter->Value->GetActorLocation(), iter->Value->cardName);
                         findCard = true;
                         break;
                     }
@@ -144,6 +161,12 @@ void ACoreCardGamePC::DealLeftClick()
                 coreCardGameMode->selectPlayCard = card;
                 coreCardGameMode->SetSelectPlayCard(card->camp, card);
             }
+            else if (card->cardStatus == BattleCardStatus::InBattle)
+            {
+                AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
+                ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
+                coreCardGameMode->selectBoardCard = card;
+            }
         }
         else if (hitResult.GetComponent() && hitResult.GetComponent()->ComponentHasTag(FName(TEXT("BoardGrid"))))
         {
@@ -165,6 +188,7 @@ void ACoreCardGamePC::DealLeftClick()
             AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
             ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
             coreCardGameMode->selectPlayCard = NULL;
+            coreCardGameMode->selectBoardCard = NULL;
             coreCardGameMode->RecoverSelectPlayCard();
         }
     }
@@ -173,6 +197,47 @@ void ACoreCardGamePC::DealLeftClick()
         AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
         ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
         coreCardGameMode->selectPlayCard = NULL;
+        coreCardGameMode->selectBoardCard = NULL;
+        coreCardGameMode->RecoverSelectPlayCard();
+    }
+}
+
+void ACoreCardGamePC::DealRightClick()
+{
+    FHitResult hitResult;
+    GetRaycastObj(hitResult);
+    if (hitResult.bBlockingHit)
+    {
+        if (hitResult.GetComponent() && hitResult.GetComponent()->ComponentHasTag(FName(TEXT("BoardGrid"))))
+        {
+            DrawDebugSphere(GetWorld(), hitResult.Location, 50.0, 10, FColor::Cyan, false, 1.0);
+            AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
+            ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
+            if (coreCardGameMode->selectBoardCard)
+            {
+                ABoardGrid* grid = Cast<ABoardGrid>(hitResult.GetActor());
+                int32 launchX = coreCardGameMode->selectBoardCard->gridX;
+                int32 launchY = coreCardGameMode->selectBoardCard->gridY;
+                int32 targetX = grid->gridX;
+                int32 targetY = grid->gridY + UGlobalConstFunctionLibrary::graveCardSectionRow + UGlobalConstFunctionLibrary::playCardSectionRow;
+                coreCardGameMode->TestTriggerAction(coreCardGameMode->selectBoardCard->camp, launchX, launchY, targetX, targetY, ActionType::Move);
+            }
+        }
+        else
+        {
+            AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
+            ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
+            coreCardGameMode->selectPlayCard = NULL;
+            coreCardGameMode->selectBoardCard = NULL;
+            coreCardGameMode->RecoverSelectPlayCard();
+        }
+    }
+    else
+    {
+        AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
+        ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
+        coreCardGameMode->selectPlayCard = NULL;
+        coreCardGameMode->selectBoardCard = NULL;
         coreCardGameMode->RecoverSelectPlayCard();
     }
 }

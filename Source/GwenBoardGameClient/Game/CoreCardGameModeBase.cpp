@@ -136,6 +136,10 @@ void ACoreCardGameModeBase::Tick(float deltaTime)
 								allSectionOneHandCardIds.Add(cardId);
 							}
 						}
+						else
+						{
+							allBattleCards[cardId]->cardStatus = BattleCardStatus::InBattle;
+						}
 					}
 				}
 				

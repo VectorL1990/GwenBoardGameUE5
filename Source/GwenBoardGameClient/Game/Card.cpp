@@ -100,3 +100,23 @@ void ACard::DeHighlight()
 
 }
 
+void ACard::TriggerCardMotion(FVector2D targetHorizonTarget)
+{
+
+}
+
+void ACard::TriggerCardRotation()
+{
+
+}
+
+void ACard::CardMotion(float dT)
+{
+
+}
+
+void ACard::CardRotation(float dT)
+{
+
+}
+

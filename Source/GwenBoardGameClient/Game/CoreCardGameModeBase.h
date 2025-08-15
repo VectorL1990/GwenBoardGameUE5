@@ -127,6 +127,8 @@ public:
 
     ACard* selectPlayCard;
 
+    ACard* selectBoardCard;
+
     TMap<CameraType, ABattleCamera*> camerasMap;
 
     UPROPERTY(EditAnywhere)
@@ -361,13 +363,13 @@ public:
 
 
     AActor* testMotionCard;
-    ETestCardMotionStage testCardMotionStage = ETestCardMotionStage::Default;
+    ECardVerticalMotionStage testCardMotionStage = ECardVerticalMotionStage::Default;
 
-    ETestCardRotationStage testCardRotationStage = ETestCardRotationStage::Default;
+    ECardRotationStage testCardRotationStage = ECardRotationStage::Default;
 
-    ETestCardHorizonMotionStage testCardHorizonXMotionStage = ETestCardHorizonMotionStage::Default;
+    ECardHorizonMotionStage testCardHorizonXMotionStage = ECardHorizonMotionStage::Default;
 
-    ETestCardHorizonMotionStage testCardHorizonYMotionStage = ETestCardHorizonMotionStage::Default;
+    ECardHorizonMotionStage testCardHorizonYMotionStage = ECardHorizonMotionStage::Default;
 
     float testMotionCardRiseTop = 0.0;
 

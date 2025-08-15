@@ -19,7 +19,7 @@ enum class EAtkDistanceType : uint8
 };
 
 UENUM(BlueprintType)
-enum class ETestCardMotionStage : uint8
+enum class ECardVerticalMotionStage : uint8
 {
     Default = 0,
     RiseAcc = 1,
@@ -30,7 +30,7 @@ enum class ETestCardMotionStage : uint8
 };
 
 UENUM(BlueprintType)
-enum class ETestCardRotationStage : uint8
+enum class ECardRotationStage : uint8
 {
     Default = 0,
     PosRotate = 1,
@@ -38,7 +38,7 @@ enum class ETestCardRotationStage : uint8
 };
 
 UENUM(BlueprintType)
-enum class ETestCardHorizonMotionStage : uint8
+enum class ECardHorizonMotionStage : uint8
 {
     Default = 0,
     Acc = 1,
