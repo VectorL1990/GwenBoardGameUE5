@@ -45,6 +45,23 @@ enum class ECardHorizonMotionStage : uint8
     Dec = 2,
 };
 
+UENUM(BlueprintType)
+enum class ECardFloatMotionStage : uint8
+{
+    Default = 0,
+    Acc = 1,
+    Dec = 2,
+};
+
+enum class ECardFloatRotateStage : uint8
+{
+    Default,
+    FirstStageIncrease,
+    FirstStageDecrease,
+    SecondStageIncrease,
+    SecondStageDecrease
+};
+
 
 USTRUCT(BlueprintType, Blueprintable)
 struct FCardInfo

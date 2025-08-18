@@ -87,6 +87,7 @@ void ACoreCardGamePC::DealHover()
                 }
             }
 
+            // Is it battle card on board ???
             if (!findCard)
             {
                 for (TMap<int32, ACard*>::TConstIterator iter = coreCardGameMode->allBattleCards.CreateConstIterator(); iter; ++iter)
@@ -95,6 +96,7 @@ void ACoreCardGamePC::DealHover()
                     {
                         coreCardGameMode->curHighlightCard = iter->Value;
                         iter->Value->Highlight();
+                        iter->Value->TriggerHoverRotate();
                         battleWidget->SetupCardDetail(iter->Value->GetActorLocation(), iter->Value->cardName);
                         findCard = true;
                         break;
@@ -166,6 +168,7 @@ void ACoreCardGamePC::DealLeftClick()
                 AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
                 ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
                 coreCardGameMode->selectBoardCard = card;
+                card->TriggerSelectFloat();
             }
         }
         else if (hitResult.GetComponent() && hitResult.GetComponent()->ComponentHasTag(FName(TEXT("BoardGrid"))))
@@ -188,7 +191,11 @@ void ACoreCardGamePC::DealLeftClick()
             AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
             ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
             coreCardGameMode->selectPlayCard = NULL;
-            coreCardGameMode->selectBoardCard = NULL;
+            if (coreCardGameMode->selectBoardCard)
+            {
+                coreCardGameMode->selectBoardCard->RecoverSelectOrigin();
+                coreCardGameMode->selectBoardCard = NULL;
+            }
             coreCardGameMode->RecoverSelectPlayCard();
         }
     }
@@ -197,7 +204,11 @@ void ACoreCardGamePC::DealLeftClick()
         AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
         ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
         coreCardGameMode->selectPlayCard = NULL;
-        coreCardGameMode->selectBoardCard = NULL;
+        if (coreCardGameMode->selectBoardCard)
+        {
+            coreCardGameMode->selectBoardCard->RecoverSelectOrigin();
+            coreCardGameMode->selectBoardCard = NULL;
+        }
         coreCardGameMode->RecoverSelectPlayCard();
     }
 }
@@ -228,7 +239,11 @@ void ACoreCardGamePC::DealRightClick()
             AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
             ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
             coreCardGameMode->selectPlayCard = NULL;
-            coreCardGameMode->selectBoardCard = NULL;
+            if (coreCardGameMode->selectBoardCard)
+            {
+                coreCardGameMode->selectBoardCard->RecoverSelectOrigin();
+                coreCardGameMode->selectBoardCard = NULL;
+            }
             coreCardGameMode->RecoverSelectPlayCard();
         }
     }
@@ -237,7 +252,11 @@ void ACoreCardGamePC::DealRightClick()
         AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
         ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
         coreCardGameMode->selectPlayCard = NULL;
-        coreCardGameMode->selectBoardCard = NULL;
+        if (coreCardGameMode->selectBoardCard)
+        {
+            coreCardGameMode->selectBoardCard->RecoverSelectOrigin();
+            coreCardGameMode->selectBoardCard = NULL;
+        }
         coreCardGameMode->RecoverSelectPlayCard();
     }
 }

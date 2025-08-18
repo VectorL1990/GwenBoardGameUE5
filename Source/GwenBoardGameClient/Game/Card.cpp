@@ -36,6 +36,8 @@ void ACard::Tick(float DeltaTime)
 
 	CardMotion(DeltaTime);
 	CardRotation(DeltaTime);
+	SelectFloatingRise(DeltaTime);
+	SelectFloatingRotate(DeltaTime);
 }
 
 void ACard::NotifyInit_Implementation()
@@ -311,6 +313,124 @@ void ACard::CardRotation(float dT)
 		}
 		FRotator rot = FRotator(cardCurRotationPitch, cardCurRotationPitch * 0.15, cardCurRotationPitch * 0.15);
 		SetActorRotation(rot);
+	}
+}
+
+void ACard::TriggerSelectFloat()
+{
+	cardFloatMotionStage = ECardFloatMotionStage::Acc;
+	cardFloatCurSpeed = 0.0;
+	cardFloatOriginHeight = GetActorLocation().Z;
+}
+
+void ACard::RecoverSelectOrigin()
+{
+	cardFloatMotionStage = ECardFloatMotionStage::Default;
+	cardFloatCurSpeed = 0.0;
+	FVector originLoc = FVector(GetActorLocation().X, GetActorLocation().Y, cardFloatOriginHeight);
+	SetActorLocation(originLoc);
+}
+
+void ACard::TriggerHoverRotate()
+{
+	if (cardFloatRotateStage == ECardFloatRotateStage::Default)
+	{
+		cardFloatRotateStage = ECardFloatRotateStage::FirstStageIncrease;
+		cardFloatRotateCurProgress = 0.0;
+	}
+}
+
+void ACard::SelectFloatingRotate(float dT)
+{
+	if (cardFloatRotateStage == ECardFloatRotateStage::FirstStageIncrease)
+	{
+		if (cardFloatRotateCurProgress < cardFloatRotateMaxProgress)
+		{
+			cardFloatRotateCurProgress += cardFloatRotateProgressSpeed;
+		}
+		else
+		{
+			cardFloatRotateCurProgress = cardFloatRotateMaxProgress;
+			cardFloatRotateStage = ECardFloatRotateStage::FirstStageDecrease;
+		}
+
+		float lerpPitch = FMath::Lerp(0.0, cardFloatMaxRotate_1, cardFloatRotateCurProgress);
+		FRotator rot = FRotator(0.0, lerpPitch, 0.0);
+		SetActorRotation(rot);
+	}
+	else if (cardFloatRotateStage == ECardFloatRotateStage::FirstStageDecrease)
+	{
+		if (cardFloatRotateCurProgress > 0.0)
+		{
+			cardFloatRotateCurProgress -= cardFloatRotateProgressSpeed;
+		}
+		else
+		{
+			cardFloatRotateCurProgress = 0.0;
+			cardFloatRotateStage = ECardFloatRotateStage::SecondStageIncrease;
+		}
+
+		float lerpPitch = FMath::Lerp(0.0, cardFloatMaxRotate_1, cardFloatRotateCurProgress);
+		FRotator rot = FRotator(0.0, lerpPitch, 0.0);
+		SetActorRotation(rot);
+	}
+	else if (cardFloatRotateStage == ECardFloatRotateStage::SecondStageIncrease)
+	{
+		if (cardFloatRotateCurProgress < cardFloatRotateMaxProgress)
+		{
+			cardFloatRotateCurProgress += cardFloatRotateProgressSpeed;
+		}
+		else
+		{
+			cardFloatRotateCurProgress = cardFloatRotateMaxProgress;
+			cardFloatRotateStage = ECardFloatRotateStage::SecondStageDecrease;
+		}
+		float lerpPitch = FMath::Lerp(0.0, cardFloatMaxRotate_2, cardFloatRotateCurProgress);
+		FRotator rot = FRotator(0.0, lerpPitch, 0.0);
+		SetActorRotation(rot);
+	}
+	else if (cardFloatRotateStage == ECardFloatRotateStage::SecondStageDecrease)
+	{
+		if (cardFloatRotateCurProgress > 0.0)
+		{
+			cardFloatRotateCurProgress -= cardFloatRotateProgressSpeed;
+		}
+		else
+		{
+			cardFloatRotateCurProgress = 0.0;
+			cardFloatRotateStage = ECardFloatRotateStage::Default;
+		}
+		float lerpPitch = FMath::Lerp(0.0, cardFloatMaxRotate_2, cardFloatRotateCurProgress);
+		FRotator rot = FRotator(0.0, lerpPitch, 0.0);
+		SetActorRotation(rot);
+	}
+}
+
+void ACard::SelectFloatingRise(float dT)
+{
+	if (cardFloatMotionStage == ECardFloatMotionStage::Acc)
+	{
+		float cardFloatCurPos = GetActorLocation().Z + cardFloatCurSpeed * dT + 0.5 * cardFloatRiseAcc * dT * dT;
+		FVector cardLoc = FVector(GetActorLocation().X, GetActorLocation().Y, cardFloatCurPos);
+		SetActorLocation(cardLoc);
+		cardFloatCurSpeed += cardFloatRiseAcc * dT;
+		if (cardFloatCurSpeed >= cardFloatMaxSpeed)
+		{
+			cardFloatCurSpeed = cardFloatMaxSpeed;
+			cardFloatMotionStage = ECardFloatMotionStage::Dec;
+		}
+	}
+	else if (cardFloatMotionStage == ECardFloatMotionStage::Dec)
+	{
+		float cardFloatCurPos = GetActorLocation().Z + cardFloatCurSpeed * dT + 0.5 * cardFloatRiseAcc * dT * dT;
+		FVector cardLoc = FVector(GetActorLocation().X, GetActorLocation().Y, cardFloatCurPos);
+		SetActorLocation(cardLoc);
+		cardFloatCurSpeed -= cardFloatRiseAcc * dT;
+		if (cardFloatCurSpeed <= 0.0)
+		{
+			cardFloatCurSpeed = 0.0;
+			cardFloatMotionStage = ECardFloatMotionStage::Default;
+		}
 	}
 }
 

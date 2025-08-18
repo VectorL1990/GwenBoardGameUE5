@@ -176,4 +176,42 @@ public:
 
     UFUNCTION(BlueprintCallable)
     void CardRotation(float dT);
+
+    ECardFloatMotionStage cardFloatMotionStage = ECardFloatMotionStage::Default;
+
+    ECardFloatRotateStage cardFloatRotateStage = ECardFloatRotateStage::Default;
+
+    float cardFloatOriginHeight = 0.0;
+
+    float cardFloatCurSpeed = 0.0;
+
+    UPROPERTY(EditDefaultsOnly)
+    float cardFloatMaxSpeed = 0.0;
+
+    UPROPERTY(EditDefaultsOnly)
+    float cardFloatRiseAcc = 0.0;
+
+    UPROPERTY(EditDefaultsOnly)
+    float cardFloatRotateMaxProgress = 0.0;
+
+    UPROPERTY(EditDefaultsOnly)
+    float cardFloatRotateProgressSpeed = 0.0;
+
+    float cardFloatRotateCurProgress = 0.0;
+
+    UPROPERTY(EditDefaultsOnly)
+    float cardFloatMaxRotate_1 = 0.0;
+
+    UPROPERTY(EditDefaultsOnly)
+    float cardFloatMaxRotate_2 = 0.0;
+
+    void TriggerSelectFloat();
+
+    void RecoverSelectOrigin();
+
+    void TriggerHoverRotate();
+
+    void SelectFloatingRotate(float dT);
+
+    void SelectFloatingRise(float dT);
 };
