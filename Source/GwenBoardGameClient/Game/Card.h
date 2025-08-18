@@ -95,7 +95,7 @@ public:
 
 
 
-    ECardVerticalMotionStage verticalMotionStage = ECardVerticalMotionStage::Default;
+    ECardVerticalMotionStage cardVerticalMotionStage = ECardVerticalMotionStage::Default;
 
     ECardRotationStage cardRotationStage = ECardRotationStage::Default;
 
@@ -103,71 +103,67 @@ public:
 
     ECardHorizonMotionStage cardHorizonYMotionStage = ECardHorizonMotionStage::Default;
 
-    float testMotionCardRiseTop = 0.0;
+    float cardMotionRiseTop = 0.0;
+    
+    float cardMotionBottom = 120.0;
 
-    float testMotionCardXOffset = 0.0;
+    float cardMotionXOffset = 0.0;
 
-    float testMotionCardYOffset = 0.0;
+    float cardMotionYOffset = 0.0;
 
-    float testMotionCardXAccMotion = 0.0;
+    float cardXMotion = 0.0;
 
-    float testMotionCardYAccMotion = 0.0;
-
-    UPROPERTY(EditDefaultsOnly)
-    float testMotionAcc = 100;
-
-    UPROPERTY(EditDefaultsOnly)
-    float testDropAcc = 100;
+    float cardYMotion = 0.0;
 
     UPROPERTY(EditDefaultsOnly)
-    float testRebounceAcc = 100;
+    float cardVerticalRiseAcc = 100;
 
     UPROPERTY(EditDefaultsOnly)
-    float testRebounceSpeedLost = 0.5;
+    float cardVerticalDropAcc = 100;
 
-    float testMotionCardSpeed = 0.0;
+    UPROPERTY(EditDefaultsOnly)
+    float cardRebounceVerticalAcc = 100;
 
-    float testMotionCardHorizonXSpeed = 0.0;
+    UPROPERTY(EditDefaultsOnly)
+    float cardRebounceSpeedLost = 0.5;
 
-    float testMotionCardHorizonYSpeed = 0.0;
+    float cardVerticalSpeed = 0.0;
+
+    float cardHorizonXSpeed = 0.0;
+
+    float cardHorizonYSpeed = 0.0;
 
     UPROPERTY(EditDefaultsOnly)
     float maxMotionCardSpeed = 100.0;
 
-    UPROPERTY(EditDefaultsOnly)
-    float testMotionCardRotationAttenuation = 0.5;
 
     UPROPERTY(EditDefaultsOnly)
-    float testMotionCardRotateSpeed = 0.4;
+    float cardRotateSpeed = 0.4;
 
     UPROPERTY(EditDefaultsOnly)
-    float testMotionCardMaxRotationPitch = 20.0;
+    float cardMaxRotationPitch = 20.0;
 
-    float testMotionCardCurRotationPitch = 0.0;
+    float cardCurRotationPitch = 0.0;
 
-    float testMotionCardNextRotationPitch = 0.0;
+    float cardNextRotationPitch = 0.0;
 
-    float testMotionCardHorizonXAcc = 0.0;
+    float cardMotionHorizonXAcc = 0.0;
 
-    float testMotionCardHorizonYAcc = 0.0;
+    float cardMotionHorizonYAcc = 0.0;
 
-    FVector2D testMotionCardHorizonTarget = FVector2D::Zero();
+    FVector2D cardHorizonTarget = FVector2D::Zero();
 
-    UPROPERTY(EditDefaultsOnly)
-    float testMotionHorizonT = 1.0;
 
-    float testMotionCardCurXLoc = 0.0;
+    float cardCurXLoc = 0.0;
 
-    float testMotionCardCurYLoc = 0.0;
+    float cardCurYLoc = 0.0;
 
-    UPROPERTY(EditDefaultsOnly)
-    float testMotionCardLerp = 0.2;
 
-    float testMotionCurCountT = 0.0;
+    float cardMotionCurCountT = 0.0;
 
-    float testMotionRiseT = 0.0;
+    float cardMotionRiseT = 0.0;
 
-    float testMotionTotalT = 0.0;
+    float cardMotionTotalT = 0.0;
 
     UFUNCTION(BlueprintCallable)
     void TriggerCardMotion(FVector2D targetHorizonTarget);
