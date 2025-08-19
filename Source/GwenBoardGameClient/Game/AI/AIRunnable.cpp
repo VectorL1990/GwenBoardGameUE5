@@ -64,7 +64,7 @@ uint32 FAIRunnable::Run()
 			aiRunnableState = EAIRunnableState::NewState;
 
 			mcts->realBoard.lastActionId = actionCode;
-			mcts->realBoard.lastStepActionType = ActionType::PlayCard;
+			mcts->realBoard.lastStepActionType = waitActionType;
 		}
 		else if (aiRunnableState == EAIRunnableState::StartSelfPlay)
 		{

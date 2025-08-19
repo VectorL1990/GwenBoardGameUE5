@@ -184,6 +184,16 @@ void ACoreCardGamePC::DealLeftClick()
                 int32 targetX = grid->gridX;
                 int32 targetY = grid->gridY + UGlobalConstFunctionLibrary::graveCardSectionRow + UGlobalConstFunctionLibrary::playCardSectionRow;
                 coreCardGameMode->TestTriggerAction(coreCardGameMode->selectPlayCard->camp, launchX, launchY, targetX, targetY, ActionType::PlayCard);
+                coreCardGameMode->selectPlayCard = NULL;
+            }
+            else if (coreCardGameMode->selectBoardCard)
+            {
+                ABoardGrid* grid = Cast<ABoardGrid>(hitResult.GetActor());
+                int32 launchX = coreCardGameMode->selectBoardCard->gridX;
+                int32 launchY = coreCardGameMode->selectBoardCard->gridY;
+                int32 targetX = grid->gridX;
+                int32 targetY = grid->gridY + UGlobalConstFunctionLibrary::graveCardSectionRow + UGlobalConstFunctionLibrary::playCardSectionRow;
+                coreCardGameMode->TestTriggerAction(coreCardGameMode->selectBoardCard->camp, launchX, launchY, targetX, targetY, ActionType::Move);
             }
         }
         else

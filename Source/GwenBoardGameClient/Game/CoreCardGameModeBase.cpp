@@ -272,6 +272,7 @@ void ACoreCardGameModeBase::Tick(float deltaTime)
 
 		// We should refresh all nodes to Mct widget here.
 		//aiRunnable->mcts->treeRoot
+		aiRunnable->aiRunnableState = EAIRunnableState::Default;
 	}
 	else if (aiRunnable->aiRunnableState == EAIRunnableState::SelfPlayEnd)
 	{
