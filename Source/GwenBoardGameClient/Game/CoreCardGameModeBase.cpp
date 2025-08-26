@@ -142,7 +142,8 @@ void ACoreCardGameModeBase::Tick(float deltaTime)
 							}
 
 							if (originGridY >= UGlobalConstFunctionLibrary::graveCardSectionRow + UGlobalConstFunctionLibrary::playCardSectionRow &&
-								originGridY < UGlobalConstFunctionLibrary::graveCardSectionRow + UGlobalConstFunctionLibrary::playCardSectionRow + UGlobalConstFunctionLibrary::boardSectionRow)
+								originGridY < UGlobalConstFunctionLibrary::graveCardSectionRow + UGlobalConstFunctionLibrary::playCardSectionRow + UGlobalConstFunctionLibrary::boardSectionRow &&
+								(originGridX != j || originGridY != i))
 							{
 								// which means this card is a hand card and moves to play board
 								int32 boardGridId = (i - UGlobalConstFunctionLibrary::graveCardSectionRow - UGlobalConstFunctionLibrary::playCardSectionRow) * UGlobalConstFunctionLibrary::maxCol + j;
@@ -193,15 +194,15 @@ void ACoreCardGameModeBase::Tick(float deltaTime)
 		}
 		for (int32 i = 0; i < allSectionOneGraveCardIds.Num(); i++)
 		{
-			if (allBattleCards[allSectionZeroGraveCardIds[i]]->cardStatus != BattleCardStatus::InGrave)
+			if (allBattleCards[allSectionOneGraveCardIds[i]]->cardStatus != BattleCardStatus::InGrave)
 			{
 				// move this card to grave
-				FVector cardGraveOffset = allBattleCards[allSectionZeroGraveCardIds[i]]->GetActorLocation() - sectionOneGraveAreaLocation;
+				FVector cardGraveOffset = allBattleCards[allSectionOneGraveCardIds[i]]->GetActorLocation() - sectionOneGraveAreaLocation;
 				if (cardGraveOffset.Length() > 100.0)
 				{
-					allBattleCards[allSectionZeroGraveCardIds[i]]->SetActorLocation(sectionOneGraveAreaLocation);
+					allBattleCards[allSectionOneGraveCardIds[i]]->SetActorLocation(sectionOneGraveAreaLocation);
 				}
-				allBattleCards[allSectionZeroGraveCardIds[i]]->SetActorLocation(sectionOneGraveAreaLocation);
+				allBattleCards[allSectionOneGraveCardIds[i]]->SetActorLocation(sectionOneGraveAreaLocation);
 			}
 		}
 

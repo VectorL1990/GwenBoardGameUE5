@@ -1188,7 +1188,7 @@ TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPassiveSkillTargetGrids(
 		FGridXY grid;
 		if (launchCamp == 0)
 		{
-			if (grid.x < UGlobalConstFunctionLibrary::maxCol - 1)
+			if (launchX < UGlobalConstFunctionLibrary::maxCol - 1)
 			{
 				grid.x = launchX + 1;
 				grid.y = launchY;
@@ -1197,7 +1197,7 @@ TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPassiveSkillTargetGrids(
 		}
 		else
 		{
-			if (grid.x > 0)
+			if (launchX > 0)
 			{
 				grid.x = launchX - 1;
 				grid.y = launchY;

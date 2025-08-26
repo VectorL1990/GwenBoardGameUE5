@@ -641,11 +641,11 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::LaunchPassiveSkillDict(
             {
                 if (effectInfo.values.Num() == 0)
                 {
-                    effectInfo.values.Add(effectResultDict.modifyValues[0]);
+                    effectInfo.values.Add(triggerEffectResult.modifyValues[0]);
                 }
                 else
                 {
-                    effectInfo.values[0] = effectResultDict.modifyValues[0];
+                    effectInfo.values[0] = triggerEffectResult.modifyValues[0];
                 }
                 effectResultDict = Hurt(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY, isVirtual, sectionZeroScore, sectionOneScore);
             }
@@ -718,6 +718,10 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::Hurt(
     FEffectResultDict effectResultDict;
     effectResultDict.modifyType = "hurt";
     effectResultDict.success = true;
+    effectResultDict.triggerGridX = launchX;
+    effectResultDict.triggerGridY = launchY;
+    effectResultDict.renderEffectType = effectInfo.renderEffectType;
+    effectResultDict.renderTime = effectInfo.renderEffectTime;
 
     TArray<FGridXY> targetGrids = GetAoeTargetGrids(
         allInstanceCardInfo,
@@ -846,6 +850,10 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::Heal(
     FEffectResultDict effectResultDict;
     effectResultDict.modifyType = "heal";
     effectResultDict.success = true;
+    effectResultDict.triggerGridX = launchX;
+    effectResultDict.triggerGridY = launchY;
+    effectResultDict.renderEffectType = effectInfo.renderEffectType;
+    effectResultDict.renderTime = effectInfo.renderEffectTime;
 
     TArray<FGridXY> targetGrids = GetAoeTargetGrids(
         allInstanceCardInfo,
@@ -918,6 +926,10 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::IncreaseDefence(
     FEffectResultDict effectResultDict;
     effectResultDict.modifyType = "increaseDefence";
     effectResultDict.success = true;
+    effectResultDict.triggerGridX = launchX;
+    effectResultDict.triggerGridY = launchY;
+    effectResultDict.renderEffectType = effectInfo.renderEffectType;
+    effectResultDict.renderTime = effectInfo.renderEffectTime;
 
     TArray<FGridXY> targetGrids = GetAoeTargetGrids(
         allInstanceCardInfo,
@@ -981,6 +993,10 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::Wound(TMap<int32, FInstance
     FEffectResultDict effectResultDict;
     effectResultDict.modifyType = "wound";
     effectResultDict.success = true;
+    effectResultDict.triggerGridX = launchX;
+    effectResultDict.triggerGridY = launchY;
+    effectResultDict.renderEffectType = effectInfo.renderEffectType;
+    effectResultDict.renderTime = effectInfo.renderEffectTime;
 
     TArray<FGridXY> targetGrids = GetAoeTargetGrids(
         allInstanceCardInfo,

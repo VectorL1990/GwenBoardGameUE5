@@ -1203,6 +1203,13 @@ public:
 			if (effectResultInfo.success)
 			{
 				effectResultInfo.triggerRound = 0;
+				FRenderEffectDict renderEffectDict(effectResultInfo);
+				FRenderEffectRound renderEffectRound;
+				renderEffectRound.renderRound = 0;
+				renderEffectRound.renderEffectList.Add(renderEffectDict);
+				renderEffectRoundList.Add(renderEffectRound);
+
+				
 				TriggerPassiveEffect(launchX, launchY, effectResultInfo, renderEffectRoundList);
 				RefreshPassiveEffectTriggerTags();
 
@@ -1297,6 +1304,14 @@ public:
 							allInstanceCardInfo[launchUid].camp, allInstanceCardInfo, boardRows, effectInfo, j, i, false, sectionZeroScores, sectionOneScores);
 						if (effectResultInfo.success)
 						{
+							effectResultInfo.triggerRound = 0;
+							FRenderEffectDict renderEffectDict(effectResultInfo);
+							FRenderEffectRound renderEffectRound;
+							renderEffectRound.renderRound = 0;
+							renderEffectRound.renderEffectList.Add(renderEffectDict);
+							renderEffectRoundList.Add(renderEffectRound);
+
+
 							if (allInstanceCardInfo[launchUid].curAvailableTimes > 0)
 							{
 								allInstanceCardInfo[launchUid].curAvailableTimes -= 1;
@@ -1306,7 +1321,7 @@ public:
 								allInstanceCardInfo[launchUid].curCoolDown = allInstanceCardInfo[launchUid].originCardInfo.coolDown;
 							}
 
-							effectResultInfo.triggerRound = 0;
+							
 							TriggerPassiveEffect(j, i, effectResultInfo, renderEffectRoundList);
 							RefreshPassiveEffectTriggerTags();
 
@@ -1397,6 +1412,14 @@ public:
 				allInstanceCardInfo, boardRows, effectInfo, launchX, launchY, targetX, targetY, false, sectionZeroScores, sectionOneScores);
 			if (effectResultInfo.success)
 			{
+				effectResultInfo.triggerRound = 0;
+				FRenderEffectDict renderEffectDict(effectResultInfo);
+				FRenderEffectRound renderEffectRound;
+				renderEffectRound.renderRound = 0;
+				renderEffectRound.renderEffectList.Add(renderEffectDict);
+				renderEffectRoundList.Add(renderEffectRound);
+
+
 				if (allInstanceCardInfo[launchUid].curAvailableTimes > 0)
 				{
 					allInstanceCardInfo[launchUid].curAvailableTimes -= 1;
@@ -1406,7 +1429,7 @@ public:
 					allInstanceCardInfo[launchUid].curCoolDown = allInstanceCardInfo[launchUid].originCardInfo.coolDown;
 				}
 
-				effectResultInfo.triggerRound = 0;
+				
 				TriggerPassiveEffect(launchX, launchY, effectResultInfo, renderEffectRoundList);
 				RefreshPassiveEffectTriggerTags();
 
@@ -1663,6 +1686,7 @@ public:
 				if (secondaryEffectResult.triggerRound >= renderEffectRoundList.Num())
 				{
 					FRenderEffectRound renderEffectRound;
+					renderEffectRound.renderRound = secondaryEffectResult.triggerRound;
 					renderEffectRound.renderEffectList.Add(renderEffectDict);
 					renderEffectRoundList.Add(renderEffectRound);
 				}
@@ -1713,6 +1737,12 @@ public:
 
 	void MoveCard2Grave(uint8 section, int32 deadGridX, int32 deadGridY, int32 deadUid)
 	{
+		if (boardRows[deadGridY].colCardInfos[deadGridX] == -1)
+		{
+			// which means this card has already been moved to grave
+			return;
+		}
+
 		if (section == 0)
 		{
 			for (int32 i = 0; i < UGlobalConstFunctionLibrary::graveCardSectionRow; i++)

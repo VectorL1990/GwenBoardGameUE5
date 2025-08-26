@@ -161,37 +161,14 @@ void ACoreCardGamePC::DealLeftClick()
                 AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
                 ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
                 coreCardGameMode->selectPlayCard = card;
+                coreCardGameMode->selectBoardCard = NULL;
                 coreCardGameMode->SetSelectPlayCard(card->camp, card);
             }
             else if (card->cardStatus == BattleCardStatus::InBattle)
             {
                 AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
                 ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
-                if (coreCardGameMode->selectBoardCard)
-                {
-                    // Check skill availabilities
-                    bool launchSkillLegality = coreCardGameMode->aiRunnable->mcts->realBoard.CheckLaunchSkillLegality(
-                        coreCardGameMode->selectBoardCard->gridX,
-                        coreCardGameMode->selectBoardCard->gridY,
-                        card->gridX,
-                        card->gridY);
-
-                    if (launchSkillLegality)
-                    {
-                        coreCardGameMode->TestTriggerAction(coreCardGameMode->selectBoardCard->camp,
-                            coreCardGameMode->selectBoardCard->gridX,
-                            coreCardGameMode->selectBoardCard->gridY,
-                            card->gridX,
-                            card->gridY,
-                            ActionType::LaunchSkill);
-                    }
-                    else
-                    {
-                        // notify player that motion is not available
-                        GEngine->AddOnScreenDebugMessage(-1, 2.0, FColor::Red, "sha diao chan on 9");
-                    }
-                }
-                else
+                if (coreCardGameMode->selectBoardCard == NULL)
                 {
                     coreCardGameMode->selectBoardCard = card;
                     card->TriggerSelectFloat();
@@ -269,6 +246,31 @@ void ACoreCardGamePC::DealRightClick()
                 int32 targetX = grid->gridX;
                 int32 targetY = grid->gridY + UGlobalConstFunctionLibrary::graveCardSectionRow + UGlobalConstFunctionLibrary::playCardSectionRow;
                 coreCardGameMode->TestTriggerAction(coreCardGameMode->selectBoardCard->camp, launchX, launchY, targetX, targetY, ActionType::Move);
+            }
+        }
+        else if (hitResult.GetComponent() && hitResult.GetComponent()->ComponentHasTag(FName(TEXT("BattleCard"))))
+        {
+            ACard* card = Cast<ACard>(hitResult.GetActor());
+            AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
+            ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
+            if (coreCardGameMode->selectBoardCard)
+            {
+                // Check skill availabilities
+                bool launchSkillLegality = coreCardGameMode->aiRunnable->mcts->realBoard.CheckLaunchSkillLegality(
+                    coreCardGameMode->selectBoardCard->gridX,
+                    coreCardGameMode->selectBoardCard->gridY,
+                    card->gridX,
+                    card->gridY);
+
+                if (launchSkillLegality)
+                {
+                    coreCardGameMode->TestTriggerAction(coreCardGameMode->selectBoardCard->camp,
+                        coreCardGameMode->selectBoardCard->gridX,
+                        coreCardGameMode->selectBoardCard->gridY,
+                        card->gridX,
+                        card->gridY,
+                        ActionType::LaunchSkill);
+                }
             }
         }
         else

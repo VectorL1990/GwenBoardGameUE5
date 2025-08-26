@@ -62,6 +62,7 @@ uint32 FAIRunnable::Run()
 			TArray<FRenderEffectRound> renderEffectRounds;
 			mcts->realBoard.TriggerAction(true, waitLaunchCamp, actionCode, renderEffectRounds);
 			aiRunnableState = EAIRunnableState::NewState;
+			newRenderEffectRounds = renderEffectRounds;
 
 			mcts->realBoard.lastActionId = actionCode;
 			mcts->realBoard.lastStepActionType = waitActionType;

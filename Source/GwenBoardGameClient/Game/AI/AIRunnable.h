@@ -34,6 +34,9 @@ public:
 	uint8 waitLaunchCamp;
 	ActionType waitActionType;
 
+	UPROPERTY()
+	TArray<FRenderEffectRound> newRenderEffectRounds;
+
 	//FCriticalSection criticalSection;
 
 	FAIRunnable(ACoreCardGameModeBase* inOwner);
