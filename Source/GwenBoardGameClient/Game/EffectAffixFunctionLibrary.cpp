@@ -52,6 +52,10 @@ FGetAffixInfo UEffectAffixFunctionLibrary::GetAffix(
         affixInfo.costType = "useSelfDefence";
         affixInfo.costValue = 2* affixInfo.effectValue;
     }
+    else if (affixType == "hurtVal")
+    {
+
+    }
     return affixInfo;
 }
 
@@ -961,6 +965,19 @@ int32 UEffectAffixFunctionLibrary::UseSelfDefence_2(
     int32 launchUid = boardCardInfo[launchY].colCardInfos[launchX];
     int32 useSelfDefenceHurt = allInstanceCardInfo[launchUid].curDefence / 2;
     return useSelfDefenceHurt;
+}
+
+int32 UEffectAffixFunctionLibrary::HurtVal(
+    TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+    TArray<FBoardRow>& boardCardInfo,
+    FEffectInfo& effectInfo,
+    int32 launchX,
+    int32 launchY,
+    int32 targetX,
+    int32 targetY)
+{
+    //int32 launchUid = boardCardInfo[launchY].colCardInfos[launchX];
+    return 0;
 }
 
 void UEffectAffixFunctionLibrary::testFunc1(int32 launchX, int32 launchY, int32 targetX, int32 targetY)

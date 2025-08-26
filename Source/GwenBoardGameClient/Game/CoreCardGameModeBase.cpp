@@ -94,6 +94,8 @@ void ACoreCardGameModeBase::Tick(float deltaTime)
 					}
 					else
 					{
+						int32 originGridX = allBattleCards[cardId]->gridX;
+						int32 originGridY = allBattleCards[cardId]->gridY;
 						allBattleCards[cardId]->gridX = j;
 						allBattleCards[cardId]->gridY = i;
 						allBattleCards[cardId]->camp = aiRunnable->mcts->realBoard.allInstanceCardInfo[cardId].camp;
@@ -134,7 +136,22 @@ void ACoreCardGameModeBase::Tick(float deltaTime)
 						}
 						else
 						{
-							allBattleCards[cardId]->cardStatus = BattleCardStatus::InBattle;
+							if (allBattleCards[cardId]->cardStatus != BattleCardStatus::InBattle)
+							{
+								allBattleCards[cardId]->cardStatus = BattleCardStatus::InBattle;
+							}
+
+							if (originGridY >= UGlobalConstFunctionLibrary::graveCardSectionRow + UGlobalConstFunctionLibrary::playCardSectionRow &&
+								originGridY < UGlobalConstFunctionLibrary::graveCardSectionRow + UGlobalConstFunctionLibrary::playCardSectionRow + UGlobalConstFunctionLibrary::boardSectionRow)
+							{
+								// which means this card is a hand card and moves to play board
+								int32 boardGridId = (i - UGlobalConstFunctionLibrary::graveCardSectionRow - UGlobalConstFunctionLibrary::playCardSectionRow) * UGlobalConstFunctionLibrary::maxCol + j;
+								FVector2D target = FVector2D(boardGrids[boardGridId]->GetActorLocation().X,
+									boardGrids[boardGridId]->GetActorLocation().Y);
+								allBattleCards[cardId]->TriggerCardMotion(target);
+
+								selectBoardCard = NULL;
+							}
 						}
 					}
 				}

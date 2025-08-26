@@ -214,4 +214,6 @@ public:
     void SelectFloatingRotate(float dT);
 
     void SelectFloatingRise(float dT);
+
+    void ResetCardMotion();
 };

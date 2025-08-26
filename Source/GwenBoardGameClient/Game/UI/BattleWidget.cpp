@@ -45,6 +45,12 @@ void UBattleWidget::ClickButton(FString buttonName)
 		ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
 		coreCardGameMode->ReqFinishSelectCards();
 	}
+	else if (buttonName == "EndRound")
+	{
+		AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
+		ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
+		coreCardGameMode->TestTriggerAction(0, 0, 0, 0, 0, ActionType::EndRound);
+	}
 }
 
 void UBattleWidget::SetFinishCardSelectionText()

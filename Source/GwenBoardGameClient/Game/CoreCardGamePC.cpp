@@ -167,8 +167,35 @@ void ACoreCardGamePC::DealLeftClick()
             {
                 AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
                 ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
-                coreCardGameMode->selectBoardCard = card;
-                card->TriggerSelectFloat();
+                if (coreCardGameMode->selectBoardCard)
+                {
+                    // Check skill availabilities
+                    bool launchSkillLegality = coreCardGameMode->aiRunnable->mcts->realBoard.CheckLaunchSkillLegality(
+                        coreCardGameMode->selectBoardCard->gridX,
+                        coreCardGameMode->selectBoardCard->gridY,
+                        card->gridX,
+                        card->gridY);
+
+                    if (launchSkillLegality)
+                    {
+                        coreCardGameMode->TestTriggerAction(coreCardGameMode->selectBoardCard->camp,
+                            coreCardGameMode->selectBoardCard->gridX,
+                            coreCardGameMode->selectBoardCard->gridY,
+                            card->gridX,
+                            card->gridY,
+                            ActionType::LaunchSkill);
+                    }
+                    else
+                    {
+                        // notify player that motion is not available
+                        GEngine->AddOnScreenDebugMessage(-1, 2.0, FColor::Red, "sha diao chan on 9");
+                    }
+                }
+                else
+                {
+                    coreCardGameMode->selectBoardCard = card;
+                    card->TriggerSelectFloat();
+                }
             }
         }
         else if (hitResult.GetComponent() && hitResult.GetComponent()->ComponentHasTag(FName(TEXT("BoardGrid"))))

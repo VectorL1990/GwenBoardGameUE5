@@ -1185,7 +1185,25 @@ TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPassiveSkillTargetGrids(
 	}
 	else if (targetGeoType == "right")
 	{
-
+		FGridXY grid;
+		if (launchCamp == 0)
+		{
+			if (grid.x < UGlobalConstFunctionLibrary::maxCol - 1)
+			{
+				grid.x = launchX + 1;
+				grid.y = launchY;
+				modifyGrids.Add(grid);
+			}
+		}
+		else
+		{
+			if (grid.x > 0)
+			{
+				grid.x = launchX - 1;
+				grid.y = launchY;
+				modifyGrids.Add(grid);
+			}
+		}
 	}
 	else if (targetGeoType == "forward")
 	{

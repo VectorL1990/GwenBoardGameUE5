@@ -187,6 +187,15 @@ public:
         int32 targetX,
         int32 targetY);
 
+    static int32 HurtVal(
+        TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+        TArray<FBoardRow>& boardCardInfo,
+        FEffectInfo& effectInfo,
+        int32 launchX,
+        int32 launchY,
+        int32 targetX,
+        int32 targetY);
+
     static void testFunc1(int32 launchX, int32 launchY, int32 targetX, int32 targetY);
 
     void (*FuncPtr)(int32 launchX, int32 launchY, int32 targetX, int32 targetY) = testFunc1;

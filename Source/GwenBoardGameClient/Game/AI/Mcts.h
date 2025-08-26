@@ -583,6 +583,117 @@ public:
 		}
 	}
 
+	bool CheckLaunchSkillLegality(int32 launchX, int32 launchY, int32 targetX, int32 targetY)
+	{
+		int32 launchId = boardRows[launchY].colCardInfos[launchX];
+		if (launchId == -1)
+		{
+			return false;
+		}
+
+		FInstanceCardInfo launchCardInfo = allInstanceCardInfo[boardRows[launchY].colCardInfos[launchX]];
+
+		bool manualSkillAvailable = false;
+		if (launchCardInfo.originCardInfo.launchType == "manual")
+		{
+			if (launchCardInfo.originCardInfo.coolDown == -1)
+			{
+				if (launchCardInfo.originCardInfo.availableTimes == -1)
+				{
+					manualSkillAvailable = true;
+				}
+				else
+				{
+					if (launchCardInfo.curAvailableTimes > 0)
+					{
+						manualSkillAvailable = true;
+					}
+				}
+			}
+			else
+			{
+				if (launchCardInfo.curCoolDown == 0 &&
+					(launchCardInfo.originCardInfo.availableTimes == -1 ||
+						launchCardInfo.curAvailableTimes > 0))
+				{
+					manualSkillAvailable = true;
+				}
+			}
+		}
+
+		bool extraTagPrereq = true;
+		if (launchCardInfo.curExtraTags.Contains("silent"))
+		{
+			extraTagPrereq = false;
+		}
+
+		if (manualSkillAvailable && extraTagPrereq)
+		{
+			FEffectInfo effectInfo;
+			effectInfo.aoeType = launchCardInfo.originCardInfo.aoeType;
+			effectInfo.availableTimes = launchCardInfo.originCardInfo.availableTimes;
+			effectInfo.coolDown = launchCardInfo.originCardInfo.coolDown;
+			effectInfo.effectAffix = launchCardInfo.originCardInfo.effectAffix;
+			effectInfo.effectAffixCamp = launchCardInfo.originCardInfo.effectAffixCamp;
+			effectInfo.effectType = launchCardInfo.originCardInfo.effectType;
+			effectInfo.launchGeoType = launchCardInfo.originCardInfo.launchGeoType;
+			effectInfo.launchType = launchCardInfo.originCardInfo.launchType;
+			effectInfo.passivePrereqType = launchCardInfo.originCardInfo.passivePrereqType;
+			effectInfo.prereqCampType = launchCardInfo.originCardInfo.prereqCampType;
+			effectInfo.prereqTag = launchCardInfo.originCardInfo.prereqTag;
+			effectInfo.prereqTagCondition = launchCardInfo.originCardInfo.prereqTagCondition;
+			effectInfo.prereqType = launchCardInfo.originCardInfo.prereqType;
+			effectInfo.prereqValue = launchCardInfo.originCardInfo.prereqValue;
+			effectInfo.targetCamp = launchCardInfo.originCardInfo.targetCamp;
+			effectInfo.targetGeoType = launchCardInfo.originCardInfo.targetGeoType;
+			effectInfo.values = launchCardInfo.originCardInfo.values;
+
+			bool prereqPass = false;
+			if (effectInfo.prereqType == "none" ||
+				UCheckPrereqFunctionLibrary::CheckPrereqRule(
+					allInstanceCardInfo,
+					boardRows,
+					effectInfo.prereqType,
+					launchX,
+					launchY,
+					launchCardInfo.camp,
+					effectInfo.prereqCampType,
+					effectInfo.prereqValue))
+			{
+				prereqPass = true;
+			}
+
+			if (prereqPass &&
+				(effectInfo.prereqTagCondition == "none" ||
+					UCheckPrereqTagFunctionLibrary::CheckLaunchPrereqTagRule(
+						allInstanceCardInfo,
+						boardRows,
+						effectInfo,
+						launchX,
+						launchY)))
+			{
+				prereqPass = true;
+			}
+
+			if (prereqPass && UCheckPrereqTagFunctionLibrary::CheckTargetPrereqTagRule(allInstanceCardInfo,
+				boardRows,
+				effectInfo,
+				targetX,
+				targetY))
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+
 	void GetLegalMoves(uint8 curPlayingSectionNb, TArray<int32>& legalMoves, TArray<ActionType>& actionTypes)
 	{
 		for (int32 row = 0; row < UGlobalConstFunctionLibrary::boardSectionRow; row++)
@@ -1417,6 +1528,7 @@ public:
 				FEffectResultDict secondaryEffectResult = UCoreGameBlueprintFunctionLibrary::LaunchPassiveSkillDict(allInstanceCardInfo[effectResultDict.modifyUids[i]].camp,
 					allInstanceCardInfo,
 					boardRows,
+					effectResultDict,
 					passiveEffectInfo,
 					effectResultDict.modifyType,
 					effectResultDict.modifyGrids[i].x,
@@ -1534,6 +1646,7 @@ public:
 				FEffectResultDict secondaryEffectResult = UCoreGameBlueprintFunctionLibrary::LaunchPassiveSkillDict(allInstanceCardInfo[effectResultDict.modifyUids[i]].camp,
 					allInstanceCardInfo,
 					boardRows,
+					effectResultDict,
 					passiveEffectInfo,
 					effectResultDict.modifyType,
 					effectResultDict.modifyGrids[i].x,

@@ -587,6 +587,7 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::LaunchPassiveSkillDict(
     uint8 launchCamp,
     TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
     TArray<FBoardRow>& boardCardInfo,
+    FEffectResultDict triggerEffectResult,
     FEffectInfo& effectInfo,
     FString triggerEffectType,
     int32 launchX,
@@ -632,6 +633,21 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::LaunchPassiveSkillDict(
             if (triggerEffectType == "heal")
             {
                 effectResultDict = Heal(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY, isVirtual, sectionZeroScore, sectionOneScore);
+            }
+        }
+        else if (effectInfo.effectType == "transferHurt")
+        {
+            if (triggerEffectType == "hurt")
+            {
+                if (effectInfo.values.Num() == 0)
+                {
+                    effectInfo.values.Add(effectResultDict.modifyValues[0]);
+                }
+                else
+                {
+                    effectInfo.values[0] = effectResultDict.modifyValues[0];
+                }
+                effectResultDict = Hurt(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY, isVirtual, sectionZeroScore, sectionOneScore);
             }
         }
     }

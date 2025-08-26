@@ -269,6 +269,7 @@ void ACard::CardMotion(float dT)
 			des.Z = 120.0;
 			SetActorLocation(des);
 			cardVerticalSpeed = 0.0;
+			ResetCardMotion();
 		}
 	}
 
@@ -432,5 +433,42 @@ void ACard::SelectFloatingRise(float dT)
 			cardFloatMotionStage = ECardFloatMotionStage::Default;
 		}
 	}
+}
+
+void ACard::ResetCardMotion()
+{
+	cardVerticalMotionStage = ECardVerticalMotionStage::Default;
+	cardRotationStage = ECardRotationStage::Default;
+	cardHorizonXMotionStage = ECardHorizonMotionStage::Default;
+	cardHorizonYMotionStage = ECardHorizonMotionStage::Default;
+
+	cardFloatMotionStage = ECardFloatMotionStage::Default;
+	cardFloatRotateStage = ECardFloatRotateStage::Default;
+
+	cardMotionRiseTop = 0.0;
+	cardMotionXOffset = 0.0;
+	cardMotionYOffset = 0.0;
+	cardXMotion = 0.0;
+	cardYMotion = 0.0;
+
+	cardCurRotationPitch = 0.0;
+	cardNextRotationPitch = 0.0;
+	cardMotionHorizonXAcc = 0.0;
+	cardMotionHorizonYAcc = 0.0;
+
+	cardVerticalSpeed = 0.0;
+	cardHorizonXSpeed = 0.0;
+	cardHorizonYSpeed = 0.0;
+
+	cardCurXLoc = 0.0;
+	cardCurYLoc = 0.0;
+
+	cardMotionCurCountT = 0.0;
+	cardMotionRiseT = 0.0;
+	cardMotionTotalT = 0.0;
+
+	cardFloatRotateCurProgress = 0.0;
+
+	cardFloatCurSpeed = 0.0;
 }
 

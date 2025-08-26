@@ -207,6 +207,7 @@ public:
         uint8 launchCamp,
         TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
         TArray<FBoardRow>& boardCardInfo,
+        FEffectResultDict triggerEffectResult,
         FEffectInfo& effectInfo,
         FString triggerEffectType,
         int32 launchX,
