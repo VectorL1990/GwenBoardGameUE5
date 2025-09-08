@@ -35,7 +35,9 @@ public:
 	ActionType waitActionType;
 
 	UPROPERTY()
-	TArray<FRenderEffectRound> newRenderEffectRounds;
+	FRenderActionNode newStateRenderRoot;
+
+	ActionType newStateActionType;
 
 	//FCriticalSection criticalSection;
 

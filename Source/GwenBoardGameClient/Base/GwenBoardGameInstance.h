@@ -73,7 +73,9 @@ class GWENBOARDGAMECLIENT_API UGwenBoardGameInstance : public UGameInstance
             UTexture* texture,
             FString moveType,
             FString cardCategory,
-            EAtkDistanceType atkDistanceType);
+            EAtkDistanceType atkDistanceType,
+            FString renderEffectType,
+            float renderEffectTime);
 
     UFUNCTION(BlueprintNativeEvent)
     void TriggerReadCardInfos();

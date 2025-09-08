@@ -184,7 +184,9 @@ void UGwenBoardGameInstance::SetCardInfo(FString cardName,
 	UTexture* texture,
 	FString moveType,
 	FString cardCategory,
-	EAtkDistanceType atkDistanceType)
+	EAtkDistanceType atkDistanceType,
+	FString renderEffectType,
+	float renderEffectTime)
 {
 	FCardInfo cardInfo;
 	cardInfo.cardName = cardName;
@@ -219,6 +221,8 @@ void UGwenBoardGameInstance::SetCardInfo(FString cardName,
 	cardInfo.moveType = moveType;
 	cardInfo.cardCategory = cardCategory;
 	cardInfo.attackDistanceType = atkDistanceType;
+	cardInfo.renderEffectType = renderEffectType;
+	cardInfo.renderEffectTime = renderEffectTime;
 	allCardInfos.Add(cardName, cardInfo);
 }
 

@@ -36,11 +36,26 @@ public:
 
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-
     UFUNCTION(BlueprintNativeEvent)
     void InitDone();
 
-    float curTestOutputRuntimeInterval = 0.0;
+    EGameModeRenderState gameModeRenderState = EGameModeRenderState::Default;
+
+    TArray<float> curRenderingActionTimes;
+
+    TArray<FRenderActionNode> curRenderingActionNodes;
+
+    float curGameModeRenderStepTime = 0.0;
+
+    float gameModeRenderStepInterval = 0.0;
+
+    UPROPERTY(EditDefaultsOnly)
+    float defaultRenderPlayCardInterval = 0.0;
+
+    UPROPERTY(EditDefaultsOnly)
+    float defaultRenderMoveCardInterval = 0.0;
+
+
 
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<ACard> cardBPClass;
@@ -173,7 +188,6 @@ public:
 
     int32 curActionEffectRound = 0;
 
-    TArray<FRenderEffectRound> curActionRenderEffectRoundList;
 
     ActionType curActionType;
 

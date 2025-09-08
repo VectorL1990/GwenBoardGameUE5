@@ -647,6 +647,8 @@ public:
 			effectInfo.targetCamp = launchCardInfo.originCardInfo.targetCamp;
 			effectInfo.targetGeoType = launchCardInfo.originCardInfo.targetGeoType;
 			effectInfo.values = launchCardInfo.originCardInfo.values;
+			effectInfo.renderEffectType = launchCardInfo.originCardInfo.renderEffectType;
+			effectInfo.renderEffectTime = launchCardInfo.originCardInfo.renderEffectTime;
 
 			bool prereqPass = false;
 			if (effectInfo.prereqType == "none" ||
@@ -821,6 +823,8 @@ public:
 						effectInfo.targetCamp = cardInfo.originCardInfo.targetCamp;
 						effectInfo.targetGeoType = cardInfo.originCardInfo.targetGeoType;
 						effectInfo.values = cardInfo.originCardInfo.values;
+						effectInfo.renderEffectType = cardInfo.originCardInfo.renderEffectType;
+						effectInfo.renderEffectTime = cardInfo.originCardInfo.renderEffectTime;
 
 						bool prereqPass = false;
 						if (effectInfo.prereqType == "none" || 
@@ -926,7 +930,7 @@ public:
 		bool testInference,
 		uint8 campNb,
 		int32 actionId,
-		TArray<FRenderEffectRound>& renderEffectRoundList)
+		FRenderActionNode& renderParentNode)
 	{
 		int32 launchX = 0;
 		int32 launchY = 0;
@@ -942,7 +946,7 @@ public:
 				launchY,
 				targetX,
 				targetY,
-				renderEffectRoundList);
+				renderParentNode);
 		}
 		else if (actionType == ActionType::PlayCard)
 		{
@@ -953,7 +957,7 @@ public:
 				launchY,
 				targetX,
 				targetY,
-				renderEffectRoundList);
+				renderParentNode);
 			if (campNb == 0)
 			{
 				sectionZeroPlayCardAvailable = false;
@@ -965,7 +969,7 @@ public:
 		}
 		else if (actionType == ActionType::Move)
 		{
-			TriggerMove(launchX, launchY, targetX, targetY);
+			TriggerMove(launchX, launchY, targetX, targetY, renderParentNode);
 			if (campNb == 0)
 			{
 				sectionZeroMoveAvailable = false;
@@ -977,7 +981,7 @@ public:
 		}
 		else if (actionType == ActionType::EndRound)
 		{
-			TriggerRoundEndSkill(curPlayingSectionNb, renderEffectRoundList);
+			TriggerRoundEndSkill(curPlayingSectionNb, renderParentNode);
 			UpdateCardAttachInfos();
 			UpdateCardAttachEffects();
 			if (curPlayingSectionNb == 0)
@@ -1100,13 +1104,21 @@ public:
 		int32 launchY,
 		int32 targetX,
 		int32 targetY,
-		TArray<FRenderEffectRound>& renderEffectRoundList)
+		FRenderActionNode& renderParentNode)
 	{
+		renderParentNode.actionType = ActionType::PlayCard;
+		renderParentNode.renderTime = 0.0;
+		renderParentNode.triggerGridX = launchX;
+		renderParentNode.triggerGridY = launchY;
+		renderParentNode.targetGridXs.Add(targetX);
+		renderParentNode.targetGridYs.Add(targetY);
+		
+
 		int32 playCardUid = boardRows[launchY].colCardInfos[launchX];
 		// Trigger play card skill
 		if (allInstanceCardInfo[playCardUid].originCardInfo.launchType == "auto")
 		{
-			TriggerPlayCardSkill(launchCampNb, launchX, launchY, targetX, targetY, renderEffectRoundList);
+			TriggerPlayCardSkill(launchCampNb, launchX, launchY, targetX, targetY, renderParentNode);
 		}
 		boardRows[targetY].colCardInfos[targetX] = playCardUid;
 		boardRows[launchY].colCardInfos[launchX] = -1;
@@ -1146,7 +1158,7 @@ public:
 		int32 launchY,
 		int32 targetX,
 		int32 targetY,
-		TArray<FRenderEffectRound>& renderEffectRoundList)
+		FRenderActionNode& renderParentNode)
 	{
 		int32 launchUid = boardRows[launchY].colCardInfos[launchX];
 		FEffectInfo effectInfo;
@@ -1167,6 +1179,8 @@ public:
 		effectInfo.prereqValue = allInstanceCardInfo[launchUid].originCardInfo.prereqValue;
 		effectInfo.passivePrereqType = allInstanceCardInfo[launchUid].originCardInfo.passivePrereqType;
 		effectInfo.values = allInstanceCardInfo[launchUid].originCardInfo.values;
+		effectInfo.renderEffectType = allInstanceCardInfo[launchUid].originCardInfo.renderEffectType;
+		effectInfo.renderEffectTime = allInstanceCardInfo[launchUid].originCardInfo.renderEffectTime;
 
 		bool prereqPass = false;
 		if (effectInfo.prereqType == "none" ||
@@ -1203,14 +1217,23 @@ public:
 			if (effectResultInfo.success)
 			{
 				effectResultInfo.triggerRound = 0;
-				FRenderEffectDict renderEffectDict(effectResultInfo);
-				FRenderEffectRound renderEffectRound;
-				renderEffectRound.renderRound = 0;
-				renderEffectRound.renderEffectList.Add(renderEffectDict);
-				renderEffectRoundList.Add(renderEffectRound);
+				FRenderActionNode renderActionNode;
+				renderActionNode.actionType = ActionType::LaunchSkill;
+				renderActionNode.renderTime = effectResultInfo.renderTime;
+				renderActionNode.renderEffectType = effectResultInfo.renderEffectType;
+				renderActionNode.triggerGridX = effectResultInfo.triggerGridX;
+				renderActionNode.triggerGridY = effectResultInfo.triggerGridY;
+				renderActionNode.modifyUids = effectResultInfo.modifyUids;
+				renderActionNode.modifyValues = effectResultInfo.modifyValues;
+				for (int32 i = 0; i < effectResultInfo.modifyGrids.Num(); i++)
+				{
+					renderActionNode.targetGridXs.Add(effectResultInfo.modifyGrids[i].x);
+					renderActionNode.targetGridYs.Add(effectResultInfo.modifyGrids[i].y);
+				}
+				renderParentNode.children.Add(renderActionNode);
 
 				
-				TriggerPassiveEffect(launchX, launchY, effectResultInfo, renderEffectRoundList);
+				TriggerPassiveEffect(launchX, launchY, effectResultInfo, renderActionNode);
 				RefreshPassiveEffectTriggerTags();
 
 				for (int32 i = 0; i < effectResultInfo.modifyGrids.Num(); i++)
@@ -1231,7 +1254,7 @@ public:
 		
 	}
 
-	void TriggerRoundEndSkill(uint8 curSection, TArray<FRenderEffectRound>& renderEffectRoundList)
+	void TriggerRoundEndSkill(uint8 curSection, FRenderActionNode& renderParentNode)
 	{
 		for (int32 i = UGlobalConstFunctionLibrary::graveCardSectionRow + UGlobalConstFunctionLibrary::playCardSectionRow;
 			i < UGlobalConstFunctionLibrary::graveCardSectionRow + UGlobalConstFunctionLibrary::playCardSectionRow + UGlobalConstFunctionLibrary::boardSectionRow;
@@ -1270,6 +1293,8 @@ public:
 					effectInfo.prereqValue = allInstanceCardInfo[launchUid].originCardInfo.prereqValue;
 					effectInfo.passivePrereqType = allInstanceCardInfo[launchUid].originCardInfo.passivePrereqType;
 					effectInfo.values = allInstanceCardInfo[launchUid].originCardInfo.values;
+					effectInfo.renderEffectType = allInstanceCardInfo[launchUid].originCardInfo.renderEffectType;
+					effectInfo.renderEffectTime = allInstanceCardInfo[launchUid].originCardInfo.renderEffectTime;
 
 					bool prereqPass = false;
 					if (effectInfo.prereqType == "none" ||
@@ -1305,11 +1330,20 @@ public:
 						if (effectResultInfo.success)
 						{
 							effectResultInfo.triggerRound = 0;
-							FRenderEffectDict renderEffectDict(effectResultInfo);
-							FRenderEffectRound renderEffectRound;
-							renderEffectRound.renderRound = 0;
-							renderEffectRound.renderEffectList.Add(renderEffectDict);
-							renderEffectRoundList.Add(renderEffectRound);
+							FRenderActionNode renderActionNode;
+							renderActionNode.actionType = ActionType::LaunchSkill;
+							renderActionNode.renderTime = effectResultInfo.renderTime;
+							renderActionNode.renderEffectType = effectResultInfo.renderEffectType;
+							renderActionNode.triggerGridX = j;
+							renderActionNode.triggerGridY = i;
+							renderActionNode.modifyUids = effectResultInfo.modifyUids;
+							renderActionNode.modifyValues = effectResultInfo.modifyValues;
+							for (int32 k = 0; k < effectResultInfo.modifyGrids.Num(); k++)
+							{
+								renderActionNode.targetGridXs.Add(effectResultInfo.modifyGrids[k].x);
+								renderActionNode.targetGridYs.Add(effectResultInfo.modifyGrids[k].y);
+							}
+							renderParentNode.children.Add(renderActionNode);
 
 
 							if (allInstanceCardInfo[launchUid].curAvailableTimes > 0)
@@ -1322,7 +1356,7 @@ public:
 							}
 
 							
-							TriggerPassiveEffect(j, i, effectResultInfo, renderEffectRoundList);
+							TriggerPassiveEffect(j, i, effectResultInfo, renderActionNode);
 							RefreshPassiveEffectTriggerTags();
 
 							for (int32 k = 0; k < effectResultInfo.modifyGrids.Num(); k++)
@@ -1351,7 +1385,7 @@ public:
 		int32 launchY,
 		int32 targetX,
 		int32 targetY,
-		TArray<FRenderEffectRound>& renderEffectRoundList)
+		FRenderActionNode& renderParentNode)
 	{
 		int32 launchUid = boardRows[launchY].colCardInfos[launchX];
 
@@ -1378,6 +1412,8 @@ public:
 		effectInfo.prereqValue = allInstanceCardInfo[launchUid].originCardInfo.prereqValue;
 		effectInfo.passivePrereqType = allInstanceCardInfo[launchUid].originCardInfo.passivePrereqType;
 		effectInfo.values = allInstanceCardInfo[launchUid].originCardInfo.values;
+		effectInfo.renderEffectType = allInstanceCardInfo[launchUid].originCardInfo.renderEffectType;
+		effectInfo.renderEffectTime = allInstanceCardInfo[launchUid].originCardInfo.renderEffectTime;
 
 		bool prereqPass = false;
 		if (effectInfo.prereqType == "none" ||
@@ -1413,11 +1449,20 @@ public:
 			if (effectResultInfo.success)
 			{
 				effectResultInfo.triggerRound = 0;
-				FRenderEffectDict renderEffectDict(effectResultInfo);
-				FRenderEffectRound renderEffectRound;
-				renderEffectRound.renderRound = 0;
-				renderEffectRound.renderEffectList.Add(renderEffectDict);
-				renderEffectRoundList.Add(renderEffectRound);
+				FRenderActionNode renderActionNode;
+				renderActionNode.actionType = ActionType::LaunchSkill;
+				renderActionNode.renderTime = effectResultInfo.renderTime;
+				renderActionNode.renderEffectType = effectResultInfo.renderEffectType;
+				renderActionNode.triggerGridX = effectResultInfo.triggerGridX;
+				renderActionNode.triggerGridY = effectResultInfo.triggerGridY;
+				renderActionNode.modifyUids = effectResultInfo.modifyUids;
+				renderActionNode.modifyValues = effectResultInfo.modifyValues;
+				for (int32 i = 0; i < effectResultInfo.modifyGrids.Num(); i++)
+				{
+					renderActionNode.targetGridXs.Add(effectResultInfo.modifyGrids[i].x);
+					renderActionNode.targetGridYs.Add(effectResultInfo.modifyGrids[i].y);
+				}
+				renderParentNode.children.Add(renderActionNode);
 
 
 				if (allInstanceCardInfo[launchUid].curAvailableTimes > 0)
@@ -1430,7 +1475,7 @@ public:
 				}
 
 				
-				TriggerPassiveEffect(launchX, launchY, effectResultInfo, renderEffectRoundList);
+				TriggerPassiveEffect(launchX, launchY, effectResultInfo, renderActionNode);
 				RefreshPassiveEffectTriggerTags();
 
 				for (int32 i = 0; i < effectResultInfo.modifyGrids.Num(); i++)
@@ -1630,7 +1675,7 @@ public:
 		int32 triggerX,
 		int32 triggerY,
 		FEffectResultDict effectResultDict,
-		TArray<FRenderEffectRound>& renderEffectRoundList)
+		FRenderActionNode& renderParentNode)
 	{
 		// Traverse all cards that are modified, try to trigger their passive effects
 		for (int32 i = 0; i < effectResultDict.modifyUids.Num(); i++)
@@ -1682,29 +1727,25 @@ public:
 
 				secondaryEffectResult.triggerRound = effectResultDict.triggerRound + 1;
 
-				FRenderEffectDict renderEffectDict(secondaryEffectResult);
-				if (secondaryEffectResult.triggerRound >= renderEffectRoundList.Num())
+				FRenderActionNode renderActionNode;
+				renderActionNode.actionType = ActionType::LaunchSkill;
+				renderActionNode.renderTime = secondaryEffectResult.renderTime;
+				renderActionNode.renderEffectType = secondaryEffectResult.renderEffectType;
+				renderActionNode.triggerGridX = secondaryEffectResult.triggerGridX;
+				renderActionNode.triggerGridY = secondaryEffectResult.triggerGridY;
+				for (int32 j = 0; j < secondaryEffectResult.modifyGrids.Num(); j++)
 				{
-					FRenderEffectRound renderEffectRound;
-					renderEffectRound.renderRound = secondaryEffectResult.triggerRound;
-					renderEffectRound.renderEffectList.Add(renderEffectDict);
-					renderEffectRoundList.Add(renderEffectRound);
+					renderActionNode.targetGridXs.Add(secondaryEffectResult.modifyGrids[j].x);
+					renderActionNode.targetGridYs.Add(secondaryEffectResult.modifyGrids[j].y);
 				}
-				else
-				{
-					// which means there's already an equal RenderEffectRound exist
-					if (renderEffectRoundList[secondaryEffectResult.triggerRound].renderTime < secondaryEffectResult.renderTime)
-					{
-						renderEffectRoundList[secondaryEffectResult.triggerRound].renderTime = secondaryEffectResult.renderTime;
-					}
-					renderEffectRoundList[secondaryEffectResult.triggerRound].renderEffectList.Add(renderEffectDict);
-				}
-
+				renderActionNode.modifyUids = secondaryEffectResult.modifyUids;
+				renderActionNode.modifyValues = secondaryEffectResult.modifyValues;
+				renderParentNode.children.Add(renderActionNode);
 
 				if (secondaryEffectResult.modifyUids.Num() > 0)
 				{
 					TriggerPassiveEffect(effectResultDict.modifyGrids[i].x,
-						effectResultDict.modifyGrids[i].y, secondaryEffectResult, renderEffectRoundList);
+						effectResultDict.modifyGrids[i].y, secondaryEffectResult, renderActionNode);
 				}
 
 				for (int32 j = 0; j < secondaryEffectResult.modifyGrids.Num(); j++)
@@ -1726,8 +1767,15 @@ public:
 		int32 launchX,
 		int32 launchY,
 		int32 targetX,
-		int32 targetY)
+		int32 targetY,
+		FRenderActionNode& renderParentNode)
 	{
+		renderParentNode.actionType = ActionType::Move;
+		renderParentNode.triggerGridX = launchX;
+		renderParentNode.triggerGridY = launchY;
+		renderParentNode.targetGridXs.Add(targetX);
+		renderParentNode.targetGridYs.Add(targetY);
+
 		int32 moveCardUid = boardRows[launchY].colCardInfos[launchX];
 		boardRows[targetY].colCardInfos[targetX] = moveCardUid;
 		boardRows[launchY].colCardInfos[launchX] = -1;
@@ -1955,6 +2003,8 @@ public:
 				effectInfo.targetCamp = launchCardInfo.originCardInfo.targetCamp;
 				effectInfo.targetGeoType = launchCardInfo.originCardInfo.targetGeoType;
 				effectInfo.values = launchCardInfo.originCardInfo.values;
+				effectInfo.renderEffectType = launchCardInfo.originCardInfo.renderEffectType;
+				effectInfo.renderEffectTime = launchCardInfo.originCardInfo.renderEffectTime;
 
 				bool prereqPass = true;
 				if (!UCheckPrereqFunctionLibrary::CheckPrereqRule(

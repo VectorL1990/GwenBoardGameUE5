@@ -337,8 +337,8 @@ void UMcts::SendTritonRequest()
 		ActionType actionType = ActionType::EndRound;
 		copyBoard.ActionDecoding(action, launchX, launchY, targetX, targetY, actionType);
 		// we should do move here! So that we can predict next action probs
-		TArray<FRenderEffectRound> renderEffectRoundList;
-		copyBoard.TriggerAction(false, copyBoard.curPlayingSectionNb, action, renderEffectRoundList);
+		FRenderActionNode renderActionNode;
+		copyBoard.TriggerAction(false, copyBoard.curPlayingSectionNb, action, renderActionNode);
 		copyBoard.lastActionId = action;
 		copyBoard.lastStepActionType = actionType;
 	}
@@ -404,12 +404,12 @@ bool UMcts::CheckTritonReponseAll()
 
 		for (int32 j = 0; j < legalActionIds.Num(); j++)
 		{
-			TArray<FRenderEffectRound> renderEffectRoundList;
+			FRenderActionNode renderActionNode;
 			// Trigger action just for replay
 			FBoardInfo copyBoard = tritonResponseData.curBoardInfo.GetCopyBoard();
 
 			copyBoard.TriggerAction(false, tritonResponseData.curBoardInfo.curPlayingSectionNb,
-				legalActionIds[j], renderEffectRoundList);
+				legalActionIds[j], renderActionNode);
 
 			float expPolicy = exp(tritonResponseData.policies[legalActionIds[j]]);
 			UMctsTreeNode* newNode = tritonResponseData.curMctsTreeNode->ExpandNode(

@@ -59,10 +59,12 @@ uint32 FAIRunnable::Run()
 				waitTargetX, 
 				waitTargetY, 
 				waitActionType);
-			TArray<FRenderEffectRound> renderEffectRounds;
-			mcts->realBoard.TriggerAction(true, waitLaunchCamp, actionCode, renderEffectRounds);
+			FRenderActionNode renderRootNode;
+			mcts->realBoard.TriggerAction(true, waitLaunchCamp, actionCode, renderRootNode);
 			aiRunnableState = EAIRunnableState::NewState;
-			newRenderEffectRounds = renderEffectRounds;
+
+			newStateRenderRoot = renderRootNode;
+			newStateActionType = waitActionType;
 
 			mcts->realBoard.lastActionId = actionCode;
 			mcts->realBoard.lastStepActionType = waitActionType;
@@ -124,8 +126,8 @@ uint32 FAIRunnable::Run()
 				mcts->curTrainingData.playSectionNbs.Add(targetSectionNb);
 				*/
 
-				TArray<FRenderEffectRound> renderEffectList;
-				mcts->realBoard.TriggerAction(false, mcts->realBoard.curPlayingSectionNb, targetAction, renderEffectList);
+				FRenderActionNode renderActionRoot;
+				mcts->realBoard.TriggerAction(false, mcts->realBoard.curPlayingSectionNb, targetAction, renderActionRoot);
 
 				mcts->realBoard.lastActionId = targetAction;
 				mcts->realBoard.lastStepActionType = targetActionType;

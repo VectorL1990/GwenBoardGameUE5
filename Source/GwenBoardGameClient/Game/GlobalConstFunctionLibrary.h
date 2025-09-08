@@ -62,6 +62,25 @@ enum class ECardFloatRotateStage : uint8
     SecondStageDecrease
 };
 
+UENUM(BlueprintType)
+enum class ActionType : uint8
+{
+    PlayCard = 0,
+    LaunchSkill = 1,
+    Move = 2,
+    EndRound = 3
+};
+
+UENUM(BlueprintType)
+enum class EGameModeRenderState : uint8
+{
+    Default = 0,
+    StartRenderStep = 1,
+    RenderingStep = 2,
+    StartRenderSkill = 3,
+    RenderingEffect = 3,
+};
+
 
 USTRUCT(BlueprintType, Blueprintable)
 struct FCardInfo
@@ -163,6 +182,12 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
         FString moveType;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FString renderEffectType;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    float renderEffectTime;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
         FString cardCategory;
@@ -360,6 +385,9 @@ struct FRenderEffectDict
     GENERATED_USTRUCT_BODY()
 public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    ActionType actionType;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     int32 renderRound;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -374,6 +402,12 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     int32 triggerGridY;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TArray<int32> targetGridXs;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TArray<int32> targetGridYs;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TArray<int32> modifyUids;
@@ -399,19 +433,40 @@ public:
 };
 
 USTRUCT(BlueprintType, Blueprintable)
-struct FRenderEffectRound
+struct FRenderActionNode
 {
     GENERATED_USTRUCT_BODY()
 public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TArray<FRenderEffectDict> renderEffectList;
+    FString renderEffectType;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    int32 renderRound;
+    int32 triggerGridX;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int32 triggerGridY;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TArray<int32> targetGridXs;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TArray<int32> targetGridYs;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TArray<int32> modifyUids;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TArray<float> modifyValues;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     float renderTime;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    ActionType actionType;
+
+    TArray<FRenderActionNode> children;
 };
+
 
 
 USTRUCT(BlueprintType, Blueprintable)

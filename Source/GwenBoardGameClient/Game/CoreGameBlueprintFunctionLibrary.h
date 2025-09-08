@@ -94,13 +94,7 @@ enum class AoeType : uint8
     ObliqueCross = 5,
 };
 
-enum class ActionType : uint8
-{
-    PlayCard = 0,
-    LaunchSkill = 1,
-    Move = 2,
-    EndRound = 3
-};
+
 
 UENUM(BlueprintType)
 enum class EGamingType : uint8
@@ -108,6 +102,8 @@ enum class EGamingType : uint8
     Training = 0,
     SinglePlay = 1,
 };
+
+
 
 
 
