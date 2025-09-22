@@ -37,7 +37,7 @@ void ACard::Tick(float DeltaTime)
 	CardMotion(DeltaTime);
 	CardRotation(DeltaTime);
 	SelectFloatingRise(DeltaTime);
-	SelectFloatingRotate(DeltaTime);
+	//SelectFloatingRotate(DeltaTime);
 }
 
 void ACard::NotifyInit_Implementation()
@@ -65,10 +65,44 @@ void ACard::InitCard(
     UCardWidget3D* widget = Cast<UCardWidget3D>(cardWidgetComponent->GetWidget());
     widget->NotifyInit();
     widget->SetupHpDefence(inCurHp, inCurDefence, inCurCd, inCurAvailable);
+
+	hp = inCurHp;
+	defence = inCurDefence;
 }
 
 void ACard::UpdateCard(int32 inCurHp, int32 inCurDefence, int32 inCurCd, int32 inCurAvailable)
 {
+	if (inCurHp > hp)
+	{
+		// which means hp increases, play healing animation
+		TriggerCardEffectMotion();
+	}
+	else if (inCurHp < hp)
+	{
+		if (inCurHp <= 0)
+		{
+			// which means card is dead, play dead animation
+			TriggerCardDeadAnim();
+		}
+		else
+		{
+			// which means hp decreases, play hurting animation
+			TriggerCardEffectMotion();
+		}
+	}
+	else
+	{
+		if (inCurDefence > defence)
+		{
+			TriggerCardEffectMotion();
+		}
+		else if (inCurDefence < defence)
+		{
+			// which means card is being hurt, play hurting animation
+			TriggerCardEffectMotion();
+		}
+	}
+	hp = inCurHp;
     cardWidgetComponent = GetComponentByClass<UWidgetComponent>();
     UCardWidget3D* widget = Cast<UCardWidget3D>(cardWidgetComponent->GetWidget());
     widget->SetupHpDefence(inCurHp, inCurDefence, inCurCd, inCurAvailable);
@@ -101,6 +135,27 @@ void ACard::Highlight()
 void ACard::DeHighlight()
 {
 
+}
+
+void ACard::TriggerCardEffectMotion()
+{
+	cardHurtMotionStage = ECardVerticalMotionStage::RiseAcc;
+
+	float riseT0 = maxHurtCardRiseSpeed / hurtCardRiseAcc * 2.0;
+	float hurtCardRiseTop = 0.5 * hurtCardRiseAcc * riseT0 * riseT0 * 2.0 + GetActorLocation().Z;
+
+	float dropT0 = FMath::Sqrt(2.0 * (hurtCardRiseTop - cardMotionBottom) / hurtCardDropAcc);
+	float rebounceSpeed = hurtCardDropAcc * dropT0 * cardRebounceSpeedLost;
+	float riseT1 = rebounceSpeed / cardRebounceVerticalAcc;
+	float dropT1 = riseT1;
+	hurtCardMotionTotalT = riseT0 + dropT0 + riseT1 + dropT1;
+	hurtCardMotionCurCountT = 0.0;
+}
+
+void ACard::TriggerCardHurtRotation()
+{
+	cardHurtRotationStage = ECardRotationStage::PosRotate;
+	cardNextRotationPitch = cardMaxRotationPitch;
 }
 
 void ACard::TriggerCardMotion(FVector2D targetHorizonTarget)
@@ -276,7 +331,129 @@ void ACard::CardMotion(float dT)
 	cardMotionCurCountT += dT;
 }
 
+void ACard::CardHurtMotion(float dT)
+{
+	if (hurtCardMotionCurCountT >= hurtCardMotionTotalT)
+	{
+		return;
+	}
+
+
+
+
+	if (cardHurtMotionStage == ECardVerticalMotionStage::RiseAcc)
+	{
+		float rising = GetActorLocation().Z + cardVerticalSpeed * dT + 0.5 * hurtCardRiseAcc * dT * dT;
+		cardVerticalSpeed += hurtCardRiseAcc * dT;
+		if (cardVerticalSpeed >= maxHurtCardRiseSpeed)
+		{
+			cardVerticalSpeed = maxHurtCardRiseSpeed;
+			cardHurtMotionStage = ECardVerticalMotionStage::RiseDec;
+		}
+		FVector des = FVector(GetActorLocation().X, GetActorLocation().Y, rising);
+		SetActorLocation(des);
+	}
+	else if (cardHurtMotionStage == ECardVerticalMotionStage::RiseDec)
+	{
+		float rising = GetActorLocation().Z + cardVerticalSpeed * dT + 0.5 * hurtCardRiseAcc * dT * dT;
+		cardVerticalSpeed -= hurtCardRiseAcc * dT;
+		if (cardVerticalSpeed <= 0.0)
+		{
+			cardVerticalSpeed = 0.0;
+			cardHurtMotionStage = ECardVerticalMotionStage::DropAcc;
+		}
+		FVector des = FVector(GetActorLocation().X, GetActorLocation().Y, rising);
+		SetActorLocation(des);
+	}
+	else if (cardHurtMotionStage == ECardVerticalMotionStage::DropAcc)
+	{
+		float drop = GetActorLocation().Z - cardVerticalSpeed * dT - 0.5 * hurtCardDropAcc * dT * dT;
+		cardVerticalSpeed += hurtCardDropAcc * dT;
+		FVector des = FVector(GetActorLocation().X, GetActorLocation().Y, drop);
+		SetActorLocation(des);
+		if (des.Z <= 120.0)
+		{
+			cardHurtMotionStage = ECardVerticalMotionStage::RebounceUp;
+			des.Z = 120.0;
+			SetActorLocation(des);
+			cardVerticalSpeed = cardVerticalSpeed * cardRebounceSpeedLost;
+
+			TriggerCardHurtRotation();
+		}
+	}
+	else if (cardHurtMotionStage == ECardVerticalMotionStage::RebounceUp)
+	{
+		float rebounce = GetActorLocation().Z + cardVerticalSpeed * dT + 0.5 * cardRebounceVerticalAcc * dT * dT;
+		cardVerticalSpeed -= cardRebounceVerticalAcc * dT;
+		FVector des = FVector(GetActorLocation().X, GetActorLocation().Y, rebounce);
+		SetActorLocation(des);
+		if (cardVerticalSpeed <= 0.0)
+		{
+			cardVerticalSpeed = 0.0;
+			cardHurtMotionStage = ECardVerticalMotionStage::RebounceDown;
+		}
+	}
+	else if (cardHurtMotionStage == ECardVerticalMotionStage::RebounceDown)
+	{
+		float drop = GetActorLocation().Z - cardVerticalSpeed * dT - 0.5 * cardRebounceVerticalAcc * dT * dT;
+		cardVerticalSpeed += cardRebounceVerticalAcc * dT;
+		FVector des = FVector(GetActorLocation().X, GetActorLocation().Y, drop);
+		SetActorLocation(des);
+		if (des.Z <= 120.0)
+		{
+			cardHurtMotionStage = ECardVerticalMotionStage::Default;
+			des.Z = 120.0;
+			SetActorLocation(des);
+			cardVerticalSpeed = 0.0;
+			ResetCardHurtMotion();
+		}
+	}
+
+	hurtCardMotionCurCountT += dT;
+}
+
 void ACard::CardRotation(float dT)
+{
+	if (FMath::Abs(cardNextRotationPitch) <= 1.0)
+	{
+		cardRotationStage = ECardRotationStage::Default;
+		FRotator rot = FRotator(0.0, 0.0, 0.0);
+		SetActorRotation(rot);
+	}
+	else
+	{
+		if (cardRotationStage == ECardRotationStage::PosRotate)
+		{
+			if (cardCurRotationPitch >= cardNextRotationPitch)
+			{
+				cardCurRotationPitch = cardNextRotationPitch;
+				cardNextRotationPitch = -0.5 * cardNextRotationPitch;
+				cardRotationStage = ECardRotationStage::NegRotate;
+			}
+			else
+			{
+				cardCurRotationPitch += cardRotateSpeed;
+			}
+		}
+		else if (cardRotationStage == ECardRotationStage::NegRotate)
+		{
+			if (cardCurRotationPitch <= cardNextRotationPitch)
+			{
+				cardCurRotationPitch = cardNextRotationPitch;
+				cardNextRotationPitch = -0.5 * cardNextRotationPitch;
+				cardRotationStage = ECardRotationStage::PosRotate;
+			}
+			else
+			{
+				cardCurRotationPitch -= cardRotateSpeed;
+			}
+		}
+		FRotator rot = FRotator(cardCurRotationPitch * cardMotionPitchAdjustCoe, cardCurRotationPitch * cardMotionYawAdjustCoe, cardCurRotationPitch * cardMotionRollAdjustCoe);
+		SetActorRotation(rot);
+	}
+}
+
+void ACard::CardHurtRotation(float dT)
 {
 	if (FMath::Abs(cardNextRotationPitch) <= 1.0)
 	{
@@ -471,4 +648,22 @@ void ACard::ResetCardMotion()
 
 	cardFloatCurSpeed = 0.0;
 }
+
+void ACard::ResetCardHurtMotion()
+{
+	cardVerticalMotionStage = ECardVerticalMotionStage::Default;
+	cardRotationStage = ECardRotationStage::Default;
+
+	cardCurRotationPitch = 0.0;
+	cardNextRotationPitch = 0.0;
+
+	hurtCardMotionCurCountT = 0.0;
+	hurtCardMotionTotalT = 0.0;
+}
+
+void ACard::TriggerCardDeadAnim()
+{
+	curDeadCountDown = 0.0;
+}
+
 

@@ -238,6 +238,7 @@ void ACoreCardGamePC::DealRightClick()
             DrawDebugSphere(GetWorld(), hitResult.Location, 50.0, 10, FColor::Cyan, false, 1.0);
             AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
             ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
+
             if (coreCardGameMode->selectBoardCard)
             {
                 ABoardGrid* grid = Cast<ABoardGrid>(hitResult.GetActor());
@@ -417,6 +418,22 @@ void ACoreCardGamePC::NextMctsTrainNodeMenu()
     if (mctReplayMenu)
     {
         mctReplayMenu->NextMctsNodeMenu();
+    }
+}
+
+void ACoreCardGamePC::UpdateActionCountDownBar(float progress)
+{
+    if (battleWidget)
+    {
+        battleWidget->UpdateCountDownBarProgress(progress);
+    }
+}
+
+void ACoreCardGamePC::UpdateEndRoundButtonState(EEndRoundButtonState endRoundButtonState)
+{
+    if (battleWidget)
+    {
+        battleWidget->UpdateEndRoundButtonState(endRoundButtonState);
     }
 }
 

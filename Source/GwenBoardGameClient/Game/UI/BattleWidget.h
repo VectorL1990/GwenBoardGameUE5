@@ -8,6 +8,7 @@
 #include "TextBlock.h"
 #include "../CoreGameBlueprintFunctionLibrary.h"
 #include "CardDetailWidget.h"
+#include "Components/Image.h"
 #include "BattleWidget.generated.h"
 
 /**
@@ -19,7 +20,8 @@ class GWENBOARDGAMECLIENT_API UBattleWidget : public UUserWidget
     GENERATED_BODY()
 public:
     UFUNCTION(BlueprintCallable)
-    void Init(UCardDetailWidget* inCardDetailWidget);
+    void Init(UCardDetailWidget* inCardDetailWidget,
+        UImage* inCountDownBar);
 
     UFUNCTION(BlueprintNativeEvent)
     void NotifyInit();
@@ -33,6 +35,13 @@ public:
 
     void SetFinishCardSelectionText();
 
+    void UpdateCountDownBarProgress(float progress);
+
+    void UpdateEndRoundButtonState(EEndRoundButtonState state);
+
+    UPROPERTY(EditDefaultsOnly)
+    UMaterialInterface* actionCountDownBarMatParent;
+
     UPROPERTY()
     UCardDetailWidget* cardDetailWidget;
 
@@ -41,4 +50,7 @@ public:
 
     UPROPERTY(BlueprintReadWrite)
     UTextBlock* finishCardSelectionText;
+
+    UPROPERTY(BlueprintReadWrite)
+    UImage* actionCountDownBar;
 };

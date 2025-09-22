@@ -5,12 +5,18 @@
 #include "CanvasPanelSlot.h"
 #include "Kismet/GameplayStatics.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
+#include "Kismet/KismetMaterialLibrary.h"
 #include "Game/CoreCardGameModeBase.h"
 
 
-void UBattleWidget::Init(UCardDetailWidget* inCardDetailWidget)
+void UBattleWidget::Init(
+	UCardDetailWidget* inCardDetailWidget,
+	UImage* inCountDownBar)
 {
 	cardDetailWidget = inCardDetailWidget;
+	UMaterialInstanceDynamic* mi = UKismetMaterialLibrary::CreateDynamicMaterialInstance(this, actionCountDownBarMatParent);
+	actionCountDownBar = inCountDownBar;
+	actionCountDownBar->Brush.SetResourceObject(mi);
 	cardDetailWidget->NotifyInit();
 	//HideCardDetail();
 }
@@ -56,4 +62,18 @@ void UBattleWidget::ClickButton(FString buttonName)
 void UBattleWidget::SetFinishCardSelectionText()
 {
 	finishCardSelectionText->SetText(FText::FromString("Please wait"));
+}
+
+void UBattleWidget::UpdateCountDownBarProgress(float progress)
+{
+	UMaterialInstanceDynamic* mi = Cast<UMaterialInstanceDynamic>(actionCountDownBar->Brush.GetResourceObject());
+	mi->SetScalarParameterValue("Fade", progress);
+}
+
+void UBattleWidget::UpdateEndRoundButtonState(EEndRoundButtonState state)
+{
+	if (state == EEndRoundButtonState::SelfHasPlayCard)
+	{
+
+	}
 }

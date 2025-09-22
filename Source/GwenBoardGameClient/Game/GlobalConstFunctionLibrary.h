@@ -6,10 +6,12 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "GlobalConstFunctionLibrary.generated.h"
 
-#define StateCodingTotalCHW 4704
-#define StateCodingC 84
-#define StateCodingH 14
-#define StateCodingW 4
+#define StateCodingTotalCHW 12384
+#define StateCodingC 86
+#define StateCodingH 18
+#define StateCodingW 8
+#define defaultRenderPlayCardInterval 1.0;
+#define defaultRenderMoveCardInterval 1.0;
 
 UENUM(BlueprintType)
 enum class EAtkDistanceType : uint8
@@ -75,10 +77,21 @@ UENUM(BlueprintType)
 enum class EGameModeRenderState : uint8
 {
     Default = 0,
-    StartRenderStep = 1,
+    EndRoundRender = 1,
     RenderingStep = 2,
-    StartRenderSkill = 3,
-    RenderingEffect = 3,
+    ActionTimeOut = 3,
+    ActionTimeOutWaitRender = 4,
+    ActionTimeOutRenderStep = 5,
+    RenderingEndRound = 6,
+};
+
+UENUM(BlueprintType)
+enum class EEndRoundButtonState : uint8
+{
+    SelfNotPlayCardYet = 0,
+    SelfHasPlayCard = 1,
+    OppoNotPlayCardYet = 2,
+    OppoHasPlayCard = 3,
 };
 
 
@@ -370,67 +383,12 @@ public:
     TArray<float> modifyValues;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    int32 triggerRound;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FString renderEffectType;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     float renderTime;
 };
 
-USTRUCT(BlueprintType, Blueprintable)
-struct FRenderEffectDict
-{
-    GENERATED_USTRUCT_BODY()
-public:
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    ActionType actionType;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    int32 renderRound;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    FString renderEffectType;
-
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    float renderTime;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    int32 triggerGridX;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    int32 triggerGridY;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TArray<int32> targetGridXs;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TArray<int32> targetGridYs;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TArray<int32> modifyUids;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TArray<float> modifyValues;
-
-    FRenderEffectDict()
-    {
-
-    }
-
-    FRenderEffectDict(const FEffectResultDict& effectResultDict)
-    {
-        renderRound = effectResultDict.triggerRound;
-        renderTime = effectResultDict.renderTime;
-        renderEffectType = effectResultDict.renderEffectType;
-        triggerGridX = effectResultDict.triggerGridX;
-        triggerGridY = effectResultDict.triggerGridY;
-        modifyUids = effectResultDict.modifyUids;
-        modifyValues = effectResultDict.modifyValues;
-    }
-};
 
 USTRUCT(BlueprintType, Blueprintable)
 struct FRenderActionNode
@@ -441,6 +399,9 @@ public:
     FString renderEffectType;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int32 triggerCardId;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     int32 triggerGridX;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -464,7 +425,14 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     ActionType actionType;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int32 renderRound;
+
     TArray<FRenderActionNode> children;
+
+    float curRenderTime = 0.0;
+
+    bool triggerRender = false;
 };
 
 
@@ -514,6 +482,8 @@ enum class EAIRunnableState
 };
 
 
+
+
 /**
  * 
  */
@@ -523,10 +493,12 @@ class GWENBOARDGAMECLIENT_API UGlobalConstFunctionLibrary : public UBlueprintFun
     GENERATED_BODY()
 public:
     static const int32 handCardNb = 5;
-    static const int32 maxCol = 4;
-    static const int32 boardSectionRow = 4;
+    static const int32 maxCol = 8;
+    static const int32 boardSectionRow = 6;
     static const int32 playCardSectionRow = 2;
     static const int32 graveCardSectionRow = 3;
+
+    
 
     uint8 autoSkillGeoTargetTypeCoding[17] = { 0 };
     uint8 skillLaunchTypeCoding[6] = { 0 };

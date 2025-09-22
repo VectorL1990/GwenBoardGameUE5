@@ -30,6 +30,7 @@ void ACoreCardGameModeBase::BeginPlay()
 		sectionOneHandBattleCards[i]->SetActorLocation(sectionOneCardLocations[i]);
 		sectionOneHandBattleCards[i]->SetActorRotation(sectionOneCardRots[i]);
 	}
+	curPlayerOperateLeftTime = playerOperateTime;
 
 	FName testTag = "testMotionCard";
 	TArray<AActor*> testTagCards;
@@ -60,661 +61,314 @@ void ACoreCardGameModeBase::Tick(float deltaTime)
 {
 	MoveRearrangeCards();
 
-	if (isSinglePlay)
-	{
-		
-	}
-	else
-	{
-
-	}
-
-	if (curRenderingActionNodes.Num() > 0)
-	{
-		TArray<FRenderActionNode> triggerRenderNodes;
-		TArray<int32> finishedRenderNodeNbs;
-		for (int32 i = 0; i < curRenderingActionTimes.Num(); i++)
-		{
-			if (curRenderingActionTimes[i] >= curRenderingActionNodes[i].renderTime)
-			{
-				// which means action node rendering is finished
-				finishedRenderNodeNbs.Add(i);
-
-				for (int32 j = 0; j < curRenderingActionNodes[i].children.Num(); j++)
-				{
-					curRenderingActionNodes.Add(curRenderingActionNodes[i].children[j]);
-					curRenderingActionTimes.Add(0.0);
-
-					triggerRenderNodes.Add(curRenderingActionNodes[i].children[j]);
-				}
-			}
-			else
-			{
-
-			}
-		}
-
-
-		for (int32 i = 0; i < triggerRenderNodes.Num(); i++)
-		{
-			if (triggerRenderNodes[i].actionType == ActionType::LaunchSkill)
-			{
-				if (triggerRenderNodes[i].renderEffectType == "hurt")
-				{
-					// play hurt card effect
-					
-				}
-				else if (triggerRenderNodes[i].renderEffectType == "move")
-				{
-					// play effect moving card vfx
-				}
-				else if (triggerRenderNodes[i].renderEffectType == "spawn")
-				{
-					// play spawn card vfx
-				}
-				else if (triggerRenderNodes[i].renderEffectType == "draw")
-				{
-					// play draw card vfx
-				}
-			}
-		}
-	}
-
-	/*
 	if (gameModeRenderState == EGameModeRenderState::Default)
 	{
 		if (aiRunnable->aiRunnableState == EAIRunnableState::NewState)
 		{
-			gameModeRenderState = EGameModeRenderState::StartRenderStep;
+			aiRunnable->aiRunnableState = EAIRunnableState::Default;
+			gameModeRenderState = EGameModeRenderState::RenderingStep;
 			curRenderingActionNodes.Empty();
-			curRenderingActionTimes.Empty();
 			curRenderingActionNodes.Add(aiRunnable->newStateRenderRoot);
-			curRenderingActionTimes.Add(0.0);
-		}
-	}
-	else if (gameModeRenderState == EGameModeRenderState::StartRenderStep)
-	{
-		if (aiRunnable->newStateRenderEffectRounds[curGameModeRenderStep].actionType == ActionType::PlayCard)
-		{
-			int32 triggerX = aiRunnable->newStateRenderEffectRounds[curGameModeRenderStep].renderEffectList[0].triggerGridX;
-			int32 triggerY = aiRunnable->newStateRenderEffectRounds[curGameModeRenderStep].renderEffectList[0].triggerGridY;
-			int32 cardId = aiRunnable->mcts->realBoard.boardRows[triggerY].colCardInfos[triggerX];
-
-			if (allBattleCards[cardId]->cardStatus != BattleCardStatus::InBattle)
-			{
-				allBattleCards[cardId]->cardStatus = BattleCardStatus::InBattle;
-			}
-
-			int32 boardGridX = aiRunnable->newStateRenderEffectRounds[curGameModeRenderStep].renderEffectList[0].targetGridXs[0];
-			int32 boardGridY = aiRunnable->newStateRenderEffectRounds[curGameModeRenderStep].renderEffectList[0].targetGridYs[0];
-			int32 boardGridId = boardGridY * UGlobalConstFunctionLibrary::maxCol + boardGridX;
-
-			FVector destLocation = boardGrids[boardGridId]->GetActorLocation() + gridCardVerticalOffset;
-			FVector2D destLocation2D = FVector2D(destLocation.X, destLocation.Y);
-			// play card distributed animation
-			allBattleCards[cardId]->TriggerCardMotion(destLocation2D);
-			if (allBattleCards[cardId]->camp == 0)
-			{
-				for (int32 i = 0; i < sectionZeroHandBattleCards.Num(); i++)
-				{
-					if (sectionZeroHandBattleCards[i] == allBattleCards[cardId])
-					{
-						sectionZeroHandBattleCards.RemoveAt(i);
-						break;
-					}
-				}
-			}
-			else
-			{
-				for (int32 i = 0; i < sectionOneHandBattleCards.Num(); i++)
-				{
-					if (sectionOneHandBattleCards[i] == allBattleCards[cardId])
-					{
-						sectionOneHandBattleCards.RemoveAt(i);
-						break;
-					}
-				}
-			}
-
-			curGameModeRenderStepTime = 0.0;
-			gameModeRenderStepInterval = defaultRenderPlayCardInterval;
-			gameModeRenderState = EGameModeRenderState::RenderingStep;
-		}
-		else if (aiRunnable->newStateRenderEffectRounds[curGameModeRenderStep].actionType == ActionType::Move)
-		{
-			int32 triggerX = aiRunnable->newStateRenderEffectRounds[curGameModeRenderStep].renderEffectList[0].triggerGridX;
-			int32 triggerY = aiRunnable->newStateRenderEffectRounds[curGameModeRenderStep].renderEffectList[0].triggerGridY;
-			int32 cardId = aiRunnable->mcts->realBoard.boardRows[triggerY].colCardInfos[triggerX];
-
-			int32 boardGridX = aiRunnable->newStateRenderEffectRounds[curGameModeRenderStep].renderEffectList[0].targetGridXs[0];
-			int32 boardGridY = aiRunnable->newStateRenderEffectRounds[curGameModeRenderStep].renderEffectList[0].targetGridYs[0];
-			int32 boardGridId = boardGridY * UGlobalConstFunctionLibrary::maxCol + boardGridX;
-
-			FVector destLocation = boardGrids[boardGridId]->GetActorLocation() + gridCardVerticalOffset;
-			FVector2D destLocation2D = FVector2D(destLocation.X, destLocation.Y);
-			allBattleCards[cardId]->TriggerCardMotion(destLocation2D);
-
-			curGameModeRenderStepTime = 0.0;
-			gameModeRenderStepInterval = defaultRenderMoveCardInterval;
-			gameModeRenderState = EGameModeRenderState::RenderingStep;
-		}
-		else if (aiRunnable->newStateRenderEffectRounds[curGameModeRenderStep].actionType == ActionType::LaunchSkill)
-		{
-			gameModeRenderState = EGameModeRenderState::StartRenderSkill;
-			curGameModeRenderStepTime = 0.0;
-			gameModeRenderStepInterval = 0.0;
-		}
-		else if (aiRunnable->newStateRenderEffectRounds[curGameModeRenderStep].actionType == ActionType::EndRound)
-		{
-
-		}
-	}
-	else if (gameModeRenderState == EGameModeRenderState::RenderingStep)
-	{
-		if (curGameModeRenderStepTime >= gameModeRenderStepInterval)
-		{
-			// which means we can render next step
-			gameModeRenderState = EGameModeRenderState::StartRenderStep;
-			curGameModeRenderStepTime = 0.0;
-			gameModeRenderStepInterval = 0.0;
-			curGameModeRenderStep += 1;
 		}
 		else
 		{
-			curGameModeRenderStepTime += deltaTime;
+			//OperateCountDown(deltaTime);
 		}
 	}
-	else if (gameModeRenderState == EGameModeRenderState::StartRenderSkill)
+	else if (gameModeRenderState == EGameModeRenderState::ActionTimeOut)
 	{
-		for (int32 i = 0; i < aiRunnable->newStateRenderEffectRounds[curGameModeRenderStep].renderEffectList.Num(); i++)
+		// if card is not played, trigger playing card action
+		if (curSectionNb == 0)
 		{
-			if (aiRunnable->newStateRenderEffectRounds[curGameModeRenderStep].renderEffectList[i].renderEffectType == "hurt")
+			if (aiRunnable->mcts->realBoard.sectionZeroPlayCardAvailable)
 			{
-				// play hurt card effect
+				// trigger playing card action
+				TimeoutTriggerPlayCardAction(0);
 			}
-			else if (aiRunnable->newStateRenderEffectRounds[curGameModeRenderStep].renderEffectList[i].renderEffectType == "move")
+			else
 			{
-				// play effect moving card vfx
-			}
-			else if (aiRunnable->newStateRenderEffectRounds[curGameModeRenderStep].renderEffectList[i].renderEffectType == "spawn")
-			{
-				// play spawn card vfx
-			}
-			else if (aiRunnable->newStateRenderEffectRounds[curGameModeRenderStep].renderEffectList[i].renderEffectType == "draw")
-			{
-				// play draw card vfx
+				// trigger end round animation
+				gameModeRenderState = EGameModeRenderState::EndRoundRender;
+				curPlayerOperateLeftTime = playerOperateTime;
 			}
 		}
-
-		curGameModeRenderStepTime = 0.0;
-		gameModeRenderStepInterval = aiRunnable->newStateRenderEffectRounds[curGameModeRenderStep].renderTime;
-		gameModeRenderState = EGameModeRenderState::RenderingEffect;
-	}
-	else if (gameModeRenderState == EGameModeRenderState::RenderingEffect)
-	{
-		if (curGameModeRenderStepTime >= gameModeRenderStepInterval)
+		else
 		{
-			for (int32 j = 0; j < aiRunnable->newStateRenderEffectRounds[curGameModeRenderStep].renderEffectList[i].modifyUids.Num(); j++)
+			if (aiRunnable->mcts->realBoard.sectionOnePlayCardAvailable)
 			{
-				int32 modifyUid = aiRunnable->newStateRenderEffectRounds[curGameModeRenderStep].renderEffectList[i].modifyUids[j];
-				int32 targetX = aiRunnable->newStateRenderEffectRounds[curGameModeRenderStep].renderEffectList[i].targetGridXs[j];
-				int32 targetY = aiRunnable->newStateRenderEffectRounds[curGameModeRenderStep].renderEffectList[i].targetGridYs[j];
-				if (aiRunnable->mcts->realBoard.allInstanceCardInfo[modifyUid].curHp <= 0)
+				TimeoutTriggerPlayCardAction(1);
+			}
+			else
+			{
+				// trigger end round animation
+				gameModeRenderState = EGameModeRenderState::EndRoundRender;
+				curPlayerOperateLeftTime = playerOperateTime;
+			}
+		}
+	}
+	else if (gameModeRenderState == EGameModeRenderState::ActionTimeOutWaitRender)
+	{
+		if (aiRunnable->aiRunnableState == EAIRunnableState::NewState)
+		{
+			aiRunnable->aiRunnableState = EAIRunnableState::Default;
+			gameModeRenderState = EGameModeRenderState::ActionTimeOutRenderStep;
+			curRenderingActionNodes.Empty();
+			curRenderingActionNodes.Add(aiRunnable->newStateRenderRoot);
+		}
+	}
+	else if (gameModeRenderState == EGameModeRenderState::EndRoundRender)
+	{
+		// update end round button state
+		// demonstrate end round words
+		if (curSectionNb == 0)
+		{
+			curSectionNb = 1;
+		}
+		else
+		{
+			curSectionNb = 0;
+		}
+		curRenderEndRoundTime = 0.0;
+		gameModeRenderState = EGameModeRenderState::RenderingEndRound;
+	}
+	else if (gameModeRenderState == EGameModeRenderState::RenderingStep ||
+		gameModeRenderState == EGameModeRenderState::ActionTimeOutRenderStep)
+	{
+		if (curRenderingActionNodes.Num() > 0)
+		{
+			TArray<FRenderActionNode> triggerRenderNodes;
+			TArray<int32> finishedRenderNodeNbs;
+			for (int32 i = 0; i < curRenderingActionNodes.Num(); i++)
+			{
+				if (!curRenderingActionNodes[i].triggerRender)
 				{
-					// play dead rendering
-					GEngine->AddOnScreenDebugMessage(-1, 5.0, FColor::Red, "Delete dead card: " + FString::FromInt(modifyUid));
-					if (allBattleCards[modifyUid]->IsValidLowLevel())
-					{
-						allBattleCards[modifyUid]->ConditionalBeginDestroy();
-					}
-					allBattleCards.Remove(modifyUid);
+					triggerRenderNodes.Add(curRenderingActionNodes[i]);
+					curRenderingActionNodes[i].triggerRender = true;
 				}
 				else
 				{
-					// play being hurt rendering
-				}
-			}
-
-
-
-			curGameModeRenderStepTime = 0.0;
-			gameModeRenderStepInterval = 0.0;
-			gameModeRenderState = EGameModeRenderState::StartRenderStep;
-			curGameModeRenderStep += 1;
-		}
-		else
-		{
-			curGameModeRenderStepTime += deltaTime;
-		}
-	}
-	*/
-
-
-	if (aiRunnable->aiRunnableState == EAIRunnableState::NewState)
-	{
-		TArray<int32> allCardIds;
-		aiRunnable->mcts->realBoard.allInstanceCardInfo.GetKeys(allCardIds);
-
-		TArray<int32> allSectionZeroHandCardIds;
-		TArray<int32> allSectionOneHandCardIds;
-		TArray<int32> allSectionZeroGraveCardIds;
-		TArray<int32> allSectionOneGraveCardIds;
-		allSectionZeroHandCardIds = aiRunnable->mcts->realBoard.sectionZeroHandCards;
-		allSectionOneHandCardIds = aiRunnable->mcts->realBoard.sectionOneHandCards;
-		allSectionZeroGraveCardIds = aiRunnable->mcts->realBoard.sectionZeroGraveCards;
-		allSectionOneGraveCardIds = aiRunnable->mcts->realBoard.sectionOneGraveCards;
-
-
-
-
-
-
-
-		// delete cards not existed first
-		TArray<int32> removeCardIds;
-		for (TMap<int32, ACard*>::TConstIterator iter = allBattleCards.CreateConstIterator(); iter; ++iter)
-		{
-			if (!allCardIds.Contains(iter->Key))
-			{
-				removeCardIds.Add(iter->Key);
-				// which means this card doesn't exist, we should delete it
-				if (iter->Value->IsValidLowLevel())
-				{
-					iter->Value->ConditionalBeginDestroy();
-				}
-			}
-			else
-			{
-				int32 curHp = aiRunnable->mcts->realBoard.allInstanceCardInfo[iter->Key].curHp;
-				int32 curDefence = aiRunnable->mcts->realBoard.allInstanceCardInfo[iter->Key].curDefence;
-				int32 curCd = aiRunnable->mcts->realBoard.allInstanceCardInfo[iter->Key].curCoolDown;
-				int32 curAvailable = aiRunnable->mcts->realBoard.allInstanceCardInfo[iter->Key].curAvailableTimes;
-				iter->Value->UpdateCard(curHp, curDefence, curCd, curAvailable);
-			}
-		}
-		for (int32 i = 0; i < removeCardIds.Num(); i++)
-		{
-			allBattleCards.Remove(removeCardIds[i]);
-		}
-
-
-		if (aiRunnable->newStateActionType == ActionType::PlayCard)
-		{
-			// we should check whether there are any skills launched ?
-			// we should check whether there are any new cards spawned by skills ?
-			for (int32 i = 0; i < aiRunnable->mcts->realBoard.boardRows.Num(); i++)
-			{
-				for (int32 j = 0; j < aiRunnable->mcts->realBoard.boardRows[i].colCardInfos.Num(); j++)
-				{
-					int32 cardId = aiRunnable->mcts->realBoard.boardRows[i].colCardInfos[j];
-					if (cardId == -1)
+					if (curRenderingActionNodes[i].curRenderTime >= curRenderingActionNodes[i].renderTime)
 					{
-						continue;
-					}
-					
-					if (!allBattleCards.Contains(cardId))
-					{
-						// we should spawn card here
-						if ((i >= UGlobalConstFunctionLibrary::graveCardSectionRow &&
-							i < UGlobalConstFunctionLibrary::graveCardSectionRow + UGlobalConstFunctionLibrary::playCardSectionRow) ||
-							(i >= UGlobalConstFunctionLibrary::graveCardSectionRow + UGlobalConstFunctionLibrary::playCardSectionRow + UGlobalConstFunctionLibrary::boardSectionRow &&
-								i < UGlobalConstFunctionLibrary::graveCardSectionRow + UGlobalConstFunctionLibrary::playCardSectionRow * 2 + UGlobalConstFunctionLibrary::boardSectionRow))
+						// which means action node rendering is finished
+						finishedRenderNodeNbs.Add(i);
+						if (curRenderingActionNodes[i].actionType == ActionType::PlayCard)
 						{
-							// which means it's in hand card section
-							if (aiRunnable->mcts->realBoard.allInstanceCardInfo[cardId].camp == 0)
+							// which means card has been played, show up end round button
+							UGameInstance* gi = UGameplayStatics::GetGameInstance(this);
+							UGwenBoardGameInstance* gwenGI = Cast<UGwenBoardGameInstance>(gi);
+							if (curSectionNb == gwenGI->playerCambNb)
 							{
-								SpawnHandCard(aiRunnable->mcts->realBoard.allInstanceCardInfo[cardId].originCardInfo.cardName,
-									aiRunnable->mcts->realBoard.allInstanceCardInfo[cardId].camp,
-									cardId,
-									aiRunnable->mcts->realBoard.allInstanceCardInfo[cardId].curHp,
-									aiRunnable->mcts->realBoard.allInstanceCardInfo[cardId].curDefence,
-									aiRunnable->mcts->realBoard.allInstanceCardInfo[cardId].curCoolDown,
-									aiRunnable->mcts->realBoard.allInstanceCardInfo[cardId].curAvailableTimes,
-									aiRunnable->mcts->realBoard.sectionZeroHandCards.Num());
+								if (gameModeRenderState == EGameModeRenderState::RenderingStep)
+								{
+									UpdateEndRoundButtonState(EEndRoundButtonState::SelfHasPlayCard);
+								}
+								else
+								{
+									UpdateEndRoundButtonState(EEndRoundButtonState::OppoNotPlayCardYet);
+								}
 							}
 							else
 							{
-								SpawnHandCard(aiRunnable->mcts->realBoard.allInstanceCardInfo[cardId].originCardInfo.cardName,
-									aiRunnable->mcts->realBoard.allInstanceCardInfo[cardId].camp,
-									cardId,
-									aiRunnable->mcts->realBoard.allInstanceCardInfo[cardId].curHp,
-									aiRunnable->mcts->realBoard.allInstanceCardInfo[cardId].curDefence,
-									aiRunnable->mcts->realBoard.allInstanceCardInfo[cardId].curCoolDown,
-									aiRunnable->mcts->realBoard.allInstanceCardInfo[cardId].curAvailableTimes,
-									aiRunnable->mcts->realBoard.sectionOneHandCards.Num());
-							}
-						}
-						else if (i >= UGlobalConstFunctionLibrary::graveCardSectionRow + UGlobalConstFunctionLibrary::playCardSectionRow &&
-							i < UGlobalConstFunctionLibrary::graveCardSectionRow + UGlobalConstFunctionLibrary::playCardSectionRow + UGlobalConstFunctionLibrary::boardSectionRow)
-						{
-							// which means it's play board card
-							int32 boardGridId = (i - UGlobalConstFunctionLibrary::graveCardSectionRow - UGlobalConstFunctionLibrary::playCardSectionRow) * UGlobalConstFunctionLibrary::maxCol + j;
-							FVector2D target = FVector2D(boardGrids[boardGridId]->GetActorLocation().X, boardGrids[boardGridId]->GetActorLocation().Y);
-							FVector spawnLoc = boardGrids[boardGridId]->GetActorLocation() + gridCardVerticalOffset;
-							ACard* card = GetWorld()->SpawnActor<ACard>(cardBPClass, spawnLoc, FRotator::ZeroRotator);
-							card->cardId = cardId;
-							card->gridX = j;
-							card->gridY = i;
-
-							card->camp = aiRunnable->mcts->realBoard.allInstanceCardInfo[cardId].camp;
-							card->InitCard(aiRunnable->mcts->realBoard.allInstanceCardInfo[cardId].originCardInfo.cardName, 
-								aiRunnable->mcts->realBoard.allInstanceCardInfo[cardId].curHp, 
-								aiRunnable->mcts->realBoard.allInstanceCardInfo[cardId].curDefence, 
-								aiRunnable->mcts->realBoard.allInstanceCardInfo[cardId].curCoolDown, 
-								aiRunnable->mcts->realBoard.allInstanceCardInfo[cardId].curAvailableTimes);
-
-							if (aiRunnable->mcts->realBoard.allInstanceCardInfo[cardId].camp == 0)
-							{
-								allBattleCards.Add(cardId, card);
-							}
-							else
-							{
-								allBattleCards.Add(cardId, card);
+								if (gameModeRenderState == EGameModeRenderState::RenderingStep)
+								{
+									UpdateEndRoundButtonState(EEndRoundButtonState::OppoHasPlayCard);
+								}
+								else
+								{
+									UpdateEndRoundButtonState(EEndRoundButtonState::OppoHasPlayCard);
+								}
 							}
 						}
 					}
 					else
 					{
-						int32 originGridX = allBattleCards[cardId]->gridX;
-						int32 originGridY = allBattleCards[cardId]->gridY;
-						allBattleCards[cardId]->gridX = j;
-						allBattleCards[cardId]->gridY = i;
-						allBattleCards[cardId]->camp = aiRunnable->mcts->realBoard.allInstanceCardInfo[cardId].camp;
-						if (i < UGlobalConstFunctionLibrary::graveCardSectionRow ||
-							i >= (UGlobalConstFunctionLibrary::graveCardSectionRow +
-								UGlobalConstFunctionLibrary::playCardSectionRow +
-								UGlobalConstFunctionLibrary::boardSectionRow +
-								UGlobalConstFunctionLibrary::playCardSectionRow))
-						{
-							// which means this card goes to grave area
-							UGameInstance* gi = UGameplayStatics::GetGameInstance(this);
-							UGwenBoardGameInstance* gwenGI = Cast<UGwenBoardGameInstance>(gi);
-							if (gwenGI->playerCambNb == allBattleCards[cardId]->camp)
-							{
-								allSectionZeroGraveCardIds.Add(cardId);
-							}
-							else
-							{
-								allSectionOneGraveCardIds.Add(cardId);
-							}
-						}
-						else if ((i >= UGlobalConstFunctionLibrary::graveCardSectionRow &&
-							i < UGlobalConstFunctionLibrary::graveCardSectionRow + UGlobalConstFunctionLibrary::playCardSectionRow) ||
-							(i >= UGlobalConstFunctionLibrary::graveCardSectionRow + UGlobalConstFunctionLibrary::playCardSectionRow + UGlobalConstFunctionLibrary::boardSectionRow &&
-								i < UGlobalConstFunctionLibrary::graveCardSectionRow + UGlobalConstFunctionLibrary::playCardSectionRow * 2 + UGlobalConstFunctionLibrary::boardSectionRow))
-						{
-							// which means this card belongs to hand card area
-							UGameInstance* gi = UGameplayStatics::GetGameInstance(this);
-							UGwenBoardGameInstance* gwenGI = Cast<UGwenBoardGameInstance>(gi);
-							if (gwenGI->playerCambNb == allBattleCards[cardId]->camp)
-							{
-								allSectionZeroHandCardIds.Add(cardId);
-							}
-							else
-							{
-								allSectionOneHandCardIds.Add(cardId);
-							}
-						}
-						else
-						{
-							if (allBattleCards[cardId]->cardStatus != BattleCardStatus::InBattle)
-							{
-								allBattleCards[cardId]->cardStatus = BattleCardStatus::InBattle;
-							}
-
-							if (originGridY >= UGlobalConstFunctionLibrary::graveCardSectionRow + UGlobalConstFunctionLibrary::playCardSectionRow &&
-								originGridY < UGlobalConstFunctionLibrary::graveCardSectionRow + UGlobalConstFunctionLibrary::playCardSectionRow + UGlobalConstFunctionLibrary::boardSectionRow &&
-								(originGridX != j || originGridY != i))
-							{
-								// which means this card is being moved
-								int32 boardGridId = (i - UGlobalConstFunctionLibrary::graveCardSectionRow - UGlobalConstFunctionLibrary::playCardSectionRow) * UGlobalConstFunctionLibrary::maxCol + j;
-								FVector2D target = FVector2D(boardGrids[boardGridId]->GetActorLocation().X,
-									boardGrids[boardGridId]->GetActorLocation().Y);
-								allBattleCards[cardId]->TriggerCardMotion(target);
-
-								selectBoardCard = NULL;
-							}
-						}
+						curRenderingActionNodes[i].curRenderTime += deltaTime;
 					}
 				}
 			}
-		}
-		else if (aiRunnable->newStateActionType == ActionType::LaunchSkill)
-		{
-			// we should check whether there are any skills launched ?
-			// we should check whether there are any new cards spawned by skills ?
-		}
-		else if (aiRunnable->newStateActionType == ActionType::Move)
-		{
 
-		}
-		else if (aiRunnable->newStateActionType == ActionType::EndRound)
-		{
-			// we should check whether there are any skills launched ?
-			// we should check whether there are any new cards spawned by skills ?
-		}
-		
-		for (int32 i = 0; i < aiRunnable->mcts->realBoard.boardRows.Num(); i++)
-		{
-			for (int32 j = 0; j < aiRunnable->mcts->realBoard.boardRows[i].colCardInfos.Num(); j++)
+			if (finishedRenderNodeNbs.Num() == curRenderingActionNodes.Num())
 			{
-				int32 cardId = aiRunnable->mcts->realBoard.boardRows[i].colCardInfos[j];
-				if (cardId == -1)
+				// finish all current rendering nodes
+				for (int32 i = 0; i < curRenderingActionNodes.Num(); i++)
 				{
-
-				}
-				else
-				{
-					if (!allBattleCards.Contains(cardId))
+					for (int32 j = 0; j < curRenderingActionNodes[i].children.Num(); j++)
 					{
-						// we should spawn card here
+						triggerRenderNodes.Add(curRenderingActionNodes[i].children[j]);
+					}
+				}
+
+				curRenderingActionNodes.Empty();
+				for (int32 i = 0; i < triggerRenderNodes.Num(); i++)
+				{
+					triggerRenderNodes[i].triggerRender = true;
+				}
+				curRenderingActionNodes = triggerRenderNodes;
+				if (curRenderingActionNodes.Num() == 0)
+				{
+					if (gameModeRenderState == EGameModeRenderState::RenderingStep)
+					{
+						gameModeRenderState = EGameModeRenderState::Default;
 					}
 					else
 					{
-						int32 originGridX = allBattleCards[cardId]->gridX;
-						int32 originGridY = allBattleCards[cardId]->gridY;
-						allBattleCards[cardId]->gridX = j;
-						allBattleCards[cardId]->gridY = i;
-						allBattleCards[cardId]->camp = aiRunnable->mcts->realBoard.allInstanceCardInfo[cardId].camp;
-						if (i < UGlobalConstFunctionLibrary::graveCardSectionRow ||
-							i >= (UGlobalConstFunctionLibrary::graveCardSectionRow +
-								UGlobalConstFunctionLibrary::playCardSectionRow +
-								UGlobalConstFunctionLibrary::boardSectionRow +
-								UGlobalConstFunctionLibrary::playCardSectionRow))
+						gameModeRenderState = EGameModeRenderState::EndRoundRender;
+						curPlayerOperateLeftTime = playerOperateTime;
+					}
+				}
+			}
+
+
+			for (int32 i = 0; i < triggerRenderNodes.Num(); i++)
+			{
+				if (triggerRenderNodes[i].actionType == ActionType::LaunchSkill)
+				{
+					if (triggerRenderNodes[i].renderEffectType == "hurt")
+					{
+						// play hurt card effect
+						int32 boardGridId = (triggerRenderNodes[i].triggerGridY -
+							UGlobalConstFunctionLibrary::graveCardSectionRow -
+							UGlobalConstFunctionLibrary::playCardSectionRow) *
+							UGlobalConstFunctionLibrary::maxCol + triggerRenderNodes[i].triggerGridX;
+
+						FVector triggerPt = FVector(
+							boardGrids[boardGridId]->GetActorLocation().X,
+							boardGrids[boardGridId]->GetActorLocation().Y,
+							boardGrids[boardGridId]->GetActorLocation().Z + gridGuidePSOffset);
+
+						TArray<FVector> targetPts;
+						for (int32 j = 0; j < triggerRenderNodes[i].targetGridXs.Num(); j++)
 						{
-							// which means this card goes to grave area
-							UGameInstance* gi = UGameplayStatics::GetGameInstance(this);
-							UGwenBoardGameInstance* gwenGI = Cast<UGwenBoardGameInstance>(gi);
-							if (gwenGI->playerCambNb == allBattleCards[cardId]->camp)
+							int32 targetBoardGridId = (triggerRenderNodes[i].targetGridYs[j] -
+								UGlobalConstFunctionLibrary::graveCardSectionRow -
+								UGlobalConstFunctionLibrary::playCardSectionRow) *
+								UGlobalConstFunctionLibrary::maxCol + triggerRenderNodes[i].targetGridXs[j];
+
+							FVector targetPt = FVector(
+								boardGrids[targetBoardGridId]->GetActorLocation().X,
+								boardGrids[targetBoardGridId]->GetActorLocation().Y,
+								boardGrids[targetBoardGridId]->GetActorLocation().Z + gridGuidePSOffset);
+
+							targetPts.Add(targetPt);
+						}
+						TriggerSkillHurtRender(triggerPt, targetPts);
+
+						for (int32 j = 0; j < triggerRenderNodes[i].modifyUids.Num(); j++)
+						{
+							if (allBattleCards[triggerRenderNodes[i].modifyUids[j]]->defence >= triggerRenderNodes[i].modifyValues[j])
 							{
-								allSectionZeroGraveCardIds.Add(cardId);
+								int32 curDefence = allBattleCards[triggerRenderNodes[i].modifyUids[j]]->defence - triggerRenderNodes[i].modifyValues[j];
+								int32 curHp = allBattleCards[triggerRenderNodes[i].modifyUids[j]]->hp;
+								int32 curCd = aiRunnable->mcts->realBoard.allInstanceCardInfo[triggerRenderNodes[i].modifyUids[j]].curCoolDown;
+								int32 curAvailableTimes = aiRunnable->mcts->realBoard.allInstanceCardInfo[triggerRenderNodes[i].modifyUids[j]].curAvailableTimes;
+								allBattleCards[triggerRenderNodes[i].modifyUids[j]]->UpdateCard(curHp, curDefence, curCd, curAvailableTimes);
 							}
 							else
 							{
-								allSectionOneGraveCardIds.Add(cardId);
+								int32 curDefence = 0;
+								int32 curHp = allBattleCards[triggerRenderNodes[i].modifyUids[j]]->hp -
+									(triggerRenderNodes[i].modifyValues[j] - allBattleCards[triggerRenderNodes[i].modifyUids[j]]->defence);
+								int32 curCd = aiRunnable->mcts->realBoard.allInstanceCardInfo[triggerRenderNodes[i].modifyUids[j]].curCoolDown;
+								int32 curAvailableTimes = aiRunnable->mcts->realBoard.allInstanceCardInfo[triggerRenderNodes[i].modifyUids[j]].curAvailableTimes;
+								allBattleCards[triggerRenderNodes[i].modifyUids[j]]->UpdateCard(curHp, curDefence, curCd, curAvailableTimes);
 							}
 						}
-						else if ((i >= UGlobalConstFunctionLibrary::graveCardSectionRow &&
-							i < UGlobalConstFunctionLibrary::graveCardSectionRow + UGlobalConstFunctionLibrary::playCardSectionRow) ||
-							(i >= UGlobalConstFunctionLibrary::graveCardSectionRow + UGlobalConstFunctionLibrary::playCardSectionRow + UGlobalConstFunctionLibrary::boardSectionRow &&
-								i < UGlobalConstFunctionLibrary::graveCardSectionRow + UGlobalConstFunctionLibrary::playCardSectionRow * 2 + UGlobalConstFunctionLibrary::boardSectionRow))
+					}
+					else if (triggerRenderNodes[i].renderEffectType == "move")
+					{
+						// play effect moving card vfx
+
+						
+					}
+					else if (triggerRenderNodes[i].renderEffectType == "spawn")
+					{
+						// play spawn card vfx
+					}
+					else if (triggerRenderNodes[i].renderEffectType == "draw")
+					{
+						// play draw card vfx
+					}
+				}
+				else if (triggerRenderNodes[i].actionType == ActionType::Move)
+				{
+					int32 targetGridId = (triggerRenderNodes[i].targetGridYs.Last() -
+						UGlobalConstFunctionLibrary::graveCardSectionRow - UGlobalConstFunctionLibrary::playCardSectionRow) *
+						UGlobalConstFunctionLibrary::maxCol + triggerRenderNodes[i].targetGridXs.Last();
+
+					FVector2D target = FVector2D(boardGrids[targetGridId]->GetActorLocation().X,
+						boardGrids[targetGridId]->GetActorLocation().Y);
+
+					int32 launchCardId = triggerRenderNodes[i].triggerCardId;
+					allBattleCards[launchCardId]->TriggerCardMotion(target);
+
+					allBattleCards[launchCardId]->gridX = triggerRenderNodes[i].targetGridXs.Last();
+					allBattleCards[launchCardId]->gridY = triggerRenderNodes[i].targetGridYs.Last();
+
+					selectBoardCard = NULL;
+				}
+				else if (triggerRenderNodes[i].actionType == ActionType::PlayCard)
+				{
+					int32 triggerCardId = triggerRenderNodes[i].triggerCardId;
+
+					if (allBattleCards[triggerCardId]->cardStatus != BattleCardStatus::InBattle)
+					{
+						allBattleCards[triggerCardId]->cardStatus = BattleCardStatus::InBattle;
+					}
+
+					allBattleCards[triggerCardId]->gridX = triggerRenderNodes[i].targetGridXs.Last();
+					allBattleCards[triggerCardId]->gridY = triggerRenderNodes[i].targetGridYs.Last();
+
+
+					int32 targetGridId = (triggerRenderNodes[i].targetGridYs.Last() -
+						UGlobalConstFunctionLibrary::graveCardSectionRow - UGlobalConstFunctionLibrary::playCardSectionRow) *
+						UGlobalConstFunctionLibrary::maxCol + triggerRenderNodes[i].targetGridXs.Last();
+
+					FVector2D target = FVector2D(boardGrids[targetGridId]->GetActorLocation().X,
+						boardGrids[targetGridId]->GetActorLocation().Y);
+
+					// play card distributed animation
+					allBattleCards[triggerCardId]->TriggerCardMotion(target);
+					if (allBattleCards[triggerCardId]->camp == 0)
+					{
+						for (int32 j = 0; j < sectionZeroHandBattleCards.Num(); j++)
 						{
-							// which means this card belongs to hand card area
-							UGameInstance* gi = UGameplayStatics::GetGameInstance(this);
-							UGwenBoardGameInstance* gwenGI = Cast<UGwenBoardGameInstance>(gi);
-							if (gwenGI->playerCambNb == allBattleCards[cardId]->camp)
+							if (sectionZeroHandBattleCards[j] == allBattleCards[triggerCardId])
 							{
-								allSectionZeroHandCardIds.Add(cardId);
-							}
-							else
-							{
-								allSectionOneHandCardIds.Add(cardId);
+								sectionZeroHandBattleCards.RemoveAt(j);
+								break;
 							}
 						}
-						else
+					}
+					else
+					{
+						for (int32 j = 0; j < sectionOneHandBattleCards.Num(); j++)
 						{
-							if (allBattleCards[cardId]->cardStatus != BattleCardStatus::InBattle)
+							if (sectionOneHandBattleCards[j] == allBattleCards[triggerCardId])
 							{
-								allBattleCards[cardId]->cardStatus = BattleCardStatus::InBattle;
-							}
-
-							if (originGridY >= UGlobalConstFunctionLibrary::graveCardSectionRow + UGlobalConstFunctionLibrary::playCardSectionRow &&
-								originGridY < UGlobalConstFunctionLibrary::graveCardSectionRow + UGlobalConstFunctionLibrary::playCardSectionRow + UGlobalConstFunctionLibrary::boardSectionRow &&
-								(originGridX != j || originGridY != i))
-							{
-								// which means this card is a hand card and moves to play board
-								int32 boardGridId = (i - UGlobalConstFunctionLibrary::graveCardSectionRow - UGlobalConstFunctionLibrary::playCardSectionRow) * UGlobalConstFunctionLibrary::maxCol + j;
-								FVector2D target = FVector2D(boardGrids[boardGridId]->GetActorLocation().X,
-									boardGrids[boardGridId]->GetActorLocation().Y);
-								allBattleCards[cardId]->TriggerCardMotion(target);
-
-								selectBoardCard = NULL;
+								sectionOneHandBattleCards.RemoveAt(j);
+								break;
 							}
 						}
 					}
 				}
-				
-				allCardIds.Add(cardId);
-			}
-		}
-
-		// delete cards not existed first
-		for (TMap<int32, ACard*>::TConstIterator iter = allBattleCards.CreateConstIterator(); iter; ++iter)
-		{
-			if (!allCardIds.Contains(iter->Key))
-			{
-				// which means this card doesn't exist, we should delete it
-			}
-			else
-			{
-				int32 curHp = aiRunnable->mcts->realBoard.allInstanceCardInfo[iter->Key].curHp;
-				int32 curDefence = aiRunnable->mcts->realBoard.allInstanceCardInfo[iter->Key].curDefence;
-				int32 curCd = aiRunnable->mcts->realBoard.allInstanceCardInfo[iter->Key].curCoolDown;
-				int32 curAvailable = aiRunnable->mcts->realBoard.allInstanceCardInfo[iter->Key].curAvailableTimes;
-				iter->Value->UpdateCard(curHp, curDefence, curCd, curAvailable);
-			}
-		}
-
-		// move grave cards to grave
-		for (int32 i = 0; i < allSectionZeroGraveCardIds.Num(); i++)
-		{
-			if (allBattleCards[allSectionZeroGraveCardIds[i]]->cardStatus != BattleCardStatus::InGrave)
-			{
-				// move this card to grave
-				FVector cardGraveOffset = allBattleCards[allSectionZeroGraveCardIds[i]]->GetActorLocation() - sectionZeroGraveAreaLocation;
-				if (cardGraveOffset.Length() > 100.0)
+				else if (triggerRenderNodes[i].actionType == ActionType::EndRound)
 				{
-					allBattleCards[allSectionZeroGraveCardIds[i]]->SetActorLocation(sectionZeroGraveAreaLocation);
-				}
-				allBattleCards[allSectionZeroGraveCardIds[i]]->cardStatus = BattleCardStatus::InGrave;
-			}
-		}
-		for (int32 i = 0; i < allSectionOneGraveCardIds.Num(); i++)
-		{
-			if (allBattleCards[allSectionOneGraveCardIds[i]]->cardStatus != BattleCardStatus::InGrave)
-			{
-				// move this card to grave
-				FVector cardGraveOffset = allBattleCards[allSectionOneGraveCardIds[i]]->GetActorLocation() - sectionOneGraveAreaLocation;
-				if (cardGraveOffset.Length() > 100.0)
-				{
-					allBattleCards[allSectionOneGraveCardIds[i]]->SetActorLocation(sectionOneGraveAreaLocation);
-				}
-				allBattleCards[allSectionOneGraveCardIds[i]]->SetActorLocation(sectionOneGraveAreaLocation);
-			}
-		}
-
-
-		// move cards from pile to hand
-		for (int32 i = 0; i < allSectionZeroHandCardIds.Num(); i++)
-		{
-			bool findRenderHandCard = false;
-			for (int32 j = 0; j < sectionZeroHandBattleCards.Num(); j++)
-			{
-				if (sectionZeroHandBattleCards[j]->cardId == allSectionZeroHandCardIds[i])
-				{
-					findRenderHandCard = true;
-					break;
+					gameModeRenderState = EGameModeRenderState::EndRoundRender;
+					curPlayerOperateLeftTime = playerOperateTime;
 				}
 			}
-			if (!findRenderHandCard)
-			{
-				
-			}
 		}
-		for (int32 i = 0; i < allSectionOneHandCardIds.Num(); i++)
-		{
-			bool findRenderHandCard = false;
-			for (int32 j = 0; j < sectionOneHandBattleCards.Num(); j++)
-			{
-				if (sectionOneHandBattleCards[j]->cardId == allSectionOneHandCardIds[i])
-				{
-					findRenderHandCard = true;
-					break;
-				}
-			}
-			if (!findRenderHandCard)
-			{
-
-			}
-		}
-
-
-		// move cards from hand to board or pile
-		int32 sectionZeroHandCardNb = 0;
-		while (sectionZeroHandCardNb < sectionZeroHandBattleCards.Num())
-		{
-			if (!allSectionZeroHandCardIds.Contains(sectionZeroHandBattleCards[sectionZeroHandCardNb]->cardId))
-			{
-				int32 boardGridX = sectionZeroHandBattleCards[sectionZeroHandCardNb]->gridX;
-				int32 boardGridY = sectionZeroHandBattleCards[sectionZeroHandCardNb]->gridY - 
-					UGlobalConstFunctionLibrary::graveCardSectionRow - 
-					UGlobalConstFunctionLibrary::playCardSectionRow;
-				int32 boardGridId = boardGridY * UGlobalConstFunctionLibrary::maxCol + boardGridX;
-				
-				FVector destLocation = boardGrids[boardGridId]->GetActorLocation() + gridCardVerticalOffset;
-				sectionZeroHandBattleCards[sectionZeroHandCardNb]->SetActorLocation(destLocation);
-				sectionZeroHandBattleCards[sectionZeroHandCardNb]->SetActorRotation(FRotator::ZeroRotator);
-				sectionZeroHandBattleCards.RemoveAt(sectionZeroHandCardNb);
-			}
-			else
-			{
-				sectionZeroHandCardNb += 1;
-			}
-		}
-		int32 sectionOneHandCardNb = 0;
-		while (sectionOneHandCardNb < sectionOneHandBattleCards.Num())
-		{
-			if (!allSectionOneHandCardIds.Contains(sectionOneHandBattleCards[sectionOneHandCardNb]->cardId))
-			{
-				int32 boardGridX = sectionOneHandBattleCards[sectionOneHandCardNb]->gridX;
-				int32 boardGridY = sectionOneHandBattleCards[sectionOneHandCardNb]->gridY -
-					UGlobalConstFunctionLibrary::graveCardSectionRow -
-					UGlobalConstFunctionLibrary::playCardSectionRow;
-				int32 boardGridId = boardGridY * UGlobalConstFunctionLibrary::maxCol + boardGridX;
-
-				FVector destLocation = boardGrids[boardGridId]->GetActorLocation() + gridCardVerticalOffset;
-				sectionOneHandBattleCards[sectionOneHandCardNb]->SetActorLocation(destLocation);
-				sectionOneHandBattleCards[sectionOneHandCardNb]->SetActorRotation(FRotator::ZeroRotator);
-				sectionOneHandBattleCards.RemoveAt(sectionOneHandCardNb);
-			}
-			else
-			{
-				sectionOneHandCardNb += 1;
-			}
-		}
-
-
-
-		// We should refresh all nodes to Mct widget here.
-		//aiRunnable->mcts->treeRoot
-		aiRunnable->aiRunnableState = EAIRunnableState::Default;
 	}
-	else if (aiRunnable->aiRunnableState == EAIRunnableState::SelfPlayEnd)
+	else if (gameModeRenderState == EGameModeRenderState::RenderingEndRound)
 	{
-		APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
-		ACoreCardGamePC* coreCardPC = Cast<ACoreCardGamePC>(playerController);
-		coreCardPC->mctReplayMenu->RefreshMctsMenu();
-		aiRunnable->aiRunnableState = EAIRunnableState::Default;
+		if (curRenderEndRoundTime >= endRoundRenderInterval)
+		{
+			gameModeRenderState = EGameModeRenderState::Default;
+		}
+		else
+		{
+			curRenderEndRoundTime += deltaTime;
+		}
 	}
 }
 
@@ -723,6 +377,24 @@ void ACoreCardGameModeBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	if (aiRunnable)
 	{
 		aiRunnable->Stop();
+	}
+}
+
+void ACoreCardGameModeBase::OperateCountDown(float dT)
+{
+	if (curPlayerOperateLeftTime > 0.0)
+	{
+		// update count down bar
+		curPlayerOperateLeftTime -= dT;
+		APlayerController* pc = UGameplayStatics::GetPlayerController(this, 0);
+		ACoreCardGamePC* coreCardGamePC = Cast<ACoreCardGamePC>(pc);
+		float progress = 1.0 - curPlayerOperateLeftTime / playerOperateTime;
+		coreCardGamePC->UpdateActionCountDownBar(progress);
+	}
+	else
+	{
+		// force to stop current player action
+		gameModeRenderState = EGameModeRenderState::ActionTimeOut;
 	}
 }
 
@@ -748,6 +420,182 @@ void ACoreCardGameModeBase::TestTriggerTritonInference()
 void ACoreCardGameModeBase::TestTriggerAction(uint8 campNb, int32 launchX, int32 launchY, int32 targetX, int32 targetY, ActionType actionType)
 {
 	aiRunnable->TriggerAssignAction(campNb, launchX, launchY, targetX, targetY, actionType);
+}
+
+void ACoreCardGameModeBase::TryTriggerEndRound()
+{
+	UGameInstance* gi = UGameplayStatics::GetGameInstance(this);
+	UGwenBoardGameInstance* gwenGI = Cast<UGwenBoardGameInstance>(gi);
+	if (gwenGI->playerCambNb == 0)
+	{
+		if (aiRunnable->mcts->realBoard.curPlayingSectionNb == 0)
+		{
+			if (aiRunnable->mcts->realBoard.sectionZeroPlayCardAvailable)
+			{
+				// no, you can not end up
+
+			}
+			else
+			{
+
+			}
+		}
+		else
+		{
+			// you can not press it
+		}
+	}
+	else
+	{
+		if (aiRunnable->mcts->realBoard.curLaunchPlaySectionNb == 0)
+		{
+			// you can not press it
+		}
+		else
+		{
+			if (aiRunnable->mcts->realBoard.sectionOnePlayCardAvailable)
+			{
+				// no, you can not end up
+
+			}
+			else
+			{
+
+			}
+		}
+	}
+}
+
+void ACoreCardGameModeBase::TimeoutTriggerPlayCardAction(uint8 campNb)
+{
+	if (campNb == 0)
+	{
+		int32 launchX = -1;
+		int32 launchY = -1;
+		// get first available playing card
+		for (int32 i = UGlobalConstFunctionLibrary::graveCardSectionRow; 
+			i < UGlobalConstFunctionLibrary::graveCardSectionRow + 
+			UGlobalConstFunctionLibrary::playCardSectionRow; 
+			i++)
+		{
+			for (int32 j = 0; j < UGlobalConstFunctionLibrary::maxCol; j++)
+			{
+				if (aiRunnable->mcts->realBoard.boardRows[i].colCardInfos[j] != -1)
+				{
+					launchX = j;
+					launchY = i;
+					break;
+				}
+			}
+
+			if (launchX != -1)
+			{
+				break;
+			}
+		}
+
+
+		if (launchX != -1)
+		{
+			int32 targetX = 0;
+			int32 targetY = 0;
+			// find random available target grid
+			for (int32 i = UGlobalConstFunctionLibrary::graveCardSectionRow +
+				UGlobalConstFunctionLibrary::playCardSectionRow;
+				i < UGlobalConstFunctionLibrary::graveCardSectionRow +
+				UGlobalConstFunctionLibrary::playCardSectionRow +
+				UGlobalConstFunctionLibrary::boardSectionRow / 2;
+				i++)
+			{
+				for (int32 j = 0; j < UGlobalConstFunctionLibrary::maxCol; j++)
+				{
+					if (aiRunnable->mcts->realBoard.boardRows[i].colCardInfos[j] == -1)
+					{
+						targetX = j;
+						targetY = i;
+						break;
+					}
+				}
+
+				if (targetX != -1)
+				{
+					// trigger playing card
+					aiRunnable->TriggerAssignAction(0, launchX, launchY, targetX, targetY, ActionType::PlayCard);
+					break;
+				}
+			}
+		}
+	}
+	else
+	{
+		int32 launchX = -1;
+		int32 launchY = -1;
+		// get first available playing card
+		for (int32 i = UGlobalConstFunctionLibrary::graveCardSectionRow + 
+			UGlobalConstFunctionLibrary::playCardSectionRow + 
+			UGlobalConstFunctionLibrary::boardSectionRow;
+			i < UGlobalConstFunctionLibrary::graveCardSectionRow +
+			UGlobalConstFunctionLibrary::playCardSectionRow*2 + 
+			UGlobalConstFunctionLibrary::boardSectionRow;
+			i++)
+		{
+			for (int32 j = 0; j < UGlobalConstFunctionLibrary::maxCol; j++)
+			{
+				if (aiRunnable->mcts->realBoard.boardRows[i].colCardInfos[j] != -1)
+				{
+					launchX = j;
+					launchY = i;
+					break;
+				}
+			}
+
+			if (launchX != -1)
+			{
+				break;
+			}
+		}
+
+
+		if (launchX != -1)
+		{
+			int32 targetX = 0;
+			int32 targetY = 0;
+			// find random available target grid
+			for (int32 i = UGlobalConstFunctionLibrary::graveCardSectionRow +
+				UGlobalConstFunctionLibrary::playCardSectionRow +
+				UGlobalConstFunctionLibrary::boardSectionRow / 2; i < UGlobalConstFunctionLibrary::graveCardSectionRow +
+				UGlobalConstFunctionLibrary::playCardSectionRow +
+				UGlobalConstFunctionLibrary::boardSectionRow;
+				i++)
+			{
+				for (int32 j = 0; j < UGlobalConstFunctionLibrary::maxCol; j++)
+				{
+					if (aiRunnable->mcts->realBoard.boardRows[i].colCardInfos[j] == -1)
+					{
+						targetX = j;
+						targetY = i;
+						break;
+					}
+				}
+
+				if (targetX != -1)
+				{
+					aiRunnable->TriggerAssignAction(1, launchX, launchY, targetX, targetY, ActionType::PlayCard);
+					break;
+				}
+			}
+		}
+		
+	}
+
+	gameModeRenderState = EGameModeRenderState::ActionTimeOutWaitRender;
+}
+
+void ACoreCardGameModeBase::UpdateEndRoundButtonState(EEndRoundButtonState state)
+{
+	APlayerController* pc = UGameplayStatics::GetPlayerController(this, 0);
+	ACoreCardGamePC* coreCardGamePC = Cast<ACoreCardGamePC>(pc);
+	coreCardGamePC->UpdateEndRoundButtonState(state);
 }
 
 void ACoreCardGameModeBase::DemonstrateMctsTreeNode(UMctsTreeNode* node)
@@ -957,28 +805,16 @@ void ACoreCardGameModeBase::ReqLaunchCardSkill(bool simulationFlag, int32 launch
 	
 }
 
-void ACoreCardGameModeBase::TriggerRenderEffect()
+void ACoreCardGameModeBase::TriggerSkillHurtRender(FVector startPt, const TArray<FVector>& targetPts)
 {
-	/*
-	FRenderEffectRound renderEffectRound = curActionRenderEffectRoundList[curActionEffectRound];
-	for (int32 i = 0; i < renderEffectRound.renderEffectList.Num(); i++)
+	for (int32 i = 0; i < targetPts.Num(); i++)
 	{
-		int32 launchX = renderEffectRound.renderEffectList[i].triggerGridX;
-		int32 launchY = renderEffectRound.renderEffectList[i].triggerGridY;
-		int32 launchUid = battleBoard->realBoard.boardRows[launchY].colCardInfos[launchX];
-		for (int32 j = 0; j < renderEffectRound.renderEffectList[i].modifyUids.Num(); j++)
-		{
-			TSubclassOf<AActor> particleActorClass = effectParticleActorMap[renderEffectRound.renderEffectList[i].renderEffectType];
-			int32 targetX = battleBoard->realBoard.allInstanceCardInfo[renderEffectRound.renderEffectList[i].modifyUids[j]].curCol;
-			int32 targetY = battleBoard->realBoard.allInstanceCardInfo[renderEffectRound.renderEffectList[i].modifyUids[j]].curRow;
-			int32 targetUid = battleBoard->realBoard.boardRows[targetY].colCardInfos[targetX];
-			
-			FVector targetLaunchOffset = battleBoard->allCards[targetUid]->GetActorLocation() - battleBoard->allCards[launchUid]->GetActorLocation();
-			targetLaunchOffset.Normalize();
-			FRotator targetRot = targetLaunchOffset.Rotation();
-			AActor* particleActor = GetWorld()->SpawnActor<AActor>(particleActorClass, battleBoard->allCards[launchUid]->GetActorLocation(), targetRot);
-		}
-	}*/
+		APSGuideActor* psActor = GetWorld()->SpawnActor<APSGuideActor>(cardConnectPSBPClass, startPt, FRotator::ZeroRotator);
+		psActor->Init(startPt, targetPts[i]);
+		FRotator slashRot = FRotator(0.0, 180.0, 0.0);
+		ASlashPSActor* slashPSActor = GetWorld()->SpawnActor<ASlashPSActor>(redSlashNiagaraBPClass, targetPts[i], slashRot);
+	}
+	
 }
 
 void ACoreCardGameModeBase::DeleteHandAllCards()

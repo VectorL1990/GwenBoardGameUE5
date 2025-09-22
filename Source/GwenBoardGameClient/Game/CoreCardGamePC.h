@@ -69,6 +69,12 @@ public:
     void NextMctsTrainNodeMenu();
 
 
+
+    void UpdateActionCountDownBar(float progress);
+
+    void UpdateEndRoundButtonState(EEndRoundButtonState endRoundButtonState);
+
+
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
     ACoreCardGameManager* coreCardGameManager;
 

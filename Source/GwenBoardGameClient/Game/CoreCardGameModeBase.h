@@ -14,6 +14,9 @@
 #include "ReplayBoard.h"
 #include "ReplayCard.h"
 #include "Card.h"
+#include "NiagaraActor.h"
+#include "Render/PSGuideActor.h"
+#include "Render/SlashPSActor.h"
 #include "CoreCardGameModeBase.generated.h"
 
 /**
@@ -41,19 +44,26 @@ public:
 
     EGameModeRenderState gameModeRenderState = EGameModeRenderState::Default;
 
-    TArray<float> curRenderingActionTimes;
+    int32 curRenderingRound = 0;
 
     TArray<FRenderActionNode> curRenderingActionNodes;
 
-    float curGameModeRenderStepTime = 0.0;
-
-    float gameModeRenderStepInterval = 0.0;
+    float curRenderEndRoundTime = 0.0;
 
     UPROPERTY(EditDefaultsOnly)
-    float defaultRenderPlayCardInterval = 0.0;
+    float endRoundRenderInterval = 1.0;
+
+
+
+    
+
+
+    void OperateCountDown(float dT);
 
     UPROPERTY(EditDefaultsOnly)
-    float defaultRenderMoveCardInterval = 0.0;
+    float playerOperateTime = 90.0;
+
+    float curPlayerOperateLeftTime;
 
 
 
@@ -139,6 +149,9 @@ public:
     FVector gridCardVerticalOffset;
 
     UPROPERTY(EditDefaultsOnly)
+    float gridGuidePSOffset = 50.0;
+
+    UPROPERTY(EditDefaultsOnly)
     FVector replayGridCardVerticalOffset;
 
     ACard* selectPlayCard;
@@ -164,6 +177,14 @@ public:
 
     UPROPERTY(EditDefaultsOnly)
     float replayHandCardOffset;
+
+    UPROPERTY(EditDefaultsOnly)
+    TSubclassOf<APSGuideActor> cardConnectPSBPClass;
+
+    UPROPERTY(EditDefaultsOnly)
+    TSubclassOf<ASlashPSActor> redSlashNiagaraBPClass;
+
+    
 public:
     // --- Select card logic
     UFUNCTION(BlueprintNativeEvent)
@@ -182,6 +203,12 @@ public:
 
     void DemonstrateMctsTreeNode(UMctsTreeNode* node);
 
+    void TryTriggerEndRound();
+
+    void TimeoutTriggerPlayCardAction(uint8 campNb);
+
+    void UpdateEndRoundButtonState(EEndRoundButtonState state);
+
     UPROPERTY(Transient)
     TObjectPtr<UMcts> mcts;
 
@@ -194,7 +221,7 @@ public:
 
     void ReqLaunchCardSkill(bool simulationFlag, int32 launchX, int32 launchY, int32 targetX, int32 targetY);
 
-    void TriggerRenderEffect();
+    void TriggerSkillHurtRender(FVector startPt, const TArray<FVector>& targetPts);
 
     //void LaunchSkill();
 

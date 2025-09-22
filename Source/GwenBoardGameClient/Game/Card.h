@@ -92,6 +92,49 @@ public:
     int32 gridY;
 
 
+    ECardVerticalMotionStage cardHurtMotionStage = ECardVerticalMotionStage::Default;
+
+    ECardRotationStage cardHurtRotationStage = ECardRotationStage::Default;
+
+    UPROPERTY(EditDefaultsOnly)
+    float maxHurtCardRiseSpeed = 100.0;
+
+    UPROPERTY(EditDefaultsOnly)
+    float hurtCardRiseAcc = 100;
+
+    UPROPERTY(EditDefaultsOnly)
+    float hurtCardDropAcc = 100;
+
+    float hurtCardMotionTotalT = 0.0;
+
+    float hurtCardMotionCurCountT = 0.0;
+
+    UPROPERTY(EditDefaultsOnly)
+    float deadCountDown = 0.8;
+
+    float curDeadCountDown = 0.0;
+
+    UFUNCTION(BlueprintCallable)
+    void TriggerCardEffectMotion();
+
+    UFUNCTION(BlueprintCallable)
+    void TriggerCardHurtRotation();
+
+    UFUNCTION(BlueprintCallable)
+    void CardHurtMotion(float dT);
+
+    UFUNCTION(BlueprintCallable)
+    void CardHurtRotation(float dT);
+
+    void ResetCardHurtMotion();
+
+    void TriggerCardDeadAnim();
+
+    void KillCard();
+
+
+
+
 
 
 
@@ -142,6 +185,15 @@ public:
 
     UPROPERTY(EditDefaultsOnly)
     float cardMaxRotationPitch = 20.0;
+
+    UPROPERTY(EditDefaultsOnly)
+    float cardMotionPitchAdjustCoe = 1.0;
+
+    UPROPERTY(EditDefaultsOnly)
+    float cardMotionYawAdjustCoe = 0.15;
+
+    UPROPERTY(EditDefaultsOnly)
+    float cardMotionRollAdjustCoe = 0.15;
 
     float cardCurRotationPitch = 0.0;
 
