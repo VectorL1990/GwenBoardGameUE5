@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "../GlobalConstFunctionLibrary.h"
+#include "../CheckLaunchGeoLibrary.h"
 #include "../BattleBoard.h"
 #include "MctsTreeNode.h"
 #include "TritonHttpClient.h"
@@ -143,7 +144,7 @@ public:
 			{
 				int32 posInChannel = i * UGlobalConstFunctionLibrary::maxCol + j;
 
-				int32 sectionTagStartChannelNb = 84;
+				int32 sectionTagStartChannelNb = 85;
 				if (curSectionNb == 0)
 				{
 					boardCoding[channelLen * sectionTagStartChannelNb + posInChannel] = 1;
@@ -153,7 +154,7 @@ public:
 					boardCoding[channelLen * sectionTagStartChannelNb + posInChannel] = -1;
 				}
 
-				int32 hpDiffStartChannelNb = 85;
+				int32 hpDiffStartChannelNb = 86;
 				if (curSectionNb == 0)
 				{
 					boardCoding[channelLen * hpDiffStartChannelNb + posInChannel] = sectionZeroTotalHp - sectionOneTotalHp;
@@ -179,7 +180,7 @@ public:
 				// effectType: hurt
 				// launchGeoType: point, three
 				int32 launchGeoType[10] = { 0 };
-				int32 targetGeoType[11] = { 0 };
+				int32 targetGeoType[12] = { 0 };
 				int32 moveType[3] = { 0 };
 				int32 aoeType[4] = { 0 };
 				int32 skillType[22] = { 0 };
@@ -294,7 +295,7 @@ public:
 					}
 				}
 
-				int32 moveTypeStartChannelNb = 26;
+				int32 moveTypeStartChannelNb = 27;
 				for (int32 k = 0; k < 3; k++)
 				{
 					if (allInstanceCardInfo[uid].camp == curSectionNb)
@@ -307,7 +308,7 @@ public:
 					}
 				}
 
-				int32 aoeTypeStartChannelNb = 29;
+				int32 aoeTypeStartChannelNb = 30;
 				for (int32 k = 0; k < 4; k++)
 				{
 					if (allInstanceCardInfo[uid].camp == curSectionNb)
@@ -320,7 +321,7 @@ public:
 					}
 				}
 
-				int32 skillTypeStartChannelNb = 33;
+				int32 skillTypeStartChannelNb = 34;
 				for (int32 k = 0; k < 22; k++)
 				{
 					if (allInstanceCardInfo[uid].camp == curSectionNb)
@@ -333,7 +334,7 @@ public:
 					}
 				}
 
-				int32 prereqTypeStartChannelNb = 55;
+				int32 prereqTypeStartChannelNb = 56;
 				for (int32 k = 0; k < 23; k++)
 				{
 					if (allInstanceCardInfo[uid].camp == curSectionNb)
@@ -346,7 +347,7 @@ public:
 					}
 				}
 
-				int32 affixTypeStartChannelNb = 78;
+				int32 affixTypeStartChannelNb = 79;
 				for (int32 k = 0; k < 6; k++)
 				{
 					if (allInstanceCardInfo[uid].camp == curSectionNb)
@@ -651,6 +652,15 @@ public:
 			effectInfo.renderEffectTime = launchCardInfo.originCardInfo.renderEffectTime;
 
 			bool prereqPass = false;
+			if (UCheckLaunchGeoLibrary::CheckLaunchGeoType(effectInfo.launchGeoType,
+				allInstanceCardInfo,
+				boardRows,
+				launchX,
+				launchY))
+			{
+				prereqPass = true;
+			}
+
 			if (effectInfo.prereqType == "none" ||
 				UCheckPrereqFunctionLibrary::CheckPrereqRule(
 					allInstanceCardInfo,
@@ -677,11 +687,21 @@ public:
 				prereqPass = true;
 			}
 
-			if (prereqPass && UCheckPrereqTagFunctionLibrary::CheckTargetPrereqTagRule(allInstanceCardInfo,
+			if (prereqPass 
+				&& 
+				UCheckPrereqTagFunctionLibrary::CheckTargetPrereqTagRule(allInstanceCardInfo,
 				boardRows,
 				effectInfo,
 				targetX,
-				targetY))
+				targetY)
+				&&
+				UCheckTargetGeoRuleLibrary::CheckTargetSkillGeoLegality(effectInfo,
+					allInstanceCardInfo,
+					boardRows,
+					launchX,
+					launchY,
+					targetX,
+					targetY))
 			{
 				return true;
 			}
@@ -827,6 +847,15 @@ public:
 						effectInfo.renderEffectTime = cardInfo.originCardInfo.renderEffectTime;
 
 						bool prereqPass = false;
+						if (UCheckLaunchGeoLibrary::CheckLaunchGeoType(effectInfo.launchGeoType,
+							allInstanceCardInfo,
+							boardRows,
+							col,
+							checkRow))
+						{
+							prereqPass = true;
+						}
+
 						if (effectInfo.prereqType == "none" || 
 							UCheckPrereqFunctionLibrary::CheckPrereqRule(
 								allInstanceCardInfo,
@@ -867,11 +896,21 @@ public:
 
 							for (int32 i = 0; i < possibleGrids.Num(); i++)
 							{
-								if (UCheckPrereqTagFunctionLibrary::CheckTargetPrereqTagRule(allInstanceCardInfo,
+								if (UCheckPrereqTagFunctionLibrary::CheckTargetPrereqTagRule(
+									allInstanceCardInfo,
 									boardRows,
 									effectInfo,
 									possibleGrids[i].x,
-									possibleGrids[i].y))
+									possibleGrids[i].y) 
+									&&
+									UCheckTargetGeoRuleLibrary::CheckTargetSkillGeoLegality(
+										effectInfo,
+										allInstanceCardInfo,
+										boardRows,
+										col,
+										checkRow,
+										possibleGrids[i].x,
+										possibleGrids[i].y))
 								{
 									int32 actionId = ActionCoding(
 										col,
@@ -1186,6 +1225,16 @@ public:
 		effectInfo.renderEffectTime = allInstanceCardInfo[launchUid].originCardInfo.renderEffectTime;
 
 		bool prereqPass = false;
+		if (UCheckLaunchGeoLibrary::CheckLaunchGeoType(effectInfo.launchGeoType,
+			allInstanceCardInfo,
+			boardRows,
+			launchX,
+			launchY))
+		{
+			prereqPass = true;
+		}
+
+
 		if (effectInfo.prereqType == "none" ||
 			UCheckPrereqFunctionLibrary::CheckPrereqRule(
 				allInstanceCardInfo,
@@ -1302,6 +1351,16 @@ public:
 					effectInfo.renderEffectTime = allInstanceCardInfo[launchUid].originCardInfo.renderEffectTime;
 
 					bool prereqPass = false;
+					if (UCheckLaunchGeoLibrary::CheckLaunchGeoType(effectInfo.launchGeoType,
+						allInstanceCardInfo,
+						boardRows,
+						j,
+						i))
+					{
+						prereqPass = true;
+					}
+
+
 					if (effectInfo.prereqType == "none" ||
 						UCheckPrereqFunctionLibrary::CheckPrereqRule(
 							allInstanceCardInfo,
@@ -1423,6 +1482,16 @@ public:
 		effectInfo.renderEffectTime = allInstanceCardInfo[launchUid].originCardInfo.renderEffectTime;
 
 		bool prereqPass = false;
+		if (UCheckLaunchGeoLibrary::CheckLaunchGeoType(effectInfo.launchGeoType,
+			allInstanceCardInfo,
+			boardRows,
+			launchX,
+			launchY))
+		{
+			prereqPass = true;
+		}
+
+
 		if (effectInfo.prereqType == "none" ||
 			UCheckPrereqFunctionLibrary::CheckPrereqRule(
 				allInstanceCardInfo,
@@ -1489,7 +1558,8 @@ public:
 
 				for (int32 i = 0; i < effectResultInfo.modifyGrids.Num(); i++)
 				{
-					if (allInstanceCardInfo[effectResultInfo.modifyUids[i]].curHp <= 0.0)
+					if (effectResultInfo.modifyUids[i] != -1 &&
+						allInstanceCardInfo[effectResultInfo.modifyUids[i]].curHp <= 0.0)
 					{
 						// move this card to grave
 						MoveCard2Grave(allInstanceCardInfo[effectResultInfo.modifyUids[i]].camp,
@@ -1689,6 +1759,10 @@ public:
 		// Traverse all cards that are modified, try to trigger their passive effects
 		for (int32 i = 0; i < effectResultDict.modifyUids.Num(); i++)
 		{
+			if (effectResultDict.modifyUids[i] == -1)
+			{
+				continue;
+			}
 			if (allInstanceCardInfo[effectResultDict.modifyUids[i]].passiveEffectTriggerThisRound)
 			{
 				continue;
@@ -1900,6 +1974,7 @@ public:
 		else if (targetGeoType == "left") coding[8] = 1;
 		else if (targetGeoType == "self") coding[9] = 1;
 		else if (targetGeoType == "reflect") coding[10] = 1;
+		else if (targetGeoType == "next") coding[11] = 1;
 	}
 
 	void GetSkillAoeCoding(FString aoeType, int32* coding)
@@ -2377,7 +2452,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	bool isTraining = true;
 
-	int32 maxSelfPlayLoop = 10;
+	int32 maxSelfPlayLoop = 10000;
 
 	int32 curSelfPlayLoop = 0;
 

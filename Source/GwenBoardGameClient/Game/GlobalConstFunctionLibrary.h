@@ -6,8 +6,8 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "GlobalConstFunctionLibrary.generated.h"
 
-#define StateCodingTotalCHW 12384
-#define StateCodingC 86
+#define StateCodingTotalCHW 12528
+#define StateCodingC 87
 #define StateCodingH 18
 #define StateCodingW 8
 #define defaultRenderPlayCardInterval 1.0;
@@ -492,7 +492,7 @@ class GWENBOARDGAMECLIENT_API UGlobalConstFunctionLibrary : public UBlueprintFun
 {
     GENERATED_BODY()
 public:
-    static const int32 handCardNb = 5;
+    static const int32 handCardNb = 10;
     static const int32 maxCol = 8;
     static const int32 boardSectionRow = 6;
     static const int32 playCardSectionRow = 2;

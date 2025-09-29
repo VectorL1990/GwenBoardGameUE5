@@ -70,6 +70,13 @@ void ACoreCardGameModeBase::Tick(float deltaTime)
 			curRenderingActionNodes.Empty();
 			curRenderingActionNodes.Add(aiRunnable->newStateRenderRoot);
 		}
+		else if (aiRunnable->aiRunnableState == EAIRunnableState::SelfPlayEnd)
+		{
+			APlayerController* pc = UGameplayStatics::GetPlayerController(this, 0);
+			ACoreCardGamePC* coreCardPC = Cast<ACoreCardGamePC>(pc);
+			coreCardPC->mctReplayMenu->RefreshMctsMenu();
+			aiRunnable->aiRunnableState = EAIRunnableState::Default;
+		}
 		else
 		{
 			//OperateCountDown(deltaTime);
@@ -712,6 +719,8 @@ void ACoreCardGameModeBase::DemonstrateMctsTreeNode(UMctsTreeNode* node)
 					FVector targetGridLoc = boardGrids[targetGridId]->GetActorLocation();
 					GEngine->AddOnScreenDebugMessage(-1, 5.0, FColor::Yellow, "Target is killed");
 					UKismetSystemLibrary::DrawDebugLine(this, launchGridLoc, targetGridLoc, FLinearColor::Yellow, 1.0, 10.0);
+					UKismetSystemLibrary::DrawDebugPoint(this, launchGridLoc, 10.0, FLinearColor::Red, 1.0);
+					UKismetSystemLibrary::DrawDebugPoint(this, targetGridLoc, 10.0, FLinearColor::Blue, 1.0);
 				}
 				else
 				{
@@ -722,6 +731,8 @@ void ACoreCardGameModeBase::DemonstrateMctsTreeNode(UMctsTreeNode* node)
 					FVector targetGridLoc = boardGrids[targetGridId]->GetActorLocation();
 					GEngine->AddOnScreenDebugMessage(-1, 5.0, FColor::Red, "Target is killed");
 					UKismetSystemLibrary::DrawDebugLine(this, launchCardLoc, targetGridLoc, FLinearColor::Red, 1.0, 10.0);
+					UKismetSystemLibrary::DrawDebugPoint(this, launchCardLoc, 10.0, FLinearColor::Red, 1.0);
+					UKismetSystemLibrary::DrawDebugPoint(this, targetGridLoc, 10.0, FLinearColor::Blue, 1.0);
 				}
 			}
 			else
@@ -740,12 +751,16 @@ void ACoreCardGameModeBase::DemonstrateMctsTreeNode(UMctsTreeNode* node)
 					FVector targetCardLoc = allReplayCards[targetCardUid]->GetActorLocation();
 					GEngine->AddOnScreenDebugMessage(-1, 5.0, FColor::Yellow, "Target is killed");
 					UKismetSystemLibrary::DrawDebugLine(this, launchGridLoc, targetCardLoc, FLinearColor::Yellow, 1.0, 10.0);
+					UKismetSystemLibrary::DrawDebugPoint(this, launchGridLoc, 10.0, FLinearColor::Red, 1.0);
+					UKismetSystemLibrary::DrawDebugPoint(this, targetCardLoc, 10.0, FLinearColor::Blue, 1.0);
 				}
 				else
 				{
 					FVector launchCardLoc = allReplayCards[launchCardUid]->GetActorLocation();
 					FVector targetCardLoc = allReplayCards[targetCardUid]->GetActorLocation();
 					UKismetSystemLibrary::DrawDebugLine(this, launchCardLoc, targetCardLoc, FLinearColor::Green, 1.0, 10.0);
+					UKismetSystemLibrary::DrawDebugPoint(this, launchCardLoc, 10.0, FLinearColor::Red, 1.0);
+					UKismetSystemLibrary::DrawDebugPoint(this, targetCardLoc, 10.0, FLinearColor::Blue, 1.0);
 				}
 			}
 		}

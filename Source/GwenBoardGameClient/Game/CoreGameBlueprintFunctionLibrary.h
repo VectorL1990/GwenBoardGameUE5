@@ -269,6 +269,24 @@ public:
         int32 targetY,
         bool isPotentialVirtual);
 
+    static FEffectResultDict Pull(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+        TArray<FBoardRow>& boardCardInfo,
+        FEffectInfo& effectInfo,
+        int32 launchX,
+        int32 launchY,
+        int32 targetX,
+        int32 targetY,
+        bool isPotentialVirtual);
+
+    static FEffectResultDict SwitchOppoPos(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+        TArray<FBoardRow>& boardCardInfo,
+        FEffectInfo& effectInfo,
+        int32 launchX,
+        int32 launchY,
+        int32 targetX,
+        int32 targetY,
+        bool isPotentialVirtual);
+
     static void ConvertStateToJson(const TArray<FString>& stateArray,
         const int32 col,
         const int32 row);

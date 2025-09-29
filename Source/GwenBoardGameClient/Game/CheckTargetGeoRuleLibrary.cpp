@@ -405,6 +405,10 @@ TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleTargetGeoGrids(FString ge
 	{
 		possibleGrids = GetPossibleDiagonal(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, distanceType);
 	}
+	else if (geoRule == "next")
+	{
+		possibleGrids = GetPossibleNext(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, distanceType);
+	}
 	else if (geoRule == "self")
 	{
 		FGridXY grid;
@@ -538,6 +542,7 @@ TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleTargetGeoGrids(FString ge
 	{
 
 	}
+	
 	return possibleGrids;
 }
 
@@ -902,6 +907,56 @@ TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleDiagonal(TMap<int32, FIns
 	}
 
 
+	return possibleGrids;
+}
+
+TArray<FGridXY> UCheckTargetGeoRuleLibrary::GetPossibleNext(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+	TArray<FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, EAtkDistanceType distanceType)
+{
+	TArray<FGridXY> possibleGrids;
+	int32 launchUid = boardCardInfo[launchY].colCardInfos[launchX];
+	if (launchX > 0 && launchX < UGlobalConstFunctionLibrary::maxCol - 1)
+	{
+		if (boardCardInfo[launchY].colCardInfos[launchX - 1] != -1)
+		{
+			FGridXY grid;
+			grid.x = launchX - 1;
+			grid.y = launchY;
+			possibleGrids.Add(grid);
+		}
+
+		if (boardCardInfo[launchY].colCardInfos[launchX + 1] != -1)
+		{
+			FGridXY grid;
+			grid.x = launchX + 1;
+			grid.y = launchY;
+			possibleGrids.Add(grid);
+		}
+	}
+
+	if (launchY > UGlobalConstFunctionLibrary::graveCardSectionRow +
+		UGlobalConstFunctionLibrary::playCardSectionRow &&
+		launchY < UGlobalConstFunctionLibrary::graveCardSectionRow +
+		UGlobalConstFunctionLibrary::playCardSectionRow +
+		UGlobalConstFunctionLibrary::boardSectionRow - 1)
+	{
+		if (boardCardInfo[launchY - 1].colCardInfos[launchX] != -1)
+		{
+			FGridXY grid;
+			grid.x = launchX;
+			grid.y = launchY - 1;
+			possibleGrids.Add(grid);
+		}
+
+		if (boardCardInfo[launchY + 1].colCardInfos[launchX] != -1)
+		{
+			FGridXY grid;
+			grid.x = launchX;
+			grid.y = launchY + 1;
+			possibleGrids.Add(grid);
+		}
+	}
+	
 	return possibleGrids;
 }
 
@@ -1330,6 +1385,92 @@ void UCheckTargetGeoRuleLibrary::CheckPossibleTargetLocateThree(TMap<int32, FIns
 				}
 			}
 		}
+	}
+}
+
+bool UCheckTargetGeoRuleLibrary::CheckTargetSkillGeoLegality(
+	const FEffectInfo& effectInfo,
+	TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+	TArray<FBoardRow>& boardCardInfo,
+	int32 launchX,
+	int32 launchY,
+	int32 targetX,
+	int32 targetY)
+{
+	if (effectInfo.effectType == "switchOppoPos")
+	{
+		if (boardCardInfo[targetY].colCardInfos[targetX] == -1)
+		{
+			return false;
+		}
+
+		if (launchX == targetX)
+		{
+			// which means they are located at the same col
+			if (launchY == UGlobalConstFunctionLibrary::graveCardSectionRow +
+				UGlobalConstFunctionLibrary::playCardSectionRow
+				||
+				launchY == UGlobalConstFunctionLibrary::graveCardSectionRow +
+				UGlobalConstFunctionLibrary::playCardSectionRow +
+				UGlobalConstFunctionLibrary::boardSectionRow - 1)
+			{
+				return false;
+			}
+			else
+			{
+				return true;
+			}
+		}
+		else if (launchY == targetY)
+		{
+			// which means they are located at the same row
+			if (launchX == 0 ||
+				launchX == UGlobalConstFunctionLibrary::maxCol - 1)
+			{
+				return false;
+			}
+			else
+			{
+				return true;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else if (effectInfo.effectType == "pull")
+	{
+		if (launchX == targetX)
+		{
+			if (FMath::Abs(launchY - targetY) == 1)
+			{
+				return false;
+			}
+			else
+			{
+				return true;
+			}
+		}
+		else if (launchY == targetY)
+		{
+			if (FMath::Abs(launchX - targetX) == 1)
+			{
+				return false;
+			}
+			else
+			{
+				return true;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else
+	{
+		return true;
 	}
 }
 

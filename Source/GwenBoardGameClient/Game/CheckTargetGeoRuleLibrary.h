@@ -44,7 +44,8 @@ public:
 	static TArray<FGridXY> GetPossibleDiagonal(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, 
 		TArray<FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, EAtkDistanceType distanceType);
 
-
+	static TArray<FGridXY> GetPossibleNext(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+		TArray<FBoardRow>& boardCardInfo, FEffectInfo& effectInfo, int32 launchX, int32 launchY, EAtkDistanceType distanceType);
 
 
 	static TArray<FGridXY> GetAutoSkillTargetGrids(
@@ -85,4 +86,15 @@ public:
 
 	static void CheckPossibleTargetLocateThree(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo, 
 		TArray<FBoardRow>& boardCardInfo, TArray<FGridXY>& checkGrids);
+
+
+
+	static bool CheckTargetSkillGeoLegality(
+		const FEffectInfo& effectInfo,
+		TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+		TArray<FBoardRow>& boardCardInfo,
+		int32 launchX,
+		int32 launchY,
+		int32 targetX,
+		int32 targetY);
 };

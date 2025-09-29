@@ -681,6 +681,14 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::LaunchSkillDict(
     {
         effectResultDict = IncreaseDefence(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY, isPotentialVirtual);
     }
+    else if (effectInfo.effectType == "switchOppoPos")
+    {
+        effectResultDict = SwitchOppoPos(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY, isPotentialVirtual);
+    }
+    else if (effectInfo.effectType == "pull")
+    {
+        effectResultDict = Pull(allInstanceCardInfo, boardCardInfo, effectInfo, launchX, launchY, targetX, targetY, isPotentialVirtual);
+    }
 
     return effectResultDict;
 }
@@ -1033,6 +1041,245 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::Wound(TMap<int32, FInstance
         effectResultDict.modifyValues.Add(affixInfo.effectValue);
         effectResultDict.modifyGrids.Add(targetGrids[i]);
         effectResultDict.modifyUids.Add(uid);
+    }
+    return effectResultDict;
+}
+
+FEffectResultDict UCoreGameBlueprintFunctionLibrary::Pull(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+    TArray<FBoardRow>& boardCardInfo,
+    FEffectInfo& effectInfo,
+    int32 launchX,
+    int32 launchY,
+    int32 targetX,
+    int32 targetY,
+    bool isPotentialVirtual)
+{
+    FEffectResultDict effectResultDict;
+    effectResultDict.modifyType = "pull";
+    effectResultDict.triggerGridX = launchX;
+    effectResultDict.triggerGridY = launchY;
+    effectResultDict.success = false;
+    effectResultDict.renderEffectType = effectInfo.renderEffectType;
+    effectResultDict.renderTime = effectInfo.renderEffectTime;
+
+    TArray<FGridXY> targetGrids = GetAoeTargetGrids(
+        allInstanceCardInfo,
+        boardCardInfo,
+        launchX,
+        launchY,
+        targetX,
+        targetY,
+        effectInfo.aoeType,
+        effectInfo.targetCamp);
+
+    for (int32 i = 0; i < targetGrids.Num(); i++)
+    {
+        if (!isPotentialVirtual)
+        {
+            if (targetGrids[i].y == launchY)
+            {
+                if (targetGrids[i].x < launchX && launchX - targetGrids[i].x > 1 && launchX > 1)
+                {
+                    if (boardCardInfo[launchY].colCardInfos[launchX - 1] == -1)
+                    {
+                        int32 bePullUid = boardCardInfo[targetGrids[i].y].colCardInfos[targetGrids[i].x];
+                        FGridXY bePullGrid = FGridXY(targetX, targetY);
+                        effectResultDict.modifyUids.Add(bePullUid);
+                        effectResultDict.modifyGrids.Add(bePullGrid);
+                        boardCardInfo[launchY].colCardInfos[launchX - 1] = bePullUid;
+                        boardCardInfo[targetGrids[i].y].colCardInfos[targetGrids[i].x] = -1;
+                        effectResultDict.success = true;
+                    }
+                    else
+                    {
+                        effectResultDict.success = false;
+                        break;
+                    }
+                }
+                else if (targetGrids[i].x > launchX && targetGrids[i].x - launchX > 1 && launchX < UGlobalConstFunctionLibrary::maxCol - 1)
+                {
+                    if (boardCardInfo[launchY].colCardInfos[launchX + 1] == -1)
+                    {
+                        int32 bePullUid = boardCardInfo[targetGrids[i].y].colCardInfos[targetGrids[i].x];
+                        FGridXY bePullGrid = FGridXY(targetX, targetY);
+                        effectResultDict.modifyUids.Add(bePullUid);
+                        effectResultDict.modifyGrids.Add(bePullGrid);
+                        boardCardInfo[launchY].colCardInfos[launchX + 1] = bePullUid;
+                        boardCardInfo[targetGrids[i].y].colCardInfos[targetGrids[i].x] = -1;
+                        effectResultDict.success = true;
+                    }
+                    else
+                    {
+                        effectResultDict.success = false;
+                        break;
+                    }
+                }
+                else
+                {
+                    effectResultDict.success = false;
+                    break;
+                }
+            }
+            else if (targetGrids[i].x == launchX)
+            {
+                if (targetGrids[i].y < launchY && 
+                    launchY - targetGrids[i].y > 1 && 
+                    launchY > UGlobalConstFunctionLibrary::graveCardSectionRow + 
+                    UGlobalConstFunctionLibrary::playCardSectionRow + 1)
+                {
+                    if (boardCardInfo[launchY - 1].colCardInfos[launchX] == -1)
+                    {
+                        int32 bePullUid = boardCardInfo[targetGrids[i].y].colCardInfos[targetGrids[i].x];
+                        FGridXY bePullGrid = FGridXY(targetX, targetY);
+                        effectResultDict.modifyUids.Add(bePullUid);
+                        effectResultDict.modifyGrids.Add(bePullGrid);
+                        boardCardInfo[launchY - 1].colCardInfos[launchX] = bePullUid;
+                        boardCardInfo[targetGrids[i].y].colCardInfos[targetGrids[i].x] = -1;
+                        effectResultDict.success = true;
+                    }
+                    else
+                    {
+                        effectResultDict.success = false;
+                        break;
+                    }
+                }
+                else if (targetGrids[i].y > launchY && 
+                    targetGrids[i].y - launchY > 1 && 
+                    launchY < UGlobalConstFunctionLibrary::graveCardSectionRow + 
+                    UGlobalConstFunctionLibrary::playCardSectionRow + 
+                    UGlobalConstFunctionLibrary::boardSectionRow - 2)
+                {
+                    if (boardCardInfo[launchY + 1].colCardInfos[launchX] == -1)
+                    {
+                        int32 bePullUid = boardCardInfo[targetGrids[i].y].colCardInfos[targetGrids[i].x];
+                        FGridXY bePullGrid = FGridXY(targetX, targetY);
+                        effectResultDict.modifyUids.Add(bePullUid);
+                        effectResultDict.modifyGrids.Add(bePullGrid);
+                        boardCardInfo[launchY + 1].colCardInfos[launchX] = bePullUid;
+                        boardCardInfo[targetGrids[i].y].colCardInfos[targetGrids[i].x] = -1;
+                        effectResultDict.success = true;
+                    }
+                    else
+                    {
+                        effectResultDict.success = false;
+                        break;
+                    }
+                }
+                else
+                {
+                    effectResultDict.success = false;
+                    break;
+                }
+            }
+            else
+            {
+                effectResultDict.success = false;
+                break;
+            }
+        }
+    }
+    return effectResultDict;
+}
+
+FEffectResultDict UCoreGameBlueprintFunctionLibrary::SwitchOppoPos(TMap<int32, FInstanceCardInfo>& allInstanceCardInfo,
+    TArray<FBoardRow>& boardCardInfo,
+    FEffectInfo& effectInfo,
+    int32 launchX,
+    int32 launchY,
+    int32 targetX,
+    int32 targetY,
+    bool isPotentialVirtual)
+{
+    FEffectResultDict effectResultDict;
+    effectResultDict.modifyType = "switchOppoPos";
+    effectResultDict.triggerGridX = launchX;
+    effectResultDict.triggerGridY = launchY;
+    effectResultDict.success = false;
+    effectResultDict.renderEffectType = effectInfo.renderEffectType;
+    effectResultDict.renderTime = effectInfo.renderEffectTime;
+
+    TArray<FGridXY> targetGrids = GetAoeTargetGrids(
+        allInstanceCardInfo,
+        boardCardInfo,
+        launchX,
+        launchY,
+        targetX,
+        targetY,
+        effectInfo.aoeType,
+        effectInfo.targetCamp);
+
+    for (int32 i = 0; i < targetGrids.Num(); i++)
+    {
+        if (!isPotentialVirtual)
+        {
+            if (targetGrids[i].y == launchY)
+            {
+                // which means target grid is at the same row with launch grid
+                if (launchX > 0 && launchX <= UGlobalConstFunctionLibrary::maxCol - 1)
+                {
+                    int32 leftUid = boardCardInfo[launchY].colCardInfos[launchX - 1];
+                    int32 rightUid = boardCardInfo[launchY].colCardInfos[launchX + 1];
+                    boardCardInfo[launchY].colCardInfos[launchX - 1] = rightUid;
+                    boardCardInfo[launchY].colCardInfos[launchX + 1] = leftUid;
+                    FGridXY leftGrid = FGridXY(launchX - 1, launchY);
+                    FGridXY rightGrid = FGridXY(launchX + 1, launchY);
+                    effectResultDict.modifyGrids.Add(leftGrid);
+                    effectResultDict.modifyGrids.Add(rightGrid);
+                    //if (leftUid != -1)
+                    {
+                        effectResultDict.modifyUids.Add(leftUid);
+                    }
+                    //if (rightUid != -1)
+                    {
+                        effectResultDict.modifyUids.Add(rightUid);
+                    }
+                    effectResultDict.success = true;
+                }
+                else
+                {
+                    effectResultDict.success = false;
+                    break;
+                }
+            }
+            else if (targetGrids[i].x == launchX)
+            {
+                if (launchY > UGlobalConstFunctionLibrary::graveCardSectionRow + 
+                    UGlobalConstFunctionLibrary::playCardSectionRow 
+                    && 
+                    launchY < UGlobalConstFunctionLibrary::graveCardSectionRow + 
+                    UGlobalConstFunctionLibrary::playCardSectionRow + 
+                    UGlobalConstFunctionLibrary::boardSectionRow - 1)
+                {
+                    int32 upUid = boardCardInfo[launchY + 1].colCardInfos[launchX];
+                    int32 downUid = boardCardInfo[launchY - 1].colCardInfos[launchX];
+                    boardCardInfo[launchY - 1].colCardInfos[launchX] = upUid;
+                    boardCardInfo[launchY + 1].colCardInfos[launchX] = downUid;
+                    FGridXY upGrid = FGridXY(launchX, launchY + 1);
+                    FGridXY downGrid = FGridXY(launchX, launchY - 1);
+                    effectResultDict.modifyGrids.Add(upGrid);
+                    effectResultDict.modifyGrids.Add(downGrid);
+                    //if (upUid != -1)
+                    {
+                        effectResultDict.modifyUids.Add(upUid);
+                    }
+                    //if (downUid != -1)
+                    {
+                        effectResultDict.modifyUids.Add(downUid);
+                    }
+                    effectResultDict.success = true;
+                }
+                else
+                {
+                    effectResultDict.success = false;
+                    break;
+                }
+            }
+            else
+            {
+                effectResultDict.success = false;
+                break;
+            }
+        }
     }
     return effectResultDict;
 }

@@ -91,7 +91,7 @@ public:
     UBattleWidget* battleWidget;
     UPROPERTY()
     USelectCardWidget* selectCardWidget;
-    UPROPERTY()
+    UPROPERTY(BlueprintReadWrite)
     UMctReplayMenuWidget* mctReplayMenu;
 
     

@@ -63,3 +63,8 @@ void UMctReplayMenuWidget::UpdateWHistories(const TArray<int32> wActionIds,
 	}
 }
 
+void UMctReplayMenuWidget::NotifyShowMenu_Implementation()
+{
+
+}
+

@@ -52,4 +52,7 @@ public:
         const TArray<uint8> wLaunchSections, 
         const TArray<float> wHistories,
         const TArray<float> quHistories);
+
+    UFUNCTION(BlueprintNativeEvent)
+    void NotifyShowMenu();
 };
