@@ -48,6 +48,10 @@ public:
 
     void UpdateWinLoseResult(int32 winSection);
 
+    void ConstructMctsTreeFromStruct(const FMctsNodeTree& treeStruct, FString curTreeNodeUid);
+
+    void CopyFromMctNodeStruct(const FMctsNode& nodeStruct);
+
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<UMctsTreeNode> mctsTreeNodeBPClass;
 

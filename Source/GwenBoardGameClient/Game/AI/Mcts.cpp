@@ -17,10 +17,13 @@
 void UMcts::InitMcts()
 {
 
-	veryFirstNode = NewObject<UMctsTreeNode>(GetWorld(), mctsTreeNodeBPClass);
+	//veryFirstNode = NewObject<UMctsTreeNode>(GetWorld(), mctsTreeNodeBPClass);
+	veryFirstNode.ResetNode();
 	tritonHttpClient = NewObject<UTritonHttpClient>(GetWorld(), tritonHttpClientBPClass);
 	tritonHttpClient->InitTritonClient(this);
-	treeRoot = veryFirstNode;
+	treeRootUid = veryFirstNode.selfUid;
+	allMctsNodes.Empty();
+	allMctsNodes.Add(veryFirstNode.selfUid, veryFirstNode);
 
 
 	UGameInstance* gi = UGameplayStatics::GetGameInstance(this);
@@ -167,8 +170,10 @@ void UMcts::ResetMcts()
 	curSimulationMove = 0;
 	curTritonRequestID = 0;
 
-	veryFirstNode = NewObject<UMctsTreeNode>(GetWorld(), mctsTreeNodeBPClass);
-	treeRoot = veryFirstNode;
+	veryFirstNode.ResetNode();
+	treeRootUid = veryFirstNode.selfUid;
+	allMctsNodes.Empty();
+	allMctsNodes.Add(veryFirstNode.selfUid, veryFirstNode);
 
 
 	UGameInstance* gi = UGameplayStatics::GetGameInstance(this);
@@ -306,30 +311,29 @@ void UMcts::ResetMcts()
 
 void UMcts::UpdateCurSearchNode(int32 targetMove)
 {
-	if (treeRoot->children.Contains(targetMove))
+	for (int32 i = 0; i < allMctsNodes[treeRootUid].childrenUids.Num(); i++)
 	{
-		treeRoot = treeRoot->children[targetMove];
-		//treeRoot->parent = NULL;
-	}
-	else
-	{
-		treeRoot->ResetNode();
+		if (allMctsNodes[allMctsNodes[treeRootUid].childrenUids[i]].actionId == targetMove)
+		{
+			treeRootUid = allMctsNodes[treeRootUid].childrenUids[i];
+			break;
+		}
 	}
 }
 
 void UMcts::SendTritonRequest()
 {
-	UMctsTreeNode* curSearchNode = treeRoot;
+	FString curSearchNodeUid = treeRootUid;
 
 	FBoardInfo copyBoard = realBoard.GetCopyBoard();
 	while (true)
 	{
-		if (curSearchNode == NULL || curSearchNode->IsLeaf())
+		if (curSearchNodeUid == "" || allMctsNodes[curSearchNodeUid].IsLeaf())
 		{
 			break;
 		}
 		int32 action = 0;
-		curSearchNode = curSearchNode->Select(action, isTraining);
+		curSearchNodeUid = allMctsNodes[curSearchNodeUid].Select(allMctsNodes, action, isTraining);
 		int32 launchX = 0;
 		int32 launchY = 0;
 		int32 targetX = 0;
@@ -343,12 +347,12 @@ void UMcts::SendTritonRequest()
 		copyBoard.lastStepActionType = actionType;
 	}
 
-	copyBoard.StateCoding(copyBoard.curPlayingSectionNb, curSearchNode->stateCoding);
+	copyBoard.StateCoding(copyBoard.curPlayingSectionNb, allMctsNodes[curSearchNodeUid].stateCoding);
 
 	int32 requestID = GetCurTritonRequestID();
 	tritonResponseData.curBoardInfo = copyBoard;
-	tritonResponseData.curMctsTreeNode = curSearchNode;
-	tritonHttpClient->SendInferenceRequest("GwenNetModel", curSearchNode->stateCoding, StateCodingTotalCHW, requestID);
+	tritonResponseData.curMctsTreeNodeUid = curSearchNodeUid;
+	tritonHttpClient->SendInferenceRequest("GwenNetModel", allMctsNodes[curSearchNodeUid].stateCoding, StateCodingTotalCHW, requestID);
 }
 
 void UMcts::SendTestTritonRequest()
@@ -412,23 +416,29 @@ bool UMcts::CheckTritonReponseAll()
 				legalActionIds[j], renderActionNode);
 
 			float expPolicy = exp(tritonResponseData.policies[legalActionIds[j]]);
-			UMctsTreeNode* newNode = tritonResponseData.curMctsTreeNode->ExpandNode(
-				tritonResponseData.curMctsTreeNode->hirachy,
+			FString newNodeUid = allMctsNodes[tritonResponseData.curMctsTreeNodeUid].ExpandNode(
+				allMctsNodes,
+				allMctsNodes[tritonResponseData.curMctsTreeNodeUid].hirachy,
 				legalActionIds[j],
 				legalActionTypes[j],
 				tritonResponseData.curBoardInfo.curPlayingSectionNb,
 				expPolicy,
 				copyBoard.boardRows,
-				copyBoard.allInstanceCardInfo);
-			newNode->sectionZeroScore = copyBoard.sectionZeroScores;
-			newNode->sectionOneScore = copyBoard.sectionOneScores;
-			newAddNodes.Add(newNode);
+				copyBoard.allInstanceCardInfo
+			);
+			if (newNodeUid != "")
+			{
+				allMctsNodes[newNodeUid].sectionZeroScore = copyBoard.sectionZeroScores;
+				allMctsNodes[newNodeUid].sectionOneScore = copyBoard.sectionOneScores;
+			}
 		}
 	}
 
-	tritonResponseData.curMctsTreeNode->UpdateQValueRecursive(tritonResponseData.curMctsTreeNode->actionId,
-		tritonResponseData.curMctsTreeNode->curPlayingSectionNb,
-		tritonResponseData.curMctsTreeNode->hirachy,
+	allMctsNodes[tritonResponseData.curMctsTreeNodeUid].UpdateQValueRecursive(
+		allMctsNodes,
+		allMctsNodes[tritonResponseData.curMctsTreeNodeUid].actionId,
+		allMctsNodes[tritonResponseData.curMctsTreeNodeUid].curPlayingSectionNb,
+		allMctsNodes[tritonResponseData.curMctsTreeNodeUid].hirachy,
 		tritonResponseData.boardValue,
 		isTraining);
 
@@ -448,12 +458,12 @@ void UMcts::GetTritonAction(
 	TArray<int32> candidateActs;
 	TArray<float> softmaxProbs;
 	float temp = 0.001;
-	for (TMap<int32, UMctsTreeNode*>::TConstIterator iter = treeRoot->children.CreateConstIterator(); iter; ++iter)
+	for (int32 i=0; i<allMctsNodes[treeRootUid].childrenUids.Num(); i++)
 	{
-		float logVisit = 1.0 / temp * FMath::Loge((double)(iter->Value->visit) + 1e-10);
-		candidateActs.Add(iter->Key);
+		float logVisit = 1.0 / temp * FMath::Loge((double)(allMctsNodes[allMctsNodes[treeRootUid].childrenUids[i]].visit) + 1e-10);
+		candidateActs.Add(allMctsNodes[allMctsNodes[treeRootUid].childrenUids[i]].actionId);
 		logVisits.Add(logVisit);
-		actionTypes.Add(iter->Value->actionType);
+		actionTypes.Add(allMctsNodes[allMctsNodes[treeRootUid].childrenUids[i]].actionType);
 	}
 	UCoreGameBlueprintFunctionLibrary::Softmax(logVisits, softmaxProbs);
 	for (int32 i = 0; i < candidateActs.Num(); i++)
@@ -503,19 +513,18 @@ void UMcts::GetTritonAction(
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, "cur game: " + FString::FromInt(curSelfPlayLoop) + ", total acts: " + FString::FromInt(finalCandidateActs.Num()) + ", select rand act nb: " + FString::FromInt(randActNb));
 		
 		int32 targetMove = finalCandidateActs[randActNb];
-		outSectionNb = treeRoot->children[targetMove]->curPlayingSectionNb;
-		UpdateCurSearchNode(targetMove);
-		actionId = targetMove;
-		outActionType = finalActionTypes[randActNb];
-		/*
-		int32 targetMove;
-		ActionType targetActionType;
-		UCoreGameBlueprintFunctionLibrary::GetDirichletAction(candidateActs, actionTypes, softmaxProbs, targetMove, targetActionType);
-		outSectionNb = treeRoot->children[targetMove]->curPlayingSectionNb;
-		UpdateCurSearchNode(targetMove);
-		actionId = targetMove;
-		outActionType = targetActionType;
-		*/
+
+		for (int32 i = 0; i < allMctsNodes[treeRootUid].childrenUids.Num(); i++)
+		{
+			if (allMctsNodes[allMctsNodes[treeRootUid].childrenUids[i]].actionId == targetMove)
+			{
+				outSectionNb = allMctsNodes[allMctsNodes[treeRootUid].childrenUids[i]].curPlayingSectionNb;
+				UpdateCurSearchNode(targetMove);
+				actionId = targetMove;
+				outActionType = finalActionTypes[randActNb];
+				break;
+			}
+		}
 	}
 	else
 	{
@@ -530,19 +539,18 @@ void UMcts::GetTritonAction(
 			}
 		}
 		int32 targetMove = candidateActs[maxSoftmaxProbNb];
-		outSectionNb = treeRoot->children[targetMove]->curPlayingSectionNb;
-		UpdateCurSearchNode(targetMove);
-		actionId = targetMove;
-		outActionType = actionTypes[maxSoftmaxProbNb];
-		/*
-		int32 targetMove;
-		ActionType targetActionType;
-		UCoreGameBlueprintFunctionLibrary::GetDirichletAction(candidateActs, actionTypes, softmaxProbs, targetMove, targetActionType);
-		outSectionNb = treeRoot->children[targetMove]->curPlayingSectionNb;
-		// reset search tree in real battle case
-		UpdateCurSearchNode(-1);
-		actionId = targetMove;
-		*/
+		
+		for (int32 i = 0; i < allMctsNodes[treeRootUid].childrenUids.Num(); i++)
+		{
+			if (allMctsNodes[allMctsNodes[treeRootUid].childrenUids[i]].actionId == targetMove)
+			{
+				outSectionNb = allMctsNodes[allMctsNodes[treeRootUid].childrenUids[i]].curPlayingSectionNb;
+				UpdateCurSearchNode(targetMove);
+				actionId = targetMove;
+				outActionType = actionTypes[maxSoftmaxProbNb];
+				break;
+			}
+		}
 	}
 	
 }
@@ -745,23 +753,4 @@ void UMcts::AddTrainingData(const FTrainingData& trainingData,
 	stateCodingArchive->Close();
 	actionProbsArchive->Close();
 	winScoreArchive->Close();
-}
-
-void UMcts::ClearTree(UMctsTreeNode* curTreeNode)
-{
-	if (curTreeNode)
-	{
-		if (curTreeNode->children.Num() > 0)
-		{
-			for (TMap<int32, UMctsTreeNode*>::TConstIterator iter = curTreeNode->children.CreateConstIterator(); iter; ++iter)
-			{
-				if (iter->Value->IsValidLowLevel())
-				{
-					ClearTree(iter->Value);
-				}
-			}
-			curTreeNode->children.Empty();
-		}
-		curTreeNode->ConditionalBeginDestroy();
-	}
 }

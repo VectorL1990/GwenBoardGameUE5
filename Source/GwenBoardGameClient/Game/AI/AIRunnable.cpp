@@ -73,8 +73,9 @@ uint32 FAIRunnable::Run()
 		{
 			mcts->curSelfPlayLoop = 0;
 			mcts->realBoard.curPlayingSectionNb = FMath::RandRange(0, 1);
-			mcts->treeRoot->curPlayingSectionNb = mcts->realBoard.curPlayingSectionNb;
-			if (mcts->treeRoot->curPlayingSectionNb == 0)
+			mcts->allMctsNodes[mcts->treeRootUid].curPlayingSectionNb = mcts->realBoard.curPlayingSectionNb;
+			//mcts->treeRoot->curPlayingSectionNb = mcts->realBoard.curPlayingSectionNb;
+			if (mcts->allMctsNodes[mcts->treeRootUid].curPlayingSectionNb == 0)
 			{
 				mcts->realBoard.sectionZeroPlayCardAvailable = true;
 				mcts->realBoard.sectionZeroMoveAvailable = true;
@@ -167,7 +168,7 @@ uint32 FAIRunnable::Run()
 						}
 					}
 
-					mcts->veryFirstNode->UpdateWinLoseResult(winner);
+					mcts->veryFirstNode.UpdateWinLoseResult(mcts->allMctsNodes, winner);
 					
 					mcts->curSimulationMove = 0;
 					aiRunnableState = EAIRunnableState::SelfPlayLoopEnd;
@@ -201,7 +202,11 @@ uint32 FAIRunnable::Run()
 			aiRunnableState = EAIRunnableState::SelfPlayLooping;
 			FTrainingData newTrainingData;
 			mcts->curTrainingData = newTrainingData;
-			mcts->finishSelfPlayGameTreeRoots.Add(mcts->veryFirstNode);
+			FMctsNodeTree newTree;
+			newTree.allNodes = mcts->allMctsNodes;
+			newTree.rootUid = mcts->veryFirstNode.selfUid;
+			mcts->finishSelfPlayGameTrees.Add(newTree);
+			//mcts->finishSelfPlayGameTreeRoots.Add(mcts->veryFirstNode.);
 			mcts->ResetMcts();
 		}
 		else if (aiRunnableState == EAIRunnableState::SelfPlayEnd)

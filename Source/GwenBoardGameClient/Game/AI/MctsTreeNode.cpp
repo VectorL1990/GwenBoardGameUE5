@@ -205,4 +205,35 @@ void UMctsTreeNode::UpdateWinLoseResult(int32 winSection)
 	}
 }
 
+void UMctsTreeNode::ConstructMctsTreeFromStruct(const FMctsNodeTree& treeStruct, FString curTreeNodeUid)
+{
+	if (treeStruct.allNodes.Contains(curTreeNodeUid))
+	{
+		for (int32 i = 0; i < treeStruct.allNodes[curTreeNodeUid].childrenUids.Num(); i++)
+		{
+			UMctsTreeNode* child = NewObject<UMctsTreeNode>(GetWorld(), mctsTreeNodeBPClass);
+			child->CopyFromMctNodeStruct(treeStruct.allNodes[treeStruct.allNodes[curTreeNodeUid].childrenUids[i]]);
+			child->parent = this;
+			children.Add(child->actionId, child);
+			child->ConstructMctsTreeFromStruct(treeStruct, treeStruct.allNodes[curTreeNodeUid].childrenUids[i]);
+		}
+	}
+}
+
+void UMctsTreeNode::CopyFromMctNodeStruct(const FMctsNode& nodeStruct)
+{
+	actionId = nodeStruct.actionId;
+	actionType = nodeStruct.actionType;
+	visit = nodeStruct.visit;
+	truncatedVisit = nodeStruct.truncatedVisit;
+	p = nodeStruct.p;
+	q = nodeStruct.q;
+	u = nodeStruct.u;
+	hirachy = nodeStruct.hirachy;
+	sectionZeroScore = nodeStruct.sectionZeroScore;
+	sectionOneScore = nodeStruct.sectionOneScore;
+	replayBoardRows = nodeStruct.replayBoardRows;
+	allReplayInstanceCardInfo = nodeStruct.allReplayInstanceCardInfo;
+}
+
 

@@ -2401,7 +2401,7 @@ struct FTritonResponseData
 	GENERATED_USTRUCT_BODY()
 public:
 	UPROPERTY()
-	UMctsTreeNode* curMctsTreeNode;
+	FString curMctsTreeNodeUid;
 
 	UPROPERTY()
 	FBoardInfo curBoardInfo;
@@ -2472,16 +2472,22 @@ public:
 	TSubclassOf<UTritonHttpClient> tritonHttpClientBPClass;
 
 	UPROPERTY()
-	UMctsTreeNode* veryFirstNode;
+	FMctsNode veryFirstNode;
+	//UMctsTreeNode* veryFirstNode;
 
 	UPROPERTY()
-	TArray<UMctsTreeNode*> newAddNodes;
+	TMap<FString, FMctsNode> allMctsNodes;
+
 
 	UPROPERTY()
-	UMctsTreeNode* treeRoot;
+	FString treeRootUid;
+	//UMctsTreeNode* treeRoot;
+
+	//UPROPERTY()
+	//TArray<FString> finishSelfPlayGameTreeRoots;
 
 	UPROPERTY()
-	TArray<UMctsTreeNode*> finishSelfPlayGameTreeRoots;
+	TArray<FMctsNodeTree> finishSelfPlayGameTrees;
 
 	UPROPERTY()
 	UTritonHttpClient* tritonHttpClient;
@@ -2531,7 +2537,6 @@ public:
 		int32 height,
 		int32 width);
 
-	void ClearTree(UMctsTreeNode* curTreeNode);
 
 	/**
 	* Testing part
