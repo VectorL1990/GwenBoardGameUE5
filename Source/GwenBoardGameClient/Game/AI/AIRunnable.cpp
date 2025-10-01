@@ -202,11 +202,16 @@ uint32 FAIRunnable::Run()
 			aiRunnableState = EAIRunnableState::SelfPlayLooping;
 			FTrainingData newTrainingData;
 			mcts->curTrainingData = newTrainingData;
+			/*
 			FMctsNodeTree newTree;
 			newTree.allNodes = mcts->allMctsNodes;
 			newTree.rootUid = mcts->veryFirstNode.selfUid;
 			mcts->finishSelfPlayGameTrees.Add(newTree);
-			//mcts->finishSelfPlayGameTreeRoots.Add(mcts->veryFirstNode.);
+			*/
+			FMctsNodeTree newTree;
+			newTree.allNodes = mcts->allMctsNodes;
+			newTree.rootUid = mcts->veryFirstNode.selfUid;
+			mcts->finishSelfPlayDemoTree = newTree;
 			mcts->ResetMcts();
 		}
 		else if (aiRunnableState == EAIRunnableState::SelfPlayEnd)

@@ -19,6 +19,7 @@ void UMctReplayMenuWidget::Init(UTreeView* inTreeView, UScrollBox* inScrollBox)
 
 void UMctReplayMenuWidget::RefreshMctsMenu()
 {
+	
 	treeView->ClearListItems();
 
 	AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
@@ -28,6 +29,7 @@ void UMctReplayMenuWidget::RefreshMctsMenu()
 	rootNode->CopyFromMctNodeStruct(coreCardGameMode->aiRunnable->mcts->finishSelfPlayGameTrees[0].allNodes[rootUid]);
 	rootNode->ConstructMctsTreeFromStruct(coreCardGameMode->aiRunnable->mcts->finishSelfPlayGameTrees[0], rootUid);
 	treeView->AddItem(rootNode);
+	
 }
 
 void UMctReplayMenuWidget::NextMctsNodeMenu()

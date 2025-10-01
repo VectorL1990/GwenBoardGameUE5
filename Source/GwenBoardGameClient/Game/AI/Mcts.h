@@ -2490,6 +2490,9 @@ public:
 	TArray<FMctsNodeTree> finishSelfPlayGameTrees;
 
 	UPROPERTY()
+	FMctsNodeTree finishSelfPlayDemoTree;
+
+	UPROPERTY()
 	UTritonHttpClient* tritonHttpClient;
 
 	int32 curTritonRequestID = 0;
