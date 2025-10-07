@@ -6,9 +6,9 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "GlobalConstFunctionLibrary.generated.h"
 
-#define StateCodingTotalCHW 12528
+#define StateCodingTotalCHW 11136
 #define StateCodingC 87
-#define StateCodingH 18
+#define StateCodingH 16
 #define StateCodingW 8
 #define defaultRenderPlayCardInterval 1.0;
 #define defaultRenderMoveCardInterval 1.0;
@@ -377,6 +377,9 @@ public:
     TArray<FGridXY> modifyGrids;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TArray<FGridXY> toGrids;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TArray<int32> modifyUids;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -412,6 +415,12 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TArray<int32> targetGridYs;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TArray<int32> toGridXs;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TArray<int32> toGridYs;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TArray<int32> modifyUids;
@@ -728,24 +737,35 @@ public:
     FString rootUid;
 };
 
+enum class EAIHumanBattleType
+{
+    AIHumanPlay,
+    AISelfPlay
+};
+
 enum class EAIRunnableState
 {
     Default,
-    NewTask,
     Working,
     StartSelfPlay,
     SelfPlayLooping,
     SelfPlaySendTritonRequest,
     WaitTritonResponse,
-    NextSimulation,
     SelfPlayLoopEnd,
     SelfPlayEnd,
-
-    TestGetAction,
-    FinishTestGetAction,
     NewState,
-
     TestTritonRequest,
+
+    AIAskAction,
+    AISimulationFinish,
+    AIAskActionEnd,
+};
+
+
+enum class EAIHumanOperateState
+{
+    Thinking,
+    Movement,
 };
 
 

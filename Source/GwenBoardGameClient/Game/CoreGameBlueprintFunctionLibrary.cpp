@@ -1087,6 +1087,8 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::Pull(TMap<int32, FInstanceC
                         effectResultDict.modifyUids.Add(bePullUid);
                         effectResultDict.modifyGrids.Add(bePullGrid);
                         boardCardInfo[launchY].colCardInfos[launchX - 1] = bePullUid;
+                        FGridXY desGrid = FGridXY(launchX - 1, launchY);
+                        effectResultDict.toGrids.Add(desGrid);
                         boardCardInfo[targetGrids[i].y].colCardInfos[targetGrids[i].x] = -1;
                         effectResultDict.success = true;
                     }
@@ -1105,6 +1107,8 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::Pull(TMap<int32, FInstanceC
                         effectResultDict.modifyUids.Add(bePullUid);
                         effectResultDict.modifyGrids.Add(bePullGrid);
                         boardCardInfo[launchY].colCardInfos[launchX + 1] = bePullUid;
+                        FGridXY desGrid = FGridXY(launchX + 1, launchY);
+                        effectResultDict.toGrids.Add(desGrid);
                         boardCardInfo[targetGrids[i].y].colCardInfos[targetGrids[i].x] = -1;
                         effectResultDict.success = true;
                     }
@@ -1134,6 +1138,8 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::Pull(TMap<int32, FInstanceC
                         effectResultDict.modifyUids.Add(bePullUid);
                         effectResultDict.modifyGrids.Add(bePullGrid);
                         boardCardInfo[launchY - 1].colCardInfos[launchX] = bePullUid;
+                        FGridXY desGrid = FGridXY(launchX, launchY - 1);
+                        effectResultDict.toGrids.Add(desGrid);
                         boardCardInfo[targetGrids[i].y].colCardInfos[targetGrids[i].x] = -1;
                         effectResultDict.success = true;
                     }
@@ -1156,6 +1162,8 @@ FEffectResultDict UCoreGameBlueprintFunctionLibrary::Pull(TMap<int32, FInstanceC
                         effectResultDict.modifyUids.Add(bePullUid);
                         effectResultDict.modifyGrids.Add(bePullGrid);
                         boardCardInfo[launchY + 1].colCardInfos[launchX] = bePullUid;
+                        FGridXY desGrid = FGridXY(launchX, launchY + 1);
+                        effectResultDict.toGrids.Add(desGrid);
                         boardCardInfo[targetGrids[i].y].colCardInfos[targetGrids[i].x] = -1;
                         effectResultDict.success = true;
                     }

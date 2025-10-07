@@ -321,6 +321,18 @@ void UMcts::UpdateCurSearchNode(int32 targetMove)
 	}
 }
 
+void UMcts::UpdateCurSearchNodeByManualAction(int32 targetMove)
+{
+	for (int32 i = 0; i < allMctsNodes[treeRootUid].childrenUids.Num(); i++)
+	{
+		if (allMctsNodes[allMctsNodes[treeRootUid].childrenUids[i]].actionId == targetMove)
+		{
+			treeRootUid = allMctsNodes[treeRootUid].childrenUids[i];
+			break;
+		}
+	}
+}
+
 void UMcts::SendTritonRequest()
 {
 	FString curSearchNodeUid = treeRootUid;
@@ -368,12 +380,18 @@ int32 UMcts::GetCurTritonRequestID()
 {
 	int32 tmpTritonRequestID = curTritonRequestID;
 	curTritonRequestID += 1;
+	curWaitTritonID = tmpTritonRequestID;
 	return tmpTritonRequestID;
 }
 
 bool UMcts::CheckTritonReponseAll()
 {
 	if (!receivedTritonResponse)
+	{
+		return false;
+	}
+
+	if (receivedRequestID != curWaitTritonID)
 	{
 		return false;
 	}
@@ -511,8 +529,13 @@ void UMcts::GetTritonAction(
 		//FGenericPlatformMath::SRandInit(FDateTime::Now().GetTicks());
 		//int32 randActNb = FMath::RandRange(0, finalCandidateActs.Num() - 1);
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, "cur game: " + FString::FromInt(curSelfPlayLoop) + ", total acts: " + FString::FromInt(finalCandidateActs.Num()) + ", select rand act nb: " + FString::FromInt(randActNb));
+
 		
 		int32 targetMove = finalCandidateActs[randActNb];
+		if (finalActionTypes[randActNb] == ActionType::EndRound)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "Select end round");
+		}
 
 		for (int32 i = 0; i < allMctsNodes[treeRootUid].childrenUids.Num(); i++)
 		{

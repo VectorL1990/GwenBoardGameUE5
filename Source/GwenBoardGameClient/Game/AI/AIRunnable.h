@@ -51,6 +51,14 @@ public:
 	virtual void Stop() override;
 	virtual void Exit() override;
 
+	EAIHumanBattleType aiHumanPlayType = EAIHumanBattleType::AIHumanPlay;
+
+	uint8 askActionSection = 0;
+
+	void AIHumanLoop();
+
+	void AISelfPlayLoop();
+
 	void TriggerMctsGetAction(uint8 campNb);
 
 	void TriggerAssignAction(uint8 campNb,
@@ -60,9 +68,13 @@ public:
 		int32 targetY,
 		ActionType actionType);
 
+	void TriggerAIAskAction(uint8 inTriggerSection);
+
 	void TriggerTestGetAction();
 
 	void TriggerTestTritonInference();
 
 	void TriggerStartSelfPlay();
+
+	void TriggerSuplementRequest();
 };

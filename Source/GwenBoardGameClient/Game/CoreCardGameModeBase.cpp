@@ -35,6 +35,22 @@ void ACoreCardGameModeBase::BeginPlay()
 	FName testTag = "testMotionCard";
 	TArray<AActor*> testTagCards;
 	UGameplayStatics::GetAllActorsWithTag(this, testTag, testTagCards);
+
+	APlayerController* pc = UGameplayStatics::GetPlayerController(this, 0);
+	ACoreCardGamePC* coreCardPC = Cast<ACoreCardGamePC>(pc);
+	coreCardPC->InitMenu();
+
+	gameModeRenderState = EGameModeRenderState::Default;
+	UGameInstance* gi = UGameplayStatics::GetGameInstance(this);
+	UGwenBoardGameInstance* gwenGI = Cast<UGwenBoardGameInstance>(gi);
+	if (gwenGI->playerCambNb == curSectionNb)
+	{
+		UpdateEndRoundButtonState(EEndRoundButtonState::SelfNotPlayCardYet);
+	}
+	else
+	{
+		UpdateEndRoundButtonState(EEndRoundButtonState::OppoNotPlayCardYet);
+	}
 }
 
 void ACoreCardGameModeBase::InitEvents()
@@ -79,7 +95,33 @@ void ACoreCardGameModeBase::Tick(float deltaTime)
 		}
 		else
 		{
-			//OperateCountDown(deltaTime);
+			OperateCountDown(deltaTime);
+			UGameInstance* gi = UGameplayStatics::GetGameInstance(this);
+			UGwenBoardGameInstance* gwenGI = Cast<UGwenBoardGameInstance>(gi);
+			if (gwenGI->playerCambNb != curSectionNb)
+			{
+				if (!isTrain)
+				{
+					if (aiRunnable->aiRunnableState == EAIRunnableState::Default)
+					{
+						AIMovementCountDown(deltaTime);
+					}
+					/*
+					else if (aiRunnable->aiRunnableState == EAIRunnableState::WaitTritonResponse)
+					{
+						if (curAIWaitResponseTime >= aiWaitResponseTime)
+						{
+							aiRunnable->TriggerSuplementRequest();
+							curAIWaitResponseTime = 0.0;
+						}
+						else
+						{
+							curAIWaitResponseTime += deltaTime;
+						}
+					}
+					*/
+				}
+			}
 		}
 	}
 	else if (gameModeRenderState == EGameModeRenderState::ActionTimeOut)
@@ -295,6 +337,79 @@ void ACoreCardGameModeBase::Tick(float deltaTime)
 					{
 						// play draw card vfx
 					}
+					else if (triggerRenderNodes[i].renderEffectType == "switchOppoPos")
+					{
+						if (triggerRenderNodes[i].modifyUids[0] == -1)
+						{
+							int32 boardGridId = (triggerRenderNodes[i].targetGridYs[0] -
+								UGlobalConstFunctionLibrary::graveCardSectionRow -
+								UGlobalConstFunctionLibrary::playCardSectionRow) *
+								UGlobalConstFunctionLibrary::maxCol + triggerRenderNodes[i].targetGridXs[0];
+							FVector targetGridLoc = FVector(
+								boardGrids[boardGridId]->GetActorLocation().X,
+								boardGrids[boardGridId]->GetActorLocation().Y,
+								boardGrids[boardGridId]->GetActorLocation().Z) + gridCardVerticalOffset;
+
+							FVector pos_1 = allBattleCards[triggerRenderNodes[i].modifyUids[1]]->GetActorLocation();
+							
+							allBattleCards[triggerRenderNodes[i].modifyUids[1]]->SetActorLocation(targetGridLoc);
+							int32 gridX_0 = triggerRenderNodes[i].targetGridXs[0];
+							int32 gridY_0 = triggerRenderNodes[i].targetGridYs[0];
+
+							allBattleCards[triggerRenderNodes[i].modifyUids[1]]->gridX = gridX_0;
+							allBattleCards[triggerRenderNodes[i].modifyUids[1]]->gridY = gridY_0;
+						}
+						else if (triggerRenderNodes[i].modifyUids[1] == -1)
+						{
+							int32 boardGridId = (triggerRenderNodes[i].targetGridYs[1] -
+								UGlobalConstFunctionLibrary::graveCardSectionRow -
+								UGlobalConstFunctionLibrary::playCardSectionRow) *
+								UGlobalConstFunctionLibrary::maxCol + triggerRenderNodes[i].targetGridXs[1];
+							FVector targetGridLoc = FVector(
+								boardGrids[boardGridId]->GetActorLocation().X,
+								boardGrids[boardGridId]->GetActorLocation().Y,
+								boardGrids[boardGridId]->GetActorLocation().Z) + gridCardVerticalOffset;
+
+							FVector pos_0 = allBattleCards[triggerRenderNodes[i].modifyUids[0]]->GetActorLocation();
+
+							allBattleCards[triggerRenderNodes[i].modifyUids[0]]->SetActorLocation(targetGridLoc);
+							int32 gridX_1 = triggerRenderNodes[i].targetGridXs[1];
+							int32 gridY_1 = triggerRenderNodes[i].targetGridYs[1];
+
+							allBattleCards[triggerRenderNodes[i].modifyUids[0]]->gridX = gridX_1;
+							allBattleCards[triggerRenderNodes[i].modifyUids[0]]->gridY = gridY_1;
+						}
+						else
+						{
+							FVector pos_0 = allBattleCards[triggerRenderNodes[i].modifyUids[0]]->GetActorLocation();
+							FVector pos_1 = allBattleCards[triggerRenderNodes[i].modifyUids[1]]->GetActorLocation();
+							allBattleCards[triggerRenderNodes[i].modifyUids[0]]->SetActorLocation(pos_1);
+							allBattleCards[triggerRenderNodes[i].modifyUids[1]]->SetActorLocation(pos_0);
+							int32 gridX_0 = allBattleCards[triggerRenderNodes[i].modifyUids[0]]->gridX;
+							int32 gridY_0 = allBattleCards[triggerRenderNodes[i].modifyUids[0]]->gridY;
+							int32 gridX_1 = allBattleCards[triggerRenderNodes[i].modifyUids[1]]->gridX;
+							int32 gridY_1 = allBattleCards[triggerRenderNodes[i].modifyUids[1]]->gridY;
+							allBattleCards[triggerRenderNodes[i].modifyUids[0]]->gridX = gridX_1;
+							allBattleCards[triggerRenderNodes[i].modifyUids[0]]->gridY = gridY_1;
+							allBattleCards[triggerRenderNodes[i].modifyUids[1]]->gridX = gridX_0;
+							allBattleCards[triggerRenderNodes[i].modifyUids[1]]->gridY = gridY_0;
+						}
+					}
+					else if (triggerRenderNodes[i].renderEffectType == "pull")
+					{
+						FVector triggerLoc = allBattleCards[triggerRenderNodes[i].modifyUids[0]]->GetActorLocation();
+						int32 boardGridId = (triggerRenderNodes[i].toGridYs[0] -
+							UGlobalConstFunctionLibrary::graveCardSectionRow -
+							UGlobalConstFunctionLibrary::playCardSectionRow) *
+							UGlobalConstFunctionLibrary::maxCol + triggerRenderNodes[i].toGridXs[0];
+						FVector targetGridLoc = FVector(
+							boardGrids[boardGridId]->GetActorLocation().X,
+							boardGrids[boardGridId]->GetActorLocation().Y,
+							boardGrids[boardGridId]->GetActorLocation().Z) + gridCardVerticalOffset;
+						allBattleCards[triggerRenderNodes[i].modifyUids[0]]->SetActorLocation(targetGridLoc);
+						allBattleCards[triggerRenderNodes[i].modifyUids[0]]->gridX = triggerRenderNodes[i].toGridXs[0];
+						allBattleCards[triggerRenderNodes[i].modifyUids[0]]->gridY = triggerRenderNodes[i].toGridYs[0];
+					}
 				}
 				else if (triggerRenderNodes[i].actionType == ActionType::Move)
 				{
@@ -371,6 +486,16 @@ void ACoreCardGameModeBase::Tick(float deltaTime)
 		if (curRenderEndRoundTime >= endRoundRenderInterval)
 		{
 			gameModeRenderState = EGameModeRenderState::Default;
+			UGameInstance* gi = UGameplayStatics::GetGameInstance(this);
+			UGwenBoardGameInstance* gwenGI = Cast<UGwenBoardGameInstance>(gi);
+			if (gwenGI->playerCambNb == curSectionNb)
+			{
+				UpdateEndRoundButtonState(EEndRoundButtonState::SelfNotPlayCardYet);
+			}
+			else
+			{
+				UpdateEndRoundButtonState(EEndRoundButtonState::OppoNotPlayCardYet);
+			}
 		}
 		else
 		{
@@ -403,6 +528,35 @@ void ACoreCardGameModeBase::OperateCountDown(float dT)
 		// force to stop current player action
 		gameModeRenderState = EGameModeRenderState::ActionTimeOut;
 	}
+}
+
+void ACoreCardGameModeBase::AIMovementCountDown(float dT)
+{
+	
+	if (curAIMovementWaitTime >= aiMovementWaitTime)
+	{
+		curAIMovementWaitTime = 0.0;
+		UGameInstance* gi = UGameplayStatics::GetGameInstance(this);
+		UGwenBoardGameInstance* gwenGI = Cast<UGwenBoardGameInstance>(gi);
+		if (gwenGI->playerCambNb == 0)
+		{
+			TriggerAIAskAction(1);
+		}
+		else
+		{
+			TriggerAIAskAction(0);
+		}
+	}
+	else
+	{
+		curAIMovementWaitTime += dT;
+	}
+	
+}
+
+void ACoreCardGameModeBase::TriggerAIAskAction(uint8 inTriggerSection)
+{
+	aiRunnable->TriggerAIAskAction(inTriggerSection);
 }
 
 

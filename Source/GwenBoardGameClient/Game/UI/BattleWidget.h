@@ -21,7 +21,8 @@ class GWENBOARDGAMECLIENT_API UBattleWidget : public UUserWidget
 public:
     UFUNCTION(BlueprintCallable)
     void Init(UCardDetailWidget* inCardDetailWidget,
-        UImage* inCountDownBar);
+        UImage* inCountDownBar,
+        UButton* inEndRoundButton);
 
     UFUNCTION(BlueprintNativeEvent)
     void NotifyInit();
@@ -39,6 +40,12 @@ public:
 
     void UpdateEndRoundButtonState(EEndRoundButtonState state);
 
+    UFUNCTION(BlueprintNativeEvent)
+    void NotifyShowEndRoundButton();
+
+    UFUNCTION(BlueprintNativeEvent)
+    void NotifyHideEndRoundButton();
+
     UPROPERTY(EditDefaultsOnly)
     UMaterialInterface* actionCountDownBarMatParent;
 
@@ -53,4 +60,7 @@ public:
 
     UPROPERTY(BlueprintReadWrite)
     UImage* actionCountDownBar;
+
+    UPROPERTY(BlueprintReadWrite)
+    UButton* endRoundButton;
 };

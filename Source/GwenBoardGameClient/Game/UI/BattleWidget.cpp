@@ -11,13 +11,15 @@
 
 void UBattleWidget::Init(
 	UCardDetailWidget* inCardDetailWidget,
-	UImage* inCountDownBar)
+	UImage* inCountDownBar,
+	UButton* inEndRoundButton)
 {
 	cardDetailWidget = inCardDetailWidget;
 	UMaterialInstanceDynamic* mi = UKismetMaterialLibrary::CreateDynamicMaterialInstance(this, actionCountDownBarMatParent);
 	actionCountDownBar = inCountDownBar;
 	actionCountDownBar->Brush.SetResourceObject(mi);
 	cardDetailWidget->NotifyInit();
+	endRoundButton = inEndRoundButton;
 	//HideCardDetail();
 }
 
@@ -70,10 +72,26 @@ void UBattleWidget::UpdateCountDownBarProgress(float progress)
 	mi->SetScalarParameterValue("Fade", progress);
 }
 
-void UBattleWidget::UpdateEndRoundButtonState(EEndRoundButtonState state)
+void UBattleWidget::UpdateEndRoundButtonState(EEndRoundButtonState inState)
 {
-	if (state == EEndRoundButtonState::SelfHasPlayCard)
+	if (inState == EEndRoundButtonState::SelfHasPlayCard)
 	{
-
+		NotifyShowEndRoundButton();
+		//endRoundButton->Visibility = ESlateVisibility::Visible;
 	}
+	else
+	{
+		NotifyHideEndRoundButton();
+		//endRoundButton->Visibility = ESlateVisibility::Hidden;
+	}
+}
+
+void UBattleWidget::NotifyShowEndRoundButton_Implementation()
+{
+
+}
+
+void UBattleWidget::NotifyHideEndRoundButton_Implementation()
+{
+
 }

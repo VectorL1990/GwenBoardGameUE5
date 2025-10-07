@@ -25,9 +25,9 @@ void UMctReplayMenuWidget::RefreshMctsMenu()
 	AGameModeBase* gameMode = UGameplayStatics::GetGameMode(this);
 	ACoreCardGameModeBase* coreCardGameMode = Cast<ACoreCardGameModeBase>(gameMode);
 	UMctsTreeNode* rootNode = NewObject<UMctsTreeNode>(GetWorld(), mctsTreeNodeBPClass);
-	FString rootUid = coreCardGameMode->aiRunnable->mcts->finishSelfPlayGameTrees[0].rootUid;
-	rootNode->CopyFromMctNodeStruct(coreCardGameMode->aiRunnable->mcts->finishSelfPlayGameTrees[0].allNodes[rootUid]);
-	rootNode->ConstructMctsTreeFromStruct(coreCardGameMode->aiRunnable->mcts->finishSelfPlayGameTrees[0], rootUid);
+	FString rootUid = coreCardGameMode->aiRunnable->mcts->finishSelfPlayDemoTree.rootUid;
+	rootNode->CopyFromMctNodeStruct(coreCardGameMode->aiRunnable->mcts->finishSelfPlayDemoTree.allNodes[rootUid]);
+	rootNode->ConstructMctsTreeFromStruct(coreCardGameMode->aiRunnable->mcts->finishSelfPlayDemoTree, rootUid);
 	treeView->AddItem(rootNode);
 	
 }

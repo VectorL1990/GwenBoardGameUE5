@@ -60,10 +60,26 @@ public:
 
     void OperateCountDown(float dT);
 
+    void AIMovementCountDown(float dT);
+
+    void TriggerAIAskAction(uint8 inTriggerSection);
+
     UPROPERTY(EditDefaultsOnly)
     float playerOperateTime = 90.0;
 
     float curPlayerOperateLeftTime;
+
+    bool isTrain = false;
+
+    bool testManualTriggerAIAsk = false;
+
+    float curAIMovementWaitTime = 0.0;
+
+    float aiMovementWaitTime = 1.0;
+
+    float curAIWaitResponseTime = 0.0;
+
+    float aiWaitResponseTime = 3.0;
 
 
 
@@ -282,7 +298,6 @@ public:
     float aiTrainPlayerActionCount = 0.0;
 
     // --- Single game logic
-    bool isTrain = true;
 
     uint8 curSectionNb = 0;
 

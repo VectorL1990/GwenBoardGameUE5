@@ -47,10 +47,274 @@ void FAIRunnable::Exit()
 
 }
 
+void FAIRunnable::AIHumanLoop()
+{
+	if (aiRunnableState == EAIRunnableState::Working)
+	{
+		int32 actionCode = mcts->realBoard.ActionCoding(
+			waitLaunchX,
+			waitLaunchY,
+			waitTargetX,
+			waitTargetY,
+			waitActionType);
+		FRenderActionNode renderRootNode;
+		mcts->realBoard.TriggerAction(true, waitLaunchCamp, actionCode, renderRootNode);
+		aiRunnableState = EAIRunnableState::NewState;
+
+		newStateRenderRoot = renderRootNode;
+		newStateActionType = waitActionType;
+
+		mcts->UpdateCurSearchNodeByManualAction(actionCode);
+		mcts->realBoard.lastActionId = actionCode;
+		mcts->realBoard.lastStepActionType = waitActionType;
+	}
+	else if (aiRunnableState == EAIRunnableState::AIAskAction)
+	{
+		//mcts->realBoard.curPlayingSectionNb = askActionSection;
+		//mcts->allMctsNodes[mcts->treeRootUid].curPlayingSectionNb = askActionSection;
+		aiRunnableState = EAIRunnableState::SelfPlaySendTritonRequest;
+	}
+	else if (aiRunnableState == EAIRunnableState::SelfPlaySendTritonRequest)
+	{
+		if (mcts->curSimulationMove >= mcts->aiHumanPlayExpandSimulationMoves)
+		{
+			//FScopeLock lock(&criticalSection);
+			int32 targetAction;
+			ActionType targetActionType;
+			FTrainDataStateCodingAndActionProbs trainStateCodingAndActionProbs;
+			uint8 targetSectionNb;
+			mcts->GetTritonAction(targetAction, targetActionType, targetSectionNb, trainStateCodingAndActionProbs.actionProbs);
+
+			FRenderActionNode renderActionRoot;
+			mcts->realBoard.TriggerAction(false, mcts->realBoard.curPlayingSectionNb, targetAction, renderActionRoot);
+
+			newStateRenderRoot = renderActionRoot;
+			newStateActionType = targetActionType;
+
+			mcts->realBoard.lastActionId = targetAction;
+			mcts->realBoard.lastStepActionType = targetActionType;
+
+			int32 trainingDataStateCoding[StateCodingTotalCHW] = { 0 };
+			mcts->realBoard.StateCoding(mcts->realBoard.curPlayingSectionNb, trainingDataStateCoding);
+			FMemory::Memcpy(trainStateCodingAndActionProbs.stateCoding, trainingDataStateCoding, StateCodingTotalCHW * sizeof(int32));
+
+			int32 winner;
+			bool isGameEnd = mcts->realBoard.GameEnd(winner);
+
+			mcts->curSimulationMove = 0;
+			aiRunnableState = EAIRunnableState::AISimulationFinish;
+
+		}
+		else
+		{
+			mcts->SendTritonRequest();
+			mcts->curSimulationMove += 1;
+			aiRunnableState = EAIRunnableState::WaitTritonResponse;
+		}
+	}
+	else if (aiRunnableState == EAIRunnableState::WaitTritonResponse)
+	{
+		if (mcts->CheckTritonReponseAll())
+		{
+			aiRunnableState = EAIRunnableState::SelfPlaySendTritonRequest;
+		}
+	}
+	else if (aiRunnableState == EAIRunnableState::AISimulationFinish)
+	{
+		//mcts->ResetMcts();
+		aiRunnableState = EAIRunnableState::NewState;
+	}
+}
+
+void FAIRunnable::AISelfPlayLoop()
+{
+	if (aiRunnableState == EAIRunnableState::Working)
+	{
+		int32 actionCode = mcts->realBoard.ActionCoding(
+			waitLaunchX,
+			waitLaunchY,
+			waitTargetX,
+			waitTargetY,
+			waitActionType);
+		FRenderActionNode renderRootNode;
+		mcts->realBoard.TriggerAction(true, waitLaunchCamp, actionCode, renderRootNode);
+		aiRunnableState = EAIRunnableState::NewState;
+
+		newStateRenderRoot = renderRootNode;
+		newStateActionType = waitActionType;
+
+		mcts->realBoard.lastActionId = actionCode;
+		mcts->realBoard.lastStepActionType = waitActionType;
+	}
+	else if (aiRunnableState == EAIRunnableState::StartSelfPlay)
+	{
+		mcts->curSelfPlayLoop = 0;
+		mcts->realBoard.curPlayingSectionNb = FMath::RandRange(0, 1);
+		mcts->allMctsNodes[mcts->treeRootUid].curPlayingSectionNb = mcts->realBoard.curPlayingSectionNb;
+		//mcts->treeRoot->curPlayingSectionNb = mcts->realBoard.curPlayingSectionNb;
+		if (mcts->allMctsNodes[mcts->treeRootUid].curPlayingSectionNb == 0)
+		{
+			mcts->realBoard.sectionZeroPlayCardAvailable = true;
+			mcts->realBoard.sectionZeroMoveAvailable = true;
+			mcts->realBoard.sectionOnePlayCardAvailable = false;
+			mcts->realBoard.sectionOneMoveAvailable = false;
+		}
+		else
+		{
+			mcts->realBoard.sectionZeroPlayCardAvailable = false;
+			mcts->realBoard.sectionZeroMoveAvailable = false;
+			mcts->realBoard.sectionOnePlayCardAvailable = true;
+			mcts->realBoard.sectionOneMoveAvailable = true;
+		}
+		FTrainingData newTrainingData;
+		mcts->curTrainingData = newTrainingData;
+		aiRunnableState = EAIRunnableState::SelfPlayLooping;
+	}
+	else if (aiRunnableState == EAIRunnableState::SelfPlayLooping)
+	{
+		if (mcts->curSelfPlayLoop >= mcts->maxSelfPlayLoop)
+		{
+			mcts->curSimulationMove = 0;
+			aiRunnableState = EAIRunnableState::SelfPlayEnd;
+			//mcts->SaveTrainingData(mcts->trainingDatas, StateCodingC, StateCodingH, StateCodingW);
+		}
+		else
+		{
+			//mcts->ResetMcts();
+			aiRunnableState = EAIRunnableState::SelfPlaySendTritonRequest;
+		}
+	}
+	else if (aiRunnableState == EAIRunnableState::SelfPlaySendTritonRequest)
+	{
+		if (mcts->curSimulationMove >= mcts->expandSimulationMoves)
+		{
+			//FScopeLock lock(&criticalSection);
+			int32 targetAction;
+			ActionType targetActionType;
+			FTrainDataStateCodingAndActionProbs trainStateCodingAndActionProbs;
+			uint8 targetSectionNb;
+			mcts->GetTritonAction(targetAction, targetActionType, targetSectionNb, trainStateCodingAndActionProbs.actionProbs);
+
+			/*
+			int32 trainingDataStateCoding[StateCodingTotalCHW] = { 0 };
+			mcts->realBoard.StateCoding(mcts->realBoard.curPlayingSectionNb, trainingDataStateCoding);
+			FMemory::Memcpy(trainStateCodingAndActionProbs.stateCoding, trainingDataStateCoding, StateCodingTotalCHW * sizeof(int32));
+
+			mcts->curTrainingData.stateCodingAndActionProbs.Add(trainStateCodingAndActionProbs);
+			mcts->curTrainingData.playSectionNbs.Add(targetSectionNb);
+			*/
+
+			FRenderActionNode renderActionRoot;
+			mcts->realBoard.TriggerAction(false, mcts->realBoard.curPlayingSectionNb, targetAction, renderActionRoot);
+
+			mcts->realBoard.lastActionId = targetAction;
+			mcts->realBoard.lastStepActionType = targetActionType;
+
+			int32 trainingDataStateCoding[StateCodingTotalCHW] = { 0 };
+			mcts->realBoard.StateCoding(mcts->realBoard.curPlayingSectionNb, trainingDataStateCoding);
+			FMemory::Memcpy(trainStateCodingAndActionProbs.stateCoding, trainingDataStateCoding, StateCodingTotalCHW * sizeof(int32));
+
+			mcts->curTrainingData.stateCodingAndActionProbs.Add(trainStateCodingAndActionProbs);
+			mcts->curTrainingData.playSectionNbs.Add(targetSectionNb);
+
+			int32 winner;
+			bool isGameEnd = mcts->realBoard.GameEnd(winner);
+
+			if (isGameEnd)
+			{
+				if (winner == -1)
+				{
+					// which means it's draw
+					for (int32 i = 0; i < mcts->curTrainingData.playSectionNbs.Num(); i++)
+					{
+						mcts->curTrainingData.scores.Add(0.0);
+					}
+				}
+				else
+				{
+					for (int32 i = 0; i < mcts->curTrainingData.playSectionNbs.Num(); i++)
+					{
+						if (mcts->curTrainingData.playSectionNbs[i] == winner)
+						{
+							mcts->curTrainingData.scores.Add(1.0);
+						}
+						else
+						{
+							mcts->curTrainingData.scores.Add(-1.0);
+						}
+					}
+				}
+
+				mcts->veryFirstNode.UpdateWinLoseResult(mcts->allMctsNodes, winner);
+
+				mcts->curSimulationMove = 0;
+				aiRunnableState = EAIRunnableState::SelfPlayLoopEnd;
+				//mcts->trainingDatas.Add(mcts->curTrainingData);
+			}
+			else
+			{
+				mcts->curSimulationMove = 0;
+				aiRunnableState = EAIRunnableState::SelfPlayLooping;
+			}
+		}
+		else
+		{
+			mcts->SendTritonRequest();
+			mcts->curSimulationMove += 1;
+			aiRunnableState = EAIRunnableState::WaitTritonResponse;
+		}
+	}
+	else if (aiRunnableState == EAIRunnableState::WaitTritonResponse)
+	{
+		if (mcts->CheckTritonReponseAll())
+		{
+			aiRunnableState = EAIRunnableState::SelfPlaySendTritonRequest;
+		}
+	}
+	else if (aiRunnableState == EAIRunnableState::SelfPlayLoopEnd)
+	{
+		mcts->AddTrainingData(mcts->curTrainingData, StateCodingC, StateCodingH, StateCodingW);
+		// save training data to file
+		mcts->curSelfPlayLoop += 1;
+		aiRunnableState = EAIRunnableState::SelfPlayLooping;
+		FTrainingData newTrainingData;
+		mcts->curTrainingData = newTrainingData;
+		/*
+		FMctsNodeTree newTree;
+		newTree.allNodes = mcts->allMctsNodes;
+		newTree.rootUid = mcts->veryFirstNode.selfUid;
+		mcts->finishSelfPlayGameTrees.Add(newTree);
+		*/
+		FMctsNodeTree newTree;
+		newTree.allNodes = mcts->allMctsNodes;
+		newTree.rootUid = mcts->veryFirstNode.selfUid;
+		mcts->finishSelfPlayDemoTree = newTree;
+		mcts->ResetMcts();
+	}
+	else if (aiRunnableState == EAIRunnableState::SelfPlayEnd)
+	{
+
+	}
+	else if (aiRunnableState == EAIRunnableState::TestTritonRequest)
+	{
+		mcts->SendTestTritonRequest();
+		aiRunnableState = EAIRunnableState::Default;
+	}
+}
+
 uint32 FAIRunnable::Run()
 {
 	while (running)
 	{
+		if (aiHumanPlayType == EAIHumanBattleType::AISelfPlay)
+		{
+			AISelfPlayLoop();
+		}
+		else if (aiHumanPlayType == EAIHumanBattleType::AIHumanPlay)
+		{
+			AIHumanLoop();
+		}
+		/*
 		if (aiRunnableState == EAIRunnableState::Working)
 		{
 			int32 actionCode = mcts->realBoard.ActionCoding(
@@ -117,15 +381,6 @@ uint32 FAIRunnable::Run()
 				FTrainDataStateCodingAndActionProbs trainStateCodingAndActionProbs;
 				uint8 targetSectionNb;
 				mcts->GetTritonAction(targetAction, targetActionType, targetSectionNb, trainStateCodingAndActionProbs.actionProbs);
-
-				/*
-				int32 trainingDataStateCoding[StateCodingTotalCHW] = { 0 };
-				mcts->realBoard.StateCoding(mcts->realBoard.curPlayingSectionNb, trainingDataStateCoding);
-				FMemory::Memcpy(trainStateCodingAndActionProbs.stateCoding, trainingDataStateCoding, StateCodingTotalCHW * sizeof(int32));
-
-				mcts->curTrainingData.stateCodingAndActionProbs.Add(trainStateCodingAndActionProbs);
-				mcts->curTrainingData.playSectionNbs.Add(targetSectionNb);
-				*/
 
 				FRenderActionNode renderActionRoot;
 				mcts->realBoard.TriggerAction(false, mcts->realBoard.curPlayingSectionNb, targetAction, renderActionRoot);
@@ -202,12 +457,7 @@ uint32 FAIRunnable::Run()
 			aiRunnableState = EAIRunnableState::SelfPlayLooping;
 			FTrainingData newTrainingData;
 			mcts->curTrainingData = newTrainingData;
-			/*
-			FMctsNodeTree newTree;
-			newTree.allNodes = mcts->allMctsNodes;
-			newTree.rootUid = mcts->veryFirstNode.selfUid;
-			mcts->finishSelfPlayGameTrees.Add(newTree);
-			*/
+			
 			FMctsNodeTree newTree;
 			newTree.allNodes = mcts->allMctsNodes;
 			newTree.rootUid = mcts->veryFirstNode.selfUid;
@@ -223,6 +473,7 @@ uint32 FAIRunnable::Run()
 			mcts->SendTestTritonRequest();
 			aiRunnableState = EAIRunnableState::Default;
 		}
+		*/
 	}
 	return 0;
 }
@@ -232,8 +483,18 @@ void FAIRunnable::TriggerMctsGetAction(uint8 campNb)
 	aiRunnableState = EAIRunnableState::Working;
 }
 
+void FAIRunnable::TriggerAIAskAction(uint8 inTriggerSection)
+{
+	askActionSection = inTriggerSection;
+	mcts->curSimulationMove = 0;
+	aiHumanPlayType = EAIHumanBattleType::AIHumanPlay;
+	aiRunnableState = EAIRunnableState::AIAskAction;
+}
+
 void FAIRunnable::TriggerTestGetAction()
 {
+	mcts->curSimulationMove = 0;
+	aiHumanPlayType = EAIHumanBattleType::AISelfPlay;
 	aiRunnableState = EAIRunnableState::SelfPlayLooping;
 }
 
@@ -245,6 +506,12 @@ void FAIRunnable::TriggerTestTritonInference()
 void FAIRunnable::TriggerStartSelfPlay()
 {
 	aiRunnableState = EAIRunnableState::StartSelfPlay;
+}
+
+void FAIRunnable::TriggerSuplementRequest()
+{
+	mcts->SendTritonRequest();
+	aiRunnableState = EAIRunnableState::WaitTritonResponse;
 }
 
 void FAIRunnable::TriggerAssignAction(uint8 campNb,

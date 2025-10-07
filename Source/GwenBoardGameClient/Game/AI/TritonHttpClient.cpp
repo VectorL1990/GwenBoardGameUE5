@@ -46,7 +46,7 @@ void UTritonHttpClient::SendInferenceRequest(const FString& modelName, const int
         "inputs": [
             {
                 "name": "input_0",
-                "shape": [1, 87, 18, 8],
+                "shape": [1, 87, 16, 8],
                 "datatype": "FP32",
                 "parameters":
                 {
@@ -153,5 +153,6 @@ void UTritonHttpClient::ProcessResponse(const int32& requestId, const int32& met
     }
 
     castMcts->receivedTritonResponse = true;
+    castMcts->receivedRequestID = requestId;
 }
 

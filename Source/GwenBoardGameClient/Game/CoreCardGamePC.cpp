@@ -17,7 +17,7 @@
 void ACoreCardGamePC::BeginPlay()
 {
     SetShowMouseCursor(true);
-    InitMenu();
+    //InitMenu();
     //mctReplayMenu->RefreshMctsMenu();
 }
 

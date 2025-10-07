@@ -1020,11 +1020,13 @@ public:
 		}
 		else if (actionType == ActionType::EndRound)
 		{
+			renderParentNode.actionType = ActionType::EndRound;
 			TriggerRoundEndSkill(curPlayingSectionNb, renderParentNode);
 			UpdateCardAttachInfos();
 			UpdateCardAttachEffects();
 			if (curPlayingSectionNb == 0)
 			{
+				curLaunchPlaySectionNb = 1;
 				curPlayingSectionNb = 1;
 				sectionZeroPlayCardAvailable = false;
 				sectionZeroMoveAvailable = false;
@@ -1033,6 +1035,7 @@ public:
 			}
 			else
 			{
+				curLaunchPlaySectionNb = 0;
 				curPlayingSectionNb = 0;
 				sectionZeroPlayCardAvailable = true;
 				sectionZeroMoveAvailable = true;
@@ -1284,6 +1287,11 @@ public:
 					renderActionNode.targetGridXs.Add(effectResultInfo.modifyGrids[i].x);
 					renderActionNode.targetGridYs.Add(effectResultInfo.modifyGrids[i].y);
 				}
+				for (int32 i = 0; i < effectResultInfo.toGrids.Num(); i++)
+				{
+					renderActionNode.toGridXs.Add(effectResultInfo.toGrids[i].x);
+					renderActionNode.toGridYs.Add(effectResultInfo.toGrids[i].y);
+				}
 
 				
 				TriggerPassiveEffect(launchX, launchY, effectResultInfo, renderActionNode);
@@ -1408,6 +1416,11 @@ public:
 							{
 								renderActionNode.targetGridXs.Add(effectResultInfo.modifyGrids[k].x);
 								renderActionNode.targetGridYs.Add(effectResultInfo.modifyGrids[k].y);
+							}
+							for (int32 k = 0; k < effectResultInfo.toGrids.Num(); k++)
+							{
+								renderActionNode.toGridXs.Add(effectResultInfo.toGrids[k].x);
+								renderActionNode.toGridYs.Add(effectResultInfo.toGrids[k].y);
 							}
 
 
@@ -1539,6 +1552,11 @@ public:
 				{
 					renderActionNode.targetGridXs.Add(effectResultInfo.modifyGrids[i].x);
 					renderActionNode.targetGridYs.Add(effectResultInfo.modifyGrids[i].y);
+				}
+				for (int32 i = 0; i < effectResultInfo.toGrids.Num(); i++)
+				{
+					renderActionNode.toGridXs.Add(effectResultInfo.toGrids[i].x);
+					renderActionNode.toGridYs.Add(effectResultInfo.toGrids[i].y);
 				}
 				renderParentNode = renderActionNode;
 
@@ -1827,6 +1845,11 @@ public:
 						renderActionNode.targetGridXs.Add(secondaryEffectResult.modifyGrids[j].x);
 						renderActionNode.targetGridYs.Add(secondaryEffectResult.modifyGrids[j].y);
 					}
+					for (int32 j = 0; j < secondaryEffectResult.toGrids.Num(); j++)
+					{
+						renderActionNode.toGridXs.Add(secondaryEffectResult.toGrids[j].x);
+						renderActionNode.toGridYs.Add(secondaryEffectResult.toGrids[j].y);
+					}
 					renderActionNode.modifyUids = secondaryEffectResult.modifyUids;
 					renderActionNode.modifyValues = secondaryEffectResult.modifyValues;
 
@@ -2007,7 +2030,6 @@ public:
 		else if (effectType == "exchangeFirstDeath") coding[17] = 1;
 		else if (effectType == "duel") coding[18] = 1;
 		else if (effectType == "recover") coding[19] = 1;
-
 		else if (effectType == "pull") coding[20] = 1;
 		else if (effectType == "switchOppoPos") coding[21] = 1;
 	}
@@ -2452,7 +2474,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	bool isTraining = true;
 
-	int32 maxSelfPlayLoop = 10000;
+	int32 maxSelfPlayLoop = 4;
 
 	int32 curSelfPlayLoop = 0;
 
@@ -2461,6 +2483,9 @@ public:
 
 	UPROPERTY()
 	int32 expandSimulationMoves = 1;
+
+	UPROPERTY()
+	int32 aiHumanPlayExpandSimulationMoves = 10;
 
 	UPROPERTY()
 	FBoardInfo realBoard;
@@ -2497,7 +2522,11 @@ public:
 
 	int32 curTritonRequestID = 0;
 
+	int32 curWaitTritonID = 0;
+
 	bool receivedTritonResponse = false;
+
+	int32 receivedRequestID = 0;
 
 	UPROPERTY()
 	FTritonResponseData tritonResponseData;
@@ -2513,6 +2542,8 @@ public:
 	void ResetMcts();
 
 	void UpdateCurSearchNode(int32 targetMove);
+
+	void UpdateCurSearchNodeByManualAction(int32 targetMove);
 
 	int32 GetCurTritonRequestID();
 
